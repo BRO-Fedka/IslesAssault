@@ -19,6 +19,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # MAIL.login('islesassault@mail.ru', 'UZJGwPevEAhe7h0geg9c')
 import datetime
 app = Flask(__name__)
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
+print(SQLALCHEMY_DATABASE_URI)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/IslesAssault/data.db'
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
