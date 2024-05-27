@@ -1,0 +1,30 @@
+
+            {%for i in range(0,lenvehicles)%}
+                <a href="/shop/{{vehicles[i][0]}}" class="ShopCard {{vehicles[i][4]}} {% if vehicles[i][1] == 0%}notPurchased{%elif vehicles[i][1] == 1%}Purchased{%endif%}"  onclick="SaveMusicPos()">
+                <div class="ShopCard">
+                    <div class="item-lbl">
+                        <span>{{vehicles[i][3]}}</span>
+                    </div>
+
+                    {% if vehicles[i][4] == 'vehicle' %}
+                    <div class="imgbg">
+                        <img src="static\veh{{vehicles[i][0]}}.svg" class="unselectable">
+                    </div>
+
+                    {%endif%}
+                    {% if vehicles[i][4] == 'skin' %}
+                    <img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicles[i][5]}}">
+                    {%endif%}
+                    {% if vehicles[i][4] == 'image' %}
+                    <img src="static\Playericons\{{vehicles[i][5]}}.svg" class="unselectable">
+                    {%endif%}
+                    {% if vehicles[i][1] == 0%}
+                    <div class="MoneyNum" class="unselectable"><img src="static/goldshell.svg"><b>{{vehicles[i][2]}}</b></div>
+
+                    {%elif vehicles[i][1] == 1%}
+                    <div class="MoneyNum" class="unselectable"><img src="static/checkmark.svg"><b>Purchased</b></div>
+                    {%endif%}
+                    </div>
+                    </a>
+<!--                <option value="{{i[0]}}">{{i[2]}}</option>-->
+            {%endfor%}

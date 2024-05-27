@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <title>Isles.io</title>
+</head>
+ <body>
+   <audio src="static/mainMenuMusic.mp3"></audio>
+  <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
+<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
+<script src="static/music.js"></script>
+    <div id="MainScreen">
+    </div>
+    <div id="NEbar">
+        <a href="/login" onclick="SaveMusicPos()">
+
+            <div class="NEbar">
+
+                <img src="static\exit.svg" class="unselectable">
+            </div>
+        </a>
+    </div>
+
+    <div id="MainForm">
+        <form action="/register" method="post" class="form-contact" >
+            <label class="inp">Nickname:</label>
+            <br>
+            <input class="inp" type="text" name="nick" value="" requied />
+        <label class="inp">E-mail:</label>
+            <br>
+            <input class="inp" type="text" name="email" value="" requied />
+        <label class="inp">Password:</label>
+            <br>
+            <input class="inp" type="password" name="psw" value="" requied />
+            <br>
+            <a class="inp" href="..\login">Log in</a>
+            <br>
+        <input id="RegBTN" type="submit" value="Sign in" onclick="SaveMusicPos()"/>
+        </form>
+    </div>
+
+
+ </body>
+</html>

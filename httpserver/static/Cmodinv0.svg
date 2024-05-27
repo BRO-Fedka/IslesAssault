@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <ellipse style="fill: rgb(216, 216, 216); fill-opacity: 0; stroke: rgb(0, 255, 0); stroke-width: 2px;" cx="12.5" cy="37.5" rx="7.5" ry="7.5"/>
+  <ellipse style="fill: rgb(216, 216, 216); fill-opacity: 0; stroke: rgb(0, 255, 0); stroke-width: 2px;" cx="37.5" cy="37.5" rx="7.5" ry="7.5"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 255, 0); stroke-width: 4px;" x1="12.5" y1="37.5" x2="20" y2="27.5"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 255, 0); stroke-width: 4px;" x1="37.5" y1="37.5" x2="30" y2="27.5"/>
+  <g>
+    <ellipse style="fill: rgb(216, 216, 216); fill-opacity: 0; stroke: rgb(0, 255, 0); stroke-width: 2px;" cx="25" cy="22.5" rx="3" ry="3"/>
+    <line style="fill: rgb(216, 216, 216); stroke-width: 2px; stroke: rgb(0, 255, 0);" x1="25" y1="17.5" x2="25" y2="27.5"/>
+    <line style="fill: rgb(216, 216, 216); stroke-width: 2px; stroke: rgb(0, 255, 0);" x1="25.042" y1="17.5" x2="24.959" y2="27.5" transform="matrix(-0.008378, -0.999965, 0.999965, -0.008378, 2.710744, 47.688127)"/>
+  </g>
+</svg>

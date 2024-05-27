@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="-0.16 -0.16 0.32 0.32" xmlns="http://www.w3.org/2000/svg">
+<polygon class="vehiclebody" points="0.15 0,0 0.06,-0.15 0.045,-0.15 -0.045,0 -0.06," fill="#888"/>
+
+<circle cx="0" cy="0" r="0.0375" fill="#6c6c6c" />
+<line x1="0" y1="0" x2="0" y2="-0.05625" stroke="#9b9b93" stroke-width="0.01875"/>
+
+<circle cx="-0.1" cy="0" r="0.0375" fill="#6c6c6c" />
+<line x1="-0.1" y1="0" x2="-0.1" y2="-0.05625" stroke="#9b9b93" stroke-width="0.01875"/>
+
+</svg>

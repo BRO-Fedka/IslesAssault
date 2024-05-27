@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <title>Isles.io</title>
+</head>
+ <body>
+  <audio src="static/mainMenuMusic.mp3"></audio>
+  <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
+<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
+<script src="static/music.js"></script>
+    <div id="MainScreen">
+    </div>
+
+    <div id="NEbar">
+        <a href="/"  onclick="SaveMusicPos()">
+
+            <div class="NEbar">
+
+                <img src="static\exit.svg" class="unselectable">
+            </div>
+        </a>
+    </div>
+    <div id="MainForm" style="overflow:visible">
+        {% if errs %}
+<div class="unselectable errnav" onclick="this.style.display = 'none'">{{errt}}</div>
+    {%endif%}
+        <form action="/login" method="post" class="form-contact">
+
+        <label class="inp"> E-mail</label>
+            <br>
+            <input class="inp" type="text" name="email" value="" required />
+        <label class="inp"> Password</label>
+            <br>
+            <input class="inp" type="password" name="psw" value="" required />
+
+            <a class="inp" href="..\register">Sign in</a> <a class="inp" href="..\fp">Forgot password?</a>
+            <br>
+        <input id="PlayBTN" type="submit" value="Log in" onclick="SaveMusicPos()"/>
+        </form>
+<!--        <h1 >Isles.io</h1>-->
+<!--        <h2>Nickname:</h2>-->
+<!--        <input id="NameField">-->
+
+<!--        <input id="PlayBTN" value="Play" type="button">-->
+    </div>
+
+
+ </body>
+</html>
