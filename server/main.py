@@ -10,7 +10,7 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 import sqlite3
 WH = 16
-SQL = sqlite3.connect('..\\data.db')
+SQL = sqlite3.connect('/root/IslesAssault/data.db')
 SQLctx = SQL.cursor()
 TPS = 15
 
