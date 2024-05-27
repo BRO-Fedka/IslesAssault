@@ -1877,7 +1877,7 @@ async def handler(websocket):
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
         await asyncio.sleep(1/TPS)
 async def main():
-    async with websockets.serve(handler, "0.0.0.0", 8001): #26.223.93.1
+    async with websockets.serve(handler, "80.68.156.140", 8001): #26.223.93.1
         await asyncio.Future()
 if __name__ == '__main__':
 
