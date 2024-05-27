@@ -19,11 +19,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # MAIL.login('islesassault@mail.ru', 'UZJGwPevEAhe7h0geg9c')
 import datetime
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://root/IslesAssault/data.db'
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'cf185c1afcd895af8f44dd24e5c727736196cd10'
 db = SQLAlchemy(app)
-
+# print(os.path.curdir)
 class Account(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     nickname = db.Column(db.String(32),nullable=False)
@@ -266,4 +266,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host='80.68.156.140',port = 80) #26.223.93.1
+    app.run(host='localhost',port = 80) #26.223.93.1
