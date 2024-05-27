@@ -21,6 +21,9 @@ import datetime
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://root/IslesAssault/data.db'
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
+
+
+
 app.config['SECRET_KEY'] = 'cf185c1afcd895af8f44dd24e5c727736196cd10'
 db = SQLAlchemy(app)
 # print(os.path.curdir)
