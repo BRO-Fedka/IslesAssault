@@ -7,7 +7,7 @@
     5
   ],
   "js": "%js%",
-  "map": "../static/MAPchnew.png",
+  "map": "../static/MAPchNew.png",
   "online": "%online%",
   "text": "%text%",
   "vehicleAvailable": [
