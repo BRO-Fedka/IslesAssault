@@ -60,7 +60,7 @@ draw:function(layer, playername){
 drawp:function(layer, playername){
 //    console.log(layer)
 
-    if( layer==52){
+    if( layer==52 && PlayersData.has(playername)){
        // console.log(playername)
         let sin = 0
         let cos = 0
