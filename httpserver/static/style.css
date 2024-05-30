@@ -1,6 +1,21 @@
-#SNvk:hover{background-color:#0066ee}
-#SNgh:hover{background-color:#000}
-#SNdiscord:hover{background-color:#4855e2}
+#SNvk{
+background-color:#0077FF;
+}
+#SNvk:hover{
+background-color:#0066ee;
+}
+#SNgh{
+background-color:#222;
+}
+#SNgh:hover{
+background-color:#000;
+}
+#SNdiscord{
+background-color:#5865F2;
+}
+#SNdiscord:hover{
+background-color:#4855e2;
+}
 #GameVersion{
 position: fixed;
 left: 5px;
