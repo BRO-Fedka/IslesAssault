@@ -347,7 +347,9 @@ background-color: rgba(0,0,0,0);
 *{
 /*transition: 0.25s;*/
 }
-
+html {
+overflow:hidden;
+}
 body{
 overflow:hidden;
 	margin: 0;

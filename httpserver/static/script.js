@@ -6,6 +6,7 @@ document.onkeydown=function(event) {
 window.onresize = resize
 function ExitGame(){
     Send = true
+    messagebtn.innerText = "Global"
     messageinput.value = "/leave"
 }
 GetServerInfo()
@@ -673,7 +674,7 @@ function startgame() {
 					// console.log(String(OBJs[1].get('b').size))
 
 					if (Send == true){
-					    					    if(messagebtn.innerText == "Team"){
+					    if(messagebtn.innerText == "Team"){
 					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+'0'+(mouseX).toString()+','+(mouseY).toString()+','+(window.innerWidth).toString()+','+(window.innerHeight).toString()+SENDB+SENDS+',m/team chat '+messageinput.value);
 					    }else{
 					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+'0'+(mouseX).toString()+','+(mouseY).toString()+','+(window.innerWidth).toString()+','+(window.innerHeight).toString()+SENDB+SENDS+',m'+messageinput.value);
@@ -2049,6 +2050,9 @@ function mousepos(e){
 }
 window.onload=function () {
 document.getElementById('TitleScreen').classList = ['titlescrh']
+if(navigator.userAgent.match(/iPhone/i)){
+document.documentElement.requestFullscreen()
+}
 }
 function startgamebtn() {
 document.getElementById('TitleScreen').classList = ['titlescrs']
