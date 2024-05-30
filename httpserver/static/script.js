@@ -364,7 +364,7 @@ function startgame() {
 					Players = []
 					splstr = infarr[0].split(',')
 					PlayerTags = new Map()
-					PlayerName = splstr[1].split(']')[splstr[1].split(']').Count - 1]
+					PlayerName = splstr[1]
 					CurVehicle = splstr[0]
 					Money = splstr[2]
 					Zones = splstr[splstr.length -1].toString()
@@ -383,6 +383,7 @@ function startgame() {
                                 argarr.push(splstr[_])
 					}
                     if (!(PlayerName=="" || PlayerName == undefined)){
+                    PlayerName = splstr[1].split(']')[splstr[1].split(']').Count - 1]
                         Players.push([PlayerName,CurVehicle]);
 //                        console.log (CurVehicle)
 //                        console.log (Vehicles)
