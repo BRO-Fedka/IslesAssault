@@ -357,14 +357,14 @@ function startgame() {
 					LastPING = Date.now();
 					// console.log(PING)
 //                    console.log(Date.now())
-//                    console.log(INFO)
+                    console.log(INFO)
 					let infarr = INFO.split('\n');
 					let grad = null;
 
 					Players = []
 					splstr = infarr[0].split(',')
 					PlayerTags = new Map()
-					PlayerName = splstr[1]
+					PlayerName = splstr[1].split(']')[splstr[1].split(']').Count - 1]
 					CurVehicle = splstr[0]
 					Money = splstr[2]
 					Zones = splstr[splstr.length -1].toString()
