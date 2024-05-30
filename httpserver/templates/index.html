@@ -178,15 +178,21 @@
                 <img src="..\static\settings.svg" class="unselectable">
          </div>
         <a href="https://vk.com/islesassault">
-            <div class="NEbar" style="background-color:#0077FF">
+            <div class="NEbar" style="background-color:#0077FF" id="SNvk">
 
                 <img src="static\vk-logo.svg" class="unselectable">
             </div>
         </a>
         <a href="https://github.com/BRO-Fedka/IslesAssault">
-            <div class="NEbar" style="background-color:#111">
+            <div class="NEbar" style="background-color:#222" id="SNgh">
 
                 <img src="static\github-mark-white.svg" class="unselectable">
+            </div>
+        </a>
+        <a href="https://discord.gg/GBBevHTt3H">
+            <div class="NEbar" style="background-color:#5865F2" id="SNdiscord">
+
+                <img src="static\discord-logo.svg" class="unselectable">
             </div>
         </a>
     </div>
@@ -211,12 +217,14 @@
         <div id="dmpprev"><img id="impprev" alt=""><div class="loader"></div></div>
 
     </div>
-    <div id="SettingsForm" style="display:none;" class="unselectable">
+    <div id="SettingsForm" style="display:none;" class="unselectable scrollable">
         <h2>Master volume</h2>
         <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
         <h2>Music volume</h2>
         <input type="range" onchange="UpdtVolumes()" id="MusicRange" min="0" max="1" step="0.01" value="0.5">
         <h2 style="display:inline">Particles</h2><input style="width:20px;height:20px;left: 5px;top:2px;position:relative" type="checkbox" onchange="UpdtParticles()" id="ParticlesChk" >
+        <br>
+        <br>
     </div>
     <div id="MainForm" class="unselectable">
         <div class="hidden" id="NICK">{{name}}</div>
