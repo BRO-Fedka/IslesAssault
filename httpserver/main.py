@@ -184,6 +184,9 @@ def account():
     return render_template('account.html', lvlitems = lvls, ava = acc.img,maxlvl = 20,xppx = int(acc.xp/(acc.lvl**2+50*acc.lvl+100)*150), lvl = acc.lvl,xp = str(acc.xp)+'/'+str(acc.lvl**2+50*acc.lvl+100),money = str(acc.money), nickname = acc.nickname, kills=str(acc.kills), deaths = str(acc.deaths), time = (str(acc.playtime//3600)+'h')*int(acc.playtime//3600 !=0)+ str(acc.playtime%3600//60)+'m', KD=str(int(acc.kills/(acc.deaths+int(acc.deaths==0))*100)/100)*int(acc.deaths!=0)+'INVINCIBLE'*int(acc.deaths==0 and acc.kills>0)+'SIMPLETON'*int(acc.deaths==0 and acc.kills==0))
 @app.route('/')
 def index():
+    agent = request.headers.get('User-Agent')
+    if ('iphone' or 'android' or 'blackberry') in agent.lower():
+        return render_template("noMobileSupportYet.html")
     logged = False
     if 'logged' in session:
         logged = session['logged']
