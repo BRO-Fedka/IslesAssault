@@ -1456,7 +1456,8 @@ async def handler(websocket):
                                                                         PlayersData[player]['MSGTURN'].append(
                                                                             f"\nc,{LastMSGI},3," + _[1:].split(' ')[2].replace(' ','').replace(',','').replace(']','').replace('[',''))
                                                                         LastMSGI += 1
-                                                                except:pass
+                                                                except Exception:
+                                                                    logging.exception("message")
 
                                                             # print(Teams)
                                                             # print(TeamsOwners)
