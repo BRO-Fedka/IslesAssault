@@ -26,7 +26,7 @@ app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-app.config['SECRET_KEY'] = 'cf185c1afcd895af8f44dd24e5c727736196cd10'
+app.config['SECRET_KEY'] = ''
 db = SQLAlchemy(app)
 # print(os.path.curdir)
 class Account(db.Model):
