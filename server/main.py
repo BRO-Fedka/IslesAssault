@@ -10,7 +10,7 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 import sqlite3
 WH = 16
-SQL = sqlite3.connect('/root/IslesAssault/data.db')
+SQL = sqlite3.connect('../data.db')
 SQLctx = SQL.cursor()
 TPS = 15
 
@@ -271,6 +271,7 @@ TeamRec={} #Player=>team
 TeamsOwners = {}
 Bullets = {}
 Torpedos = {}
+TorpedosHandler = {}
 Smokes = {}
 #Bodies = {}
 LastBulletI = 0
@@ -366,7 +367,8 @@ async def game():
                     for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
                         for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+1):
                             try:
-                                del MAP['Q'][(x, y)]['BULLETS'][bullet]
+                                # del MAP['Q'][(x, y)]['BULLETS'][bullet]
+                                MAP['Q'][(x, y)]['BULLETS'].discard(bullet)
                             except:
                                 pass
                     if Bullets[bullet][14]>0:
@@ -455,11 +457,12 @@ async def game():
                         for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
                             try:
 
-                                del MAP['Q'][(x, y)]['TORPEDOS'][torpedo]
+                                # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
                                 MAP['Q'][(x, y)]['TORPEDOS'].discard(torpedo)
                             except:
                                 pass
                     if Torpedos[torpedo][10]==1:
+                        TorpedosHandler[torpedo] = Torpedos[torpedo].copy()
                         delarr.append(torpedo)
                         continue
                     elif Torpedos[torpedo][10]==2:
@@ -1032,7 +1035,7 @@ async def game():
                     for _ in Zones:
                         PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM'])))
                     PlayersData[player]['VISB'] = set()
-
+                    OldVisTor = PlayersData[player]['VISTOR'].copy()
                     PlayersData[player]['VISS'] = set()
                     PlayersData[player]['VISBUL'] = set()
                     PlayersData[player]['VISTOR'] = set()
@@ -1062,6 +1065,7 @@ async def game():
                             PlayersData[player]['STR'] += f'\ne'
                             for _ in Teams[PlayersData[player]['TEAM']]:
                                 PlayersData[player]['STR'] += f',{_}'
+                    # print(PlayersData[player]['VISTOR'])
                     for x in range(int(PlayersData[player]['X'] // 1) - 3, int(PlayersData[player]['X'] // 1) + 4):
                         for y in range(int(PlayersData[player]['Y'] // 1) - 2, int(PlayersData[player]['Y'] // 1) + 3):
                             try:
@@ -1085,6 +1089,9 @@ async def game():
                             except:
                                 pass
 #                    part=''
+                    TorpedosAppeared = PlayersData[player]['VISTOR'] - OldVisTor
+                    TorpedosDisappeared = OldVisTor - PlayersData[player]['VISTOR']
+                    # print(PlayersData[player]['VISTOR'])
                     while len(PlayersData[player]['MSGTURN']) >0:
                                                         PlayersData[player]['STR'] +=PlayersData[player]['MSGTURN'][0]
                                                         PlayersData[player]['MSGTURN'].pop(0)
@@ -1255,13 +1262,22 @@ async def game():
                     for _ in delarr:
                         PlayersData[player]['VISBUL'].remove(_)
                     delarr=[]
-                    for _ in PlayersData[player]['VISTOR']:
+                    for _ in TorpedosAppeared:
+                        print('<')
                         try:
                             PlayersData[player]['STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (Torpedos[_][0]-PlayersData[player]["X"]+Torpedos[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Torpedos[_][1]-PlayersData[player]["Y"]+Torpedos[_][3])*320)},{Torpedos[_][5]},{Torpedos[_][10]}'
                         except KeyError:
-                            delarr.append(_)
-                    for _ in delarr:
-                        PlayersData[player]['VISTOR'].remove(_)
+                            pass
+
+                    for _ in TorpedosDisappeared:
+                        print('>')
+                        try:
+                            PlayersData[player]['STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (Torpedos[_][0]-PlayersData[player]["X"]+Torpedos[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Torpedos[_][1]-PlayersData[player]["Y"]+Torpedos[_][3])*320)},{Torpedos[_][5]},{Torpedos[_][10]}'
+                        except KeyError:
+                            PlayersData[player][
+                                'STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (TorpedosHandler[_][0] - PlayersData[player]["X"] + TorpedosHandler[_][2]) * 320)},{int(PlayersInputs[player]["h"] / 2 + (TorpedosHandler[_][1] - PlayersData[player]["Y"] + TorpedosHandler[_][3]) * 320)},{TorpedosHandler[_][5]},{TorpedosHandler[_][10]}'
+                            logging.exception("message")
+
             for player in PlayersData.keys():
                 try:
                     if PlayersData[player]['STATUS'] == 'BURNING':
@@ -1456,8 +1472,9 @@ async def handler(websocket):
                                                                         PlayersData[player]['MSGTURN'].append(
                                                                             f"\nc,{LastMSGI},3," + _[1:].split(' ')[2].replace(' ','').replace(',','').replace(']','').replace('[',''))
                                                                         LastMSGI += 1
-                                                                except Exception:
-                                                                    logging.exception("message")
+                                                                except:
+                                                                    pass
+                                                                    # logging.exception("message")
 
                                                             # print(Teams)
                                                             # print(TeamsOwners)
@@ -1878,7 +1895,7 @@ async def handler(websocket):
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
         await asyncio.sleep(1/TPS)
 async def main():
-    async with websockets.serve(handler, "80.68.156.140", 8001): #26.223.93.1
+    async with websockets.serve(handler, "localhost", 8001): #26.223.93.1
         await asyncio.Future()
 if __name__ == '__main__':
 

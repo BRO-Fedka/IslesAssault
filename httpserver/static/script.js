@@ -101,6 +101,10 @@ PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 var Players=[];
+var Torpedos = [];
+var TorpedosData = new Map();
+var Bullets=[];
+var BulletsData = new Map();
 var ColorPack = 'Summer';
 var Vehicles;
 var PlayersData = new Map();
