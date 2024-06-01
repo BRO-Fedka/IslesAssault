@@ -12,7 +12,7 @@ import sqlite3
 WH = 16
 SQL = sqlite3.connect('/root/IslesAssault/data.db')
 SQLctx = SQL.cursor()
-TPS = 4
+TPS = 15
 
 availablecls = [1,2,3,4,5]
 TEAM_HELP = '''/team create [team name] /team join [team name] /team kick [player name] /team leave /team list /team chat [message]'''
