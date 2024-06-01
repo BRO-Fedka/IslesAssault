@@ -21,7 +21,7 @@ import datetime
 app = Flask(__name__)
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 print(SQLALCHEMY_DATABASE_URI)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/IslesAssault/data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -274,4 +274,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host='80.68.156.140',port = 80) #26.223.93.1
+    app.run(host='localhost',port = 80) #26.223.93.1

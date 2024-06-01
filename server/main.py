@@ -452,7 +452,10 @@ async def game():
                     Torpedos[torpedo][4]+= Torpedos[torpedo][6]/TPS
                     Torpedos[torpedo][2] = math.cos(Torpedos[torpedo][5]/180*math.pi)*Torpedos[torpedo][4]
                     Torpedos[torpedo][3] = math.sin(Torpedos[torpedo][5]/180*math.pi)*(Torpedos[torpedo][4])
-
+                    if Torpedos[torpedo][10]==1:
+                        TorpedosHandler[torpedo] = Torpedos[torpedo].copy()
+                        delarr.append(torpedo)
+                        continue
                     for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+1):
                         for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
                             try:
@@ -1262,22 +1265,29 @@ async def game():
                     for _ in delarr:
                         PlayersData[player]['VISBUL'].remove(_)
                     delarr=[]
+
+                    # Torpedos[LastTorpedoI] = [PlayersData[player]["X"], PlayersData[player]["Y"], 0, 0, 0, PlayersData[player]["DIR"], 0.225, player, None, 500, 3]
                     for _ in TorpedosAppeared:
                         print('<')
                         try:
-                            PlayersData[player]['STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (Torpedos[_][0]-PlayersData[player]["X"]+Torpedos[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Torpedos[_][1]-PlayersData[player]["Y"]+Torpedos[_][3])*320)},{Torpedos[_][5]},{Torpedos[_][10]}'
+                            PlayersData[player]['STR'] += f'\n<,{_},{(Torpedos[_][0])},{Torpedos[_][1]},{Torpedos[_][5]},{Torpedos[_][10]},{Torpedos[_][6]}'
                         except KeyError:
                             pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in TorpedosHandler:
+                        if _ in PlayersData[player]['VISTOR']:
+                            print('>')
 
-                    for _ in TorpedosDisappeared:
-                        print('>')
-                        try:
-                            PlayersData[player]['STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (Torpedos[_][0]-PlayersData[player]["X"]+Torpedos[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Torpedos[_][1]-PlayersData[player]["Y"]+Torpedos[_][3])*320)},{Torpedos[_][5]},{Torpedos[_][10]}'
-                        except KeyError:
-                            PlayersData[player][
-                                'STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (TorpedosHandler[_][0] - PlayersData[player]["X"] + TorpedosHandler[_][2]) * 320)},{int(PlayersInputs[player]["h"] / 2 + (TorpedosHandler[_][1] - PlayersData[player]["Y"] + TorpedosHandler[_][3]) * 320)},{TorpedosHandler[_][5]},{TorpedosHandler[_][10]}'
-                            logging.exception("message")
+                            PlayersData[player]['STR'] += f'\n<,{_},{TorpedosHandler[_][10]}'
 
+            for torpedo in TorpedosHandler.keys():
+
+                for x in range(int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) - 1,
+                               int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) + 1):
+                    for y in range(int((TorpedosHandler[torpedo][3] + TorpedosHandler[torpedo][1]) // 1) - 1,
+                                   int((TorpedosHandler[torpedo][3] + TorpedosHandler[torpedo][1]) // 1) + 1):
+                        MAP['Q'][(x, y)]['TORPEDOS'].discard(torpedo)
+                TorpedosHandler.pop(torpedo)
             for player in PlayersData.keys():
                 try:
                     if PlayersData[player]['STATUS'] == 'BURNING':

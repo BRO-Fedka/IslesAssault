@@ -101,9 +101,7 @@ PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 var Players=[];
-var Torpedos = [];
 var TorpedosData = new Map();
-var Bullets=[];
 var BulletsData = new Map();
 var ColorPack = 'Summer';
 var Vehicles;
@@ -603,6 +601,29 @@ function startgame() {
 								div.scrollIntoView();
 								MSGs.push(Number(larr[3]))
 							}
+							//<
+						}else 	if (larr[0] == '<'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(TorpedosData.has(larr[1]))){
+                                TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2]),Number(larr[3]),Date.now()])
+                                }
+                            }else{
+                            console.log('!dis')
+                            try{
+                                TorpedosData.get(larr[1])[3] = larr[2]
+                                TorpedosData.get(larr[1])[5] = true
+                            }catch{}
+                            }
+//							if (MSGs.indexOf(Number(larr[2]))==-1){
+//								let div = document.createElement('div');
+//								div.className = "MSGj";
+//								div.innerHTML = '<img src="static/checkmark.svg" onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()">' + '   '+larr[1];
+//								chatview.append(div);
+//								div.scrollIntoView();
+//								MSGs.push(Number(larr[2]))
+//							}
 						}else 	if (larr[0] == 'j'){
 							// console.log('!')
 
@@ -1178,45 +1199,51 @@ if (ParticlesProcessing){
 	}else{
 	WtrParticles0 = []
 	}
-	for (let _ of OBJs[0].get('<').keys()) {
-		if(OBJs[0].get('<').get(_)[3] == 1){
-			OBJs[0].get('<').get(_)[3]=0
+//	TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false])
+	for (let _ of TorpedosData.keys()) {
+		if(TorpedosData.get(_)[3] == 1){
+			TorpedosData.get(_)[3]=0
 
             PIXI.sound.play('wtrBang');
 			for (let i = 0; i < 5; i++) {
-                WtrBangParticles0.push(new BangPrt0(X+(nX-X)*(Date.now() - LastPING) / PING + OBJs[0].get('<').get(_)[0]/320-window.innerWidth/640, Y+(nY-Y)*(Date.now() - LastPING) / PING+ OBJs[0].get('<').get(_)[1]/320-window.innerHeight/640))
+			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+                WtrBangParticles0.push(new BangPrt0(TorpedosData.get(_)[0], TorpedosData.get(_)[1]))
             }
 			ShakeXbnds += 10
 			ShakeYbnds += 10
-		}else if(OBJs[0].get('<').get(_)[3] == 2){
+		}else if(TorpedosData.get(_)[3] == 2){
                     PIXI.sound.play('lnchTrpd');
-                     OBJs[0].get('<').get(_)[3] = 0
+                     TorpedosData.get(_)[3] = 0
 		}
 //		tornum.innerText = OBJs[0].get('<').get(_)[4];
-		if (OBJs[1].get('<').has(_)) {
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
-		}else{
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]),Number(OBJs[0].get('<').get(_)[1]),OffsetY+Number(OBJs[0].get('<').get(_)[0]-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30),Number(OBJs[0].get('<').get(_)[1]-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30));
-		}
+//		if (OBJs[1].get('<').has(_)) {
+//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
+//		}else{
+			grad=ctx.createLinearGradient(window.innerWidth/2 + OffsetX - (X - TorpedosData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - TorpedosData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320,window.innerWidth/2 + OffsetX - (X - TorpedosData.get(_)[0]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - TorpedosData.get(_)[1]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+//		}
 		if (Math.random() < 0.15){
-		        WtrParticles0.push(new WtrPrt0(X+(nX-X)*(Date.now() - LastPING) / PING + OBJs[0].get('<').get(_)[0]/320-window.innerWidth/640, Y+(nY-Y)*(Date.now() - LastPING) / PING+ OBJs[0].get('<').get(_)[1]/320-window.innerHeight/640));
+		        WtrParticles0.push(new WtrPrt0(TorpedosData.get(_)[0], TorpedosData.get(_)[1]));
 		}
 		grad.addColorStop(1,"#FFFFFF00");
 		grad.addColorStop(0,"#FFFFff88");
 		ctx.strokeStyle = grad;
 		ctx.lineWidth= 8;
+//		ctx.lineCap='round';
 		ctx.beginPath()
-		ctx.lineCap='round';
-		if (OBJs[1].get('<').has(_)) {
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, OffsetY +Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
-		}else{
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('<').get(_)[0]),OffsetY+Number(OBJs[0].get('<').get(_)[1]));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('<').get(_)[0]-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30),OffsetY+Number(OBJs[0].get('<').get(_)[1]-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30));
-		}
-
+		 ctx.lineCap='round';
+        ctx.moveTo(window.innerWidth/2 + OffsetX - (X - TorpedosData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - TorpedosData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+        ctx.lineTo(window.innerWidth/2 + OffsetX - (X - TorpedosData.get(_)[0]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - TorpedosData.get(_)[1]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+//		}
 		ctx.stroke();
-		ctx.closePath()
+        ctx.closePath()
+//        ctx.lineCap='round';
+
+
+		TorpedosData.get(_)[0]= TorpedosData.get(_)[6]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
+		TorpedosData.get(_)[1]= TorpedosData.get(_)[7]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
+		if (TorpedosData.get(_)[5]){
+		    TorpedosData.delete(_)
+		}
 	}
 
 	for (let _ = 0; _ < Players.length; _++) {
