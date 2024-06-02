@@ -10,7 +10,7 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 import sqlite3
 WH = 16
-SQL = sqlite3.connect('/root/IslesAssault/data.db')
+SQL = sqlite3.connect('../data.db')
 SQLctx = SQL.cursor()
 TPS = 15
 
@@ -167,11 +167,11 @@ vehicleinfo = {
 }
 
 caninfo = {
-    'm':[12/320,18/320,6/320,50,1000000*3,0.75,6,2,4,3,0.1],#last - DEGDMGCOF
-    'p':[5/320,12/320,2/320,1,1000000*0.09,1,2,3,1,0,4],
-    't':[9/320,20/320,4/320,25,1000000*2,1.25,4,1,3,2,0.5],
-    'h':[7/320,14/320,2/320,5,1000000*0.5,1,3,1,2,1,2],
-    'f':[0/320,0/320,0/320,1,1000000*0.09,1,3,3,1,0,4],
+    'm':[12/320,18/320,6/320,50,1000000*3   ,0.75,6,2,4,3,0.1],#last - DEGDMGCOF
+    'p':[5/320 ,12/320,2/320,1 ,1000000*0.09,1   ,2,3,1,0,4],
+    't':[9/320 ,20/320,4/320,25,1000000*2   ,1.25,4,1,3,2,0.5],
+    'h':[7/320 ,14/320,2/320,5 ,1000000*0.5 ,1   ,3,1,2,1,2],
+    'f':[0/320 ,0/320 ,0/320,1 ,1000000*0.09,1   ,2,3,1,0,4],
 
 }
 SpeedCOLlosingCOF = 0.975
@@ -271,6 +271,8 @@ TeamRec={} #Player=>team
 TeamsOwners = {}
 Bullets = {}
 Torpedos = {}
+TorpedosHandler = {}
+BulletsHandler = {}
 Smokes = {}
 #Bodies = {}
 LastBulletI = 0
@@ -357,24 +359,16 @@ async def game():
                             #         try:
                             #             del MAP['Q'][(x, y)]['BULLETS'][bullet]
                             #         except:pass
+                            BulletsHandler[bullet] = Bullets[bullet].copy()
                             delarr.append(bullet)
+                            continue
+
                     Bullets[bullet][6]+= Bullets[bullet][8]/TPS
                     Bullets[bullet][2] = math.cos(Bullets[bullet][7]/180*math.pi)*Bullets[bullet][6]
                     Bullets[bullet][3] = math.sin(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6])
                     Bullets[bullet][4] = math.cos(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6]-Bullets[bullet][10])*int(Bullets[bullet][6]-Bullets[bullet][10]>0)
                     Bullets[bullet][5] = math.sin(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6]-Bullets[bullet][10])*int(Bullets[bullet][6]-Bullets[bullet][10]>0)
-                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
-                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+1):
-                            try:
-                                del MAP['Q'][(x, y)]['BULLETS'][bullet]
-                            except:
-                                pass
-                    if Bullets[bullet][14]>0:
-                        delarr.append(bullet)
-                        continue
-                    try:
-                        MAP['Q'][(int((Bullets[bullet][2]+Bullets[bullet][0])//1), int((Bullets[bullet][3]+Bullets[bullet][1])//1))]['BULLETS'].add(bullet)
-                    except:pass
+
                     Bullets[bullet][12] = LineString([[Bullets[bullet][0]+Bullets[bullet][2],Bullets[bullet][1]+Bullets[bullet][3]],[Bullets[bullet][0]+Bullets[bullet][4],Bullets[bullet][1]+Bullets[bullet][5]]])
                     try:
                         for _ in MAP['Q'][(int((Bullets[bullet][2]+Bullets[bullet][0])//1), int((Bullets[bullet][3]+Bullets[bullet][1])//1))]['PLAYERS']:
@@ -435,7 +429,24 @@ async def game():
                                                              1] - Bullets[bullet][1]
                                     Bullets[bullet][14]=2
                     except Exception:
+                        BulletsHandler[bullet] = Bullets[bullet].copy()
                         delarr.append(bullet)
+                    if Bullets[bullet][14]>0:
+                        BulletsHandler[bullet] = Bullets[bullet].copy()
+                        print(BulletsHandler)
+                        delarr.append(bullet)
+                        continue
+                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
+                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+1):
+                            try:
+                                # del MAP['Q'][(x, y)]['BULLETS'][bullet]
+                                MAP['Q'][(x, y)]['BULLETS'].discard(bullet)
+                            except:
+                                pass
+
+                    try:
+                        MAP['Q'][(int((Bullets[bullet][2]+Bullets[bullet][0])//1), int((Bullets[bullet][3]+Bullets[bullet][1])//1))]['BULLETS'].add(bullet)
+                    except:pass
                 except Exception:
                     pass
                     # logging.exception("message")
@@ -451,24 +462,11 @@ async def game():
                     Torpedos[torpedo][2] = math.cos(Torpedos[torpedo][5]/180*math.pi)*Torpedos[torpedo][4]
                     Torpedos[torpedo][3] = math.sin(Torpedos[torpedo][5]/180*math.pi)*(Torpedos[torpedo][4])
 
-                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+1):
-                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
-                            try:
-
-                                del MAP['Q'][(x, y)]['TORPEDOS'][torpedo]
-                                MAP['Q'][(x, y)]['TORPEDOS'].discard(torpedo)
-                            except:
-                                pass
-                    if Torpedos[torpedo][10]==1:
-                        delarr.append(torpedo)
-                        continue
-                    elif Torpedos[torpedo][10]==2:
+                    if Torpedos[torpedo][10]==2:
                         Torpedos[torpedo][10] = 0
                     elif Torpedos[torpedo][10]==3:
                         Torpedos[torpedo][10] = 2
-                    try:
-                        MAP['Q'][(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1), int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1))]['TORPEDOS'].add(torpedo)
-                    except:pass
+
                     Torpedos[torpedo][8] = LineString([[Torpedos[torpedo][0]+Torpedos[torpedo][2],Torpedos[torpedo][1]+Torpedos[torpedo][3]],[Torpedos[torpedo][0]+Torpedos[torpedo][2]-math.cos(Torpedos[torpedo][5]/180*math.pi)*Torpedos[torpedo][6]/TPS,Torpedos[torpedo][1]+Torpedos[torpedo][3]-math.sin(Torpedos[torpedo][5]/180*math.pi)*Torpedos[torpedo][6]/TPS]])
                     try:
                         for _ in MAP['Q'][(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1), int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1))]['PLAYERS']:
@@ -523,6 +521,21 @@ async def game():
                                     Torpedos[torpedo][10] = 1
                     except Exception:
                         delarr.append(torpedo)
+                    if Torpedos[torpedo][10]==1:
+                        TorpedosHandler[torpedo] = Torpedos[torpedo].copy()
+                        delarr.append(torpedo)
+                        continue
+                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+1):
+                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
+                            try:
+
+                                # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
+                                MAP['Q'][(x, y)]['TORPEDOS'].discard(torpedo)
+                            except:
+                                pass
+                    try:
+                        MAP['Q'][(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1), int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1))]['TORPEDOS'].add(torpedo)
+                    except:pass
                 except Exception:
                     pass
                     # logging.exception("message")
@@ -1032,7 +1045,8 @@ async def game():
                     for _ in Zones:
                         PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM'])))
                     PlayersData[player]['VISB'] = set()
-
+                    OldVisTor = PlayersData[player]['VISTOR'].copy()
+                    OldVisBul = PlayersData[player]['VISBUL'].copy()
                     PlayersData[player]['VISS'] = set()
                     PlayersData[player]['VISBUL'] = set()
                     PlayersData[player]['VISTOR'] = set()
@@ -1062,6 +1076,7 @@ async def game():
                             PlayersData[player]['STR'] += f'\ne'
                             for _ in Teams[PlayersData[player]['TEAM']]:
                                 PlayersData[player]['STR'] += f',{_}'
+                    # print(PlayersData[player]['VISTOR'])
                     for x in range(int(PlayersData[player]['X'] // 1) - 3, int(PlayersData[player]['X'] // 1) + 4):
                         for y in range(int(PlayersData[player]['Y'] // 1) - 2, int(PlayersData[player]['Y'] // 1) + 3):
                             try:
@@ -1085,6 +1100,10 @@ async def game():
                             except:
                                 pass
 #                    part=''
+                    TorpedosAppeared = PlayersData[player]['VISTOR'] - OldVisTor
+                    BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
+                    TorpedosDisappeared = OldVisTor - PlayersData[player]['VISTOR']
+                    # print(PlayersData[player]['VISTOR'])
                     while len(PlayersData[player]['MSGTURN']) >0:
                                                         PlayersData[player]['STR'] +=PlayersData[player]['MSGTURN'][0]
                                                         PlayersData[player]['MSGTURN'].pop(0)
@@ -1170,7 +1189,7 @@ async def game():
                                 _[8] = 1
                                 _[4]=datetime.datetime.now()
                                 wasShot=True
-                                Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0],PlayersData[player]["Y"] + a[1],0,0,0,0,0,b-caninfo[_[0]][7]+random.random()*caninfo[_[0]][7]*2,caninfo[_[0]][5],caninfo[_[0]][6],0.3,player,None,caninfo[_[0]][3],0,caninfo[_[0]][8]*(-1 + int(_[6])*2),'',PlayersInputs[player]['Xmod'],_[0]]
+                                Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0],PlayersData[player]["Y"] + a[1],0,0,0,0,0,b-caninfo[_[0]][7]+random.random()*caninfo[_[0]][7]*2,caninfo[_[0]][5],caninfo[_[0]][6],0.3,player,None,caninfo[_[0]][3],0,caninfo[_[0]][8]*(-1 + int(_[6])*2),'',PlayersInputs[player]['Xmod'],_[0],int(PlayersData[player]["ONGROUND"])]
                                 LastBulletI +=1
                         if not  wasShot and PlayersData[player]["STATUS"] =="ALIVE":
                             _[8] = 0
@@ -1245,23 +1264,74 @@ async def game():
                     except Exception:
                         pass
                         # logging.exception("message")
-                    delarr = []
-                    for _ in PlayersData[player]['VISBUL']:
-                        try:
-                            PlayersData[player]['STR'] += f'\n>,{_},{int(PlayersInputs[player]["w"] / 2 + (Bullets[_][0]-PlayersData[player]["X"]+Bullets[_][4])*320)},{int(PlayersInputs[player]["h"] / 2 + (Bullets[_][1]-PlayersData[player]["Y"]+Bullets[_][5])*320)},{int(PlayersInputs[player]["w"] / 2 + (Bullets[_][0]-PlayersData[player]["X"]+Bullets[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Bullets[_][1]-PlayersData[player]["Y"]+Bullets[_][3])*320)},{Bullets[_][15]},{Bullets[_][14]+int(Bullets[_][16]==player)*2}'
-                        except KeyError:
-                            delarr.append(_)
+                    # delarr = []
+                    # for _ in PlayersData[player]['VISBUL']:
+                    #     try:
+                    #         PlayersData[player]['STR'] += f'\n>,{_},{int(PlayersInputs[player]["w"] / 2 + (Bullets[_][0]-PlayersData[player]["X"]+Bullets[_][4])*320)},{int(PlayersInputs[player]["h"] / 2 + (Bullets[_][1]-PlayersData[player]["Y"]+Bullets[_][5])*320)},{int(PlayersInputs[player]["w"] / 2 + (Bullets[_][0]-PlayersData[player]["X"]+Bullets[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Bullets[_][1]-PlayersData[player]["Y"]+Bullets[_][3])*320)},{Bullets[_][15]},{Bullets[_][14]+int(Bullets[_][16]==player)*2}'
+                    #     except KeyError:
+                    #         delarr.append(_)
+                    #
+                    # for _ in delarr:
+                    #     PlayersData[player]['VISBUL'].remove(_)
+                    # delarr=[]
+                    # 'm': [12 / 320, 18 / 320, 6 / 320, 50, 1000000 * 3, 0.75, 6, 2, 4, 3, 0.1],  # last - DEGDMGCOF
+                    # Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0, 0, 0, 0, 0, b - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2, caninfo[_[0]][5], caninfo[_[0]][6], 0.3, player, None, caninfo[_[0]][3], 0, caninfo[_[0]][8] * (-1 + int(_[6]) * 2), '', PlayersInputs[player]['Xmod'],_[0], int(PlayersData[player]["ONGROUND"])]
+                    # Bullets[bullet][6]+= Bullets[bullet][8]/TPS
+                    # Bullets[bullet][2] = math.cos(Bullets[bullet][7]/180*math.pi)*Bullets[bullet][6]
+                    # Bullets[bullet][3] = math.sin(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6])
+                    # Bullets[bullet][4] = math.cos(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6]-Bullets[bullet][10])*int(Bullets[bullet][6]-Bullets[bullet][10]>0)
+                    # Bullets[bullet][5] = math.sin(Bullets[bullet][7]/180*math.pi)*(Bullets[bullet][6]-Bullets[bullet][10])*int(Bullets[bullet][6]-Bullets[bullet][10]>0)
 
-                    for _ in delarr:
-                        PlayersData[player]['VISBUL'].remove(_)
-                    delarr=[]
-                    for _ in PlayersData[player]['VISTOR']:
+                    #{Bullets[_][14]+int(Bullets[_][16]==player)*2}
+                    for _ in BulletsAppeared:
+                        print('<')
                         try:
-                            PlayersData[player]['STR'] += f'\n<,{_},{int(PlayersInputs[player]["w"] / 2 + (Torpedos[_][0]-PlayersData[player]["X"]+Torpedos[_][2])*320)},{int(PlayersInputs[player]["h"] / 2 + (Torpedos[_][1]-PlayersData[player]["Y"]+Torpedos[_][3])*320)},{Torpedos[_][5]},{Torpedos[_][10]}'
+                            PlayersData[player]['STR'] += f'\n>,{_},{(Bullets[_][0])},{Bullets[_][1]},{Bullets[_][7]},{Bullets[_][14]+int(Bullets[_][16]==player)*2},{Bullets[_][17]},{Bullets[_][8]},{Bullets[_][15]}'
                         except KeyError:
-                            delarr.append(_)
-                    for _ in delarr:
-                        PlayersData[player]['VISTOR'].remove(_)
+                            pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in BulletsHandler:
+                        if _ in PlayersData[player]['VISBUL']:
+                            print(BulletsHandler)
+
+                            PlayersData[player]['STR'] += f'\n>,{_},{BulletsHandler[_][14]+int(BulletsHandler[_][16]==player)*2}'
+                    # Torpedos[LastTorpedoI] = [PlayersData[player]["X"], PlayersData[player]["Y"], 0, 0, 0, PlayersData[player]["DIR"], 0.225, player, None, 500, 3]
+                    for _ in TorpedosAppeared:
+                        print('<')
+                        try:
+                            PlayersData[player]['STR'] += f'\n<,{_},{(Torpedos[_][0])},{Torpedos[_][1]},{Torpedos[_][5]},{Torpedos[_][10]},{Torpedos[_][6]}'
+                        except KeyError:
+                            pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in TorpedosHandler:
+                        if _ in PlayersData[player]['VISTOR']:
+                            print('>')
+
+                            PlayersData[player]['STR'] += f'\n<,{_},{TorpedosHandler[_][10]}'
+
+            for torpedo in TorpedosHandler.keys():
+
+                for x in range(int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) - 1,
+                               int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) + 1):
+                    for y in range(int((TorpedosHandler[torpedo][3] + TorpedosHandler[torpedo][1]) // 1) - 1,
+                                   int((TorpedosHandler[torpedo][3] + TorpedosHandler[torpedo][1]) // 1) + 1):
+                        try:
+                            MAP['Q'][(x, y)]['TORPEDOS'].discard(torpedo)
+                        except:
+                            pass
+                TorpedosHandler.pop(torpedo)
+            for bullet in BulletsHandler.keys():
+
+                for x in range(int((BulletsHandler[bullet][2] + BulletsHandler[bullet][0]) // 1) - 1,
+                               int((BulletsHandler[bullet][2] + BulletsHandler[bullet][0]) // 1) + 1):
+                    for y in range(int((BulletsHandler[bullet][3] + BulletsHandler[bullet][1]) // 1) - 1,
+                                   int((BulletsHandler[bullet][3] + BulletsHandler[bullet][1]) // 1) + 1):
+                        try:
+                            MAP['Q'][(x, y)]['BULLETS'].discard(bullet)
+                        except:
+                            pass
+                        # print("GOOD")
+                BulletsHandler.pop(bullet)
             for player in PlayersData.keys():
                 try:
                     if PlayersData[player]['STATUS'] == 'BURNING':
@@ -1456,8 +1526,9 @@ async def handler(websocket):
                                                                         PlayersData[player]['MSGTURN'].append(
                                                                             f"\nc,{LastMSGI},3," + _[1:].split(' ')[2].replace(' ','').replace(',','').replace(']','').replace('[',''))
                                                                         LastMSGI += 1
-                                                                except Exception:
-                                                                    logging.exception("message")
+                                                                except:
+                                                                    pass
+                                                                    # logging.exception("message")
 
                                                             # print(Teams)
                                                             # print(TeamsOwners)
@@ -1878,7 +1949,7 @@ async def handler(websocket):
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
         await asyncio.sleep(1/TPS)
 async def main():
-    async with websockets.serve(handler, "80.68.156.140", 8001): #26.223.93.1
+    async with websockets.serve(handler, "localhost", 8001): #26.223.93.1
         await asyncio.Future()
 if __name__ == '__main__':
 
