@@ -360,7 +360,7 @@ function startgame() {
 					LastPING = Date.now();
 					// console.log(PING)
 //                    console.log(Date.now())
-                    console.log(INFO)
+//                    console.log(INFO)
 					let infarr = INFO.split('\n');
 					let grad = null;
 
@@ -607,7 +607,8 @@ function startgame() {
                             if (larr.length > 3){
 //                            console.log('!')
                                 if (!(TorpedosData.has(larr[1]))){
-                                TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2]),Number(larr[3]),Date.now()])
+                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+                                TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()])
                                 }
                             }else{
                             console.log('!dis')
