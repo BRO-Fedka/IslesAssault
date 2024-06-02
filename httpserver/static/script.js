@@ -625,6 +625,30 @@ function startgame() {
 //								div.scrollIntoView();
 //								MSGs.push(Number(larr[2]))
 //							}
+						}else 	if (larr[0] == '>'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(BulletsData.has(larr[1]))){
+                                console.log(larr[2],larr[3])
+//                                 PlayersData[player]['STR'] += f'\n>,{_},{(Bullets[_][2])},{Bullets[_][3]},{Bullets[_][7]},{Bullets[_][14]+int(Bullets[_][16]==player)*2},{Bullets[_][17]},{Bullets[_][8]},{Bullets[_][9]}' spd -> w
+                                BulletsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Number(larr[8]),false,Number(larr[2]),Number(larr[3]),Date.now(),0])
+                                }
+                            }else{
+                            console.log('!dis')
+                            try{
+                                BulletsData.get(larr[1])[3] = larr[2]
+                                BulletsData.get(larr[1])[7] = true
+                            }catch{}
+                            }
+//							if (MSGs.indexOf(Number(larr[2]))==-1){
+//								let div = document.createElement('div');
+//								div.className = "MSGj";
+//								div.innerHTML = '<img src="static/checkmark.svg" onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()">' + '   '+larr[1];
+//								chatview.append(div);
+//								div.scrollIntoView();
+//								MSGs.push(Number(larr[2]))
+//							}
 						}else 	if (larr[0] == 'j'){
 							// console.log('!')
 
@@ -1345,6 +1369,7 @@ if (ParticlesProcessing){
 			ctx.fill();
 			ctx.stroke();
     }
+
     for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(30,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(30,NoTeamTag(Players[_][0]));}
 	}
@@ -1407,30 +1432,9 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(39,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(39,NoTeamTag(Players[_][0]));}
 	}
-    for (let _ of MAPstatic['S']){
 
-    		ctx.fillStyle = MAPstatic.CT.sf;
-			ctx.lineWidth= 5;
-			ctx.lineJoin = 'round';
-            ctx.strokeStyle = MAPstatic.CT.ss;
-			ctx.beginPath();
 
-			for (let l = 0; l < _.length; l += 1) {
-				//		    console.log(OBJs[0].get('b').get(_)[l*2],OBJs[0].get('b').get(_)[l*2+1])
-				// 	console.log(OFICIAL-MAP0.get('b').get(_)[2],OFICIAL-MAP0.get('b').get(_)[3])
-				// 	console.log(OFICIAL-MAP0.get('b').get(_)[0],X)
-					if (l == 0) {
-						ctx.moveTo(window.innerWidth/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
-					} else {
-						ctx.lineTo(window.innerWidth/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*320)
-					}
 
-			}
-			ctx.closePath();
-			ctx.fill();
-			ctx.stroke();
-			ctx.lineJoin = 'miter';
-    }
     for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(40,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(40,NoTeamTag(Players[_][0]));}
 	}
@@ -1447,55 +1451,6 @@ if (ParticlesProcessing){
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(44,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(44,NoTeamTag(Players[_][0]));}
 	}
 
-    for (let _ of OBJs[0].get('>').keys()) {
-		if(OBJs[0].get('>').get(_)[4] >0){
-			continue
-		}
-		if (OBJs[1].get('>').has(_)) {
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING), Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-		}else{
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+Number(OBJs[0].get('>').get(_)[1]),Number(OBJs[0].get('>').get(_)[2]),Number(OBJs[0].get('>').get(_)[3]));
-		}
-
-		grad.addColorStop(0,"#FFFFFF00");
-		grad.addColorStop(1,"#FFFF0088");
-		ctx.strokeStyle = grad
-		ctx.lineWidth= Math.abs(Number(OBJs[0].get('>').get(_)[4]));
-
-		if(OBJs[0].get('>').get(_)[5] == 1 || OBJs[0].get('>').get(_)[5] == 3){
-			if (Math.random() < 1){
-
-
-                PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
-			}
-			if(OBJs[0].get('>').get(_)[5] == 3){
-				ShakeXbnds += 5
-				ShakeYbnds += 5
-			}
-
-			OBJs[0].get('>').get(_)[5]=0
-		}else if(OBJs[0].get('>').get(_)[5] == 2){
-			if (Math.random() < 1){
-
-					PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
-
-			}
-
-			OBJs[0].get('>').get(_)[5]=0
-		}
-		ctx.beginPath()
-//		ctx.lineCap='round';
-		if (OBJs[1].get('>').has(_)) {
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-		}else{
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+ Number(OBJs[0].get('>').get(_)[1]));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]),OffsetY+ Number(OBJs[0].get('>').get(_)[3]));
-		}
-		ctx.stroke();
-		ctx.closePath()
-
-	}
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(45,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(45,NoTeamTag(Players[_][0]));}
 	}
@@ -1528,6 +1483,7 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(54,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(54,NoTeamTag(Players[_][0]));}
 	}
+
 //	if (ParticlesProcessing){
 	for (i=0; i<CanBangParticles0.length; i++) {
 	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles0[i].life**1.5)*1+")";
@@ -1672,6 +1628,94 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(64,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(64,NoTeamTag(Players[_][0]));}
 	}
+	    	    		for (let _ of BulletsData.keys()) {
+
+                if (BulletsData.get(_)[4] == 0 ){
+                        if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
+                if (Math.random() < 1){
+
+
+                    PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+                }
+                if(BulletsData.get(_)[3] == 3){
+                    ShakeXbnds += 5
+                    ShakeYbnds += 5
+                }
+
+                BulletsData.get(_)[3]=0
+            }else if(BulletsData.get(_)[3] == 2){
+                if (Math.random() < 1){
+
+                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
+
+                }
+
+                BulletsData.get(_)[3]=0
+            }
+
+    //		tornum.innerText = OBJs[0].get('<').get(_)[4];
+    //		if (OBJs[1].get('<').has(_)) {
+    //			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
+    //		}else{
+                grad=ctx.createLinearGradient(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320,window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+    //		}
+//            if (Math.random() < 0.15){
+//                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
+//            }
+            grad.addColorStop(1,"#FFFFFF00");
+            grad.addColorStop(0,"#FFFF0088");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth= BulletsData.get(_)[6];
+    //		ctx.lineCap='round';
+            ctx.beginPath()
+             ctx.lineCap='round';
+//             console.log(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320)
+            ctx.moveTo(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+            ctx.lineTo(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+    //		}
+            ctx.stroke();
+            ctx.closePath()
+    //        ctx.lineCap='round';
+
+
+            BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+            BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+            if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
+            BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
+            if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
+            }else{
+            BulletsData.get(_)[11] = 0
+            }
+
+            if (BulletsData.get(_)[7]){
+                BulletsData.delete(_)
+            }
+            }
+	}
+	for (let _ of MAPstatic['S']){
+
+    		ctx.fillStyle = MAPstatic.CT.sf;
+			ctx.lineWidth= 5;
+			ctx.lineJoin = 'round';
+            ctx.strokeStyle = MAPstatic.CT.ss;
+			ctx.beginPath();
+
+			for (let l = 0; l < _.length; l += 1) {
+				//		    console.log(OBJs[0].get('b').get(_)[l*2],OBJs[0].get('b').get(_)[l*2+1])
+				// 	console.log(OFICIAL-MAP0.get('b').get(_)[2],OFICIAL-MAP0.get('b').get(_)[3])
+				// 	console.log(OFICIAL-MAP0.get('b').get(_)[0],X)
+					if (l == 0) {
+						ctx.moveTo(window.innerWidth/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+					} else {
+						ctx.lineTo(window.innerWidth/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*320)
+					}
+
+			}
+			ctx.closePath();
+			ctx.fill();
+			ctx.stroke();
+			ctx.lineJoin = 'miter';
+    }
 //	if (ParticlesProcessing){
 		for (i=0; i<CanBangParticles1.length; i++) {
 	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles1[i].life**1.5)*1+")";
@@ -1817,59 +1861,122 @@ if (ParticlesProcessing){
 		}
 	}
 	ctx. globalCompositeOperation = "source-over"
+	    	    		for (let _ of BulletsData.keys()) {
 
-	for (let _ of OBJs[0].get('>').keys()) {
-//	    ctx.lineCap='round';
-		if(OBJs[0].get('>').get(_)[4] <0){
-			continue
-		}
-		if (OBJs[1].get('>').has(_)) {
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING), Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-		}else{
-			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+Number(OBJs[0].get('>').get(_)[1]),Number(OBJs[0].get('>').get(_)[2]),Number(OBJs[0].get('>').get(_)[3]));
-		}
-
-		grad.addColorStop(0,"#FFFFFF00");
-		grad.addColorStop(1,"#FFFF0088");
-		ctx.strokeStyle = grad
-		ctx.lineWidth= Number(OBJs[0].get('>').get(_)[4]);
-
-		if(OBJs[0].get('>').get(_)[5] == 1 || OBJs[0].get('>').get(_)[5] == 3){
-			if (Math.random() < 1){
-
-								PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+                if (BulletsData.get(_)[4] == 1 ){
+                        if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
+                if (Math.random() < 1){
 
 
-				}
+                    PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+                }
+                if(BulletsData.get(_)[3] == 3){
+                    ShakeXbnds += 5
+                    ShakeYbnds += 5
+                }
 
-			if(OBJs[0].get('>').get(_)[5] == 3){
-				ShakeXbnds += 5
-				ShakeYbnds += 5
-			}
+                BulletsData.get(_)[3]=0
+            }else if(BulletsData.get(_)[3] == 2){
+                if (Math.random() < 1){
 
-			OBJs[0].get('>').get(_)[5]=0
-		}else if(OBJs[0].get('>').get(_)[5] == 2){
-			if (Math.random() < 1){
+                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
 
-								PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
+                }
 
-			}
+                BulletsData.get(_)[3]=0
+            }
 
-			OBJs[0].get('>').get(_)[5]=0
-		}
-		ctx.beginPath()
+    //		tornum.innerText = OBJs[0].get('<').get(_)[4];
+    //		if (OBJs[1].get('<').has(_)) {
+    //			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
+    //		}else{
+                grad=ctx.createLinearGradient(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320,window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+    //		}
+//            if (Math.random() < 0.15){
+//                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
+//            }
+            grad.addColorStop(1,"#FFFFFF00");
+            grad.addColorStop(0,"#FFFF0088");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth= BulletsData.get(_)[6];
+    //		ctx.lineCap='round';
+            ctx.beginPath()
+             ctx.lineCap='round';
+//             console.log(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320)
+            ctx.moveTo(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+            ctx.lineTo(window.innerWidth/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*320,window.innerHeight/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*320);
+    //		}
+            ctx.stroke();
+            ctx.closePath()
+    //        ctx.lineCap='round';
 
-		if (OBJs[1].get('>').has(_)) {
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-		}else{
-			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+ Number(OBJs[0].get('>').get(_)[1]));
-			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]),OffsetY+ Number(OBJs[0].get('>').get(_)[3]));
-		}
-		ctx.stroke();
-		ctx.closePath()
 
+            BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+            BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+            if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
+            BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
+            if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
+            }else{
+            BulletsData.get(_)[11] = 0
+            }
+
+            if (BulletsData.get(_)[7]){
+                BulletsData.delete(_)
+            }
+            }
 	}
+//	for (let _ of OBJs[0].get('>').keys()) {
+////	    ctx.lineCap='round';
+//		if(OBJs[0].get('>').get(_)[4] <0){
+//			continue
+//		}
+//		if (OBJs[1].get('>').has(_)) {
+//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING), Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
+//		}else{
+//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+Number(OBJs[0].get('>').get(_)[1]),Number(OBJs[0].get('>').get(_)[2]),Number(OBJs[0].get('>').get(_)[3]));
+//		}
+//
+//		grad.addColorStop(0,"#FFFFFF00");
+//		grad.addColorStop(1,"#FFFF0088");
+//		ctx.strokeStyle = grad
+//		ctx.lineWidth= Number(OBJs[0].get('>').get(_)[4]);
+//
+//		if(OBJs[0].get('>').get(_)[5] == 1 || OBJs[0].get('>').get(_)[5] == 3){
+//			if (Math.random() < 1){
+//
+//								PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+//
+//
+//				}
+//
+//			if(OBJs[0].get('>').get(_)[5] == 3){
+//				ShakeXbnds += 5
+//				ShakeYbnds += 5
+//			}
+//
+//			OBJs[0].get('>').get(_)[5]=0
+//		}else if(OBJs[0].get('>').get(_)[5] == 2){
+//			if (Math.random() < 1){
+//
+//								PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
+//
+//			}
+//
+//			OBJs[0].get('>').get(_)[5]=0
+//		}
+//		ctx.beginPath()
+//
+//		if (OBJs[1].get('>').has(_)) {
+//			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING));
+//			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
+//		}else{
+//			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+ Number(OBJs[0].get('>').get(_)[1]));
+//			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]),OffsetY+ Number(OBJs[0].get('>').get(_)[3]));
+//		}
+//		ctx.stroke();
+//		ctx.closePath()
+//
+//	}
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(70,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(70,NoTeamTag(Players[_][0]));}
 	}
