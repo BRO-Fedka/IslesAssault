@@ -160,8 +160,9 @@ PREM_ITEM = {
 hiderplace = {'image':5,'skin':5,'vehicle':3}
 lvlplace = {'image':4,'skin':6,'vehicle':4}
 Servers = {
-'localhost - DevServer': 'ws://localhost:8001',
     "#1 St.Petersburg": "ws://80.68.156.140:8001",
+'localhost - DevServer': 'ws://localhost:8001',
+
 '26.223.93.1':'ws://26.223.93.1:8001',
 
 
