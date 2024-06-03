@@ -26,7 +26,7 @@ app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-app.config['SECRET_KEY'] = ''
+app.config['SECRET_KEY'] = 'cf185c1afcd895af8f44dd24e5c727736196cd10'
 db = SQLAlchemy(app)
 # print(os.path.curdir)
 class Account(db.Model):
@@ -274,4 +274,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host='80.68.156.140',port = 80) #26.223.93.1
+    app.run(host='localhost',port = 80) #26.223.93.1

@@ -104,7 +104,7 @@ updatep:function(playername,argarr){
 
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-        console.log(this)
+//        console.log(this)
             document.getElementById('TracerInv').style.display = "none";
             document.getElementById('CarryInv').style.display = "none";
             PlayersData.set(playername,
@@ -596,7 +596,7 @@ update:function(playername,argarr){
         PlayersData.get(playername).CNs[1].STS = Number((argarr[6]).substring(0,1));
         PlayersData.get(playername).HP = Number(argarr[1])
         PlayersData.get(playername).CARRY = Number(argarr[8])
-        console.log(argarr[8])
+//        console.log(argarr[8])
 
         PlayersData.get(playername).COLOR =Number( argarr[7])
      }
@@ -1105,7 +1105,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '228': '#bbb26e'},
 draw:function(layer, playername){
     if( layer==73 && PlayersData.get(playername).prevX!= null){
 //    console.log("????????????")
@@ -1137,8 +1138,8 @@ draw:function(layer, playername){
 		}
 
             drawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
-	        drawCannon(playername,CN = 0, r = 5,turcrd = [-0.2, 0],firesize = 0.75,l = 18,shtSND = "mcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
-            drawCannon(playername,CN = 1, r = 5,turcrd = [0.265,0],firesize = 0.75,l = 18,shtSND = "mcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
+	        drawCannon(playername,CN = 0, r = 5,turcrd = [-0.2, 0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false,underbody = true)
+            drawCannon(playername,CN = 1, r = 5,turcrd = [0.265,0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false,underbody = true)
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
@@ -1183,9 +1184,10 @@ drawp:function(layer, playername){
 
 		}
         PdrawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
-	    PdrawCannon(playername,CN = 0, r = 5,turcrd = [-0.2, 0],firesize = 0.75,l = 18,shtSND = "mcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
-        PdrawCannon(playername,CN = 1, r = 5,turcrd = [0.265,0],firesize = 0.75,l = 18,shtSND = "mcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
-
+	    PdrawCannon(playername,CN = 0, r = 5,turcrd = [-0.2, 0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false,underbody = true)
+        PdrawCannon(playername,CN = 1, r = 5,turcrd = [0.265,0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false,underbody = true)
+//	    drawCannon(playername,CN = 0, r = 5,turcrd = [-0.2, 0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
+//        drawCannon(playername,CN = 1, r = 5,turcrd = [0.265,0],firesize = 0.75,l = 14,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[2,1],fire = false)
     }
 },
 updatep:function(playername,argarr){
@@ -1207,8 +1209,8 @@ updatep:function(playername,argarr){
 
             } )
         }
-                console.log("!!!!!!!!!!!!!!!")
-        console.log(argarr)
+//                console.log("!!!!!!!!!!!!!!!")
+//        console.log(argarr)
         PlayersData.get(playername).prevX = PlayersData.get(playername).actX
         PlayersData.get(playername).prevY = PlayersData.get(playername).actY
         PlayersData.get(playername).actX = Number(argarr[3])

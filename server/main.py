@@ -315,7 +315,7 @@ async def game():
         try:
             await asyncio.sleep(1/TPS)
             if LastBulletI >1000: LastBulletI = 0
-            if LastTorpedoI >100: LastTorpedoI = 0
+            if LastTorpedoI >1000: LastTorpedoI = 0
             if LastSmokeI > 1000: LastSmokeI = 0
             if LastMSGI > 1000: LastMSGI = 0
             delarr = []
@@ -329,15 +329,28 @@ async def game():
                                 MAP['Q'][(x, y)]['SMOKES'].add(smoke)
                             except:
                                 pass
-                    Smokes[smoke][3]+=1
-                    Smokes[smoke][2] = (math.sqrt(Smokes[smoke][3])-(math.sqrt(Smokes[smoke][3])-17.3)*math.sqrt(Smokes[smoke][3])*0.3)*0.02
-                    if Smokes[smoke][3] > 300:
+                    # Smokes[smoke][3]+=1
+                    x = (datetime.datetime.now() - Smokes[smoke][3]).total_seconds()*10
+                    Smokes[smoke][2] = (math.sqrt(x)-(math.sqrt(x)-17.3)*math.sqrt(x)*0.3)*0.02
+                    # print(Smokes[smoke][2])
+                    # print((datetime.datetime.now()-Smokes[smoke][3]).total_seconds())
+                    if (datetime.datetime.now()-Smokes[smoke][3]).total_seconds() > 30:
                         delarr.append(smoke)
                 except:
                     delarr.append(smoke)
             for smoke in delarr:
                 try:
-                    del Smokes[smoke]
+                    for x in range(int((Smokes[smoke][0] ) // 1) - 1,
+                                   int((Smokes[smoke][0] ) // 1) + 1):
+                        for y in range(int((Smokes[smoke][1]) // 1) - 1,
+                                       int((Smokes[smoke][1] ) // 1) + 1):
+                            try:
+                                MAP['Q'][(x, y)]['SMOKES'].discard(smoke)
+                            except:
+                                pass
+                    Smokes.pop(smoke)
+                    # print("deleted")
+
                 except:pass
             delarr = []
             # print(TeamRec)
@@ -433,7 +446,7 @@ async def game():
                         delarr.append(bullet)
                     if Bullets[bullet][14]>0:
                         BulletsHandler[bullet] = Bullets[bullet].copy()
-                        print(BulletsHandler)
+                        # print(BulletsHandler)
                         delarr.append(bullet)
                         continue
                     for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
@@ -1047,6 +1060,7 @@ async def game():
                     PlayersData[player]['VISB'] = set()
                     OldVisTor = PlayersData[player]['VISTOR'].copy()
                     OldVisBul = PlayersData[player]['VISBUL'].copy()
+                    OldVisSmk = PlayersData[player]['VISSMK'].copy()
                     PlayersData[player]['VISS'] = set()
                     PlayersData[player]['VISBUL'] = set()
                     PlayersData[player]['VISTOR'] = set()
@@ -1100,9 +1114,9 @@ async def game():
                             except:
                                 pass
 #                    part=''
+                    SmokesAppeared = PlayersData[player]['VISSMK'] - OldVisSmk
                     TorpedosAppeared = PlayersData[player]['VISTOR'] - OldVisTor
                     BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
-                    TorpedosDisappeared = OldVisTor - PlayersData[player]['VISTOR']
                     # print(PlayersData[player]['VISTOR'])
                     while len(PlayersData[player]['MSGTURN']) >0:
                                                         PlayersData[player]['STR'] +=PlayersData[player]['MSGTURN'][0]
@@ -1128,13 +1142,19 @@ async def game():
                         #     print(PlayersData[player]['COL'].intersection(Point(Smokes[_][0], Smokes[_][1]).buffer(Smokes[_][2])).area,PlayersData[player]['COL'].area)
                             if int(PlayersData[player]['COL'].intersection(Point(Smokes[_][0], Smokes[_][1]).buffer(Smokes[_][2])).area*1000)/1000 == int(PlayersData[player]['COL'].area*1000)/1000 and PlayersData[player]['INSMK'] == False and PlayersData[player]['Z'] ==0:
                                 PlayersData[player]['INSMK'] = True
-                            PlayersData[player]['STR'] += f'\np,{_},'+str(int((Smokes[_][0]-PlayersData[player]['X'])*320+PlayersInputs[player]['w']/2))+','+str(int((Smokes[_][1]-PlayersData[player]['Y'])*320+PlayersInputs[player]['h']/2))+','+str(Smokes[_][2]*320)+','+str(PlayersData[player]['SMOKES'])
+
                         except KeyError:
                             delarr.append(_)
                         # except Exception:
                         #     logging.exception("message")
+                        # print(OldVisSmk,PlayersData[player]['VISSMK'])
+                    SmokesDisappeared = OldVisSmk - PlayersData[player]['VISSMK']
                     for _ in delarr:
                         PlayersData[player]['VISSMK'].remove(_)
+                    for _ in list(SmokesAppeared):
+                        PlayersData[player]['STR'] += f'\np,{_},'+str(Smokes[_][0])+','+str(Smokes[_][1])
+                    for _ in list(SmokesDisappeared):
+                        PlayersData[player]['STR'] += f'\np,{_}'
                     # for _ in Zones.keys():
                     #     if abs(PlayersData[player]['X']-Zones[_][0]) < 5 and abs(PlayersData[player]['Y']-Zones[_][1]) < 4:
                     #         q = 0
@@ -1148,7 +1168,7 @@ async def game():
                         PlayersData[player]["LASTTORPEDO"] = datetime.datetime.now()
                     if PlayersData[player]["STATUS"] == 'ALIVE' and  PlayersInputs[player]['gk'] and PlayersData[player]["SMOKES"] > 0 and ( datetime.datetime.now() - PlayersData[player]["LASTSMOKE"]).seconds > 2:
                             PlayersData[player]["SMOKES"] -= 1
-                            Smokes[LastSmokeI] = [PlayersData[player]["X"], PlayersData[player]["Y"], 0.2, 0,'s']
+                            Smokes[LastSmokeI] = [PlayersData[player]["X"], PlayersData[player]["Y"], 0.2, datetime.datetime.now(),'s']
                             LastSmokeI += 1
                             PlayersData[player]["LASTSMOKE"] = datetime.datetime.now()
 
@@ -1284,7 +1304,7 @@ async def game():
 
                     #{Bullets[_][14]+int(Bullets[_][16]==player)*2}
                     for _ in BulletsAppeared:
-                        print('<')
+                        # print('<')
                         try:
                             PlayersData[player]['STR'] += f'\n>,{_},{(Bullets[_][0])},{Bullets[_][1]},{Bullets[_][7]},{Bullets[_][14]+int(Bullets[_][16]==player)*2},{Bullets[_][17]},{Bullets[_][8]},{Bullets[_][15]}'
                         except KeyError:
@@ -1292,12 +1312,12 @@ async def game():
                     # print(PlayersData[player]['VISTOR'])
                     for _ in BulletsHandler:
                         if _ in PlayersData[player]['VISBUL']:
-                            print(BulletsHandler)
+                            # print(BulletsHandler)
 
                             PlayersData[player]['STR'] += f'\n>,{_},{BulletsHandler[_][14]+int(BulletsHandler[_][16]==player)*2}'
                     # Torpedos[LastTorpedoI] = [PlayersData[player]["X"], PlayersData[player]["Y"], 0, 0, 0, PlayersData[player]["DIR"], 0.225, player, None, 500, 3]
                     for _ in TorpedosAppeared:
-                        print('<')
+                        # print('<')
                         try:
                             PlayersData[player]['STR'] += f'\n<,{_},{(Torpedos[_][0])},{Torpedos[_][1]},{Torpedos[_][5]},{Torpedos[_][10]},{Torpedos[_][6]}'
                         except KeyError:
@@ -1949,7 +1969,7 @@ async def handler(websocket):
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
         await asyncio.sleep(1/TPS)
 async def main():
-    async with websockets.serve(handler, "80.68.156.140", 8001): #26.223.93.1
+    async with websockets.serve(handler, "localhost", 8001): #26.223.93.1
         await asyncio.Future()
 if __name__ == '__main__':
 

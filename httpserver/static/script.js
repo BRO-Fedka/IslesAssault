@@ -103,6 +103,7 @@ PIXI.sound.add("fcanon","static\\pcanon.mp3")
 var Players=[];
 var TorpedosData = new Map();
 var BulletsData = new Map();
+var SmokesData = new Map();
 var ColorPack = 'Summer';
 var Vehicles;
 var PlayersData = new Map();
@@ -602,16 +603,31 @@ function startgame() {
 								MSGs.push(Number(larr[3]))
 							}
 							//<
+						}else 	if (larr[0] == 'p'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(SmokesData.has(larr[1]))){
+//                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+                                SmokesData.set(larr[1],[Number(larr[2]),Number(larr[3]),Date.now(),false,[]])
+                                }
+                            }else{
+//                            console.log('!dis')
+                            try{
+                                SmokesData.get(larr[1])[3] = true
+                            }catch{}
+                            }
+
 						}else 	if (larr[0] == '<'){
 
                             if (larr.length > 3){
 //                            console.log('!')
                                 if (!(TorpedosData.has(larr[1]))){
-                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+//                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
                                 TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()])
                                 }
                             }else{
-                            console.log('!dis')
+//                            console.log('!dis')
                             try{
                                 TorpedosData.get(larr[1])[3] = larr[2]
                                 TorpedosData.get(larr[1])[5] = true
@@ -630,12 +646,12 @@ function startgame() {
                             if (larr.length > 3){
 //                            console.log('!')
                                 if (!(BulletsData.has(larr[1]))){
-                                console.log(larr[2],larr[3])
+//                                console.log(larr[2],larr[3])
 //                                 PlayersData[player]['STR'] += f'\n>,{_},{(Bullets[_][2])},{Bullets[_][3]},{Bullets[_][7]},{Bullets[_][14]+int(Bullets[_][16]==player)*2},{Bullets[_][17]},{Bullets[_][8]},{Bullets[_][9]}' spd -> w
                                 BulletsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Number(larr[8]),false,Number(larr[2]),Number(larr[3]),Date.now(),0])
                                 }
                             }else{
-                            console.log('!dis')
+//                            console.log('!dis')
                             try{
                                 BulletsData.get(larr[1])[3] = larr[2]
                                 BulletsData.get(larr[1])[7] = true
@@ -710,7 +726,7 @@ function startgame() {
 					        }
 					    }
                        if (b){
-                            console.log('del',key)
+//                            console.log('del',key)
                             dellarr.push(key)
                        }
                     }
@@ -1231,7 +1247,7 @@ if (ParticlesProcessing){
 
             PIXI.sound.play('wtrBang');
 			for (let i = 0; i < 5; i++) {
-			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
                 WtrBangParticles0.push(new BangPrt0(TorpedosData.get(_)[0], TorpedosData.get(_)[1]))
             }
 			ShakeXbnds += 10
@@ -1266,7 +1282,7 @@ if (ParticlesProcessing){
 
 		TorpedosData.get(_)[0]= TorpedosData.get(_)[6]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
 		TorpedosData.get(_)[1]= TorpedosData.get(_)[7]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
-		if (TorpedosData.get(_)[5]){
+		if (TorpedosData.get(_)[5] || TorpedosData.get(_)[0] > 20 || TorpedosData.get(_)[0] < -4 || TorpedosData.get(_)[1] > 19 || TorpedosData.get(_)[1] < -4){
 		    TorpedosData.delete(_)
 		}
 	}
@@ -1527,54 +1543,10 @@ if (ParticlesProcessing){
 	FireParticles0 = []
 	}
 
-	for (i=0; i<BangParticles0.length; i++) {
-	    ctx.fillStyle = "rgba(0,0,0,"+(BangParticles0[i].life**0.33)*1+")";
-
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2,OffsetY+window.innerHeight/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320,BangParticles0[i].rad,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(255,160,0,"+(BangParticles0[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2+Math.cos(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2,OffsetY+window.innerHeight/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320+Math.sin(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2,BangParticles0[i].rad*0.8,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        BangParticles0[i].dir += BangParticles0[i].life*0.25
-		BangParticles0[i].x += BangParticles0[i].xs/320/4*BangParticles0[i].life
-		BangParticles0[i].y += BangParticles0[i].ys/320/4*BangParticles0[i].life
-		BangParticles0[i].rad+=0.75*BangParticles0[i].life**1.25
-
-		BangParticles0[i].life *= 0.98
-		if (BangParticles0[i].life < 0.0001) {
-			BangParticles0.splice(i, 1);
-			i--;
-		}
-	}
 
 
-		for (i=0; i<WtrBangParticles0.length; i++) {
-	    ctx.fillStyle = "rgba(255,255,255,"+(WtrBangParticles0[i].life**0.33)*1+")";
 
-		ctx.beginPath();
-		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2,OffsetY+window.innerHeight/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320,WtrBangParticles0[i].rad,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(0,160,255,"+(WtrBangParticles0[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2+Math.cos(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,OffsetY+window.innerHeight/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320+Math.sin(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,WtrBangParticles0[i].rad*0.8,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        WtrBangParticles0[i].dir += WtrBangParticles0[i].life*0.25
-		WtrBangParticles0[i].x += WtrBangParticles0[i].xs/320/4*WtrBangParticles0[i].life
-		WtrBangParticles0[i].y += WtrBangParticles0[i].ys/320/4*WtrBangParticles0[i].life
-		WtrBangParticles0[i].rad+=0.75*WtrBangParticles0[i].life**1.25
 
-		WtrBangParticles0[i].life *= 0.98
-		if (WtrBangParticles0[i].life < 0.0001) {
-			WtrBangParticles0.splice(i, 1);
-			i--;
-		}
-	}
 
 
 	if (Z >0){
@@ -1687,11 +1659,56 @@ if (ParticlesProcessing){
             BulletsData.get(_)[11] = 0
             }
 
-            if (BulletsData.get(_)[7]){
+            if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
                 BulletsData.delete(_)
             }
             }
 	}
+		    for (let _ of SmokesData.keys()) {
+
+//          ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+          try{
+              ctx.fillStyle = 'rgba(255,255,255,0.25)';
+              let kl = 0;
+    //          smknum.innerText = OBJs[0].get('p').get(_)[3];
+
+    //(Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.02
+
+                ctx.beginPath()
+                let x = (Date.now() - SmokesData.get(_)[2]) / 100
+    //            console.log((Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.02)
+                let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.02
+                ctx.arc(OffsetX+(SmokesData.get(_)[0]-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2,OffsetY+window.innerHeight/2+(SmokesData.get(_)[1]-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320, y*320, 0, Math.PI * 2);
+                ctx.closePath()
+                ctx.fill();
+
+                for (i=0; i<SmokesData.get(_)[4].length; i++) {
+                    SmokesData.get(_)[4][i].hp-=1;
+                    SmokesData.get(_)[4][i].dir+=SmokesData.get(_)[4][i].spd*0.025;
+                    if (SmokesData.get(_)[4][i].hp < 0 ) {
+                        SmokesData.get(_)[4].splice(i, 1);
+                        i--;
+                    }
+                }
+                for (i=0; i<SmokesData.get(_)[4].length; i++) {
+                            ctx.fillStyle = "rgba("+SmokesData.get(_)[4][i].cl +','+SmokesData.get(_)[4][i].cl+',' +SmokesData.get(_)[4][i].cl +',' +SmokesData.get(_)[4][i].hp/1500+ ")";
+                            ctx.beginPath();
+                            kl+=1
+                            ctx.arc(Math.cos(SmokesData.get(_)[4][i].dir)*SmokesData.get(_)[4][i].h*y*0.5*320+(SmokesData.get(_)[0]-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2 ,Math.sin(SmokesData.get(_)[4][i].dir)*320*SmokesData.get(_)[4][i].h*y*0.5+OffsetY+OffsetY+window.innerHeight/2+(SmokesData.get(_)[1]-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320, y*320,0,2*Math.PI);
+                            ctx.closePath()
+                            ctx.fill()
+                }
+                if(Math.random() < 0.1 && kl < 10){
+                    SmokesData.get(_)[4].push(new Particle3(_))
+                }
+                            if (SmokesData.get(_)[3]){
+                    SmokesData.delete(_)
+                }
+            }catch{
+                SmokesData.delete(_)
+            }
+
+    }
 	for (let _ of MAPstatic['S']){
 
     		ctx.fillStyle = MAPstatic.CT.sf;
@@ -1716,6 +1733,52 @@ if (ParticlesProcessing){
 			ctx.stroke();
 			ctx.lineJoin = 'miter';
     }
+    		for (i=0; i<WtrBangParticles0.length; i++) {
+	    ctx.fillStyle = "rgba(255,255,255,"+(WtrBangParticles0[i].life**0.33)*1+")";
+
+		ctx.beginPath();
+		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2,OffsetY+window.innerHeight/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320,WtrBangParticles0[i].rad,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+		ctx.fillStyle = "rgba(0,160,255,"+(WtrBangParticles0[i].life**1)*1+")";
+		ctx.beginPath();
+		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2+Math.cos(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,OffsetY+window.innerHeight/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320+Math.sin(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,WtrBangParticles0[i].rad*0.8,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+        WtrBangParticles0[i].dir += WtrBangParticles0[i].life*0.25
+		WtrBangParticles0[i].x += WtrBangParticles0[i].xs/320/4*WtrBangParticles0[i].life
+		WtrBangParticles0[i].y += WtrBangParticles0[i].ys/320/4*WtrBangParticles0[i].life
+		WtrBangParticles0[i].rad+=0.75*WtrBangParticles0[i].life**1.25
+
+		WtrBangParticles0[i].life *= 0.98
+		if (WtrBangParticles0[i].life < 0.0001) {
+			WtrBangParticles0.splice(i, 1);
+			i--;
+		}
+	}
+		for (i=0; i<BangParticles0.length; i++) {
+	    ctx.fillStyle = "rgba(0,0,0,"+(BangParticles0[i].life**0.33)*1+")";
+
+		ctx.beginPath();
+		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2,OffsetY+window.innerHeight/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320,BangParticles0[i].rad,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+		ctx.fillStyle = "rgba(255,160,0,"+(BangParticles0[i].life**1)*1+")";
+		ctx.beginPath();
+		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*320+window.innerWidth/2+Math.cos(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2,OffsetY+window.innerHeight/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*320+Math.sin(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2,BangParticles0[i].rad*0.8,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+        BangParticles0[i].dir += BangParticles0[i].life*0.25
+		BangParticles0[i].x += BangParticles0[i].xs/320/4*BangParticles0[i].life
+		BangParticles0[i].y += BangParticles0[i].ys/320/4*BangParticles0[i].life
+		BangParticles0[i].rad+=0.75*BangParticles0[i].life**1.25
+
+		BangParticles0[i].life *= 0.98
+		if (BangParticles0[i].life < 0.0001) {
+			BangParticles0.splice(i, 1);
+			i--;
+		}
+	}
 //	if (ParticlesProcessing){
 		for (i=0; i<CanBangParticles1.length; i++) {
 	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles1[i].life**1.5)*1+")";
@@ -1781,49 +1844,7 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
-	    for (let _ of OBJs[0].get('p').keys()) {
 
-//          ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-          ctx.fillStyle = 'rgba(255,255,255,0.75)';
-          let kl = 0;
-//          smknum.innerText = OBJs[0].get('p').get(_)[3];
-
-
-                if (OBJs[1].get('p').has(_)) {
-                    ctx.beginPath()
-                    ctx.arc(OffsetX + OBJs[0].get('p').get(_)[0] + (OBJs[1].get('p').get(_)[0] - OBJs[0].get('p').get(_)[0]) * (Date.now() - LastPING) / PING, OffsetY + OBJs[0].get('p').get(_)[1] + (OBJs[1].get('p').get(_)[1] - OBJs[0].get('p').get(_)[1]) * (Date.now() - LastPING) / PING, OBJs[0].get('p').get(_)[2] + (OBJs[1].get('p').get(_)[2] - OBJs[0].get('p').get(_)[2]) * (Date.now() - LastPING) / PING, 0, Math.PI * 2);
-                    ctx.closePath()
-                    ctx.fill();
-                    for (i=0; i<SmokeParticles0.length; i++) {
-                        if(SmokeParticles0[i].id == _)
-                        {ctx.fillStyle = "rgba("+SmokeParticles0[i].cl +','+SmokeParticles0[i].cl+',' +SmokeParticles0[i].cl +',' +SmokeParticles0[i].hp/1500+ ")";
-                        ctx.beginPath();
-                        kl+=1
-                        ctx.arc(Math.cos(SmokeParticles0[i].dir)*SmokeParticles0[i].h*OBJs[0].get('p').get(_)[2]*0.5+OffsetX+OBJs[0].get('p').get(_)[0] + (OBJs[1].get('p').get(_)[0] - OBJs[0].get('p').get(_)[0]) * (Date.now() - LastPING) / PING ,Math.sin(SmokeParticles0[i].dir)*SmokeParticles0[i].h*OBJs[0].get('p').get(_)[2]*0.5+OffsetY+OBJs[0].get('p').get(_)[1] + (OBJs[1].get('p').get(_)[1] - OBJs[0].get('p').get(_)[1]) * (Date.now() - LastPING) / PING, OBJs[0].get('p').get(_)[2] + (OBJs[1].get('p').get(_)[2] - OBJs[0].get('p').get(_)[2]) * (Date.now() - LastPING) / PING,0,2*Math.PI);
-                        ctx.closePath()
-                        ctx.fill();}
-                    }
-                } else {
-                    //console.log('!')
-                    ctx.beginPath()
-                    ctx.arc(OffsetX + OBJs[0].get('p').get(_)[0], OffsetY + OBJs[0].get('p').get(_)[1], OBJs[0].get('p').get(_)[2], 0, Math.PI * 2);
-                    ctx.closePath()
-                    ctx.fill();
-                    for (i=0; i<SmokeParticles0.length; i++) {
-                        if(SmokeParticles0[i].id == _)
-                        {ctx.fillStyle = "rgba("+SmokeParticles0[i].cl +','+SmokeParticles0[i].cl+',' +SmokeParticles0[i].cl +',' +SmokeParticles0[i].hp/1500+ ")";
-                        ctx.beginPath();
-                        kl+=1
-                        ctx.arc(OffsetX+OBJs[0].get('p').get(_)[0] ,OffsetY+OBJs[0].get('p').get(_)[1],OBJs[0].get('p').get(_)[2],0,2*Math.PI);
-                        ctx.closePath()
-                        ctx.fill()}
-                    }
-                }
-                    if(Math.random() < 0.1 && kl < 16){
-                        SmokeParticles0.push(new Particle3(_))
-                    }
-
-    }
     for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(65,NoTeamTag(Players[_][0]))} else {Vehicles[Players[_][1]].draw(65,NoTeamTag(Players[_][0]));}
 	}
@@ -1920,63 +1941,12 @@ if (ParticlesProcessing){
             BulletsData.get(_)[11] = 0
             }
 
-            if (BulletsData.get(_)[7]){
+            if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
                 BulletsData.delete(_)
             }
             }
 	}
-//	for (let _ of OBJs[0].get('>').keys()) {
-////	    ctx.lineCap='round';
-//		if(OBJs[0].get('>').get(_)[4] <0){
-//			continue
-//		}
-//		if (OBJs[1].get('>').has(_)) {
-//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING), Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-//		}else{
-//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+Number(OBJs[0].get('>').get(_)[1]),Number(OBJs[0].get('>').get(_)[2]),Number(OBJs[0].get('>').get(_)[3]));
-//		}
-//
-//		grad.addColorStop(0,"#FFFFFF00");
-//		grad.addColorStop(1,"#FFFF0088");
-//		ctx.strokeStyle = grad
-//		ctx.lineWidth= Number(OBJs[0].get('>').get(_)[4]);
-//
-//		if(OBJs[0].get('>').get(_)[5] == 1 || OBJs[0].get('>').get(_)[5] == 3){
-//			if (Math.random() < 1){
-//
-//								PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
-//
-//
-//				}
-//
-//			if(OBJs[0].get('>').get(_)[5] == 3){
-//				ShakeXbnds += 5
-//				ShakeYbnds += 5
-//			}
-//
-//			OBJs[0].get('>').get(_)[5]=0
-//		}else if(OBJs[0].get('>').get(_)[5] == 2){
-//			if (Math.random() < 1){
-//
-//								PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
-//
-//			}
-//
-//			OBJs[0].get('>').get(_)[5]=0
-//		}
-//		ctx.beginPath()
-//
-//		if (OBJs[1].get('>').has(_)) {
-//			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]+ (OBJs[1].get('>').get(_)[0] - OBJs[0].get('>').get(_)[0]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[1]+ (OBJs[1].get('>').get(_)[1] - OBJs[0].get('>').get(_)[1]) * (Date.now() - LastPING) / PING));
-//			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]+ (OBJs[1].get('>').get(_)[2] - OBJs[0].get('>').get(_)[2]) * (Date.now() - LastPING) / PING),OffsetY+ Number(OBJs[0].get('>').get(_)[3]+ (OBJs[1].get('>').get(_)[3] - OBJs[0].get('>').get(_)[3]) * (Date.now() - LastPING) / PING));
-//		}else{
-//			ctx.moveTo(OffsetX+Number(OBJs[0].get('>').get(_)[0]),OffsetY+ Number(OBJs[0].get('>').get(_)[1]));
-//			ctx.lineTo(OffsetX+Number(OBJs[0].get('>').get(_)[2]),OffsetY+ Number(OBJs[0].get('>').get(_)[3]));
-//		}
-//		ctx.stroke();
-//		ctx.closePath()
-//
-//	}
+
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(70,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(70,NoTeamTag(Players[_][0]));}
 	}
@@ -2054,14 +2024,7 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(79,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(79,NoTeamTag(Players[_][0]));}
 	}
-    for (i=0; i<SmokeParticles0.length; i++) {
-		SmokeParticles0[i].hp-=1;
-		SmokeParticles0[i].dir+=SmokeParticles0[i].spd*0.025;
-		if (SmokeParticles0[i].hp < 0 ) {
-			SmokeParticles0.splice(i, 1);
-			i--;
-		}
-	}
+
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(80,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(80,NoTeamTag(Players[_][0]));}
 	}
@@ -2124,53 +2087,6 @@ if (ParticlesProcessing){
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(89,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(89,NoTeamTag(Players[_][0]));}
 	}
 
-	for (let _ of OBJs[0].get('n').keys()) {
-
-		if (OBJs[0].get('n').get(_)[4] == 1) {
-			if (OBJs[0].get('n').get(_)[2] > 0){
-				ctx.fillStyle = '#0000ff';
-			}else{
-				ctx.fillStyle = '#ff0000';
-			}
-
-			ctx.strokeStyle = '#000'
-		}else {
-			if (OBJs[0].get('n').get(_)[2] > 0){
-				ctx.fillStyle = 'rgba(0,0,255,0.2)';
-			}else{
-				ctx.fillStyle = 'rgba(255,0,0,0.2)';
-			}
-
-			ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-		}
-		let a = ''
-		if (OBJs[0].get('n').get(_).length > 5){
-			a = '['+OBJs[0].get('n').get(_)[5]+'] '
-		}
-		ctx.lineWidth = 1
-		ctx.textAlign = 'center'
-		ctx.font = "20px Supermercado One";
-		if(OBJs[1].get('n').has(_)) {
-			ctx.fillText(a+String(_),OffsetX+ OBJs[0].get('n').get(_)[0] + (OBJs[1].get('n').get(_)[0] - OBJs[0].get('n').get(_)[0]) * (Date.now() - LastPING) / PING, OBJs[0].get('n').get(_)[1] + (OBJs[1].get('n').get(_)[1] - OBJs[0].get('n').get(_)[1]) * (Date.now() - LastPING) / PING - 50);
-		}else{
-			ctx.fillText(a+String(_),OffsetX +OBJs[0].get('n').get(_)[0],OffsetY+ OBJs[0].get('n').get(_)[1] - 50);
-		}
-		// ctx.fillStyle = '#00ff00';
-
-		if (OBJs[0].get('n').get(_)[4] == 1) {
-
-			ctx.fillStyle = 'rgb('+255*(1-Number(OBJs[0].get('n').get(_)[3]))+','+255*OBJs[0].get('n').get(_)[3]+',0)'
-			}else {
-			ctx.fillStyle = 'rgba('+255*(1-Number(OBJs[0].get('n').get(_)[3]))+','+255*OBJs[0].get('n').get(_)[3]+',0,0.2)'
-		}
-		if(OBJs[1].get('n').has(_)) {
-			ctx.fillRect(OffsetX+OBJs[0].get('n').get(_)[0] + (OBJs[1].get('n').get(_)[0] - OBJs[0].get('n').get(_)[0]) * (Date.now() - LastPING) / PING - 25, OffsetY+OBJs[0].get('n').get(_)[1] + (OBJs[1].get('n').get(_)[1] - OBJs[0].get('n').get(_)[1]) * (Date.now() - LastPING) / PING - 45, 50 * (OBJs[0].get('n').get(_)[3] + (OBJs[1].get('n').get(_)[3] - OBJs[0].get('n').get(_)[3]) * (Date.now() - LastPING) / PING), 10) //50*Number(larr[4])
-			ctx.strokeRect(OffsetX+OBJs[0].get('n').get(_)[0] + (OBJs[1].get('n').get(_)[0] - OBJs[0].get('n').get(_)[0]) * (Date.now() - LastPING) / PING - 25, OffsetY+OBJs[0].get('n').get(_)[1] + (OBJs[1].get('n').get(_)[1] - OBJs[0].get('n').get(_)[1]) * (Date.now() - LastPING) / PING - 45, 50, 10)
-		}else{
-			ctx.fillRect(OffsetX+OBJs[0].get('n').get(_)[0] - 25,OffsetY+ OBJs[0].get('n').get(_)[1] - 45, 50 * OBJs[0].get('n').get(_)[3], 10) //50*Number(larr[4])
-			ctx.strokeRect(OffsetX+OBJs[0].get('n').get(_)[0]  - 25,OffsetY+ OBJs[0].get('n').get(_)[1] - 45, 50, 10)
-		}
-	}
         window.requestAnimationFrame(DRAW);
        }catch(e)
        {

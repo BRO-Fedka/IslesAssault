@@ -1,5 +1,5 @@
 function drawCannon(playername,CN = 0, r = 10,turcrd = [0,0],firesize = 1,l = 20,shtSND = "mcannon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,
-bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true){
+bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false){
     if(PlayersData.get(playername).CNs[CN].STS  <2){
         ctx.fillStyle = MAPstatic.CT.o0;
         ctx.strokeStyle = MAPstatic.CT.o0;
@@ -13,7 +13,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
 
         }
     }
-    if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
+    if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody){
                 ctx.fillStyle = 'rgba(0,0,0,0.2)'
                 ctx.strokeStyle = 'rgba(0,0,0,0.2)'
     }
@@ -61,7 +61,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         }
         ctx.strokeStyle = MAPstatic.CT.l1
     }
-    if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
+    if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
 			ctx.fillStyle = 'rgba(0,0,0,0.2)'
 			ctx.strokeStyle = 'rgba(0,0,0,0.2)'
 		}
@@ -74,7 +74,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         }else{
                         ctx.strokeStyle = MAPstatic.CT.o1
         }
-        if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
+        if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
 			ctx.fillStyle = 'rgba(0,0,0,0.2)'
 			ctx.strokeStyle = 'rgba(0,0,0,0.2)'
 		}
@@ -82,7 +82,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         ctx.stroke();
 }
 function PdrawCannon(playername,CN = 0, r = 10,turcrd = [0,0],firesize = 1,l = 20,shtSND = "mcannon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,
-bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true){
+bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false){
 	    ctx.lineJoin = 'miter';
         ctx.beginPath()
         if(PlayersData.get(playername).CNs[CN].STS  <2){
@@ -98,7 +98,10 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
 
                     }
         }
-
+        if(underbody){
+                    ctx.fillStyle = 'rgba(0,0,0,0.2)'
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)'
+        }
         ctx.lineWidth= 2;
         ctx.arc(window.innerWidth/2 + OffsetX+(turcrd[1]*cos*320)+(turcrd[0]*320*sin) ,window.innerHeight/2 + OffsetY+(turcrd[1]*sin*320)+(turcrd[0]*-cos*320),r,0, Math.PI * 2);
         ctx.closePath();
@@ -129,7 +132,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         if(PlayersData.get(playername).CNs[CN].STS <2){
                         ctx.strokeStyle = MAPstatic.CT.l0
                         if (PlayersData.get(playername).CNs[CN].STS == 1){
-                            for (let _ = 0; _ < 5; _++) {
+                            for (let _ = 0; _ < canbangCnt; _++) {
                                 canbangPrts.push(new canbangPrt(X+(nX-X)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*20/320,Y+(nY-Y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*20/320))
                             }
 
@@ -152,7 +155,10 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                         ctx.strokeStyle = MAPstatic.CT.l1
 
         }
-
+        if(underbody){
+                    ctx.fillStyle = 'rgba(0,0,0,0.2)'
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)'
+        }
         ctx.lineCap = 'square';
         ctx.lineWidth = lw[0];
         ctx.stroke();
@@ -164,6 +170,10 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         }
         //t
         ctx.lineWidth = lw[1];
+        if(underbody){
+                    ctx.fillStyle = 'rgba(0,0,0,0.2)'
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)'
+        }
         ctx.stroke();
 }
 function drawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
