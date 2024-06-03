@@ -27,7 +27,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.15, 0], [0, 0.06], [-0.15, 0.045], [-0.15, -0.045], [0, -0.06]]
 //        console.log((Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).acty-PlayersData.get(playername).prevY)**2)*FPS)**2)
         if (Math.random() < (Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)**2)*FPS)**3) {
@@ -53,7 +53,7 @@ draw:function(layer, playername){
     }
     else if(layer == 87 && PlayersData.get(playername).prevX!= null){
 
-        ShowName(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+        ShowName(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 
 },
@@ -76,7 +76,7 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.15, 0], [0, 0.06], [-0.15, 0.045], [-0.15, -0.045], [0, -0.06]]
 //        console.log((Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**2)
         if (Math.random() < (Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**3) {
@@ -236,7 +236,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.075, 0], [0, 0.03], [-0.065, 0.02], [-0.065, -0.02], [0, -0.03]]
 
 //        console.log((Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).acty-PlayersData.get(playername).prevY)**2)*FPS)**2)
@@ -255,18 +255,18 @@ draw:function(layer, playername){
         }
 //        [['m',0,0,50,datetime.datetime.now(),None,True,0],['m',0-0.1,0,50,datetime.datetime.now(),None,True,0]]
 //        caninfo = {
-//    'm':[12/320,18/320,6/320,50,1000000*3,0.75,6,2,4,3],
-//    'p':[5/320,12/320,2/320,1,1000000*0.09,1,2,3,1,0],
-//    't':[9/320,20/320,4/320,25,1000000*2,1.25,4,1,3,2],
-//    'h':[7/320,14/320,2/320,5,1000000*0.5,1,3,1,2,1],
-//    'f':[0/320,0/320,0/320,1,1000000*0.09,1,3,3,1,0],
+//    'm':[12/Zoom,18/Zoom,6/Zoom,50,1000000*3,0.75,6,2,4,3],
+//    'p':[5/Zoom,12/Zoom,2/Zoom,1,1000000*0.09,1,2,3,1,0],
+//    't':[9/Zoom,20/Zoom,4/Zoom,25,1000000*2,1.25,4,1,3,2],
+//    'h':[7/Zoom,14/Zoom,2/Zoom,5,1000000*0.5,1,3,1,2,1],
+//    'f':[0/Zoom,0/Zoom,0/Zoom,1,1000000*0.09,1,3,3,1,0],
 
 //PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{player},{PlayersAccs[player]["money"]},{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',0{PlayersData[player]["CAN"][0][7]},0{PlayersData[player]["CAN"][1][7]}'
 	    drawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
 	    drawCannon(playername,CN = 0, r = 7,turcrd = [0,0],firesize = 0.75,l = 18,shtSND = "hcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 2, bangCnt = 3 ,cos =cos,sin = sin,lw=[4,2])
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
-    ShowName(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+    ShowName(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -287,7 +287,7 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.075, 0], [0, 0.03], [-0.065, 0.02], [-0.065, -0.02], [0, -0.03]]
 //        console.log((Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**2)
         if (Math.random() < (Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**3) {
@@ -438,7 +438,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.3, -0.03],[0.3, 0.03],[0.275, 0.03],[0.25, 0.055],[0.06, 0.055],[0.045, 0.08],[-0.045, 0.08],[-0.06, 0.055],[-0.25, 0.055],[-0.275, 0.03],[-0.3, 0.03],[-0.3, -0.03],[-0.275, -0.03],[-0.25, -0.055],[0.25, -0.055],[0.275, -0.03]]
 //        console.log((Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).acty-PlayersData.get(playername).prevY)**2)*FPS)**2)
         if (Math.random() < (Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)**2)*FPS)**3) {
@@ -464,9 +464,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        ShowName(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+        ShowName(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        ShowName(playername,PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+        ShowName(playername,PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
@@ -488,7 +488,7 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.3, -0.03],[0.3, 0.03],[0.275, 0.03],[0.25, 0.055],[0.06, 0.055],[0.045, 0.08],[-0.045, 0.08],[-0.06, 0.055],[-0.25, 0.055],[-0.275, 0.03],[-0.3, 0.03],[-0.3, -0.03],[-0.275, -0.03],[-0.25, -0.055],[0.25, -0.055],[0.275, -0.03]]
 //        console.log((Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**2)
         if (Math.random() < (Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**3) {
@@ -631,7 +631,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.06, 0.04], [-0.06, 0.04], [-0.06, -0.04], [0.06, -0.04]]
 
 //        console.log((Math.sqrt((PlayersData.get(playername).actX-PlayersData.get(playername).prevX)**2+(PlayersData.get(playername).acty-PlayersData.get(playername).prevY)**2)*FPS)**2)
@@ -658,7 +658,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    ShowName(playername,PlayersData.get(playername).HP,90, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+    ShowName(playername,PlayersData.get(playername).HP,90, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -679,7 +679,7 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.06, 0.04], [-0.06, 0.04], [-0.06, -0.04], [0.06, -0.04]]
         //console.log((Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**2)
         if ( Z ==0 && Math.random() < (Math.sqrt((nX-X)**2+(nY-Y)**2)*FPS)**3) {
@@ -813,7 +813,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.02, 0.01],[0.02, -0.01],[0.01, -0.01],[0.01, -0.04],[-0.01, -0.04],[-0.01, -0.0075],[-0.03, -0.005],[-0.03, -0.02],[-0.04, -0.02],[-0.04, 0.02],[-0.03, 0.02],[-0.03, 0.005],[-0.01, 0.0075],[-0.01, 0.04],[0.01, 0.04],[0.01, 0.01]]
 
         drawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
@@ -850,7 +850,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    ShowName(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+    ShowName(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -871,7 +871,7 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.02, 0.01],[0.02, -0.01],[0.01, -0.01],[0.01, -0.04],[-0.01, -0.04],[-0.01, -0.0075],[-0.03, -0.005],[-0.03, -0.02],[-0.04, -0.02],[-0.04, 0.02],[-0.03, 0.02],[-0.03, 0.005],[-0.01, 0.0075],[-0.01, 0.04],[0.01, 0.04],[0.01, 0.01]]
 
     PdrawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
@@ -1124,7 +1124,7 @@ draw:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],320,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[-0.3, 0],[-0.325, 0.055],[-0.2, 0.04],[0, 0.06],[0.225, 0.06],[0.275, 0.04],[0.3, 0],[0.275, -0.04],[0.225, -0.06],[0, -0.06],[-0.2, -0.04],[-0.325, -0.055]]
 		if(PlayersData.get(playername).COLOR  == 0){
             for (let _ = 0; _ < 1; _++) {
@@ -1144,9 +1144,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        ShowName(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+        ShowName(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        ShowName(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*320 +window.innerWidth/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*320+window.innerHeight/2 + OffsetY)
+        ShowName(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
