@@ -17,7 +17,38 @@ function ZoomCorrection(){
         }
     }}
 }
+   //let svg = document.querySelector("svg");
 
+//let l0 = document.getElementById("SvgLayer0");
+//let l1 = document.getElementById("SvgLayer1");
+//let l2 = document.getElementById("SvgLayer2");
+//let l3 = document.getElementById("SvgLayer3");
+//let l4 = document.getElementById("SvgLayer4");
+let BGLayers = [[0,"../static/BG1/BG.svg"],[0.0625,"../static/BG1/BG0.svg"],[ 0.03125,"../static/BG1/BG1.svg"],[0.015625,"../static/BG1/BG2.svg"],[ 0.0078125,"../static/BG1/BG3.svg"],[-0.00390625,"../static/BG1/BG4.svg"]]
+function UpdateBG(e){
+    MainScreen.innerHTML = ""
+    for (let i = 0; i < BGLayers.length; i++) {
+        MainScreen.innerHTML += '<div class="BGSVGLayer" id="SvgLayer'+i+'" style="background-image: url('+BGLayers[i][1]+');"></div>'
+    }
+}
+UpdateBG()
+document.addEventListener('mousemove', onMouseUpdate, false);
+document.addEventListener('mouseenter', onMouseUpdate, false);
+
+function onMouseUpdate(e) {
+  let x = e.pageX;
+  for (let i = 0; i < BGLayers.length; i++) {
+//        MainScreen.innerHTML += '<div class="BGSVGLayer" id="SvgLayer'+i+'" style="background-image: url('+UpdateBG[1]+');"></div>'
+        document.getElementById("SvgLayer"+i).style.transform= 'translateX('+((x - window.innerWidth / 2) * BGLayers[i][0])*1920/window.innerWidth+'px)'
+  }
+//  let y = e.pageY;
+//  l0.style.transform = 'translateX('+((x - window.innerWidth / 2) / 16)*1920/window.innerWidth+'px)';
+//  l1.style.transform ='translateX('+((x - window.innerWidth / 2) / 32)*1920/window.innerWidth+'px)';
+// l2.style.transform = 'translateX('+((x - window.innerWidth / 2) / 64)*1920/window.innerWidth+'px)';
+//  l3.style.transform = 'translateX('+((x - window.innerWidth / 2) / 128)*1920/window.innerWidth+'px)';
+// l4.style.transform = 'translateX('+((x - window.innerWidth / 2) / -256)*1920/window.innerWidth +'px)';
+// console.log(window.innerWidth )
+}
 window.onresize = resize
 function ExitGame(){
     Send = true
@@ -248,6 +279,8 @@ function GetServerInfo(){
 				document.getElementById('online').innerHTML = "Players: "+data.online;
 				document.getElementById('text').innerHTML = data.text;
 				document.getElementById('prevmpjs').src = data.js;
+				BGLayers = data.bg;
+				UpdateBG()
 				VIEW_X = data.VIEW_X
 				VIEW_Y = data.VIEW_Y
 				VehList = data.vehicleAvailable;

@@ -10,7 +10,7 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 import sqlite3
 WH = 16
-SQL = sqlite3.connect('/root/IslesAssault/data.db')
+SQL = sqlite3.connect('../data.db')
 SQLctx = SQL.cursor()
 TPS = 15
 VIEW_X = 6
@@ -1963,7 +1963,7 @@ async def handler(websocket):
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
         await asyncio.sleep(1/TPS)
 async def main():
-    async with websockets.serve(handler, "80.68.156.140", 8001): #26.223.93.1
+    async with websockets.serve(handler, "localhost", 8001): #26.223.93.1
         await asyncio.Future()
 if __name__ == '__main__':
 
