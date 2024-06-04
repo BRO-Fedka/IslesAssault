@@ -114,35 +114,15 @@
 
 <!--    </object>-->
  <div id="MainScreen">
-     <div class="BGSVGLayer" id="SvgLayer" ></div>
-     <div class="BGSVGLayer" id="SvgLayer0"></div>
-     <div class="BGSVGLayer" id="SvgLayer1"></div>
-     <div class="BGSVGLayer" id="SvgLayer2"></div>
-     <div class="BGSVGLayer" id="SvgLayer3"></div>
-     <div class="BGSVGLayer" id="SvgLayer4"></div>
+     <div class="loader"></div>
+<!--     <div class="BGSVGLayer" id="SvgLayer" ></div>-->
+<!--     <div class="BGSVGLayer" id="SvgLayer0"></div>-->
+<!--     <div class="BGSVGLayer" id="SvgLayer1"></div>-->
+<!--     <div class="BGSVGLayer" id="SvgLayer2"></div>-->
+<!--     <div class="BGSVGLayer" id="SvgLayer3"></div>-->
+<!--     <div class="BGSVGLayer" id="SvgLayer4"></div>-->
  </div>
-  <script>
-   //let svg = document.querySelector("svg");
 
-    let l0 = document.getElementById("SvgLayer0");
-    let l1 = document.getElementById("SvgLayer1");
-    let l2 = document.getElementById("SvgLayer2");
-    let l3 = document.getElementById("SvgLayer3");
-    let l4 = document.getElementById("SvgLayer4");
-    document.addEventListener('mousemove', onMouseUpdate, false);
-    document.addEventListener('mouseenter', onMouseUpdate, false);
-
-    function onMouseUpdate(e) {
-      let x = e.pageX;
-      let y = e.pageY;
-      l0.style.transform = 'translateX('+((x - window.innerWidth / 2) / 16)*1920/window.innerWidth+'px)';
-      l1.style.transform ='translateX('+((x - window.innerWidth / 2) / 32)*1920/window.innerWidth+'px)';
-     l2.style.transform = 'translateX('+((x - window.innerWidth / 2) / 64)*1920/window.innerWidth+'px)';
-      l3.style.transform = 'translateX('+((x - window.innerWidth / 2) / 128)*1920/window.innerWidth+'px)';
-     l4.style.transform = 'translateX('+((x - window.innerWidth / 2) / -256)*1920/window.innerWidth +'px)';
-     console.log(window.innerWidth )
-    }
-  </script>
     <div id="TitleScreen" class="unselectable">
         <h1 id="LoadingTitle">Loading</h1>
         <h1 id="IslesTitle">ISLES-ASSAULT</h1>

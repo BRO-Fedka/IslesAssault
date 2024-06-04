@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" id="MainScreen">
+  <g id="SvgLayer0">
+    <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1316.171" cy="626.927" rx="4.657" ry="4.657"/>
+    <line style="fill: rgb(216, 216, 216); stroke-linecap: round; stroke-linejoin: round; stroke-width: 3px; stroke: rgb(107, 107, 107);" x1="1239.145" y1="622.454" x2="1237.083" y2="613.172"/>
+  <line style="fill: rgb(216, 216, 216); stroke-linecap: round; stroke-linejoin: round; stroke: rgb(107, 107, 107); stroke-width: 7px;" x1="1268.024" y1="628.642" x2="1258.536" y2="626.787" transform="matrix(1, 0, 0, 1, 41.668575, 5.77595)"/>
+  <ellipse style="fill: rgb(82, 82, 82);" cx="1318.215" cy="644.75" rx="17.778" ry="17.778"/>
+  <ellipse style="fill: rgb(82, 82, 82);" cx="1240.177" cy="630.215" rx="9.116" ry="9.116"/>
+  <ellipse style="fill: rgb(82, 82, 82);" cx="1273.552" cy="638.4" rx="17.778" ry="17.778"/>
+  <line style="fill: rgb(216, 216, 216); stroke-linecap: round; stroke-linejoin: round; stroke-width: 3px; stroke: rgb(107, 107, 107);" x1="1356.725" y1="631.221" x2="1354.663" y2="640.503" transform="matrix(-1, 0, 0, -1, 2711.387939, 1271.723999)"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1352.545" cy="637.37" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgb(82, 82, 82);" cx="1352.806" cy="647.414" rx="9.116" ry="9.116"/>
+  <path d="M 1187.562 635.726 L 1394.305 635.822 L 1390.396 646.78 L 1245.981 668.751 L 1187.562 635.726 Z" style="fill: rgb(52, 52, 52);" transform="matrix(0.988478, 0.151365, -0.151365, 0.988478, 113.600319, -187.88707)"/>
+  <path d="M 1370.674 586.112 L 1370.674 687.093 L 1033.151 687.093 L 1033.151 586.112 Z M 1034.151 686.093 L 1369.674 686.093 L 1369.674 587.112 L 1034.151 587.112 Z" style="fill: none;"/>
+<!--  <line style="fill: rgb(216, 216, 216); stroke-width: 15px; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2px; stroke: url(#gradient-0); paint-order: fill markers;" x1="458.892" y1="644.569" x2="486.642" y2="706.98" transform="matrix(0.936159, 0.351577, -0.351577, 0.936159, 267.768646, -123.071838)"/>-->
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1269.702" cy="621.706" rx="4.657" ry="4.657"/>
+  <line style="fill: rgb(216, 216, 216); stroke-linecap: round; stroke-linejoin: round; stroke: rgb(107, 107, 107); stroke-width: 7px;" x1="1243.064" y1="622.66" x2="1237.702" y2="621.011" transform="matrix(1, 0, 0, 1, 26.816303, 4.435157)"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1322.187" cy="629.205" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1276.315" cy="624.316" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1241.855" cy="621.184" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1282.755" cy="614.57" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(55, 15, 0, 0.82);" cx="1320.522" cy="603.954" rx="10.749" ry="10.749"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1315.475" cy="616.137" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(252, 130, 0, 0.76);" cx="1356.548" cy="640.329" rx="4.657" ry="4.657"/>
+  <ellipse style="fill: rgba(226, 79, 0, 0.76);" cx="1321.828" cy="622.142" rx="5.962" ry="5.962"/>
+  <ellipse style="fill: rgba(226, 79, 0, 0.76);" cx="1275.793" cy="616.485" rx="5.962" ry="5.962"/>
+  <ellipse style="fill: rgba(226, 79, 0, 0.76);" cx="1244.814" cy="614.048" rx="5.962" ry="5.962"/>
+  <ellipse style="fill: rgba(55, 15, 0, 0.82);" cx="1243.77" cy="601.865" rx="10.749" ry="10.749"/>
+  <ellipse style="fill: rgba(226, 79, 0, 0.76);" cx="1362.118" cy="630.234" rx="5.962" ry="5.962"/>
+  <ellipse style="fill: rgba(226, 79, 0, 0.76);" cx="1330.79" cy="604.824" rx="5.962" ry="5.962"/>
+  <ellipse style="fill: rgba(122, 37, 0, 0.82);" cx="1322.001" cy="609.785" rx="8.312" ry="8.312"/>
+  <ellipse style="fill: rgba(122, 37, 0, 0.82);" cx="1272.661" cy="607.783" rx="8.312" ry="8.312"/>
+  <ellipse style="fill: rgba(122, 37, 0, 0.82);" cx="1239.245" cy="607.609" rx="8.312" ry="8.312"/>
+  <ellipse style="fill: rgba(55, 15, 0, 0.82);" cx="1358.985" cy="618.051" rx="10.749" ry="10.749"/>
+  <ellipse style="fill: rgba(122, 30, 0, 0.82);" cx="1356.026" cy="629.19" rx="8.312" ry="8.312"/>
+  <ellipse style="fill: rgba(55, 15, 0, 0.82);" cx="1282.408" cy="604.998" rx="10.749" ry="10.749"/>
+  <ellipse style="fill: rgba(28, 8, 1, 0.66);" cx="1274.924" cy="591.423" rx="14.404" ry="14.404"/>
+  <ellipse style="fill: rgba(28, 8, 1, 0.66);" cx="1238.549" cy="586.898" rx="14.404" ry="14.404"/>
+  <ellipse style="fill: rgba(28, 8, 1, 0.66);" cx="1330.964" cy="596.818" rx="14.404" ry="14.404"/>
+  <ellipse style="fill: rgba(28, 8, 1, 0.73);" cx="1369.428" cy="612.308" rx="14.404" ry="14.404"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.64);" cx="1226.317" cy="581.824" rx="21.018" ry="21.018"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.6);" cx="1275.735" cy="566.279" rx="21.018" ry="21.018"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.79);" cx="1316.055" cy="582.011" rx="21.018" ry="21.018"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.65);" cx="1357.593" cy="596.992" rx="21.018" ry="21.018"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.28);" cx="1227.29" cy="544.831" rx="29.127" ry="29.127"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.28);" cx="1284.05" cy="533.419" rx="29.127" ry="29.127"/>
+  <ellipse style="fill: rgba(53, 53, 53, 0.28);" cx="1339.909" cy="567.655" rx="29.127" ry="29.127"/>
+</g>
+</svg>
