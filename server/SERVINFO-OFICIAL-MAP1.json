@@ -8,7 +8,7 @@
   ],
   "js": "%js%",
   "map": "../static/MAPchNew.png",
-  "bg": [[0,"../static/BG1/BG.svg"],[0.0625,"../static/BG1/BG0.svg"],[0.03125,"../static/BG1/BG1.svg"],[0.015625,"../static/BG2/BG1.svg"],[0.0078125,"../static/BG1/BG3.svg"],[-0.00390625,"../static/BG1/BG4.svg"]],
+  "bg": [[0,"../static/BG1/BG.svg"],[0.0625,"../static/BG1/BG0.svg"],[0.03125,"../static/BG1/BG1.svg"],[0.015625,"../static/BG1/BG1.svg"],[0.0078125,"../static/BG1/BG3.svg"],[-0.00390625,"../static/BG1/BG4.svg"]],
   "online": "%online%",
   "text": "%text%",
   "VIEW_X": 6,
