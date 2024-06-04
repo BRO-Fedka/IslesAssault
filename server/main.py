@@ -179,7 +179,8 @@ SpeedCOLlosingCOF = 0.975
 DEBUGVAL0 = 0
 DEFSQSIZE = 320
 JSVEHs = '../static/OSJS.js'
-MAPJSON = open('OFICIAL-MAP1.json','r').read()
+# MAPJSON = open('../httpserver/static/OFICIAL-MAP1.json', 'r').read()
+MAPJSON = "../static/OFICIAL-MAP1.json"
 print(MAPJSON)
 MAP = pickle.load(open('OFICIAL-MAP1','rb'))
 MAPobjSIDEdir = {'S':{},'B':{}}

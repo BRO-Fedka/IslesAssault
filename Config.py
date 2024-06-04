@@ -160,16 +160,9 @@ PREM_ITEM = {
 hiderplace = {'image':5,'skin':5,'vehicle':3}
 lvlplace = {'image':4,'skin':6,'vehicle':4}
 Servers = {
-    "#1 St.Petersburg": "ws://80.68.156.140:8001",
+"#1 St.Petersburg": "ws://80.68.156.140:8001",
 'localhost - DevServer': 'ws://localhost:8001',
-
-
-
 # '26.223.93.1':'ws://26.223.93.1:8001',
-
-
-
-
 }
 Description ={
     0:['2 x ArtyCannon(120mm) Ammo:150', 'Speed: 0.125', 'HP: 1000','Torpedos: 12','Smokes: 8','TurnSpeed: 20'],
