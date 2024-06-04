@@ -1007,8 +1007,7 @@ async def game():
                             else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS,min=0,minrep = 359,max=359,maxrep=0)
                     if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 :
                         if  PlayersData[player]['STATUS'] != "BURNING" :
-                            PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'] - int(PlayersInputs[player]["w"] / 2),
-                                   PlayersInputs[player]['y'] - int(PlayersInputs[player]["h"] / 2))
+                            PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
                         else:
                             PlayersData[player]['DIR'] += (random.random()*2-1)*15
                     if PlayersData[player]['TAKEN']:
@@ -1025,12 +1024,9 @@ async def game():
                             b = PlayersData[player]['DIR']
                         else:
                             if PlayersInputs[player]['Cmod']:
-                                b = lookat(PlayersInputs[player]['x']-int(PlayersInputs[player]["w"] / 2),PlayersInputs[player]['y']-int(PlayersInputs[player]["h"] / 2))
+                                b = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
                             else:
-                                b = lookat(PlayersInputs[player]['x'] - int(
-                                    PlayersInputs[player]["w"] / 2 + math.ceil(a[0] * 320)),
-                                           PlayersInputs[player]['y'] - int(
-                                               PlayersInputs[player]["h"] / 2 + math.ceil(a[1] * 320)))
+                                b = lookat(PlayersInputs[player]['x'] - a[0],PlayersInputs[player]['y']-a[1]  )
                         _[7] = b
                     # print(PlayersData[player]['ZOOM'],PlayersInputs[player]['z'])
                     if PlayersCosmetics[player]['VEHICLE'] == 0:
@@ -1183,20 +1179,17 @@ async def game():
                         deg = lookat(_[1], _[2])
                         a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
                              math.sin((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d)
-                        if _[0] == 'f':
-                            b = PlayersData[player]['DIR']
-                        else:
-                            if PlayersInputs[player]['Cmod']:
-                                b = lookat(PlayersInputs[player]['x']-int(PlayersInputs[player]["w"] / 2),PlayersInputs[player]['y']-int(PlayersInputs[player]["h"] / 2))
-                            else:
-                                b = lookat(PlayersInputs[player]['x'] - int(
-                                    PlayersInputs[player]["w"] / 2 + math.ceil(a[0] * 320)),
-                                           PlayersInputs[player]['y'] - int(
-                                               PlayersInputs[player]["h"] / 2 + math.ceil(a[1] * 320)))
-                        c = (math.cos((b) / 180 * math.pi) * caninfo[_[0]][1]*320,
-                             math.sin((b) / 180 * math.pi) * caninfo[_[0]][1]*320)
+                        # if _[0] == 'f':
+                        #     b = PlayersData[player]['DIR']
+                        # else:
+                        #     if PlayersInputs[player]['Cmod']:
+                        #         b = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
+                        #     else:
+                        #         b = lookat(PlayersInputs[player]['x'] - math.ceil(a[0] ),PlayersInputs[player]['y'] +  math.ceil(a[1] ))
+                        c = (math.cos((_[7]) / 180 * math.pi) * caninfo[_[0]][1]*320,
+                             math.sin((_[7]) / 180 * math.pi) * caninfo[_[0]][1]*320)
                         _[5] = Point(a[0], a[1]).buffer(caninfo[_[0]][0])
-                        j = LineString([[a[0], a[1]],[a[0]+math.cos((b) / 180 * math.pi)*0.2, a[1]+math.sin((b) / 180 * math.pi)*0.2]])
+                        j = LineString([[a[0], a[1]],[a[0]+math.cos((_[7]) / 180 * math.pi)*0.2, a[1]+math.sin((_[7]) / 180 * math.pi)*0.2]])
                         g = True
                         for i in PlayersData[player]['CAN']:
                             if not PlayersData[player]['CAN'].index(i) == PlayersData[player]['CAN'].index(_) and not i[5] is None:
@@ -1211,7 +1204,7 @@ async def game():
                                 _[8] = 1
                                 _[4]=datetime.datetime.now()
                                 wasShot=True
-                                Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0],PlayersData[player]["Y"] + a[1],0,0,0,0,0,b-caninfo[_[0]][7]+random.random()*caninfo[_[0]][7]*2,caninfo[_[0]][5],caninfo[_[0]][6],0.3,player,None,caninfo[_[0]][3],0,caninfo[_[0]][8]*(-1 + int(_[6])*2),'',PlayersInputs[player]['Xmod'],_[0],int(PlayersData[player]["ONGROUND"])]
+                                Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0],PlayersData[player]["Y"] + a[1],0,0,0,0,0,_[7]-caninfo[_[0]][7]+random.random()*caninfo[_[0]][7]*2,caninfo[_[0]][5],caninfo[_[0]][6],0.3,player,None,caninfo[_[0]][3],0,caninfo[_[0]][8]*(-1 + int(_[6])*2),'',PlayersInputs[player]['Xmod'],_[0],int(PlayersData[player]["ONGROUND"])]
                                 LastBulletI +=1
                         if not  wasShot and PlayersData[player]["STATUS"] =="ALIVE":
                             _[8] = 0
@@ -1505,15 +1498,13 @@ async def handler(websocket):
                                 'tbk': bool(int(message[7])),
                                 'Cmod': bool(int(message[8])),
                                 'Xmod': int(message[9]),
-                                'x':int(message[10:].split(',')[0]),
-                                'y':int(message[10:].split(',')[1]),
-                                'w':int(message[10:].split(',')[2]),
-                                'h':int(message[10:].split(',')[3]),
+                                'x':float(message[10:].split(',')[0]),
+                                'y':float(message[10:].split(',')[1]),
                                 'last':datetime.datetime.now()
 
                             }
                             if player in PlayersData:
-                                for _ in message[10:].split(',')[4:]:
+                                for _ in message[10:].split(',')[2:]:
                                     if len(_) < 2: continue
                                     elif _[0] == 'm':
 
