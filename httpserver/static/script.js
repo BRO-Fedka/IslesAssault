@@ -350,18 +350,22 @@ function startgame() {
 				}else if(event.data[0] == 'M'){
 //				console.log(event.data.substring(1))
 
-				document.getElementById('TitleScreen').classList = ['titlescrh']
+                    document.getElementById('TitleScreen').classList = ['titlescrh']
 
+                    document.getElementById("MapJSON").src = event.data.substring(1)
 
-				MAPstatic = JSON.parse(event.data.substring(1));
-//				console.log(MAPstatic)
-				WH = MAPstatic['WH']
-//				console.log(MAPstatic)
-                ZonesNum.innerHTML = ''
-                for(let _ = 0; _ < MAPstatic['*'].length; _++){
-                    ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
-                }
-				socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+'0'+(mouseX).toString()+','+(mouseY).toString()+','+(window.innerWidth).toString()+','+(window.innerHeight).toString()+SENDB+SENDS);
+                    function onMapJSONLoad(){
+                        MAPstatic = JSON.parse(rawMap);
+        //				console.log(MAPstatic)
+                        WH = MAPstatic['WH']
+        //				console.log(MAPstatic)
+                        ZonesNum.innerHTML = ''
+                        for(let _ = 0; _ < MAPstatic['*'].length; _++){
+                            ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
+                        }
+                        socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+                    }
+                    document.getElementById("MapJSON").onload = onMapJSONLoad
 				}
 				else if (event.data[0] == 'D'){
 						socket.close();
