@@ -408,7 +408,7 @@ background-image: url(../static/BG1/BG4.svg);
 }*/
 #MainScreen{
 
-    left:calc(50% - 50px);
+    left:calc(50% - 37.5px);
 
     overflow: visible;
     /*box-shadow : 0px -0px 10000px transparent trick for chrome*/
