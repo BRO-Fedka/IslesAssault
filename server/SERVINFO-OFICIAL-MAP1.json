@@ -10,6 +10,8 @@
   "map": "../static/MAPchNew.png",
   "online": "%online%",
   "text": "%text%",
+  "VIEW_X": 6,
+  "VIEW_Y": 3,
   "vehicleAvailable": [
     [
       "Battleship",

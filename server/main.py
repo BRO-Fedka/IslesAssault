@@ -13,7 +13,8 @@ WH = 16
 SQL = sqlite3.connect('../data.db')
 SQLctx = SQL.cursor()
 TPS = 15
-
+VIEW_X = 6
+VIEW_Y = 3
 availablecls = [1,2,3,4,5]
 TEAM_HELP = '''/team create [team name] /team join [team name] /team kick [player name] /team leave /team list /team chat [message]'''
 import sys
@@ -1031,19 +1032,18 @@ async def game():
                                            PlayersInputs[player]['y'] - int(
                                                PlayersInputs[player]["h"] / 2 + math.ceil(a[1] * 320)))
                         _[7] = b
-                    PlayersData[player]['ZOOM'] = PlayersInputs[player]['z']
-                    print(PlayersData[player]['ZOOM'],PlayersInputs[player]['z'])
+                    # print(PlayersData[player]['ZOOM'],PlayersInputs[player]['z'])
                     if PlayersCosmetics[player]['VEHICLE'] == 0:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) +f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5+1/TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5+1/TPS)}"
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) +f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5+1/TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5+1/TPS)}"
                     elif PlayersCosmetics[player]['VEHICLE'] == 1:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])
                     elif PlayersCosmetics[player]['VEHICLE'] == 2:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5+1/TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5+1/TPS)}"
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},'+str(PlayersData[player]['GAS']/25)+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5+1/TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5+1/TPS)}"
                         #print(PlayersData[player]['STR'] )
                     elif PlayersCosmetics[player]['VEHICLE'] == 3:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},' + str(PlayersData[player]['GAS']/25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+ "," +str(len( PlayersData[player]['CARRY']))
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},' + str(PlayersData[player]['GAS']/25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+ "," +str(len( PlayersData[player]['CARRY']))
                     elif PlayersCosmetics[player]['VEHICLE'] == 4:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},' + str(PlayersData[player]['GAS']/25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," +str(len( PlayersData[player]['CARRY']))
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},' + str(PlayersData[player]['GAS']/25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," +str(len( PlayersData[player]['CARRY']))
                     # elif PlayersCosmetics[player]['VEHICLE'] == 5:
                     #     if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2:
                     #         PlayersData[player]['STR'] = f'{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},1,'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{str(int(PlayersData[player]["HP"]))},{str(int(PlayersData[player]["HPMAX"]))},{str(PlayersData[player]["X"])},{str(PlayersData[player]["Y"])},{PlayersAccs[player]["money"]},{WH},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))
@@ -1055,7 +1055,7 @@ async def game():
                     #     else:
                     #         PlayersData[player]['STR'] = f'{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},1,' + '+' * int(PlayersData[player]['GAS'] >= 0) + str(PlayersData[player]['GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{str(int(PlayersData[player]["HP"]))},{str(int(PlayersData[player]["HPMAX"]))},{str(PlayersData[player]["X"])},{str(PlayersData[player]["Y"])},{PlayersAccs[player]["money"]},{WH},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))
                     elif PlayersCosmetics[player]['VEHICLE'] == 8:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},{PlayersData[player]["ZOOM"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])
                     PlayersData[player]['STR'] += ','
                     for _ in Zones:
                         PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM'])))
@@ -1069,8 +1069,8 @@ async def game():
                     PlayersData[player]['VISSMK'] = set()
                     PlayersData[player]['VISBRIDGES'] = set()
                     part = ''
-                    for x in range(int(PlayersData[player]['X'] // 1) - 4, int(PlayersData[player]['X'] // 1) + 5):
-                        for y in range(int(PlayersData[player]['Y'] // 1) - 3, int(PlayersData[player]['Y'] // 1) + 4):
+                    for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X, int(PlayersData[player]['X'] // 1) + VIEW_X+1):
+                        for y in range(int(PlayersData[player]['Y'] // 1) - VIEW_Y, int(PlayersData[player]['Y'] // 1) + VIEW_Y+1):
                             try:
                                 MAP['Q'][(x, y)]['PLAYERS'].discard(player)
                             except:pass
@@ -1093,8 +1093,8 @@ async def game():
                     #         for _ in Teams[PlayersData[player]['TEAM']]:
                     #             PlayersData[player]['STR'] += f',{_}'
                     # print(PlayersData[player]['VISTOR'])
-                    for x in range(int(PlayersData[player]['X'] // 1) - 3, int(PlayersData[player]['X'] // 1) + 4):
-                        for y in range(int(PlayersData[player]['Y'] // 1) - 2, int(PlayersData[player]['Y'] // 1) + 3):
+                    for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X, int(PlayersData[player]['X'] // 1) + VIEW_X+1):
+                        for y in range(int(PlayersData[player]['Y'] // 1) - VIEW_Y, int(PlayersData[player]['Y'] // 1) + VIEW_Y+1):
                             try:
                                 for _ in MAP['Q'][(x, y)]['B']:
                                     PlayersData[player]['VISB'].add(_)
@@ -1393,7 +1393,7 @@ async def game():
 
             for _ in KickList:
                 try:
-                    for x in range(int(PlayersData[_]['X'] // 1) - 5, int(PlayersData[_]['X'] // 1) + 6):
+                    for x in range(int(PlayersData[_]['X'] // 1) - VIEW_X, int(PlayersData[_]['X'] // 1) + VIEW_X+1):
                         for y in range(int(PlayersData[_]['Y'] // 1) - 4, int(PlayersData[_]['Y'] // 1) + 5):
                             try:
                                 MAP['Q'][(x, y)]['PLAYERS'].discard(_)
@@ -1505,11 +1505,10 @@ async def handler(websocket):
                                 'tbk': bool(int(message[7])),
                                 'Cmod': bool(int(message[8])),
                                 'Xmod': int(message[9]),
-                                'z':int(message[10:].split(',')[0]),
-                                'x':int(message[10:].split(',')[1]),
-                                'y':int(message[10:].split(',')[2]),
-                                'w':int(message[10:].split(',')[3]),
-                                'h':int(message[10:].split(',')[4]),
+                                'x':int(message[10:].split(',')[0]),
+                                'y':int(message[10:].split(',')[1]),
+                                'w':int(message[10:].split(',')[2]),
+                                'h':int(message[10:].split(',')[3]),
                                 'last':datetime.datetime.now()
 
                             }
@@ -1714,7 +1713,7 @@ async def handler(websocket):
                                 'COL':None,
                                 'PrevDIR':0,
                                 'AMMOUPDATE':False,
-                                "ZOOM":320,
+                                # "ZOOM":320,
                                 'VISB':set(),
                                 'VISZ':set(),
                                 'VISG':set(),

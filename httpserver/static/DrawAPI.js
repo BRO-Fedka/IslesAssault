@@ -40,13 +40,13 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     }
     ctx.beginPath()
     ctx.moveTo((PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX +(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin),(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + OffsetY);
-    ctx.lineTo((PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l);
+    ctx.lineTo((PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l/320*Zoom,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l/320*Zoom);
     ctx.closePath()
     if(PlayersData.get(playername).CNs[CN].STS <2){
         ctx.strokeStyle = MAPstatic.CT.l0
         if (PlayersData.get(playername).CNs[CN].STS == 1){
             for (let _ = 0; _ < canbangCnt; _++) {
-                canbangPrts.push(new canbangPrt(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/Zoom,PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/Zoom))
+                canbangPrts.push(new canbangPrt(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/320,PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/320))
             }
            PIXI.sound.play(shtSND);
            PlayersData.get(playername).CNs[CN].STS = 0
@@ -103,7 +103,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                     ctx.strokeStyle = 'rgba(0,0,0,0.2)'
         }
         ctx.lineWidth= 2/320*Zoom;
-        ctx.arc(GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r,0, Math.PI * 2);
+        ctx.arc(GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r/320*Zoom,0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
@@ -125,23 +125,15 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         ctx.beginPath()
 
         ctx.moveTo(GameW/2 + OffsetX +(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin),GameH/2+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + OffsetY);
-        ctx.lineTo(GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l,GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l);
+        ctx.lineTo(GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l/320*Zoom,GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l/320*Zoom);
 
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
-//        #TODO
+
         ctx.closePath()
         if(PlayersData.get(playername).CNs[CN].STS <2){
                         ctx.strokeStyle = MAPstatic.CT.l0
                         if (PlayersData.get(playername).CNs[CN].STS == 1){
                             for (let _ = 0; _ < canbangCnt; _++) {
-                                canbangPrts.push(new canbangPrt(X+(nX-X)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*20/Zoom,Y+(nY-Y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*20/Zoom))
+                                canbangPrts.push(new canbangPrt(X+(nX-X)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/320,Y+(nY-Y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/320))
                             }
 
 
@@ -168,7 +160,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                     ctx.strokeStyle = 'rgba(0,0,0,0.2)'
         }
         ctx.lineCap = 'square';
-        ctx.lineWidth = lw[0];
+        ctx.lineWidth = lw[0]/320*Zoom;
         ctx.stroke();
 
         if(PlayersData.get(playername).CNs[CN].STS <2){
@@ -177,7 +169,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                         ctx.strokeStyle = MAPstatic.CT.o1
         }
         //t
-        ctx.lineWidth = lw[1];
+        ctx.lineWidth = lw[1]/320*Zoom;
         if(underbody){
                     ctx.fillStyle = 'rgba(0,0,0,0.2)'
                     ctx.strokeStyle = 'rgba(0,0,0,0.2)'
@@ -200,7 +192,7 @@ function drawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
         }
         ctx.lineTo((PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom +GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
 		ctx.closePath();
-		ctx.lineWidth= 2;
+		ctx.lineWidth= 2/320*Zoom;
         ctx.fill();
 	    ctx.stroke();
 }
@@ -217,7 +209,7 @@ function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
         }
         ctx.lineTo(GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
 		ctx.closePath();
-		ctx.lineWidth= 2;
+		ctx.lineWidth= 2/320*Zoom;
         ctx.fill();
 	    ctx.stroke();
 }
