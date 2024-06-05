@@ -1,5 +1,4 @@
 #  [IslesAssault](http://80.68.156.140)
-___
 ![image](http://80.68.156.140/static/VKBG.png)
 ___
 >[!CAUTION]
