@@ -1066,8 +1066,8 @@ async def game():
                     PlayersData[player]['VISSMK'] = set()
                     PlayersData[player]['VISBRIDGES'] = set()
                     part = ''
-                    for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X, int(PlayersData[player]['X'] // 1) + VIEW_X+1):
-                        for y in range(int(PlayersData[player]['Y'] // 1) - VIEW_Y, int(PlayersData[player]['Y'] // 1) + VIEW_Y+1):
+                    for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X-1, int(PlayersData[player]['X'] // 1) + VIEW_X+2):
+                        for y in range(int(PlayersData[player]['Y'] // 1) - VIEW_Y-1, int(PlayersData[player]['Y'] // 1) + VIEW_Y+2):
                             try:
                                 MAP['Q'][(x, y)]['PLAYERS'].discard(player)
                             except:pass
@@ -1387,8 +1387,8 @@ async def game():
 
             for _ in KickList:
                 try:
-                    for x in range(int(PlayersData[_]['X'] // 1) - VIEW_X, int(PlayersData[_]['X'] // 1) + VIEW_X+1):
-                        for y in range(int(PlayersData[_]['Y'] // 1) - 4, int(PlayersData[_]['Y'] // 1) + 5):
+                    for x in range(int(PlayersData[_]['X'] // 1) - VIEW_X-1, int(PlayersData[_]['X'] // 1) + VIEW_X+2):
+                        for y in range(int(PlayersData[_]['Y'] // 1) - VIEW_Y-1, int(PlayersData[_]['Y'] // 1) + VIEW_Y+2):
                             try:
                                 MAP['Q'][(x, y)]['PLAYERS'].discard(_)
                             except:pass
