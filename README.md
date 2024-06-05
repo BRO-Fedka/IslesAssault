@@ -1,4 +1,4 @@
-#  [IslesAssault](http://80.68.156.140) <super>1.2.2v<super>
+#  [IslesAssault](http://80.68.156.140)
 ![image](http://80.68.156.140/static/VKBG.png)
 ___
 >[!CAUTION]
