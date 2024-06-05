@@ -1,12 +1,9 @@
-# IslesAssault 
->[!NOTE]
-> _1.2.2v beta_
-#### online multiplayer browser game
-
-### ([Play here : http://80.68.156.140](http://80.68.156.140))
+#  [IslesAssault](http://80.68.156.140)
 ___
 ![image](http://80.68.156.140/static/VKBG.png)
 ___
+>[!CAUTION]
+> No mobile support.
 ## :pushpin: About 
 __Isles Assault__ - ___Online multiplayer browser game about warfare between different military vehicles classes___. It is the result of crossing the previously popular: ___Agar.io___, ___Slither.io___, ___Diep.io___ and the fairly well-known War Thunder game. The top view was inherited from .io games, as in War Thunder, you can play for 3 main classes of vehicle: __tanks__, __ships__, __planes__, I added __airship__ and __air-carrier__ from myself. There is no plot or script in the game, all we know is that there is a world war, it began in the __early 30s__. On the battlefield there are multi-towered tanks, airships, biplanes and other curiosities of that time. 
 
