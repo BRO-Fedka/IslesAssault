@@ -486,7 +486,7 @@ async def game():
                     try:
                         for _ in MAP['Q'][(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1), int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1))]['PLAYERS']:
 
-                            if _ !=Torpedos[torpedo][7] and PlayersData[_]['Z'] ==0:
+                            if _ in PlayersData.keys() and _ !=Torpedos[torpedo][7] and PlayersData[_]['Z'] ==0:
 
                                 if PlayersData[_]['COL'].intersects(Torpedos[torpedo][8]):
 
