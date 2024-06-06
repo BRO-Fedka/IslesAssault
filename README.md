@@ -13,8 +13,6 @@ __Why isles ?__ - Because it sounds well and they are the only locations where a
 #### :wheelchair: Movement:
 * `W / A / S / D` - for all vehicles except planes.
 * Use mouse to control plane.
-* On ships and airships you use `W / S` to set `GAS` parameter it can be from __-100%__ to __100%__. _(This weird system will be removed soon)_
-* On tanks you use `W / S` to move forward or backward with full speed. (will be reworked soon)
 * On planes you use `W / S` to change state of the plane `LANDING / FLYING`, if you are landing, you can land on airship or air-carrier.
 #### :gun: Main guns: 
 * Direct turrets by mouse cursor.
@@ -61,7 +59,10 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
-
+### 1.3.0v - Interface update
+* "About" page added.
+* Tanks movement was reworked.
+* Airsips and ships control was reworked.
 #### 1.2.2v - Background update
 * Now, all server may have their own ( .svg preferably) images for main menu background.
 #### 1.2.1v - Game server relief update
