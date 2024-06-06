@@ -1,5 +1,12 @@
 from flask import Flask,request,redirect,session,render_template,make_response
 from flask_sqlalchemy import SQLAlchemy
+import markdown
+import requests
+import re
+# Simple conversion in memory
+md_text = '# Hello\n\n**Text**'
+html = markdown.markdown(md_text)
+print(html)
 # from validate_email import validate_email
 # import smtplib
 from email.mime.text import MIMEText
@@ -267,6 +274,10 @@ def register():
             return 'НА СЕРВЕРЕ ПИЗДЕЦ'
     else:
         return render_template('register.html')
+@app.route('/about',methods=['GET'])
+def about():
+      return render_template('about.html', content = re.sub(':(\\S*):|\\[!(\\S*)\\]',' ',markdown.markdown(requests.get('https://raw.githubusercontent.com/BRO-Fedka/IslesAssault/master/README.md').text)))
+
 @app.errorhandler(404)
 def err404(e):
     return render_template('error.html',reason = "Sorry", code = '404'), 404
