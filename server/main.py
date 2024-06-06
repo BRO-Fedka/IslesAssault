@@ -51,6 +51,7 @@ vehicleinfo = {
 "PENDMGDST":0.05,
 'SPAWN':1,
 'Z':0,
+'GROUNDBOOST':0.15,
 'COLP': True,
 'TAKEN':False,
 'TORPEDOS':0,
@@ -78,6 +79,7 @@ vehicleinfo = {
 'SPAWN':0,
 'GROUNDSPEED':0.2,
 'BOOST':0.02,
+
 'SMOKES':4,
 'TORPEDOS':4,
         'HP': 30,
@@ -665,7 +667,7 @@ async def game():
                         if not PlayersData[player]['ONGROUND'] :
                             PlayersData[player]["SPEED"] += ((vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*PlayersData[player]['GAS']/100)-PlayersData[player]["SPEED"])* vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['BOOST']
                         else:
-                            PlayersData[player]["SPEED"] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*PlayersData[player]['GAS']/100
+                            PlayersData[player]["SPEED"] += ((vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*PlayersData[player]['GAS']/100)-PlayersData[player]["SPEED"])* vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDBOOST'] #vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*PlayersData[player]['GAS']/100
                     PlayersData[player]["X"] += math.cos(PlayersData[player]['DIR']/180*math.pi)*PlayersData[player]['SPEED']/TPS
                     PlayersData[player]["Y"] += math.sin(PlayersData[player]['DIR']/180*math.pi)*PlayersData[player]['SPEED']/TPS
                     if PlayersData[player]['X'] > WH or PlayersData[player]['X'] < 0 or PlayersData[player]['Y'] > WH or PlayersData[player]['Y'] < 0:
@@ -973,21 +975,21 @@ async def game():
                         PlayersData[player]['COL'] = Polygon(PlayersData[player]['COL'])
                     PlayersData[player]['PrevDIR'] = PlayersData[player]['DIR']
                     if PlayersInputs[player]['wk']:
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
-                            PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']+25,-100,100)
-                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==1:
+                        # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
+                        #     PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']+25,-100,100)
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
                             PlayersData[player]['GAS'] = 100
                         elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==2:
                             PlayersData[player]['GAS'] = 'FLYING'
                     elif PlayersInputs[player]['sk']:
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 0:
-                            PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']-25,-100,100)
-                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1:
+                        # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 0:
+                        #     PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']-25,-100,100)
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
                             PlayersData[player]['GAS'] = -100
                         elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==2:
                             PlayersData[player]['GAS'] = 'LANDING'
                     else:
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1:
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
                             PlayersData[player]['GAS'] =0
                     if PlayersInputs[player]['ak'] :
                         if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2:
@@ -997,7 +999,7 @@ async def game():
                                         PlayersData[player]['DIR'] - vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN'] / TPS * math.sin(2), min=0, minrep=359, max=359,maxrep=0)
                                 else:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']-vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*2),min=0,minrep = 359,max=359,maxrep=0)
-                            else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']-vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS,min=0,minrep = 359,max=359,maxrep=0)
+                            else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']-vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
                     elif PlayersInputs[player]['dk'] :
                         if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2:
                             if not PlayersData[player]['ONGROUND']:
@@ -1005,7 +1007,7 @@ async def game():
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR'] + vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN'] / TPS * math.sin(2), min=0, minrep=359, max=359,maxrep=0)
                                 else:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*2),min=0,minrep = 359,max=359,maxrep=0)
-                            else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS,min=0,minrep = 359,max=359,maxrep=0)
+                            else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
                     if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 :
                         if  PlayersData[player]['STATUS'] != "BURNING" :
                             PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
@@ -1324,8 +1326,8 @@ async def game():
                             print('>')
 
                             PlayersData[player]['STR'] += f'\n<,{_},{TorpedosHandler[_][10]}'
-
-            for torpedo in TorpedosHandler.keys():
+            TorpedosHandlerKeys = list(TorpedosHandler.keys())
+            for torpedo in TorpedosHandlerKeys:
 
                 for x in range(int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) - 1,
                                int((TorpedosHandler[torpedo][2] + TorpedosHandler[torpedo][0]) // 1) + 1):
@@ -1336,7 +1338,8 @@ async def game():
                         except:
                             pass
                 TorpedosHandler.pop(torpedo)
-            for bullet in BulletsHandler.keys():
+            BulletsHandlerKeys = list(BulletsHandler.keys())
+            for bullet in BulletsHandlerKeys:
 
                 for x in range(int((BulletsHandler[bullet][2] + BulletsHandler[bullet][0]) // 1) - 1,
                                int((BulletsHandler[bullet][2] + BulletsHandler[bullet][0]) // 1) + 1):
@@ -1465,8 +1468,8 @@ async def game():
                 PlayersAccs.pop(_)
 
         except Exception:
-            pass
-            # logging.exception("message")
+            # pass
+            logging.exception("message")
 async def handler(websocket):
     print('Connection !')
     global LastMSGI,PlayersData
