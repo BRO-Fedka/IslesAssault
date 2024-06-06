@@ -1,5 +1,12 @@
 from flask import Flask,request,redirect,session,render_template,make_response
 from flask_sqlalchemy import SQLAlchemy
+import markdown
+import requests
+import re
+# Simple conversion in memory
+md_text = '# Hello\n\n**Text**'
+html = markdown.markdown(md_text)
+print(html)
 # from validate_email import validate_email
 # import smtplib
 from email.mime.text import MIMEText
@@ -21,7 +28,7 @@ import datetime
 app = Flask(__name__)
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 # print(SQLALCHEMY_DATABASE_URI)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/IslesAssault/data.db' # sqlite:////root/IslesAssault/data.db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -267,6 +274,10 @@ def register():
             return 'НА СЕРВЕРЕ ПИЗДЕЦ'
     else:
         return render_template('register.html')
+@app.route('/about',methods=['GET'])
+def about():
+      return render_template('about.html', content = re.sub(':(\\S*):|\\[!(\\S*)\\]',' ',markdown.markdown(requests.get('https://raw.githubusercontent.com/BRO-Fedka/IslesAssault/master/README.md').text)))
+
 @app.errorhandler(404)
 def err404(e):
     return render_template('error.html',reason = "Sorry", code = '404'), 404
@@ -274,4 +285,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host='80.68.156.140',port = 80) #26.223.93.1
+    app.run(host='localhost',port = 80) #26.223.93.1

@@ -1,0 +1,112 @@
+#NEbar {
+    position: fixed;
+    z-index: 20;
+    right: 5px;
+    top: 5px;
+}
+.NEbar {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+body{
+background: #2879AD;
+overflow-x: hidden;
+}
+
+
+h1{
+margin-top: 10px;
+margin-bottom:10px;
+
+
+}
+h2{
+margin-top: 5px;
+margin-bottom: 5px;
+
+}
+h1,h2,h3,h4{
+    cursor:default;
+	font-family: 'Fredoka One', cursive;
+	color:rgba(255,255,255,0.8);
+
+
+}
+h2:hover{
+color:#fff;
+}
+h1:hover{
+color:#fff;
+}
+*::-webkit-scrollbar {
+  width: 16px;               /* ширина scrollbar */
+}
+*::-webkit-scrollbar-track {
+  background: transparent;        /* цвет дорожки */
+}
+*::-webkit-scrollbar-thumb {
+cursor:pointer;
+  background-color: #ffffff88;    /* цвет плашки */
+  border-radius: 20px;       /* закругления плашки */
+	/*margin: 3px;*/
+  /*border: 3px solid transparent;  !* padding вокруг плашки *!*/
+}
+*::-webkit-scrollbar-thumb:hover{
+  background-color: #ffffffff;    /* цвет плашки */
+}
+p,li{
+    cursor:default;
+	font-family: 'Arial';
+	color:rgba(255,255,255,0.8);
+}
+blockquote{
+    background:rgba(255,255,255,0.2);
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding: 20px;
+    border-radius:5px;
+}
+a{
+
+text-decoration:none;
+cursor:pointer;
+color: #0044ff;
+text-align: center;
+}
+a:hover{
+color: #0000ff;
+}
+code{
+background: rgba(255,255,255,0.1);
+font-family: 'ZCOOL QingKe HuangYou', cursive;
+padding-left:10px;
+padding-right:10px;
+padding-top:1px;
+padding-bottom:1px;
+border-radius:2px;
+}
+p img{
+width: calc(100% - 5px);
+border-radius:10px;
+overflow:hidden;
+border: solid 2px #fff;
+}
+hr{
+border: 2px solid #fff;
+border-radius:1px;
+}
+ul{
+background:rgba(255,255,255,0.05);
+margin-block-start: 0;
+margin-block-end: 0;
+padding-top: 20px;
+padding-bottom:20px;
+border-radius: 10px;
+}
