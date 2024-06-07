@@ -59,6 +59,11 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+#### 1.3.1v - Server interaction update
+* Added direct connection, update button.
+* Fixed one sessione game bug.
+* Reworked "leave game" button.
+* Removed payment for spawn for logged players.
 ### 1.3.0v - Interface update
 * "About" page added.
 * Tanks movement was reworked.
