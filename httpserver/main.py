@@ -28,7 +28,7 @@ import datetime
 app = Flask(__name__)
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 # print(SQLALCHEMY_DATABASE_URI)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/AdminO/Desktop/IslesAssault/data.db' # sqlite:////root/IslesAssault/data.db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
