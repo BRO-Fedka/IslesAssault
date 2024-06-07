@@ -645,8 +645,8 @@ async def game():
 
                         if not (PlayersAccs[player]['NICK'] == '' and PlayersAccs[player]['PSW'] == ''):
                             # print('!!!')
-                            SQLctx.execute(
-                                f"""UPDATE Account set money = money+1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
+                            # SQLctx.execute(
+                            #     f"""UPDATE Account set money = money+1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
                             SQLctx.execute(
                                 f"""UPDATE Account set deaths = deaths-1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
                             SQL.commit()
@@ -1924,10 +1924,6 @@ async def handler(websocket):
                             # print(PlayersCosmetics[name]['VEHICLE'])
                             # print(c[PlayersCosmetics[name]['VEHICLE']])
                             if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
-                                PlayersAccs[name]['money'] = a[0]-1
-                                SQLctx.execute(
-                                    f"""UPDATE Account set money = money-1 WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}' AND money > 0 """)
-                                SQL.commit()
                                 await websocket.send('M'+MAPJSON)
                             else:
 

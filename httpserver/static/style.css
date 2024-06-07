@@ -542,6 +542,7 @@ height:100%;
 	border:none;
 	color: #ffffff;
 	padding: 5px;
+
 	border-radius: 5px;
 	margin-left: 15px;
 	width: 270px;
@@ -560,6 +561,7 @@ height:100%;
 	border:none;
 	color: #ffffff;
 	padding: 5px;
+	display:none;
 	border-radius: 5px;
 	margin-left: 15px;
 	width: 270px;
@@ -1604,4 +1606,88 @@ background-color: rgba(0,0,0,0.2);
 	left:50%;
 	background-color: rgba(0,0,0,0.2);
 	display: none;
+}
+       /* <div id="divServUpdt">
+            <img id="imgServUpdt" alt="" src="static\update.svg">
+        </div>*/
+#divServUpdt{
+display: inline-block;
+width:30px;
+height:30px;
+margin-left: 15px;
+margin-top: 10px;
+border-radius:5px;
+cursor:pointer;
+background:rgba(0,0,0,0.2);
+}
+#divServUpdt:hover{
+background:rgba(0,0,0,0.5);
+}
+#imgServUpdt{
+width: 30px;
+height: 30px;
+}
+#ServerTab1:checked ~ select {
+    display:inline-block !important;
+}
+#ServerTab2:checked ~ #ServerAddress {
+    display:inline-block !important;
+}
+.ServerTab{
+z-index: 1000;
+}
+input.ServerTab{
+z-index: 1000;
+display:inline;
+}
+label.ServerTab{
+display:inline-block;
+position: relative;
+bottom:7px;
+
+border-radius: 5px;
+    margin-top: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 5px;
+    font-size: 1.5em;
+    cursor:pointer;
+	font-family: 'Fredoka One', cursive;
+	color:rgba(255,255,255,0.8);
+
+	text-align: center;
+}
+#ServerTab1:checked ~ label[for="ServerTab1"]{
+background:rgba(0,0,0,0.2);
+color: rgba(255,255,255,1);
+
+}
+#ServerTab2:checked ~ label[for="ServerTab2"]{
+background:rgba(0,0,0,0.2);
+color: rgba(255,255,255,1);
+
+}
+label.ServerTab:hover{
+color:rgba(255,255,255,1);
+}
+#ServerAddress{
+	background-color: rgba(0,0,0,0.2);
+	border:none;
+	color: #ffffff;
+	padding: 5px;
+	display:none;
+	border-radius: 5px;
+	margin-left: 15px;
+	width: 260px;
+	/*transform: translateX(-50%);*/
+	font-size: 24px;
+	font-family: 'Fredoka One', cursive;
+
+}
+
+#ServerAddress:focus{
+	border:none;
+	outline: none;
+	background-color: rgba(0,0,0,0.3);
+
 }
