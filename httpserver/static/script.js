@@ -3,6 +3,8 @@ document.onkeydown=function(event) {
         event.preventDefault(); // stops its action
     }
 }
+
+document.getElementById("ServerAddress").value =document.getElementById("ServerSelect").value
 function ZoomCorrection(){
     if (VIEW_X > 0 && VIEW_Y > 0){
     if (VIEW_X/VIEW_Y > GameW/GameH){
@@ -18,7 +20,7 @@ function ZoomCorrection(){
     }}
 }
    //let svg = document.querySelector("svg");
-
+let GameStatus = "MainMenu"
 //let l0 = document.getElementById("SvgLayer0");
 //let l1 = document.getElementById("SvgLayer1");
 //let l2 = document.getElementById("SvgLayer2");
@@ -54,8 +56,33 @@ function ExitGame(){
     Send = true
     messagebtn.innerText = "Global"
     messageinput.value = "/leave"
+    setTimeout(function(){
+        if (GameStatus == "InGame" ){
+
+						GameStatus = "MainMenu"
+						PlayersData = new Map()
+
+                        let children = document.getElementById('Inventory').children;
+                        for (let i = 0; i < children.length; i++) {
+                          children[i].style.display = ""
+                        }
+                        document.getElementById('MainScreen').style.display = '';
+                        document.getElementById('MainForm').style.display = '';
+                        document.getElementById('AboutForm').style.display = '';
+                        document.getElementById('SelectForm').style.display = '';
+                        document.getElementById('NEbar').style.display = '';
+                        chatview.innerHTML = ""
+//                        PIXI.sound.play('MainMenuMusic');
+                        StartMainMusicPlay = Date.now()
+                        Players = []
+                        socket.close();
+        }
+    },500)
+
+
+
 }
-GetServerInfo()
+
 let ParticlesProcessing = true
 if (localStorage.getItem("SettingsParticlesChkVal") != '' && localStorage.getItem("SettingsParticlesChkVal") != null){
 ParticlesProcessing = localStorage.getItem("SettingsParticlesChkVal")=='true'
@@ -263,50 +290,60 @@ function Particle3(id) {
     this.dir = (Math.random()*2-1)*Math.PI;
     this.spd = Math.random()*2 -1;
 }
+
 function GetServerInfo(){
-			let socket = new WebSocket(document.getElementById('ServerSelect').value);
-			socket.addEventListener('open', function (event) {
-			    console.log('!');
-				socket.send('info');
-			});
+            try{
+                let soc = new WebSocket(document.getElementById('ServerAddress').value);
 
-			function taken(event) {
-			    console.log(event.data)
-				var data = JSON.parse(event.data);
-				console.log(data)
-				document.getElementById('impprev').src = data.map;
-				document.getElementById('Map').src = data.map;
-				document.getElementById('online').innerHTML = "Players: "+data.online;
-				document.getElementById('text').innerHTML = data.text;
-				document.getElementById('prevmpjs').src = data.js;
-				BGLayers = data.bg;
-				UpdateBG()
-				VIEW_X = data.VIEW_X
-				VIEW_Y = data.VIEW_Y
-				VehList = data.vehicleAvailable;
-				document.getElementById('VehicleSelect').innerHTML = "";
+                soc.addEventListener('open', function (event) {
+                    console.log('!');
+                    soc.send('info');
+                });
 
-				let justbool = true
-				for (let _ of VehList) {
-                    document.getElementById('VehicleSelect').innerHTML+='<option value = "'+_[1]+'">'+_[0]+'</option>'
-                    if (Number(_[1]) == Number(sessionStorage.getItem('VehicleSelectVal')) ){
-                    justbool = false
+                function taken(event) {
+                    console.log(event.data)
+                    var data = JSON.parse(event.data);
+                    console.log(data)
+                    document.getElementById('impprev').src = data.map;
+                    document.getElementById('Map').src = data.map;
+                    document.getElementById('online').innerHTML = "Players: "+data.online;
+                    document.getElementById('text').innerHTML = data.text;
+                    console.log(data.js)
+                    console.log(document.getElementById('prevmpjs').src)
+                    document.getElementById('prevmpjs').src = data.js;
+                    BGLayers = data.bg;
+                    UpdateBG()
+                    VIEW_X = data.VIEW_X
+                    VIEW_Y = data.VIEW_Y
+                    VehList = data.vehicleAvailable;
+                    document.getElementById('VehicleSelect').innerHTML = "";
+
+                    let justbool = true
+                    for (let _ of VehList) {
+                        document.getElementById('VehicleSelect').innerHTML+='<option value = "'+_[1]+'">'+_[0]+'</option>'
+                        if (Number(_[1]) == Number(sessionStorage.getItem('VehicleSelectVal')) ){
+                        justbool = false
+                        }
                     }
-				}
 
-				if (justbool || sessionStorage.getItem('VehicleSelectVal') =='' ||sessionStorage.getItem('VehicleSelectVal') ==null ){
-				    console.log(data.vehicleAvailable[0][1])
-				    document.getElementById('VehicleSelect').value = data.vehicleAvailable[0][1]
+                    if (justbool || sessionStorage.getItem('VehicleSelectVal') =='' ||sessionStorage.getItem('VehicleSelectVal') ==null ){
+                        console.log(data.vehicleAvailable[0][1])
+                        document.getElementById('VehicleSelect').value = data.vehicleAvailable[0][1]
 
-				}else{
-				    document.getElementById('VehicleSelect').value = sessionStorage.getItem('VehicleSelectVal')
-				}
+                    }else{
+                        document.getElementById('VehicleSelect').value = sessionStorage.getItem('VehicleSelectVal')
+                    }
 
 
-				ShowPrevVeh();
+                    ShowPrevVeh();
+                }
+
+                soc.addEventListener('message', taken);
+			}catch{
+                document.getElementById("online").innerHTML = "?/?"
+                document.getElementById("text").innerHTML = "No information yet"
+                document.getElementById("impprev").src = ""
 			}
-
-			socket.addEventListener('message', taken);
 }
 var MAPstatic = {
 '*':[],
@@ -344,7 +381,9 @@ var MAPstatic = {
 };
 let Zoom = 320
 let currentZoom = 320
+let socket = null
 function startgame() {
+    GameStatus = "InGame"
     PIXI.sound.stop('MainMenuMusic')
 	if (true) {
 
@@ -362,7 +401,7 @@ function startgame() {
 
 		try {
 //console.log('1')
-			let socket = new WebSocket(document.getElementById('ServerSelect').value);
+			socket = new WebSocket(document.getElementById('ServerSelect').value);
 //			console.log('2')
 			socket.addEventListener('open', function (event) {
 				socket.send('n'+nicknameinput.value+'\n'+activecl+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
@@ -371,6 +410,7 @@ function startgame() {
 			});
 			function taken(event) {
 				if (event.data[0] == 'E'){
+				    GameStatus= "Error"
 //				    console.log('EEEEEEEEEEEEE')
 					document.getElementById('TitleScreen').classList = ['titlescrh']
 					document.getElementById('MainScreen').style.display = '';
@@ -401,7 +441,8 @@ function startgame() {
                     document.getElementById("MapJSON").onload = onMapJSONLoad
 				}
 				else if (event.data[0] == 'D'){
-						socket.close();
+
+						GameStatus = "MainMenu"
 						PlayersData = new Map()
 
                         let children = document.getElementById('Inventory').children;
@@ -417,6 +458,7 @@ function startgame() {
 //                        PIXI.sound.play('MainMenuMusic');
                         StartMainMusicPlay = Date.now()
                         Players = []
+                        socket.close();
 //						location.reload();
 
 				}else if (event.data[0] == 'R'){
@@ -671,7 +713,7 @@ function startgame() {
 								//+<a onclick="Send = true; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1]
                                 if (larr[1].split(']').length >1 && larr[1] != "[SERVER]"){
 //                                    console.warn("!!!!")
-                                    div.innerHTML = '<b><a onclick="Send = true; messageinput.value = \'/team join '+larr[1].split(']')[0].slice(1)+'\';">['+larr[1].split(']')[0].slice(1) +"]</a>" +larr[1].split(']')[1]+'</b> ' +larr[2];
+                                    div.innerHTML = '<b><a onclick="Send = true;messagebtn.innerText = "Global"; messageinput.value = \'/team join '+larr[1].split(']')[0].slice(1)+'\';">['+larr[1].split(']')[0].slice(1) +"]</a>" +larr[1].split(']')[1]+'</b> ' +larr[2];
                                 }else{
                                     div.innerHTML = "<b>"+larr[1]+"</b> "+larr[2];
                                 }
@@ -762,7 +804,7 @@ function startgame() {
 							//onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()"
 							    if (larr[_].split(']').length > 1){
 								tbl.innerHTML += '    <tr class=\"bg' + ((_ - 1) / 2 % 2) + '\">\n' +
-									'        <td><b><a onclick="Send = true; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1] + '</b></td>\n' +
+									'        <td><b><a onclick="Send = true;messagebtn.innerText = "Global"; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1] + '</b></td>\n' +
 									'        <td class=\"td2\"><b>' + larr[_ + 1] + '</b></td>\n' +
 									'    </tr>'
 
@@ -1119,12 +1161,13 @@ function keydown(event) {
 		input.set(event.keyCode,true);
 		dobleinput.set(event.keyCode,true)
 	}
-	 else if (event.key == 'Enter' ) {
+	 else if (event.key == 'Enter' && GameStatus == "InGame") {
 	 	// if (clansi.style.display == 'none'){
 		if (messagefield.style.display == 'none'){
 			messagefield.style.display = 'block';
 			messageinput.focus();
 		}else {
+
 			messagefield.style.display = 'none'
 			Send = true;
 		}
@@ -1166,6 +1209,7 @@ if(ColorPack == 'Winter'){
 function DRAW(timestamp)  {
 
 try{
+    if (GameStatus == "InGame"){
     timenow = Date.now()
 	if(BURNING){
 		ShakeXbnds += 0.25
@@ -2171,7 +2215,7 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(89,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(89,NoTeamTag(Players[_][0]));}
 	}
-
+        }
         window.requestAnimationFrame(DRAW);
        }catch(e)
        {
@@ -2190,6 +2234,7 @@ function mousepos(e){
 }
 window.onload=function () {
 document.getElementById('TitleScreen').classList = ['titlescrh']
+GetServerInfo()
 if(navigator.userAgent.match(/iPhone/i)){
 document.documentElement.requestFullscreen()
 }

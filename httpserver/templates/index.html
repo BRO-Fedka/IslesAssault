@@ -90,14 +90,25 @@
         </a>
     </div>
     <div id="AboutForm" class="scrollbar unselectable">
-        <h2>Server</h2>
-        <select id="ServerSelect" onchange="GetServerInfo()">
+
+        <div id="divServUpdt" onclick="GetServerInfo()">
+            <img id="imgServUpdt" alt="" src="static\update.svg">
+        </div>
+
+            <input type="radio" id="ServerTab1" checked name="ServerFormRadios">
+            <input type="radio" id="ServerTab2"  name="ServerFormRadios">
+            <label for="ServerTab1" class="ServerTab">Servers</label>
+            <label for="ServerTab2" class="ServerTab">Direct</label>
+
+        <select id="ServerSelect" onchange="document.getElementById('ServerAddress').value = this.value;GetServerInfo()">
             {%for i in servers%}
 
                 <option value = "{{i[1]}}">{{i[0]}}</option>
             {%endfor%}
 
         </select>
+            <input id="ServerAddress" onchange="GetServerInfo()">
+
         <br>
         <div id="online">?/?</div>
 
