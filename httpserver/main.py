@@ -33,7 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../dat
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
-
+VERSION = os.environ['VERSION']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 db = SQLAlchemy(app)
 # print(os.path.curdir)
@@ -218,7 +218,7 @@ def index():
         for i in Servers.keys():
             servers.append([i, Servers[i]])
         # print(arr)
-        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors,vehicles = arr, lenvehicles = len(arr)) #,logged = logged, name = session['name']
+        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors,vehicles = arr, lenvehicles = len(arr) , version = VERSION) #,logged = logged, name = session['name']
     arr = []
     servers = []
     for i in Servers.keys():
