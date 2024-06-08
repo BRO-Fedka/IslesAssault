@@ -1,0 +1,40 @@
+2024-06-08 22:02:59.748 | INFO     | __main__:<module>:16 - Server started !
+2024-06-08 22:03:03.498 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:06.201 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:06.202 | INFO     | __main__:handler:1891 - Name '' wanted
+2024-06-08 22:03:06.203 | INFO     | __main__:handler:1895 - Bad name
+2024-06-08 22:03:06.203 | INFO     | __main__:handler:1908 - 'LOL' is better
+2024-06-08 22:03:06.204 | INFO     | __main__:handler:1938 - 'LOL' has (1099022,) GSh
+2024-06-08 22:03:06.204 | INFO     | __main__:handler:1958 - Map to 'LOL' sent
+2024-06-08 22:03:06.275 | INFO     | __main__:handler:1702 - Player init
+2024-06-08 22:03:09.793 | INFO     | __main__:handler:1874 - Player LOL informed about death
+2024-06-08 22:03:09.874 | INFO     | __main__:handler:1497 - Set AFK status
+2024-06-08 22:03:12.281 | INFO     | __main__:handler:1497 - Set AFK status
+2024-06-08 22:03:16.187 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:30.098 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:30.099 | INFO     | __main__:handler:1891 - Name '' wanted
+2024-06-08 22:03:30.099 | INFO     | __main__:handler:1895 - Bad name
+2024-06-08 22:03:30.100 | INFO     | __main__:handler:1900 - 'G-76' is better
+2024-06-08 22:03:30.100 | INFO     | __main__:handler:1933 - 'G-76' not logged
+2024-06-08 22:03:30.100 | INFO     | __main__:handler:1975 - 'G-76' not logged
+2024-06-08 22:03:30.100 | INFO     | __main__:handler:1981 - Map to 'G-76' sent
+2024-06-08 22:03:30.187 | INFO     | __main__:handler:1702 - Player init
+2024-06-08 22:03:36.597 | INFO     | __main__:handler:1874 - Player G-76 informed about death
+2024-06-08 22:03:36.675 | INFO     | __main__:handler:1497 - Set AFK status
+2024-06-08 22:03:40.966 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:40.968 | INFO     | __main__:handler:1891 - Name '' wanted
+2024-06-08 22:03:40.968 | INFO     | __main__:handler:1895 - Bad name
+2024-06-08 22:03:40.968 | INFO     | __main__:handler:1900 - 'M-75' is better
+2024-06-08 22:03:40.969 | INFO     | __main__:handler:1933 - 'M-75' not logged
+2024-06-08 22:03:40.969 | INFO     | __main__:handler:1975 - 'M-75' not logged
+2024-06-08 22:03:40.969 | INFO     | __main__:handler:1986 - 'M-75' should log in
+2024-06-08 22:03:40.970 | INFO     | __main__:handler:1497 - Set AFK status
+2024-06-08 22:03:41.295 | INFO     | __main__:handler:1497 - Set AFK status
+2024-06-08 22:03:48.584 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:51.443 | INFO     | __main__:handler:1486 - Connection
+2024-06-08 22:03:51.444 | INFO     | __main__:handler:1891 - Name '' wanted
+2024-06-08 22:03:51.445 | INFO     | __main__:handler:1895 - Bad name
+2024-06-08 22:03:51.446 | INFO     | __main__:handler:1908 - 'LOL' is better
+2024-06-08 22:03:51.446 | INFO     | __main__:handler:1938 - 'LOL' has (1099022,) GSh
+2024-06-08 22:03:51.447 | INFO     | __main__:handler:1958 - Map to 'LOL' sent
+2024-06-08 22:03:51.518 | INFO     | __main__:handler:1702 - Player init
