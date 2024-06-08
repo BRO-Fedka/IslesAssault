@@ -1,0 +1,27 @@
+2024-06-08 21:36:07.873 | INFO     | __main__:<module>:16 - Server started !
+2024-06-08 21:36:11.595 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:36:14.644 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:36:14.645 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:36:14.646 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:36:14.646 | INFO     | __main__:handler:1906 - 'LOL' is better
+2024-06-08 21:36:14.713 | INFO     | __main__:handler:1700 - Player init
+2024-06-08 21:40:02.633 | INFO     | __main__:handler:1872 - Player LOL informed about death
+2024-06-08 21:40:02.718 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:05.524 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:10.392 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:40:12.127 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:13.379 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:40:21.248 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:40:21.250 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:40:21.250 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:40:21.251 | INFO     | __main__:handler:1898 - 'Q-27' is better
+2024-06-08 21:40:21.255 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:21.575 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:51.969 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:40:53.815 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:40:59.415 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:41:13.555 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:41:13.557 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:41:13.557 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:41:13.558 | INFO     | __main__:handler:1906 - 'LOL' is better
+2024-06-08 21:41:13.612 | INFO     | __main__:handler:1700 - Player init

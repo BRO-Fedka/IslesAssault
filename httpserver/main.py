@@ -3,37 +3,38 @@ from flask_sqlalchemy import SQLAlchemy
 import markdown
 import requests
 import re
+import dotenv
+dotenv.load_dotenv()
 # Simple conversion in memory
 md_text = '# Hello\n\n**Text**'
 html = markdown.markdown(md_text)
 print(html)
 # from validate_email import validate_email
 # import smtplib
-from email.mime.text import MIMEText
-from email.header    import Header
+# from email.mime.text import MIMEText
+# from email.header    import Header
 import hashlib
 import os
-import sqlite3
+# import sqlite3
 import time
 import math
 import sys
-sys.path.append("../")
+# sys.path.append("../")
 from Config import *
 from werkzeug.security import generate_password_hash, check_password_hash
 # from FDataBase import FDataBase
 # MAIL = smtplib.SMTP('smtp.mail.ru', 587)
 # MAIL.starttls()
-# MAIL.login('islesassault@mail.ru', 'UZJGwPevEAhe7h0geg9c')
 import datetime
 app = Flask(__name__)
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 # print(SQLALCHEMY_DATABASE_URI)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/IslesAssault/data.db' # sqlite:////root/IslesAssault/data.db
+app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 
 
 
-app.config['SECRET_KEY'] = 'cf185c1afcd895af8f44dd24e5c727736196cd10'
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 db = SQLAlchemy(app)
 # print(os.path.curdir)
 class Account(db.Model):
@@ -54,7 +55,9 @@ class Account(db.Model):
 
     def __repr__(self):
         return '<Account %r>' % self.id
-
+try:
+    a = Account.query.filter_by(nickname="CHECK").first()
+except: db.create_all()
 # with app.app_context():
 # db.create_all()
 # #cl1{
@@ -285,4 +288,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host='80.68.156.140',port = 80) #26.223.93.1
+    app.run(host=os.environ['HOST'],port = int(os.environ['PORT'])) #26.223.93.1

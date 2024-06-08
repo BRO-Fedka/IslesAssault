@@ -1,0 +1,16 @@
+2024-06-08 21:43:29.046 | INFO     | __main__:<module>:16 - Server started !
+2024-06-08 21:43:32.036 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:43:36.039 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:43:36.040 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:43:36.041 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:43:36.041 | INFO     | __main__:handler:1906 - 'LOL' is better
+2024-06-08 21:43:36.045 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:43:36.061 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:43:46.508 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:43:55.386 | INFO     | __main__:handler:1495 - Set AFK status
+2024-06-08 21:43:59.661 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:44:03.408 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:44:03.409 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:44:03.410 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:44:03.410 | INFO     | __main__:handler:1906 - 'LOL' is better
+2024-06-08 21:44:03.732 | INFO     | __main__:handler:1700 - Player init

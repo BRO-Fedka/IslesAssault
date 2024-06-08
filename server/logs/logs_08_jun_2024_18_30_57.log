@@ -1,0 +1,7 @@
+2024-06-08 21:30:57.870 | INFO     | __main__:<module>:16 - Server started !
+2024-06-08 21:31:00.897 | INFO     | __main__:handler:1484 - Connection
+2024-06-08 21:31:00.899 | INFO     | __main__:handler:1889 - Name '' wanted
+2024-06-08 21:31:00.899 | INFO     | __main__:handler:1893 - Bad name
+2024-06-08 21:31:00.900 | INFO     | __main__:handler:1905 - 'LOL' is better
+2024-06-08 21:31:00.970 | INFO     | __main__:handler:1700 - Player init
+2024-06-08 21:31:46.783 | INFO     | __main__:handler:1880 - Player LOL is AFK
