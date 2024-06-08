@@ -2,5 +2,7 @@
 *.env
 data.db
 .idea/
+/.idea/
 __pychache__/
+/__pychache__/
 venv/
