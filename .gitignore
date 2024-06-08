@@ -3,6 +3,6 @@
 data.db
 .idea/
 /.idea/
-__pychache__/
-/__pychache__/
+__pycache__/
+/__pycache__/
 venv/
