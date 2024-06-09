@@ -34,6 +34,7 @@ print(os.environ['DB_PATH'])
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 VERSION = os.environ['VERSION']
+print()
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 db = SQLAlchemy(app)
 # print(os.path.curdir)
@@ -225,7 +226,7 @@ def index():
         servers.append([i, Servers[i]])
     for _ in PREM_ITEM.keys():
         if PREM_ITEM[_][0] == 0 and PREM_ITEM[_][2] == 'vehicle': arr.append([_]+list(PREM_ITEM[_]))
-    return render_template('index.html',servers = servers,logged = False, name = '', colors = '1,2,3,4',vehicles = arr,lenvehicles=len(arr),money = '',passw='')
+    return render_template('index.html',servers = servers,logged = False, name = '', colors = '1,2,3,4',vehicles = arr,lenvehicles=len(arr),money = '',passw='', version = VERSION)
 @app.route('/login',methods=['POST','GET'])
 def login():
     if 'logged' in session and session['logged'] ==True:
