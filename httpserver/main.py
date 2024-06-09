@@ -27,6 +27,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # MAIL.starttls()
 import datetime
 app = Flask(__name__)
+app.app_context()
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 # print(SQLALCHEMY_DATABASE_URI)
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
