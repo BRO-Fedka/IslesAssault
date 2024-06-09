@@ -19,7 +19,7 @@ import os
 import time
 import math
 import sys
-# sys.path.append("../")
+sys.path.append("../")
 from Config import *
 from werkzeug.security import generate_password_hash, check_password_hash
 # from FDataBase import FDataBase
