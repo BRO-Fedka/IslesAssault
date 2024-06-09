@@ -40,22 +40,45 @@ db = SQLAlchemy(app)
 # print(os.path.curdir)
 class Account(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    nickname = db.Column(db.String(32),nullable=False)
+    nickname = db.Column(db.String(16),nullable=False)
     email = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(16), nullable=False)
-    money  = db.Column(db.Integer, nullable=False)
-    invent = db.Column(db.String(512), nullable=False)
-    date = db.Column(db.DateTime,default = datetime.datetime.utcnow)
+    money  = db.Column(db.Integer, nullable=False, default = 0)
+    dateCreated = db.Column(db.DateTime,default = datetime.datetime.utcnow)
     kills = db.Column(db.Integer,nullable = False , default = 0)
     deaths = db.Column(db.Integer, nullable=False, default=0)
     playtime = db.Column(db.Integer, nullable = False,default =0)
     xp = db.Column(db.Integer, nullable=False, default =0)
     lvl = db.Column(db.Integer, nullable=False, default=0)
     img = db.Column(db.Integer, nullable=False, default=0)
-    awards = db.Column(db.String(16),nullable=False)
+    clanID = db.Column(db.Integer, nullable=False, default=0)
+
 
     def __repr__(self):
-        return '<Account %r>' % self.id
+        return '<Account %r>' % self.nickname
+class Item(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(32),nullable=False)
+    cost = db.Column(db.Integer,nullable=False)
+    lvl = db.Column(db.Integer, nullable=False, default=0)
+    type = db.Column(db.String(1), nullable=False, default= 'V') #V - vehicle, S - skin, I - image
+    imgLink = db.Column(db.String(256),nullable=False)
+    info = db.Column(db.Integer,nullable=False)
+    def data_as_tuple(self):
+        return  (self.id,self.name,self.cost,self.lvl,self.type, self.imgLink,self.info)
+    def __repr__(self):
+        return '<Item %r>' % self.name
+
+
+class Account_Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    accID = db.Column(db.Integer, nullable=False)
+    itemID = db.Column(db.Integer, nullable=False)
+    dateCreated = db.Column(db.DateTime,default = datetime.datetime.utcnow)
+    def __repr__(self):
+        return '<Account_Item %r>' % self.id
+
+
 # try:
 # a = Account.query.filter_by(nickname="CHECK").first()
 # except: db.create_all()
@@ -92,27 +115,31 @@ class Account(db.Model):
 #             return redirect('/')
 @app.route('/shop/<int:id>',methods=['POST','GET'])
 def shopveh(id):
+    curItem = Item.query.filter_by(id=id).first_or_404()
 
-    if not id in PREM_ITEM.keys():
-        return redirect('/shop')
+    # print(curItem)
+    # print(dir(curItem))
+
     if request.method == 'GET':
+        curItem = (curItem.id, curItem.name, curItem.cost, curItem.lvl, curItem.type, curItem.imgLink, curItem.info)
         if (not 'logged' in session or session['logged'] == False):
             return render_template('shopveh.html', money=0, id=id, purch=False,
-                                   vehicle=PREM_ITEM[id], desc=Description[id], logged=False)
+                                   vehicle=curItem, desc=Description[id], logged=False, lvl = 0)
         else:
             acc = Account.query.filter_by(nickname=session['name']).first()
-            return render_template('shopveh.html', money = str(acc.money),id = id,purch = bool(int(acc.invent[id])), vehicle = PREM_ITEM[id], desc =Description[id], logged = True)
+
+            return render_template('shopveh.html', money = acc.money,id = id,purch = Account_Item.query.filter_by(accID=acc.id,itemID=curItem[0]).first() != None, vehicle = curItem, desc =Description[id], logged = True,lvl = acc.lvl)
     elif request.method == 'POST':
         if (not 'logged' in session or session['logged'] == False):
             return redirect('/')
         acc = Account.query.filter_by(nickname=session['name']).first()
-        if not acc.money < PREM_ITEM[id][0] and acc.invent[id] == '0':
-            acc.money -= PREM_ITEM[id][0]
-            acc.invent = acc.invent[:id] + '1'+acc.invent[id+1:]
+        if (not acc.money < curItem.cost) and Account_Item.query.filter_by(accID=acc.id,itemID=curItem.id).first() is None:
+            acc.money -= curItem.cost
+            acc_item = Account_Item(accID = acc.id, itemID = curItem.id)
+            db.session.add(acc_item)
             db.session.commit()
-            return redirect('/shop')
-        else:
-            return render_template('shopveh.html', money = str(acc.money),id = id,purch = bool(int(acc.invent[id])), vehicle = PREM_ITEM[id],desc =Description[id])
+        return redirect('/shop')
+            # return render_template('shopveh.html', money = str(acc.money),id = id,purch = Account_Item.query.filter_by(accID=acc.id,itemID=curItem[0]).first() != None, vehicle = curItem,desc =Description[id],lvl = acc.lvl)
 # @app.route('/fp',methods=['POST','GET'])
 # def fp():
 #     if 'logged' in session and session['logged'] ==True:
@@ -135,15 +162,25 @@ def shop():
     if not 'logged' in session or session['logged'] ==False:
         return redirect('/')
     acc = Account.query.filter_by(nickname=session['name']).first()
-    arr = []
-    for _ in range(0, len(acc.invent)):
-        if _ in PREM_ITEM.keys() and PREM_ITEM[_][hiderplace[PREM_ITEM[_][2]]]:
-            if (PREM_ITEM[_][0] ==1 and not bool(int(acc.invent[_]))) : continue
+    itemsArr = []
+    allItems = Item.query.all()
+    print(allItems)
 
-            arr.append([_,int(bool(int(acc.invent[_])) or PREM_ITEM[_][0]==0) ]+list(PREM_ITEM[_]))
+    for item in allItems:
+        if acc.lvl >= item.lvl:
+            # print(Account_Item.query.filter_by(accID=acc.id,itemID=item.id).first())
+            itemsArr.append((item.data_as_tuple(),Account_Item.query.filter_by(accID=acc.id,itemID=item.id).first() != None))
 
-    print(arr)
-    return render_template('shop.html', money = str(acc.money),vehicles = arr,lenvehicles = len(arr))
+
+    # for _ in range(0, len(acc.invent)):
+    #     if _ in PREM_ITEM.keys() and PREM_ITEM[_][hiderplace[PREM_ITEM[_][2]]]:
+    #         if (PREM_ITEM[_][0] ==1 and not bool(int(acc.invent[_]))) : continue
+    #
+    #         arr.append([_,int(bool(int(acc.invent[_])) or PREM_ITEM[_][0]==0) ]+list(PREM_ITEM[_]))
+
+    print(itemsArr)
+
+    return render_template('shop.html', money = str(acc.money),vehicles = itemsArr,lenvehicles = len(itemsArr))
 @app.route('/logout')
 def logout():
     session['logged'] = False
@@ -204,16 +241,16 @@ def index():
     if logged and Account.query.filter_by(nickname=session['name']).first():
         acc = Account.query.filter_by(nickname=session['name']).first()
         arr = []
-        colors = ''
-        for _ in range(0,len(acc.invent)):
-
-            if _ in PREM_ITEM.keys() and (bool(int(acc.invent[_])) or PREM_ITEM[_][0] == 0):
-                if PREM_ITEM[_][2] == 'vehicle':
-                    arr.append([_] + list(PREM_ITEM[_]))
-                elif PREM_ITEM[_][2] == 'skin':
-                    if colors =='':colors += str(PREM_ITEM[_][4])
-                    else:
-                        colors += ','+str(PREM_ITEM[_][4])
+        colors = '1,2,3,4'
+        # for _ in range(0,len(acc.invent)):
+        #
+        #     if _ in PREM_ITEM.keys() and (bool(int(acc.invent[_])) or PREM_ITEM[_][0] == 0):
+        #         if PREM_ITEM[_][2] == 'vehicle':
+        #             arr.append([_] + list(PREM_ITEM[_]))
+        #         elif PREM_ITEM[_][2] == 'skin':
+        #             if colors =='':colors += str(PREM_ITEM[_][4])
+        #             else:
+        #                 colors += ','+str(PREM_ITEM[_][4])
         m = acc.money
         servers = []
         for i in Servers.keys():
@@ -263,19 +300,29 @@ def register():
             return render_template('login.html',errs=True,errt = "This name is occupied :(")
         if len(Account.query.filter_by(email=email).all() ) > 0:
             return render_template('login.html',errs=True,errt = "This email is occupied :(")
-        invent = ''
-        for i in range(0,64):
-            if i in PREM_ITEM.keys() and PREM_ITEM[i][0] ==0: invent += '1'
-            else: invent+='0'
-        account = Account(nickname = name, email = email, password = hashp, money = 10,invent = invent,awards = 32*'0')
+        # invent = ''
+        # for i in range(0,64):
+        #     if i in PREM_ITEM.keys() and PREM_ITEM[i][0] ==0: invent += '1'
+        #     else: invent+='0'
+        account = Account(nickname = name, email = email, password = hashp, money = 10,img = 12)
+        acc = Account.query.filter_by(nickname=session['name']).first()
+        freeItems = Item.query.filter_by(cost = 0, lvl=0).all()
+        # print(allItems)
+
+        for item in freeItems:
+            acc_item = Account_Item(accID = acc.id+1, itemID = item.id)
+            db.session.add(acc_item)
+                # itemsArr.append(
+                #     (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() != None))
+
         # veh = Vehicles(nickname = name,zepelin = True,carrier = True,rat=True,t28=True)
-        try:
-            db.session.add(account)
+        # try:
+        db.session.add(account)
             # db.session.add(veh)
-            db.session.commit()
-            return redirect('/login')
-        except:
-            return 'НА СЕРВЕРЕ ПИЗДЕЦ'
+        db.session.commit()
+        return redirect('/login')
+        # except:
+        #     return 'НА СЕРВЕРЕ ПИЗДЕЦ'
     else:
         return render_template('register.html')
 @app.route('/about',methods=['GET'])

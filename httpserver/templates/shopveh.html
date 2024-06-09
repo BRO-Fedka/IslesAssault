@@ -29,30 +29,28 @@
             </div>
         </a>
     </div>
+   <!--    ((1, 'Battleship', 0, 0, 'V', 'static\\veh0.svg', 0), False)-->
     <div id="MainForm">
-        {% if vehicle[2] == 'vehicle' %}
-
-            <img src="..\static\veh{{id}}.svg" class="unselectable svimgveh">
-
-
+        {% if vehicle[4] == 'V' %}
+            <img src="{{vehicle[5]}}" class="unselectable svimgveh">
         {%endif%}
-        {% if vehicle[2] == 'skin' %}
-                    <img src="..\static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicle[3]}}">
+        {% if vehicle[4] == 'S' %}
+                    <img src="..\static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicle[5]}}">
         {%endif%}
-        {% if vehicle[2] == 'image' %}
-                    <img src="..\static\PlayerIcons\{{vehicle[3]}}.svg" class="unselectable" >
+        {% if vehicle[4] == 'I' %}
+                    <img src="{{vehicle[5]}}" class="unselectable" >
         {%endif%}
 <!--        <img src="..\static\veh{{id}}.svg" class="unselectable">-->
     </div>
     <div id="SelectForm" class="scrollbar">
             <h1> {{vehicle[1]}}</h1>
         {% if logged %}
-            {% if vehicle[0] ==0 %}
+            {% if vehicle[2] ==0 and vehicle[3] ==0%}
             <h2>Free</h2>
-            {% elif vehicle[0] ==1 %}
+            {% elif vehicle[2] ==0 %}
             <h2>LVL required</h2>
             {%else%}
-            <h2><img src="..\\static\goldshell.svg" width="20px" height="20px">   {{vehicle[0]}}</h2>
+            <h2><img src="..\\static\goldshell.svg" width="20px" height="20px">   {{vehicle[2]}}</h2>
             {%endif%}
         {%endif%}
            <ul type="disc">
@@ -67,13 +65,21 @@
             <input disabled="disabled" id="PlayBTN" type="submit" value="Purchased"  style="pointer-events: none; "/>
             </form>
             {%else%}
-            <form action="/shop/{{id}}" method="post" >
-            <input  id="PlayBTN" type="submit" value="Buy" onclick="SaveMusicPos()"/>
+                {% if vehicle[2] > 0 %}
+                    <form action="/shop/{{id}}" method="post" >
+                    <input {% if vehicle[2] > money %} disabled="disabled" style="pointer-events: none; "{%endif%} id="PlayBTN" type="submit" value="Buy" onclick="SaveMusicPos()"/>
+                    </form>
+                {%else%}
+                    {% if vehicle[3] <= lvl %}
+                        <form action="/shop/{{id}}" method="post" >
+                        <input  id="PlayBTN" type="submit" value="Get it !" onclick="SaveMusicPos()"/>
+                        </form>
+                    {%endif%}
+                {%endif%}
 
-            </form>
             {%endif%}
 {%endif%}
-
+<br><br>
 
     </div>
 
