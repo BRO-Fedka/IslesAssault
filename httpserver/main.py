@@ -32,11 +32,8 @@ app.app_context()
 # print(SQLALCHEMY_DATABASE_URI)
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
-
-
 VERSION = os.environ['VERSION']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-db = SQLAlchemy(app)
 # print(os.path.curdir)
 class Account(db.Model):
     id = db.Column(db.Integer,primary_key=True)
