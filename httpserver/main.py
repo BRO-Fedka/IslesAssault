@@ -55,9 +55,9 @@ class Account(db.Model):
 
     def __repr__(self):
         return '<Account %r>' % self.id
-try:
-    a = Account.query.filter_by(nickname="CHECK").first()
-except: db.create_all()
+# try:
+a = Account.query.filter_by(nickname="CHECK").first()
+# except: db.create_all()
 # with app.app_context():
 # db.create_all()
 # #cl1{
