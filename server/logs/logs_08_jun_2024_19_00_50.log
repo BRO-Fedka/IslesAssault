@@ -1,9 +1,0 @@
-2024-06-08 22:00:50.164 | INFO     | __main__:<module>:16 - Server started !
-2024-06-08 22:00:56.598 | INFO     | __main__:handler:1486 - Connection
-2024-06-08 22:00:59.169 | INFO     | __main__:handler:1486 - Connection
-2024-06-08 22:00:59.171 | INFO     | __main__:handler:1891 - Name '' wanted
-2024-06-08 22:00:59.171 | INFO     | __main__:handler:1895 - Bad name
-2024-06-08 22:00:59.171 | INFO     | __main__:handler:1908 - 'LOL' is better
-2024-06-08 22:00:59.172 | INFO     | __main__:handler:1938 - 'LOL' has (1099022,) GSh
-2024-06-08 22:00:59.172 | INFO     | __main__:handler:1957 - Map to 'LOL' sent
-2024-06-08 22:00:59.240 | INFO     | __main__:handler:1702 - Player init
