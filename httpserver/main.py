@@ -30,6 +30,7 @@ app = Flask(__name__)
 app.app_context()
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.dirname(__file__))
 # print(SQLALCHEMY_DATABASE_URI)
+print(os.environ['DB_PATH'])
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 VERSION = os.environ['VERSION']
