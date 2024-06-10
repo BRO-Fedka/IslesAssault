@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1920" height="1080" style="stroke-linecap: round; stroke-miterlimit: 1; stroke-dashoffset: 18px; stroke-width: 5px; fill: rgb(132, 208, 255);"  id="MainScreen"/>
+<svg viewBox="-192 0 2304 1080" width="2304" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <rect x="-192" width="2304" height="1080" style="stroke-linecap: round; stroke-miterlimit: 1; stroke-dashoffset: 18px; stroke-width: 5px; fill: rgb(132, 208, 255);" />
 
 
 </svg>
