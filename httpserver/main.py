@@ -1,5 +1,6 @@
 from flask import Flask,request,redirect,session,render_template,make_response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import markdown
 import requests
 import re
@@ -77,7 +78,15 @@ class Account_Item(db.Model):
     dateCreated = db.Column(db.DateTime,default = datetime.datetime.utcnow)
     def __repr__(self):
         return '<Account_Item %r>' % self.id
-
+class Server(db.Model):
+    id = db.Column(db.Integer,primary_key = True)
+    name = db.Column(db.String(32),nullable = False)
+    imgLink = db.Column(db.String(256),nullable = False)
+    desc = db.Column(db.String(1024),nullable = False)
+    address = db.Column(db.String(128), nullable=False)
+    ghLink = db.Column(db.String(128), nullable=False)
+    key = db.Column(db.String(8), nullable=False)
+    status = db.Column(db.String(16), nullable=False, default = "offline")
 
 # try:
 # a = Account.query.filter_by(nickname="CHECK").first()
@@ -194,21 +203,28 @@ def image():
         if acc is None:
             session['logged'] = False
             return redirect('/login')
-        acc = Account.query.filter_by(nickname=session['name']).first()
+        # acc = Account.query.filter_by(nickname=session['name']).first()
         avas = []
-        for _ in range(0, len(acc.invent)):
-            if _ in PREM_ITEM.keys() and bool(int(acc.invent[_])) and PREM_ITEM[_][2] == 'image':
-                avas.append([PREM_ITEM[_][3],PREM_ITEM[_][1]])
+        purchItems = Account_Item.query.filter_by(accID = acc.id).all()
+        for pitem in purchItems:
+            item = Item.query.filter_by(id = pitem.itemID).first()
+            if item.type == "I":
+                avas.append((item.id,item.name,item.imgLink))
+
+        # for _ in range(0, len(acc.invent)):
+        #     if _ in PREM_ITEM.keys() and bool(int(acc.invent[_])) and PREM_ITEM[_][2] == 'image':
+        #         avas.append([PREM_ITEM[_][3],PREM_ITEM[_][1]])
 
         print(avas)
-        return render_template('avimgs.html', avas = avas)
+        return render_template('avimgs.html', avas = avas, curimg = acc.img)
     else:
         acc = Account.query.filter_by(nickname=session['name']).first()
         if acc is None:
             session['logged'] = False
             return redirect('/login')
-        acc.img = request.form['test']
-        db.session.commit()
+        if Account_Item.query.filter_by(accID = acc.id, itemID = request.form['img']) != None:
+            acc.img = request.form['img']
+            db.session.commit()
         return redirect('/account')
 
 @app.route('/account')
@@ -219,17 +235,39 @@ def account():
     if acc is None:
         session['logged'] = False
         return redirect('/login')
+    img = Item.query.filter_by(id = acc.img, type = "I").first()
+    if img is None:
+        acc.img = 12
+        img = 12
+        db.session.commit()
+    else:
+        img = img.imgLink
+    if acc is None:
+        session['logged'] = False
+        return redirect('/login')
     lvls = []
-    for j in range(0,20):
-        for i in PREM_ITEM.keys():
-          #  print(j,PREM_ITEM[i][0],PREM_ITEM[lvlplace[PREM_ITEM[i][2]]])
-            if PREM_ITEM[i][0] == 1 and PREM_ITEM[i][lvlplace[PREM_ITEM[i][2]]] == j+1:
-                lvls.append([PREM_ITEM[i]])
-                break
-        if len(lvls) == j:
+    maxLevel = db.session.query(func.max(Item.lvl)).scalar()
+    print(maxLevel)
+    for level in range(1,maxLevel+1):
+        items = Item.query.filter_by(lvl=level).all()
+        print(items)
+        if not items is None :
+            itemslst = []
+            for item in items:
+                itemslst.append((item.id,item.name,item.type,item.imgLink))
+            lvls.append(itemslst)
+        else:
             lvls.append([])
+    # for j in range(0,20):
+    #     for i in PREM_ITEM.keys():
+    #       #  print(j,PREM_ITEM[i][0],PREM_ITEM[lvlplace[PREM_ITEM[i][2]]])
+    #         if PREM_ITEM[i][0] == 1 and PREM_ITEM[i][lvlplace[PREM_ITEM[i][2]]] == j+1:
+    #             lvls.append([PREM_ITEM[i]])
+    #             break
+    #     if len(lvls) == j:
+    #         lvls.append([])
     print(lvls)
-    return render_template('account.html', lvlitems = lvls, ava = acc.img,maxlvl = 20,xppx = int(acc.xp/(acc.lvl**2+50*acc.lvl+100)*150), lvl = acc.lvl,xp = str(acc.xp)+'/'+str(acc.lvl**2+50*acc.lvl+100),money = str(acc.money), nickname = acc.nickname, kills=str(acc.kills), deaths = str(acc.deaths), time = (str(acc.playtime//3600)+'h')*int(acc.playtime//3600 !=0)+ str(acc.playtime%3600//60)+'m', KD=str(int(acc.kills/(acc.deaths+int(acc.deaths==0))*100)/100)*int(acc.deaths!=0)+'INVINCIBLE'*int(acc.deaths==0 and acc.kills>0)+'SIMPLETON'*int(acc.deaths==0 and acc.kills==0))
+    return render_template('account.html', lvlitems = lvls, ava = img,maxlvl = maxLevel+1,xppx = int(acc.xp/(acc.lvl**2+50*acc.lvl+100)*150), lvl = acc.lvl,xp = str(acc.xp)+'/'+str(acc.lvl**2+50*acc.lvl+100),money = str(acc.money), nickname = acc.nickname, kills=str(acc.kills), deaths = str(acc.deaths), time = (str(acc.playtime//3600)+'h')*int(acc.playtime//3600 !=0)+ str(acc.playtime%3600//60)+'m', KD=str(int(acc.kills/(acc.deaths+int(acc.deaths==0))*100)/100)*int(acc.deaths!=0)+'INVINCIBLE'*int(acc.deaths==0 and acc.kills>0)+'SIMPLETON'*int(acc.deaths==0 and acc.kills==0))
 @app.route('/')
 def index():
     agent = request.headers.get('User-Agent')
@@ -310,7 +348,9 @@ def register():
         # print(allItems)
 
         for item in freeItems:
-            acc_item = Account_Item(accID = acc.id+1, itemID = item.id)
+            acc_item = None
+            try: acc_item = Account_Item(accID = acc.id+1, itemID = item.id)
+            except:acc_item = Account_Item(accID = 1, itemID = item.id)
             db.session.add(acc_item)
                 # itemsArr.append(
                 #     (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() != None))

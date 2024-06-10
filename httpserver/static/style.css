@@ -111,6 +111,19 @@ background: rgba(0,0,0,0.2);
 	bottom:-25px;
 
 }
+.lvlsign span.accItemTitle{
+position: absolute;
+color:rgba(255,255,255,0.5);
+text-align:center;
+left: -60px;
+transform:translateX(-50%);
+top: -60px;
+
+}
+.lvlsign:hover span.accItemTitle{
+color:rgba(255,255,255,1);
+}
+
 .lvlsign div.vroot{
 	position: absolute;
 	background-color: rgba(0,0,0,0.2) ;
@@ -262,7 +275,7 @@ border: rgba(0,0,0,0.2) solid 5px;
 border-bottom: none;
 
 }
-.lvl-item img{
+.lvl-item a img{
 width:100%;
 height:100%;
 opacity:50%;
@@ -279,7 +292,7 @@ opacity:50%;
 	border-bottom: rgba(255,255,255,1) solid 5px;
 
 }
-.lvlsign:hover  div.lvl-item img{
+.lvlsign:hover  div.lvl-item a img{
 	opacity:100%;
 
 }
@@ -1579,6 +1592,8 @@ margin-top: 1%;
 [type=radio]:checked + img {
   opacity: 100%;
   transform: scaleX(1.05) scaleY(1.05);
+  border: 5px solid #fff;
+  border-radius:2px;
 }
 #navpanfxd{
 position :fixed;
