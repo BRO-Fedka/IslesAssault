@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+<svg  viewBox="-192 0 2304 1080" width="2304" height="1080" xmlns="http://www.w3.org/2000/svg" overflow="visible">
 
    <rect width="1920" height="355.97" style="fill: rgb(40, 121, 173); stroke-linecap: round; stroke-width: 11px;" y="730.695"/>
 <g id="SvgLayer1">
@@ -13,7 +13,7 @@
   <path d="M 526.269 717.628 L 558.888 723.431 L 586.864 717.628 L 585.318 680.081 L 576.034 642.535 L 564.304 640.213 L 548.704 658.007 L 531.684 688.977 L 526.269 717.628 Z" style="fill: rgb(69, 69, 69); stroke-width: 3px;" />
   <path d="M 496.685 717.187 L 519.247 724.537 L 537.165 718.734 L 544.13 681.961 L 526.335 671.492 L 520.794 663.755 L 509.063 666.849 L 499.779 686.215 L 496.685 717.187 Z" style="stroke-width: 3px; fill: rgb(58, 58, 58);" />
   <path d="M 2.71 693.935 L 50.029 698.19 L 86.515 691.613 L 74.912 655.614 L 57.117 645.145 L 40.745 619.614 L 23.599 625.802 L 8.899 656 L 2.71 693.935 Z" style="fill: rgb(69, 69, 69); stroke-width: 3px;" />
-      <rect width="1920" height="355.97" style="fill: rgb(40, 121, 173); stroke-linecap: round; stroke-width: 11px;" y="730.695" x="-200"/>
+      <rect width="2420" height="355.97" style="fill: rgb(40, 121, 173); stroke-linecap: round; stroke-width: 11px;" y="730.695" x="-200"/>
   <path d="M 216.237 767.922 L 320.805 770.053 L 301.662 740.964 L 296.277 729.012 L 285.574 725.989 L 263.112 727.837 L 244.538 707.29 L 222.284 713.151 L 216.237 767.922 Z" style="fill: rgb(69, 69, 69); stroke-width: 3px;" />
 
 </g>
