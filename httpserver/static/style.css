@@ -421,7 +421,7 @@ background-image: url(../static/BG1/BG4.svg);
 	-o-background-size: cover;
 	background-size: cover;
     transform: translateX(-50%);
-    width:calc(100% + 384);
+    width:calc(100% + 384px);
     height:100%;
 	position: fixed;
     color: #fff;
