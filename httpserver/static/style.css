@@ -519,7 +519,10 @@ height:100%;
 	/*margin-right: 10px;*/
 	border-radius: 5px;
 }
-.cl{
+input.cl{
+    display:none;
+}
+div.cl{
 	cursor: pointer;
 	width: 30px;
 	height: 30px;
@@ -529,25 +532,11 @@ height:100%;
 	border: 3px solid;
 	border-color: rgba(0,0,0,0.5);
 }
-.cl:hover{
-	border-color: #ffffff;
+div.cl:hover{
+	border-color: #ffffff88;
 }
-#cl1{
-	background-color: saddlebrown;
-}
-#cl2{
-	background-color: green;
-}
-#cl3{
-	background-color: darkblue;
-}
-#cl4{
-	background-color: gray;
-}
-#cl5{
-	background-color: magenta;
-}
-.activecl{
+
+input.cl:checked + div.cl{
 	border-color: #ffffff;
 }
 #VehicleSelect{

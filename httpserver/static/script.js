@@ -406,7 +406,8 @@ function startgame() {
 			socket = new WebSocket(document.getElementById('ServerSelect').value);
 //			console.log('2')
 			socket.addEventListener('open', function (event) {
-				socket.send('n'+nicknameinput.value+'\n'+activecl+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
+
+				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
 				vehicle = Number(document.getElementById('VehicleSelect').value)
 
 			});
@@ -1018,39 +1019,45 @@ let BangParticles2 = [];
 let SmokeParticles0 = [];
 let SmokeParticles0rate = 60;
 let TracerParticles1 = [];
-let availablecolors = document.getElementById('ColorMenu').innerText.split(',')
-for (let _ = 0; _ < availablecolors.length; _ += 1) {
-availablecolors[_] = Number(availablecolors[_])
-}
-let activecl = availablecolors[0]
-try{
-activecl =Number( sessionStorage.getItem("SelectedCL"))
-if (availablecolors.indexOf(activecl) == -1){
-activecl = availablecolors[0]
-}
+//let availablecolors = document.getElementById('ColorMenu').innerText.split(',')
+//for (let _ = 0; _ < availablecolors.length; _ += 1) {
+//availablecolors[_] = Number(availablecolors[_])
+//}
+//let activecl = availablecolors[0]
+function changeColor(){
+sessionStorage.setItem("SelectedCL",document.querySelector('input[name="color"]:checked').value)
 
-}catch{
-activecl = availablecolors[0]
 }
-document.getElementById('ColorMenu').innerHTML = ''
-console.log(availablecolors)
-for (let _ of availablecolors){
-	let a = document.createElement('div')
-	a.classList.add('cl')
-	if(_ == activecl){
-		a.classList.add('activecl')
-	}
-	a.id = 'cl'+_
-	document.getElementById('ColorMenu').appendChild(a)
-	document.getElementById('cl'+_).onclick= function () {
-		for (let i of availablecolors){
-			document.getElementById('cl'+i).classList.remove('activecl');
-		}
-		document.getElementById('cl'+_).classList.add('activecl');
-		sessionStorage.setItem("SelectedCL",_)
-		activecl = Number(_);
-	}
+try{
+document.querySelector('input[name="color"][value="'+ sessionStorage.getItem("SelectedCL")+'"]').checked = true
 }
+catch{}
+//if (availablecolors.indexOf(activecl) == -1){
+//activecl = availablecolors[0]
+//}
+//
+//}catch{
+//activecl = availablecolors[0]
+//}
+//document.getElementById('ColorMenu').innerHTML = ''
+//console.log(availablecolors)
+//for (let _ of availablecolors){
+//	let a = document.createElement('div')
+//	a.classList.add('cl')
+//	if(_ == activecl){
+//		a.classList.add('activecl')
+//	}
+//	a.id = 'cl'+_
+//	document.getElementById('ColorMenu').appendChild(a)
+//	document.getElementById('cl'+_).onclick= function () {
+//		for (let i of availablecolors){
+//			document.getElementById('cl'+i).classList.remove('activecl');
+//		}
+//		document.getElementById('cl'+_).classList.add('activecl');
+//		sessionStorage.setItem("SelectedCL",_)
+//		activecl = Number(_);
+//	}
+//}
 let MSGs = [];
 let ammo = new Map();
 ammo.set('120mm',0);

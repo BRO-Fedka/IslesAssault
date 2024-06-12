@@ -2,6 +2,7 @@ from flask import Flask,request,redirect,session,render_template,make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 import markdown
+import json
 import requests
 import re
 import dotenv
@@ -35,6 +36,7 @@ print(os.environ['DB_PATH'])
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 VERSION = os.environ['VERSION']
+isDEV = os.environ['DEV']
 print()
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 db = SQLAlchemy(app)
@@ -85,7 +87,7 @@ class Server(db.Model):
     desc = db.Column(db.String(1024),nullable = False)
     address = db.Column(db.String(128), nullable=False)
     ghLink = db.Column(db.String(128), nullable=False)
-    key = db.Column(db.String(8), nullable=False)
+    key = db.Column(db.String(16), nullable=False)
     status = db.Column(db.String(16), nullable=False, default = "offline")
 
 # try:
@@ -278,8 +280,12 @@ def index():
         logged = session['logged']
     if logged and Account.query.filter_by(nickname=session['name']).first():
         acc = Account.query.filter_by(nickname=session['name']).first()
-        arr = []
-        colors = '1,2,3,4'
+        # arr = []
+        colors = []
+        allColors = Item.query.filter_by(type = "S" ).all()
+        for color in allColors:
+            if not Account_Item.query.filter_by(accID = acc.id, itemID = color.id).first() is None:
+                colors.append([color.info,color.imgLink])
         # for _ in range(0,len(acc.invent)):
         #
         #     if _ in PREM_ITEM.keys() and (bool(int(acc.invent[_])) or PREM_ITEM[_][0] == 0):
@@ -290,18 +296,35 @@ def index():
         #             else:
         #                 colors += ','+str(PREM_ITEM[_][4])
         m = acc.money
-        servers = []
-        for i in Servers.keys():
-            servers.append([i, Servers[i]])
+        servers =[]
+        if isDEV: servers = [['local 8001','ws://localhost:8001'],['local 8002','ws://localhost:8002'],['local 8003','ws://localhost:8003']]
+        else:
+            onlineServers = Server.query.filter_by().all()
+            for server in onlineServers:
+                servers.append([server.name,server.address])
+
+        # servers = []
+        # for i in Servers.keys():
+        #     servers.append([i, Servers[i]])
         # print(arr)
-        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors,vehicles = arr, lenvehicles = len(arr) , version = VERSION) #,logged = logged, name = session['name']
-    arr = []
+        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors, colorslen = len(colors),vehicles = [], lenvehicles = 0 , version = VERSION) #,logged = logged, name = session['name']
+
     servers = []
-    for i in Servers.keys():
-        servers.append([i, Servers[i]])
-    for _ in PREM_ITEM.keys():
-        if PREM_ITEM[_][0] == 0 and PREM_ITEM[_][2] == 'vehicle': arr.append([_]+list(PREM_ITEM[_]))
-    return render_template('index.html',servers = servers,logged = False, name = '', colors = '1,2,3,4',vehicles = arr,lenvehicles=len(arr),money = '',passw='', version = VERSION)
+    if isDEV:
+        servers = [['local 8001', 'ws://localhost:8001'], ['local 8002', 'ws://localhost:8002'],
+                   ['local 8003', 'ws://localhost:8003']]
+    else:
+        onlineServers = Server.query.filter_by().all()
+        for server in onlineServers:
+            servers.append([server.name, server.address])
+    # for _ in PREM_ITEM.keys():
+    #     if PREM_ITEM[_][0] == 0 and PREM_ITEM[_][2] == 'vehicle': arr.append([_]+list(PREM_ITEM[_]))
+    colors = []
+    allColors = Item.query.filter_by(type="S",lvl = 0).all()
+    for color in allColors:
+        colors.append([color.info, color.imgLink])
+
+    return render_template('index.html',servers = servers,logged = False, name = '', colors = colors,colorslen = len(colors),vehicles = [],lenvehicles=0,money = '',passw='', version = VERSION)
 @app.route('/login',methods=['POST','GET'])
 def login():
     if 'logged' in session and session['logged'] ==True:
@@ -325,6 +348,7 @@ def login():
             return render_template('login.html',errs=True,errt = "Wrong password or email :(")
         return render_template('login.html',errs=True,errt = "Wrong password or email :(")
     return render_template('login.html')
+
 @app.route('/register',methods=['POST','GET'])
 def register():
     if 'logged' in session and session['logged'] ==True:
@@ -369,6 +393,149 @@ def register():
 def about():
       return render_template('about.html', content = re.sub(':(\\S*):|\\[!(\\S*)\\]',' ',markdown.markdown(requests.get('https://raw.githubusercontent.com/BRO-Fedka/IslesAssault/master/README.md').text)))
 
+@app.route('/server/connect',methods=['POST'])
+def server_connect():
+    try:
+        if isDEV: return 'OK'
+        print(request.form['key'])
+        hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
+        serv = Server.query.filter_by(key = hashkey).first()
+        print(serv)
+        serv.status = "online"
+        db.session.commit()
+        return "OK"
+    except:
+        return "ERROR"
+@app.route('/server/disconnect',methods=['POST'])
+def server_disconnect():
+    try:
+        if isDEV:return 'OK'
+        hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
+        serv = Server.query.filter_by(key = hashkey)
+        serv.status = "offline"
+        db.session.commit()
+        return 'OK'
+    except:
+        return "ERROR"
+@app.route('/server/item_check_for_acc',methods=['POST'])
+def server_item_check_for_acc():
+    try:
+
+        nickname = request.form['nickname']
+        phash = request.form['password']
+        color = int(request.form['color'])
+        vehicle = int(request.form['vehicle'])
+        acc = Account.query.filter_by(nickname = nickname,  password = phash).first()
+        if acc is None:
+            return "ERROR"
+        skinItem = Item.query.filter_by(info = color,type = "S").first()
+        vehicleItem = Item.query.filter_by(info = vehicle,type = "V").first()
+        color = -2
+        vehicle = -2
+        if not skinItem is None:
+            purchItem = Account_Item.query.filter_by(accID = acc.id, itemID = skinItem.id)
+            if not purchItem is None: color = skinItem.info
+            else: color = -1
+        if not vehicleItem is None:
+            purchItem = Account_Item.query.filter_by(accID = acc.id, itemID = vehicleItem.id)
+            if not purchItem is None: vehicle = vehicleItem.info
+            else:vehicle = -1
+        resp = {
+            "color":color,
+            'vehicle':vehicle,
+            "money":acc.money
+        }
+        return json.dumps(resp)
+
+    except:
+
+        return "ERROR"
+
+@app.route('/server/item_check',methods=['POST'])
+def server_item_check():
+    try:
+        color = int(request.form['color'])
+        vehicle = int(request.form['vehicle'])
+        print(color,vehicle)
+        skinItem = Item.query.filter_by(info = color,type = "S").first()
+        vehicleItem = Item.query.filter_by(info = vehicle,type = "V").first()
+        print(skinItem,vehicleItem)
+        color = -2
+        vehicle = -2
+        if not skinItem is None:
+            if skinItem.lvl == 0: color = skinItem.info
+            else: color = -1
+        if not vehicleItem is None:
+            if vehicleItem.lvl == 0: vehicle = vehicleItem.info
+            else: vehicle = -1
+        resp = {
+            "color":color,
+            'vehicle':vehicle
+        }
+        return json.dumps(resp)
+
+    except:
+        return "ERROR"
+@app.route('/server/change_player_data',methods=['POST'])
+def server_change_player_data():
+    # try:
+        print("@$%SF")
+        key = request.form['key']
+
+        hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
+        serv = Server.query.filter_by(key = hashkey)
+        if serv is None:
+            return "ERROR"
+
+        nickname = request.form['nickname']
+        phash = request.form['password']
+        xp = request.form['xp']
+        kills = request.form['kills']
+        delta = request.form['delta']
+        money = request.form['money']
+
+
+        print(request.form)
+        if xp.count('.')>0 or xp.count('-') >0:
+            return "ERROR"
+        if kills.count('.')>0 or kills.count('-') >0:
+            return "ERROR"
+        if delta.count('.')>0 or delta.count('-') >0:
+            return "ERROR"
+        if money.count('.')>0 or money.count('-') >0:
+            return "ERROR"
+        xp = int(xp)
+        kills = int(kills)
+        delta = int(delta)
+        money = int(money)
+        acc = Account.query.filter_by(nickname = nickname,  password = phash).first()
+        if money < acc.money:
+            return "ERROR"
+        if acc is None:
+            return "ERROR"
+        vlvl = acc.lvl
+        xp = xp + acc.xp
+        while xp > vlvl**2+50*vlvl+100:
+            xp -=vlvl**2+50*vlvl+100
+            vlvl +=1
+            curLvlItems = Item.query.filter_by(lvl=vlvl).all()
+            for item in curLvlItems:
+                ai = Account_Item(accID = acc.id,itemID = item.id)
+                db.session.add(ai)
+
+        acc.lvl = vlvl
+        acc.xp = xp
+        # print(acc.playtime)
+        acc.playtime +=delta
+        acc.kills += kills
+        acc.money = money
+        acc.deaths += 1
+        db.session.commit()
+
+        return "OK"
+
+    # except:
+    #     return "ERROR"
 @app.errorhandler(404)
 def err404(e):
     return render_template('error.html',reason = "Sorry", code = '404'), 404

@@ -3,6 +3,8 @@ import websockets
 import pickle
 import logging
 import math
+import json
+import atexit
 # import ssl
 import os
 import datetime
@@ -10,19 +12,28 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 import sqlite3
 from loguru import logger
+import requests
 import time
 import dotenv
 dotenv.load_dotenv()
 logger.add(f"./logs/logs_{time.strftime('%d_%b_%Y_%H_%M_%S', time.gmtime())}.log".lower(),enqueue=True, retention= "1 week")
 logger.info("Server started !")
 WH = 16
-SQL = sqlite3.connect(os.environ['DB_PATH'])
-SQLctx = SQL.cursor()
-print(SQLctx.execute(f"SELECT * FROM Account WHERE nickname = 'LOL'").fetchone())
+# SQL = sqlite3.connect(os.environ['DB_PATH'])
+API_SERV_ADDRESS = os.environ['API_ADDRESS']
+API_KEY = os.environ['API_KEY']
+# SQLctx = SQL.cursor()
+# print(SQLctx.execute(f"SELECT * FROM Account WHERE nickname = 'LOL'").fetchone())
 TPS = 15
 VIEW_X = 6
 VIEW_Y = 3
 availablecls = [1,2,3,4,5]
+logger.info(requests.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
+
+def exit_handler():
+    requests.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
+atexit.register(exit_handler)
+# http://localhost:90/server/connect
 TEAM_HELP = '''/team create [team name] /team join [team name] /team kick [player name] /team leave /team list /team chat [message]'''
 import sys
 sys.path.append("../")
@@ -190,27 +201,27 @@ DEFSQSIZE = 320
 JSVEHs = os.environ['JS_VEH']
 # MAPJSON = open('../httpserver/static/MAP.json', 'r').read()
 MAPJSON = os.environ['JSON_MAP']
-print(MAPJSON)
+# print(MAPJSON)
 MAP = pickle.load(open('MAP', 'rb'))
 MAPobjSIDEdir = {'S':{},'B':{}}
-print(MAP['B'])
+# print(MAP['B'])
 i = 0
 while i in range(0,len(MAP['B'])):
-    print(i)
+    # print(i)
     if MAP['B'][i] == []:
         MAP['B'].pop(i)
         i-=1
     i+=1
 i = 0
 while i in range(0,len(MAP['S'])):
-    print(i)
+    # print(i)
     if MAP['S'][i] == []:
         MAP['S'].pop(i)
         i-=1
     i+=1
 if True:
     for i in range(0,len(MAP['S'])):
-        print(MAP['S'][i])
+        # print(MAP['S'][i])
 
         srtg = (Polygon(LinearRing(MAP['S'][i].exterior.coords).parallel_offset(0.01, 'right', join_style=1,resolution=1).coords))
         MAPobjSIDEdir['S'][i] = True
@@ -219,7 +230,7 @@ if True:
             MAPobjSIDEdir['S'][i] = False
 if len(MAP['Z']) ==0:
     for i in range(0,len(MAP['B'])):
-        print(list(MAP['B'][i].exterior.coords))
+        # print(list(MAP['B'][i].exterior.coords))
 
         MAP['Z'].append(Polygon(LinearRing(MAP['B'][i].exterior.coords).parallel_offset(0.25, 'right', join_style=1,resolution=1).coords))
         MAPobjSIDEdir['B'][i] = True
@@ -228,13 +239,13 @@ if len(MAP['Z']) ==0:
             MAPobjSIDEdir['B'][i] = False
 if len(MAP['G']) ==0:
     for i in range(0,len(MAP['B'])):
-        print(list(MAP['B'][i].exterior.coords))
+        # print(list(MAP['B'][i].exterior.coords))
 
         MAP['G'].append(Polygon(LinearRing(MAP['B'][i].exterior.coords).parallel_offset(0.1, 'left', join_style=1,resolution=1).coords))
         if MAP['G'][i].area > MAP['B'][i].area:
             MAP['G'][i] = Polygon(LinearRing(MAP['B'][i].exterior.coords).parallel_offset(0.1, 'right', join_style=1,resolution=1).coords)
 
-print(len(MAP['Z']),len(MAP['B']))
+# print(len(MAP['Z']),len(MAP['B']))
 Bridges = {0:[7.31,4.63,8.51,4.63],1:[5.24,5.43,5.78,4.77],2:[8.83,4.88,9.21,5.53],3:[12.55,6.22,12.58,7.07]}
 for _ in Bridges.keys():
     line = LineString([(Bridges[_][0], Bridges[_][1]), (Bridges[_][2], Bridges[_][3])])
@@ -654,12 +665,13 @@ async def game():
                         KickList.append(player)
 
                         if not (PlayersAccs[player]['NICK'] == '' and PlayersAccs[player]['PSW'] == ''):
+                            pass
                             # print('!!!')
                             # SQLctx.execute(
                             #     f"""UPDATE Account set money = money+1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
-                            SQLctx.execute(
-                                f"""UPDATE Account set deaths = deaths-1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
-                            SQL.commit()
+                            # SQLctx.execute(
+                            #     f"""UPDATE Account set deaths = deaths-1 WHERE nickname = '{PlayersAccs[player]['NICK']}' AND password = '{PlayersAccs[player]['PSW']}'""")
+                            # SQL.commit()
                 except Exception:
                     pass
                     # logging.exception("message")
@@ -1373,9 +1385,9 @@ async def game():
                                                         if not PlayersAccs[PlayersData[player]["KILLER"]]['NICK'] == '':
                                                                 PlayersAccs[PlayersData[player]["KILLER"]]['money'] += \
                                                                 PlayersData[PlayersData[player]["KILLER"]]['KSR'] * 10
-                                                                SQLctx.execute(
-                                                                    f"""UPDATE Account set money = money+{PlayersData[PlayersData[player]["KILLER"]]['KSR'] * 10} WHERE nickname = '{PlayersAccs[PlayersData[player]["KILLER"]]['NICK']}' AND password = '{PlayersAccs[PlayersData[player]["KILLER"]]['PSW']}'""")
-                                                                SQL.commit()
+                                                                # SQLctx.execute(
+                                                                #     f"""UPDATE Account set money = money+{PlayersData[PlayersData[player]["KILLER"]]['KSR'] * 10} WHERE nickname = '{PlayersAccs[PlayersData[player]["KILLER"]]['NICK']}' AND password = '{PlayersAccs[PlayersData[player]["KILLER"]]['PSW']}'""")
+                                                                # SQL.commit()
                                                                 PlayersData[PlayersData[player]["KILLER"]]['MSGTURN'].append(
                                                                     f'\nl,You received {PlayersData[PlayersData[player]["KILLER"]]["KSR"] * 10} goldshell{"s" * int(PlayersData[PlayersData[player]["KILLER"]]["KSR"] > 0)} !,{LastMSGI}')
                                                                 LastMSGI += 1
@@ -1430,45 +1442,23 @@ async def game():
                     PlayersInputs.pop(_)
                 except:pass
                 # print(PlayersData[_]['SCORES'])
-                try:
+                print(PlayersAccs[_]["NICK"])
+                if PlayersAccs[_]["NICK"] != "":
 
-                    delta = datetime.datetime.now() - PlayersData[_]['STARTTIME']
 
-                    SQLctx.execute(
-                        f"""SELECT * FROM Account WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    ftch = list(SQLctx.fetchall()[0])
-                    xp = ftch[10] + PlayersData[_]['SCORES']
 
-                    vlvl = ftch[11]
-                    # print(xp,lvl)
-                    while xp > vlvl**2+50*vlvl+100:
-                        xp -=vlvl**2+50*vlvl+100
-                        vlvl +=1
+                    print('????')
+                    nickname = PlayersAccs[_]['NICK']
+                    password = PlayersAccs[_]['PSW']
+                    xp = PlayersData[_]['SCORES']
+                    kills = PlayersData[_]['KILLS']
+                    delta = round((datetime.datetime.now() - PlayersData[_]['STARTTIME']).total_seconds())
+                    money = PlayersAccs[_]["money"]
+                    logger.info("change_player_data",
+                                {"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
+                                 'delta': delta, 'money': money})
+                    requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})
 
-                        SQLctx.execute(f"""UPDATE Account set lvl = lvl+1 WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                        for i in PREM_ITEM.keys():
-                            #  print(j,PREM_ITEM[i][0],PREM_ITEM[lvlplace[PREM_ITEM[i][2]]])
-
-                            if PREM_ITEM[i][0] == 1 and PREM_ITEM[i][lvlplace[PREM_ITEM[i][2]]] == vlvl:
-                                ftch[5] = ftch[5][:i]+'1'+ftch[5][i+1:]
-                                break
-                        # print(inv)
-                    SQLctx.execute(
-                                f"""UPDATE Account set invent = '{ftch[5]}' WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    SQLctx.execute(
-                        f"""UPDATE Account set playtime = playtime + {int(delta.total_seconds())} WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    SQLctx.execute(
-                    f"""UPDATE Account set xp = {xp} WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    SQLctx.execute(
-                        f"""UPDATE Account set kills = kills+{PlayersData[_]['KILLS']} WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    SQLctx.execute(
-                        f"""UPDATE Account set deaths = deaths+1 WHERE nickname = '{PlayersAccs[_]['NICK']}' AND password = '{PlayersAccs[_]['PSW']}'""")
-                    SQL.commit()
-
-                except Exception:
-                    pass
-                    # logging.exception("message")
-                # print(PlayersData[_]['SCORES'])
                 try:
 
                     PlayersData.pop(_)
@@ -1916,83 +1906,125 @@ async def handler(websocket):
                 # print(message,"1")
 
                 PlayersCosmetics[name] = {'COLOR':int(message[1:].split('\n')[1]),'VEHICLE':int(message[1:].split('\n')[2]), "TRACER":1}
-                # print(PlayersCosmetics[name])
+                PlayersAccs[name] = {'NICK': '', 'PSW': '', 'money': 0}
+                resp = ""
                 try:
+                    print(API_SERV_ADDRESS + "item_check_for_acc")
+                    resp = requests.post(API_SERV_ADDRESS+"item_check_for_acc",{'nickname':message[1:].split('\n')[3],"password":message[1:].split('\n')[4],"color":PlayersCosmetics[name]["COLOR"],"vehicle":PlayersCosmetics[name]["VEHICLE"]}).text
 
-                    PlayersAccs[name] = {'NICK': message[1:].split('\n')[3],'PSW': message[1:].split('\n')[4],'money':0}
-                    # print(PlayersAccs[name])
-                    a = SQLctx.execute(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
-                    c = SQLctx.execute(
-                        f"SELECT invent FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
-                    # SQL.commit()
-                    # print(PlayersAccs[name])
-                    # print(a)
-                    # print(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'")
-
-                    if  a is None:
-
-                        logger.info(f"'{name}' not logged")
-                        # print('a = None')
-                        PlayersAccs[name] = {'NICK': '','PSW': '','money':0}
-                        raise Exception
-                    else:
-                        logger.info(f"'{name}' has {a} GSh")
-                        PlayersAccs[name]['money'] = a[0]
-                        b = False
-                        for _ in PlayersAccs.keys():
-                            if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
-                                b = True
-                                break
-                        if b:
+                except:
+                    print('!')
+                    resp = "ERROR"
+                try:
+                    print(resp)
+                    respJSON = json.loads(resp)
+                    for _ in PlayersAccs.keys():
+                        if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
                             PlayersSockets.pop(name)
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)
 
                             await websocket.send('E,Twin - ban')
                             logger.info(f"Twin '{name}'")
-                            continue
-                        else:
-                            # print(c[0])
-                            # print(PlayersCosmetics[name]['VEHICLE'])
-                            # print(c[PlayersCosmetics[name]['VEHICLE']])
-                            if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
-                                logger.info(f"Map to '{name}' sent")
-                                await websocket.send('M'+MAPJSON)
-                            else:
-
-                                if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
-                                    logger.info(f"'{name}' should buy the vehicle.")
-                                    await websocket.send('Rshop/'+str(PlayersCosmetics[name]['VEHICLE']))
-
-                                else:
-                                    logger.info(f"'{name}' cheats :(")
-                                    await websocket.send('E,NO CHEATS')
-                                PlayersSockets.pop(name)
-                                PlayersAccs.pop(name)
-                                PlayersCosmetics.pop(name)
-                                continue
-
-                except Exception:
-                    logger.info(f"'{name}' not logged")
-                    # pass
-                    # logging.exception("message")
-                    PlayersAccs[name] = {'NICK': '', 'PSW': '','money':0}
-                    # print(PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] )
-                    if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
-                        logger.info(f"Map to '{name}' sent")
-                        await websocket.send('M'+MAPJSON)
+                            break
                     else:
-
-                        if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
-                            logger.info(f"'{name}' should log in")
-                            await websocket.send('Raccount')
-                        else:
-                            logger.info(f"'{name}' cheats :(")
-                            await websocket.send('E,NO CHEATS')
-                        PlayersSockets.pop(name)
-                        PlayersAccs.pop(name)
-                        PlayersCosmetics.pop(name)
-                        continue
+                        if respJSON['color'] < 0:
+                            PlayersCosmetics[name]["COLOR"] = 1
+                        if respJSON['vehicle'] < 0:
+                            PlayersCosmetics[name]["VEHICLE"] = 0
+                        PlayersAccs[name]['money'] = respJSON['money']
+                        logger.info(f"Map to '{name}' sent")
+                        PlayersAccs[name]['NICK'] = message[1:].split('\n')[3]
+                        PlayersAccs[name]['PSW'] = message[1:].split('\n')[4]
+                        await websocket.send('M'+MAPJSON)
+                except:
+                    print(API_SERV_ADDRESS + "item_check")
+                    resp = requests.post(API_SERV_ADDRESS + "item_check",{ "color": PlayersCosmetics[name]["COLOR"],"vehicle": PlayersCosmetics[name]["VEHICLE"]}).text
+                    print(resp)
+                    respJSON = json.loads(resp)
+                    if respJSON['color'] < 0:
+                        PlayersCosmetics[name]["COLOR"] = 1
+                    if respJSON['vehicle'] < 0:
+                        PlayersCosmetics[name]["VEHICLE"] = 0
+                    logger.info(f"Map to '{name}' sent")
+                    await websocket.send('M' + MAPJSON)
+                # print(PlayersCosmetics[name])
+                # try:
+                #
+                #       PlayersAccs[name] = {'NICK': message[1:].split('\n')[3], 'PSW': message[1:].split('\n')[4], 'money': 0}
+                #     # print(PlayersAccs[name])
+                #     a = SQLctx.execute(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
+                #     c = SQLctx.execute(
+                #         f"SELECT invent FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
+                #     # SQL.commit()
+                #     # print(PlayersAccs[name])
+                #     # print(a)
+                #     # print(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'")
+                #
+                #     if  a is None:
+                #
+                #         logger.info(f"'{name}' not logged")
+                #         # print('a = None')
+                #         PlayersAccs[name] = {'NICK': '','PSW': '','money':0}
+                #         raise Exception
+                #     else:
+                #         logger.info(f"'{name}' has {a} GSh")
+                #         PlayersAccs[name]['money'] = a[0]
+                #         b = False
+                #         for _ in PlayersAccs.keys():
+                #             if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
+                #                 b = True
+                #                 break
+                #         if b:
+                #             PlayersSockets.pop(name)
+                #             PlayersAccs.pop(name)
+                #             PlayersCosmetics.pop(name)
+                #
+                #             await websocket.send('E,Twin - ban')
+                #             logger.info(f"Twin '{name}'")
+                #             continue
+                #         else:
+                #             # print(c[0])
+                #             # print(PlayersCosmetics[name]['VEHICLE'])
+                #             # print(c[PlayersCosmetics[name]['VEHICLE']])
+                #             if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
+                #                 logger.info(f"Map to '{name}' sent")
+                #                 await websocket.send('M'+MAPJSON)
+                #             else:
+                #
+                #                 if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
+                #                     logger.info(f"'{name}' should buy the vehicle.")
+                #                     await websocket.send('Rshop/'+str(PlayersCosmetics[name]['VEHICLE']))
+                #
+                #                 else:
+                #                     logger.info(f"'{name}' cheats :(")
+                #                     await websocket.send('E,NO CHEATS')
+                #                 PlayersSockets.pop(name)
+                #                 PlayersAccs.pop(name)
+                #                 PlayersCosmetics.pop(name)
+                #                 continue
+                #
+                # except Exception:
+                #     logger.info(f"'{name}' not logged")
+                #     # pass
+                #     # logging.exception("message")
+                #     PlayersAccs[name] = {'NICK': '', 'PSW': '','money':0}
+                #     # print(PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] )
+                #     if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
+                #         logger.info(f"Map to '{name}' sent")
+                #         await websocket.send('M'+MAPJSON)
+                #     else:
+                #
+                #         if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
+                #             logger.info(f"'{name}' should log in")
+                #             await websocket.send('Raccount')
+                #         else:
+                #             logger.info(f"'{name}' cheats :(")
+                #             await websocket.send('E,NO CHEATS')
+                #         PlayersSockets.pop(name)
+                #         PlayersAccs.pop(name)
+                #         PlayersCosmetics.pop(name)
+                #         continue
                 if PlayersCosmetics[name]['VEHICLE'] == 3: PlayersCosmetics[name]['COLOR'] = 228
                 PlayersAccs[name]['contime'] = datetime.datetime.now()
         elif message == 'info':
