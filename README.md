@@ -1,6 +1,5 @@
 #  [IslesAssault](http://80.68.156.140)
 ![image](http://80.68.156.140/static/VKBG.png)
-___
 >[!CAUTION]
 > No mobile support.
 ## :pushpin: About 
