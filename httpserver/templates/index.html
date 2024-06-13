@@ -144,9 +144,9 @@
 
             {%for i in range(0,colorslen)%}
 
-                <label onclick="changeColor()">
+                <label onclick="changeColor()" >
 
-                    <input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i ==0%} checked {%endif%}>
+                    <input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i ==0%} checked {%endif%} >
                     <div class="cl" style="background:{{colors[i][1]}}" ></div>
                 </label>
             {%endfor%}
@@ -259,6 +259,11 @@
  	<script type="text/javascript" src="../static/script.js"></script>
     <script type="text/javascript" src="../static/DrawAPI.js"></script>
     <script type="text/javascript" id="prevmpjs"></script>
+    <script type="text/javascript" >
+        {%for i in range(0,colorslen)%}
+            AddFColor('{{colors[i][0]}}','{{colors[i][1]}}')
+        {%endfor%}
+    </script>
 <!--    <script type="text/javascript" id="MapJSON"></script>-->
 
  </body>

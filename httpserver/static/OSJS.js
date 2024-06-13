@@ -9,7 +9,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '6':'#723636'},
 draw:function(layer, playername){
     if( layer==52 && PlayersData.get(playername).prevX!= null){
     // console.log("????????????")
@@ -218,7 +219,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '6':'#723636'},
 draw:function(layer, playername){
     if( layer==52 && PlayersData.get(playername).prevX!= null){
 //        console.log()
@@ -419,7 +421,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '6':'#723636'},
 draw:function(layer, playername){
 //    console.log(playername)
     if( ((layer==52 && PlayersData.get(playername).CARRY==0) || (PlayersData.get(playername).CARRY>0 && layer==53)) && PlayersData.get(playername).prevX!= null){
@@ -614,7 +617,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '6':'#723636'},
 draw:function(layer, playername){
     if( ((layer==52 && PlayersData.get(playername).Z == 0 ) || (layer==62 && PlayersData.get(playername).Z == 1)) && PlayersData.get(playername).prevX!= null){
         let sin = 0
@@ -796,7 +800,8 @@ f:{
         '2': '#122b0b',
         '3': '#10222b',
         '4': '#323232',
-        '5': '#713567'},
+        '5': '#713567',
+        '6':'#723636'},
 draw:function(layer, playername){
     if( layer==72  && PlayersData.get(playername).prevX!= null){
         let sin = 0
@@ -1100,12 +1105,6 @@ update:function(playername,argarr){
 hp:1000,
 
 f:{
-        '0': '#131313',
-        '1': '#2a200c',
-        '2': '#122b0b',
-        '3': '#10222b',
-        '4': '#323232',
-        '5': '#713567',
         '228': '#bbb26e'},
 draw:function(layer, playername){
     if( layer==73 && PlayersData.get(playername).prevX!= null){

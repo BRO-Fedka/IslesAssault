@@ -17,34 +17,40 @@
     [
       "Battleship",
       0,
-      "./static/veh0.svg"
+      "./static/veh0.svg",
+      1
     ],
     [
       "Tank",
       1,
-      "./static/veh1.svg"
+      "./static/veh1.svg",
+     2
     ],
     [
       "Boat",
       2,
-      "./static/veh2.svg"
+      "./static/veh2.svg",
+      3
     ],
 
     [
       "\"Macon\"",
       3,
-      "./static/veh3.svg"
+      "./static/veh3.svg",
+      5
     ],
     [
       "Aircarier",
       4,
-      "./static/veh4.svg"
+      "./static/veh4.svg",
+      6
     ],
 
     [
       "Fighter",
       8,
-      "./static/veh8.svg"
+      "./static/veh8.svg",
+      4
     ]
   ]
 }

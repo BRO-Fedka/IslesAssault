@@ -10,7 +10,7 @@ import os
 import datetime
 import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
-import sqlite3
+
 from loguru import logger
 import requests
 import time

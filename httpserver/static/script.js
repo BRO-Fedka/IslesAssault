@@ -243,12 +243,12 @@ function onWheel(e){
 function ShowPrevVeh(){
     sessionStorage.setItem('VehicleSelectVal',document.getElementById('VehicleSelect').value)
     //console.log(document.getElementById('VehicleSelect').value)
-    document.getElementById('VehicleSelect').value
+//    document.getElementById('VehicleSelect').value
 	for (let _ of VehList) {
         if(_[1]==document.getElementById('VehicleSelect').value){
             document.getElementById('vehprev').src = _[2];
 
-            document.getElementById('ShopVehLink').href = location.href+"shop/"+_[1]
+            document.getElementById('ShopVehLink').href = location.href+"shop/"+_[3]
 
 
             break;
@@ -353,6 +353,7 @@ var MAPstatic = {
 'S':[],
 '_':[],
 'CT':{
+        weather:"Clear",
 		sf: '#000',
 		ss: '#000',
 		bg:'#000',
@@ -362,23 +363,23 @@ var MAPstatic = {
 		bs:'#000',
 		gf:'#000',
 		gs:'#000',
-        f0: '#000',
-        f1: '#000',
-        f2: '#000',
-        f3: '#000',
-        f4: '#000',
-        f5: '#000',
-        f228: '#000',
 		o0:'#000',
 		o1:'#000',
 		l0:'#000',
 		l1:'#000',
 		b0:'#000',
 		b1:'#000',
-		b2:'#000'
+		b2:'#000',
+		fs:"rgba(0,0,0,0)",
+		os:"rgba(0,0,0,0)",
 
 	}
 };
+var FColors = new Map()
+function AddFColor(clval, cl){
+FColors.set(Number(clval),cl)
+
+}
 let Zoom = 320
 let currentZoom = 320
 let socket = null
@@ -1219,16 +1220,23 @@ function keyup(event) {
 }
 let start = null;
 let timenow = Date.now()
-if(ColorPack == 'Winter'){
-    for(var i = 0; i < SnowParticles0max; i++)
-        {
-            SnowParticles0.push(new Particle2(canvas.width,canvas.height))
-        }
-        }
+
 function DRAW(timestamp)  {
 
 try{
     if (GameStatus == "InGame"){
+    if(MAPstatic.CT.weather == 'Snow' ){
+    if (SnowParticles0.length == 0){
+        for(var i = 0; i < SnowParticles0max; i++)
+        {
+            SnowParticles0.push(new Particle2(canvas.width,canvas.height))
+        }
+    }
+    }else{
+        if (SnowParticles0.length > 0){
+        SnowParticles0 = []
+        }
+    }
     timenow = Date.now()
 	if(BURNING){
 		ShakeXbnds += 0.25
