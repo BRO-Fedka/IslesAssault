@@ -58,6 +58,9 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+### 1.4 Inventory and server structure refactor
+* New inventory system
+* API for game servers was created
 #### 1.3.2v - Development ease update
 * Logging added.
 * *.env onfig files added.
