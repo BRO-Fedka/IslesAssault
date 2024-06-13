@@ -26,29 +26,33 @@
         </a>
     </div>
 <div id="ShopForm" class="scrollbar">
+
             {%for i in range(0,lenvehicles)%}
-                <a href="/shop/{{vehicles[i][0]}}" class="ShopCard {{vehicles[i][4]}} {% if vehicles[i][1] == 0%}notPurchased{%elif vehicles[i][1] == 1%}Purchased{%endif%}"  onclick="SaveMusicPos()">
+                <a href="/shop/{{vehicles[i][0][0]}}" class="ShopCard {{vehicles[i][0][4]}} {% if vehicles[i][1] == False%}notPurchased{%elif vehicles[i][1] == True%}Purchased{%endif%}"  onclick="SaveMusicPos()">
                 <div class="ShopCard">
                     <div class="item-lbl">
-                        <span>{{vehicles[i][3]}}</span>
+                        <span>{{vehicles[i][0][1]}}</span>
                     </div>
 
-                    {% if vehicles[i][4] == 'vehicle' %}
+                    {% if vehicles[i][0][4] == 'V' %}
                     <div class="imgbg">
-                        <img src="static\veh{{vehicles[i][0]}}.svg" class="unselectable">
+                        <img src="{{vehicles[i][0][5]}}" class="unselectable">
                     </div>
 
                     {%endif%}
-                    {% if vehicles[i][4] == 'skin' %}
-                    <img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicles[i][5]}}">
+                    {% if vehicles[i][0][4] == 'S' %}
+                    <img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicles[i][0][5]}}">
                     {%endif%}
-                    {% if vehicles[i][4] == 'image' %}
-                    <img src="static\PlayerIcons\{{vehicles[i][5]}}.svg" class="unselectable">
+                    {% if vehicles[i][0][4] == 'I' %}
+                    <img src="{{vehicles[i][0][5]}}" class="unselectable">
                     {%endif%}
-                    {% if vehicles[i][1] == 0%}
-                    <div class="MoneyNum" class="unselectable"><img src="static/goldshell.svg"><b>{{vehicles[i][2]}}</b></div>
-
-                    {%elif vehicles[i][1] == 1%}
+                    {% if vehicles[i][1] == False%}
+                        {% if vehicles[i][0][2] != 0%}
+                            <div class="MoneyNum" class="unselectable"><img src="static/goldshell.svg"><b>{{vehicles[i][0][2]}}</b></div>
+                        {%else%}
+                            <div class="MoneyNum" class="unselectable"><img class="alarm-mark" src="static/shop-alarm.svg"><b>Get it !</b></div>
+                        {%endif%}
+                    {%elif vehicles[i][1] == True%}
                     <div class="MoneyNum" class="unselectable"><img src="static/checkmark.svg"><b>Purchased</b></div>
                     {%endif%}
                     </div>

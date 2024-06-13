@@ -24,7 +24,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.strokeStyle = MAPstatic.CT.os;
     ctx.stroke();
     sinc = 0
     cosc = 0
@@ -107,7 +107,8 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+
+        ctx.strokeStyle = MAPstatic.CT.os;
         ctx.stroke();
         sinc = 0
         cosc = 0
@@ -178,8 +179,12 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
 }
 function drawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 		ctx.beginPath();
-		ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
-		ctx.strokeStyle = "rgba(0,0,0,0.5)"
+		if (cls[PlayersData.get(playername).COLOR] != undefined){
+		    ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
+		}else{
+		    ctx.fillStyle =  FColors.get(PlayersData.get(playername).COLOR)
+		}
+		ctx.strokeStyle = MAPstatic.CT.fs
 		if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
 			ctx.fillStyle = 'rgba(0,0,0,0.2)'
 			ctx.strokeStyle = 'rgba(0,0,0,0.2)'
@@ -198,9 +203,14 @@ function drawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 }
 function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 		ctx.beginPath();
+		if (cls[PlayersData.get(playername).COLOR] != undefined){
+		    ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
+		}else{
+		    ctx.fillStyle =  FColors.get(PlayersData.get(playername).COLOR)
 
-		ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
-		ctx.strokeStyle = "rgba(0,0,0,0.5)"
+		}
+//		ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
+		ctx.strokeStyle = MAPstatic.CT.fs
 		ctx.moveTo(GameW/2 + OffsetX+(poly[0][1]*Zoom*cos) +(poly[0][0]*Zoom*sin),GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         for (let _ = 1; _ < poly.length; _+=1) {
             ctx.lineTo(GameW/2 + OffsetX+(poly[_][1]*cos*Zoom)+(poly[_][0]*Zoom*sin) ,GameH/2 + OffsetY+(poly[_][1]*sin*Zoom)+(poly[_][0]*-cos*Zoom));

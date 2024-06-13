@@ -172,16 +172,16 @@ Servers = {
 # '26.223.93.1':'ws://26.223.93.1:8001',
 }
 Description ={
-    0:['2 x ArtyCannon(120mm) Ammo:150', 'Speed: 0.125', 'HP: 1000','Torpedos: 12','Smokes: 8','TurnSpeed: 20'],
-    1:['1 x TankCannon(45mm) Ammo:100', 'Speed: 0.250', 'HP: 90','TurnSpeed: 60'],
-    2:['1 x AutoCannon(20mm) Ammo:300', 'Speed: 0.200', 'HP: 30','Torpedos: 4','Smokes: 4', 'TurnSpeed: 45'],
-    3:['2 x MachineGun(8mm) Ammo:5000', 'Speed: 0.150', 'HP: 1000','Able to carry 4 fighters','TurnSpeed: 7'],
-    4:['2 x AutoCannon(20mm) Ammo:750', 'Speed: 0.100', 'HP: 2500','Able to carry 10 fighters','Extra ammo: 7500(8mm)','TurnSpeed: 10'],
-    5:[],
-    6:[],
+    1:['2 x ArtyCannon(120mm) Ammo:150', 'Speed: 0.125', 'HP: 1000','Torpedos: 12','Smokes: 8','TurnSpeed: 20'],
+    2:['1 x TankCannon(45mm) Ammo:100', 'Speed: 0.250', 'HP: 90','TurnSpeed: 60'],
+    3:['1 x AutoCannon(20mm) Ammo:300', 'Speed: 0.200', 'HP: 30','Torpedos: 4','Smokes: 4', 'TurnSpeed: 45'],
+    4:['1 x MachineGun(8mm) Ammo:250', 'MaxSpeed: 0.4', 'HP: 30'],
+    5:['2 x MachineGun(8mm) Ammo:5000', 'Speed: 0.150', 'HP: 1000','Able to carry 4 fighters','TurnSpeed: 7'],
+    6:['2 x AutoCannon(20mm) Ammo:750', 'Speed: 0.100', 'HP: 2500','Able to carry 10 fighters','Extra ammo: 7500(8mm)','TurnSpeed: 10'],
     7:[],
-    8:['1 x MachineGun(8mm) Ammo:250', 'MaxSpeed: 0.4', 'HP: 30'],
+    8:[],
     9:[],
+
     10:[],
     11:[],
     12:[],
@@ -191,7 +191,8 @@ Description ={
     16:[],
     17:[],
     18:[],
-    19:[]
+    19:[],
+    20:[]
 
 
 

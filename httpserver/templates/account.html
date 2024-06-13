@@ -31,7 +31,7 @@
         <a href="/image"  onclick="SaveMusicPos()">
             <div id="avvobv">
 
-                <img src="static\PlayerIcons\{{ava}}.svg">
+                <img src="{{ava}}">
             </div>
         </a>
         <h2>Awards</h2>
@@ -57,7 +57,7 @@
 <!--            <div class="lvlsign" style="left:1200px"><b class="unselectable">8</b><div></div></div>-->
 <!--            <div class="lvlsign" style="left:1350px"><b class="unselectable">9</b><div></div></div>-->
 <!--            <div class="lvlsign" style="left:1500px"><b class="unselectable">10</b><div></div></div>-->
-            {% for i in range(1,maxlvl+1) %}
+            {% for i in range(1,maxlvl) %}
                     {% if i<= lvl %}
 <div class="lvlsign completedsign" style="left:{{i*150}}px">
     <b class="unselectable">{{i}}</b>
@@ -66,18 +66,18 @@
     {% for j in lvlitems[i-1] %}
         <div class="vroot"></div>
 
-        {% if j[2] == 'vehicle' %}
-<div class="lvl-item"><img src="..\static\veh{{j[5]}}.svg" class="unselectable svimgveh"></div>
+        {% if j[2] == 'V' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
 
 
 
         {%endif%}
-        {% if j[2] == 'skin' %}
-        <div class="lvl-item"><img src="..\static\skin.svg" class="unselectable" style = "background-color: {{j[3]}}"></div>
+        {% if j[2] == 'S' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
 
         {%endif%}
-        {% if j[2] == 'image' %}
-    <div class="lvl-item"><img src="..\static\PlayerIcons\{{j[3]}}.svg" class="unselectable" ></div>
+        {% if j[2] == 'I' %}
+    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
 
         {%endif%}
     {% endfor %}
@@ -88,21 +88,23 @@
 <div class="lvlsign incompletedsign" style="left:{{i*150}}px">
     <b class="unselectable">{{i}}</b>
     <div class="root"></div>
+
     {% for j in lvlitems[i-1] %}
+        <span class="accItemTitle">{{j[1]}}</span>
         <div class="vroot"></div>
 
-        {% if j[2] == 'vehicle' %}
-<div class="lvl-item"><img src="..\static\veh{{j[5]}}.svg" class="unselectable svimgveh"></div>
+        {% if j[2] == 'V' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
 
 
 
         {%endif%}
-        {% if j[2] == 'skin' %}
-        <div class="lvl-item"><img src="..\static\skin.svg" class="unselectable" style = "background-color: {{j[3]}}"></div>
+        {% if j[2] == 'S' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
 
         {%endif%}
-        {% if j[2] == 'image' %}
-    <div class="lvl-item"><img src="..\static\PlayerIcons\{{j[3]}}.svg" class="unselectable" ></div>
+        {% if j[2] == 'I' %}
+    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
 
         {%endif%}
     {% endfor %}

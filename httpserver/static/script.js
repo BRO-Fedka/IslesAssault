@@ -243,12 +243,12 @@ function onWheel(e){
 function ShowPrevVeh(){
     sessionStorage.setItem('VehicleSelectVal',document.getElementById('VehicleSelect').value)
     //console.log(document.getElementById('VehicleSelect').value)
-    document.getElementById('VehicleSelect').value
+//    document.getElementById('VehicleSelect').value
 	for (let _ of VehList) {
         if(_[1]==document.getElementById('VehicleSelect').value){
             document.getElementById('vehprev').src = _[2];
 
-            document.getElementById('ShopVehLink').href = location.href+"shop/"+_[1]
+            document.getElementById('ShopVehLink').href = location.href+"shop/"+_[3]
 
 
             break;
@@ -353,6 +353,7 @@ var MAPstatic = {
 'S':[],
 '_':[],
 'CT':{
+        weather:"Clear",
 		sf: '#000',
 		ss: '#000',
 		bg:'#000',
@@ -362,23 +363,23 @@ var MAPstatic = {
 		bs:'#000',
 		gf:'#000',
 		gs:'#000',
-        f0: '#000',
-        f1: '#000',
-        f2: '#000',
-        f3: '#000',
-        f4: '#000',
-        f5: '#000',
-        f228: '#000',
 		o0:'#000',
 		o1:'#000',
 		l0:'#000',
 		l1:'#000',
 		b0:'#000',
 		b1:'#000',
-		b2:'#000'
+		b2:'#000',
+		fs:"rgba(0,0,0,0)",
+		os:"rgba(0,0,0,0)",
 
 	}
 };
+var FColors = new Map()
+function AddFColor(clval, cl){
+FColors.set(Number(clval),cl)
+
+}
 let Zoom = 320
 let currentZoom = 320
 let socket = null
@@ -406,7 +407,8 @@ function startgame() {
 			socket = new WebSocket(document.getElementById('ServerSelect').value);
 //			console.log('2')
 			socket.addEventListener('open', function (event) {
-				socket.send('n'+nicknameinput.value+'\n'+activecl+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
+
+				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
 				vehicle = Number(document.getElementById('VehicleSelect').value)
 
 			});
@@ -1018,39 +1020,45 @@ let BangParticles2 = [];
 let SmokeParticles0 = [];
 let SmokeParticles0rate = 60;
 let TracerParticles1 = [];
-let availablecolors = document.getElementById('ColorMenu').innerText.split(',')
-for (let _ = 0; _ < availablecolors.length; _ += 1) {
-availablecolors[_] = Number(availablecolors[_])
-}
-let activecl = availablecolors[0]
-try{
-activecl =Number( sessionStorage.getItem("SelectedCL"))
-if (availablecolors.indexOf(activecl) == -1){
-activecl = availablecolors[0]
-}
+//let availablecolors = document.getElementById('ColorMenu').innerText.split(',')
+//for (let _ = 0; _ < availablecolors.length; _ += 1) {
+//availablecolors[_] = Number(availablecolors[_])
+//}
+//let activecl = availablecolors[0]
+function changeColor(){
+sessionStorage.setItem("SelectedCL",document.querySelector('input[name="color"]:checked').value)
 
-}catch{
-activecl = availablecolors[0]
 }
-document.getElementById('ColorMenu').innerHTML = ''
-console.log(availablecolors)
-for (let _ of availablecolors){
-	let a = document.createElement('div')
-	a.classList.add('cl')
-	if(_ == activecl){
-		a.classList.add('activecl')
-	}
-	a.id = 'cl'+_
-	document.getElementById('ColorMenu').appendChild(a)
-	document.getElementById('cl'+_).onclick= function () {
-		for (let i of availablecolors){
-			document.getElementById('cl'+i).classList.remove('activecl');
-		}
-		document.getElementById('cl'+_).classList.add('activecl');
-		sessionStorage.setItem("SelectedCL",_)
-		activecl = Number(_);
-	}
+try{
+document.querySelector('input[name="color"][value="'+ sessionStorage.getItem("SelectedCL")+'"]').checked = true
 }
+catch{}
+//if (availablecolors.indexOf(activecl) == -1){
+//activecl = availablecolors[0]
+//}
+//
+//}catch{
+//activecl = availablecolors[0]
+//}
+//document.getElementById('ColorMenu').innerHTML = ''
+//console.log(availablecolors)
+//for (let _ of availablecolors){
+//	let a = document.createElement('div')
+//	a.classList.add('cl')
+//	if(_ == activecl){
+//		a.classList.add('activecl')
+//	}
+//	a.id = 'cl'+_
+//	document.getElementById('ColorMenu').appendChild(a)
+//	document.getElementById('cl'+_).onclick= function () {
+//		for (let i of availablecolors){
+//			document.getElementById('cl'+i).classList.remove('activecl');
+//		}
+//		document.getElementById('cl'+_).classList.add('activecl');
+//		sessionStorage.setItem("SelectedCL",_)
+//		activecl = Number(_);
+//	}
+//}
 let MSGs = [];
 let ammo = new Map();
 ammo.set('120mm',0);
@@ -1212,16 +1220,23 @@ function keyup(event) {
 }
 let start = null;
 let timenow = Date.now()
-if(ColorPack == 'Winter'){
-    for(var i = 0; i < SnowParticles0max; i++)
-        {
-            SnowParticles0.push(new Particle2(canvas.width,canvas.height))
-        }
-        }
+
 function DRAW(timestamp)  {
 
 try{
     if (GameStatus == "InGame"){
+    if(MAPstatic.CT.weather == 'Snow' ){
+    if (SnowParticles0.length == 0){
+        for(var i = 0; i < SnowParticles0max; i++)
+        {
+            SnowParticles0.push(new Particle2(canvas.width,canvas.height))
+        }
+    }
+    }else{
+        if (SnowParticles0.length > 0){
+        SnowParticles0 = []
+        }
+    }
     timenow = Date.now()
 	if(BURNING){
 		ShakeXbnds += 0.25
