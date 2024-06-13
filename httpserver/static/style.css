@@ -1694,7 +1694,7 @@ color:rgba(255,255,255,1);
 	background-color: rgba(0,0,0,0.3);
 
 }
-<<<<<<< dev\\
+
 @keyframes shopGetIt {
   0% {transform: scale(1); ro}
   25%{transform: scale(1.25) rotate(-10deg);}
@@ -1708,5 +1708,4 @@ color:rgba(255,255,255,1);
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
-=======
->>>>>>> master
+
