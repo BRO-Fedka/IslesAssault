@@ -320,7 +320,7 @@ def index():
     # for _ in PREM_ITEM.keys():
     #     if PREM_ITEM[_][0] == 0 and PREM_ITEM[_][2] == 'vehicle': arr.append([_]+list(PREM_ITEM[_]))
     colors = []
-    allColors = Item.query.filter_by(type="S",lvl = 0).all()
+    allColors = Item.query.filter_by(type="S",lvl = 0,cost=0).all()
     for color in allColors:
         colors.append([color.info, color.imgLink])
 
