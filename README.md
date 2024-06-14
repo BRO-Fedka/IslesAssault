@@ -58,9 +58,14 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+#### 1.4.1v Fixes
+* New display of aircarrier.
+* Nicknames size depends on zoom.
+* Some bugs were fixed.
 ### 1.4 Inventory and server structure refactor
-* New inventory system
-* API for game servers was created
+* New inventory system.
+* API for game servers was created.
+* Red color added.
 #### 1.3.2v - Development ease update
 * Logging added.
 * *.env onfig files added.
