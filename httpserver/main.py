@@ -402,7 +402,7 @@ def server_connect():
         if isDEV: return 'OK'
         print(request.form['key'])
         hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
-        if isDEV: print(Server.query.all())
+        print(Server.query.all())
         serv = Server.query.filter_by(key = hashkey).first()
         print(serv)
         serv.status = "online"
