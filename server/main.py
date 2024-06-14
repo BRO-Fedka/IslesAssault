@@ -1919,7 +1919,7 @@ async def handler(websocket):
                     print(resp)
                     respJSON = json.loads(resp)
                     for _ in PlayersAccs.keys():
-                        if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
+                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name:
                             PlayersSockets.pop(name)
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)

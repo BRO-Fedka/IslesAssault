@@ -131,31 +131,7 @@ function NoTeamTag(name, updTags=true){
 }
 let GameH = 0
 let GameW = 0
-function ShowName(name, hp, hpmax,x,y){
 
-    var p = NoTeamTag(PlayerName)
-//      console.log(PlayerTags)
-//    console.log(p,PlayerTags.get(p),PlayerTags.get(name))
-    if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
-    ctx.fillStyle = '#0000ff';
-    }else{
-    ctx.fillStyle = '#ff0000';
-    }
-
-    ctx.strokeStyle = '#000'
-    ctx.lineWidth = 1
-    ctx.textAlign = 'center'
-    ctx.font = "20px Arial";
-    if (PlayerTags.get(name) != null){
-        ctx.fillText("["+PlayerTags.get(name)+"]"+name, x, y-50);
-    }else{
-        ctx.fillText(name, x, y-50);
-    }
-    ctx.fillStyle = '#00ff00';
-    ctx.fillStyle = 'rgb('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0)'
-    ctx.fillRect(x-25,y-45,50*(hp/hpmax),7) //50*Number(larr[4])
-    ctx.strokeRect(x-25,y-45,50,7)
-}
 PIXI.sound.add("bang","static\\bang.mp3")
 PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
