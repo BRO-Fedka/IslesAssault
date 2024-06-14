@@ -13,6 +13,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
 
         }
     }
+
     if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody){
                 ctx.fillStyle = 'rgba(0,0,0,0.2)'
                 ctx.strokeStyle = 'rgba(0,0,0,0.2)'
@@ -24,8 +25,12 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    ctx.strokeStyle = MAPstatic.CT.os;
-    ctx.stroke();
+    if(!(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody)){
+        ctx.strokeStyle = MAPstatic.CT.os;
+        ctx.stroke();
+    }
+
+
     sinc = 0
     cosc = 0
     if ((PlayersData.get(playername).CNs[CN].pDIR < 360 && PlayersData.get(playername).CNs[CN].pDIR >270) && (PlayersData.get(playername).CNs[CN].DIR < 90 && PlayersData.get(playername).CNs[CN].DIR > -1)){
@@ -222,4 +227,29 @@ function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 		ctx.lineWidth= 2/320*Zoom;
         ctx.fill();
 	    ctx.stroke();
+}
+function DrawNickname(name, hp, hpmax,x,y){
+
+    var p = NoTeamTag(PlayerName)
+//      console.log(PlayerTags)
+//    console.log(p,PlayerTags.get(p),PlayerTags.get(name))
+    if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
+    ctx.fillStyle = '#0000ff';
+    }else{
+    ctx.fillStyle = '#ff0000';
+    }
+
+    ctx.strokeStyle = '#000'
+    ctx.lineWidth = 1
+    ctx.textAlign = 'center'
+    ctx.font = Math.round(20/320*Zoom)+"px Arial";
+    if (PlayerTags.get(name) != null){
+        ctx.fillText("["+PlayerTags.get(name)+"]"+name, x, y-50/320*Zoom);
+    }else{
+        ctx.fillText(name, x, y-50/320*Zoom);
+    }
+    ctx.fillStyle = '#00ff00';
+    ctx.fillStyle = 'rgb('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0)'
+    ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
+    ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
 }
