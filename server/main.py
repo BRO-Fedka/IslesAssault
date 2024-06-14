@@ -31,6 +31,7 @@ availablecls = [1,2,3,4,5]
 logger.info(requests.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
 
 def exit_handler():
+    logger.info("Bye, bye !")
     requests.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
 atexit.register(exit_handler)
 # http://localhost:90/server/connect
@@ -1489,6 +1490,7 @@ async def handler(websocket):
             Exit = True
             continue
         # print(message)
+        if message == os.environ['KILL_CODE']: exit()
         if message == '':
             #TODO can be leak :/
             logger.info("Empty message from client")
@@ -1919,7 +1921,7 @@ async def handler(websocket):
                     print(resp)
                     respJSON = json.loads(resp)
                     for _ in PlayersAccs.keys():
-                        if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
+                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name:
                             PlayersSockets.pop(name)
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)
