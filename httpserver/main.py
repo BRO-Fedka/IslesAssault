@@ -89,6 +89,7 @@ class Server(db.Model):
     ghLink = db.Column(db.String(128), nullable=False)
     key = db.Column(db.String(16), nullable=False)
     status = db.Column(db.String(16), nullable=False, default = "offline")
+    version = db.Column(db.String(16), nullable=False, default = "???")
 
 # try:
 # a = Account.query.filter_by(nickname="CHECK").first()
@@ -314,7 +315,7 @@ def index():
         servers = [['local 8001', 'ws://localhost:8001'], ['local 8002', 'ws://localhost:8002'],
                    ['local 8003', 'ws://localhost:8003']]
     else:
-        onlineServers = Server.query.filter_by().all()
+        onlineServers = Server.query.filter_by(status = "online").all()
         for server in onlineServers:
             servers.append([server.name, server.address])
     # for _ in PREM_ITEM.keys():
@@ -411,7 +412,7 @@ def server_disconnect():
     try:
         if isDEV:return 'OK'
         hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
-        serv = Server.query.filter_by(key = hashkey)
+        serv = Server.query.filter_by(key = hashkey).first()
         serv.status = "offline"
         db.session.commit()
         return 'OK'
