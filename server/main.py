@@ -12,7 +12,8 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 
 from loguru import logger
-import requests
+import asynchronous_requests as requests
+import requests as req_sync
 import time
 import dotenv
 dotenv.load_dotenv()
@@ -29,11 +30,11 @@ TPS = 15
 VIEW_X = 6
 VIEW_Y = 3
 availablecls = [1,2,3,4,5]
-logger.info(requests.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
+logger.info(req_sync.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
 
 def exit_handler():
     logger.info("Bye, bye !")
-    requests.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
+    req_sync.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
 atexit.register(exit_handler)
 # http://localhost:90/server/connect
 TEAM_HELP = '''/team create [team name] /team join [team name] /team kick [player name] /team leave /team list /team chat [message]'''
@@ -184,7 +185,7 @@ vehicleinfo = {
 'Z':1,
         'HPMAX': 30,
         'COLS': False,
-'AAROCKETS':1000,
+'AAROCKETS':4,
 'SPWEP':1,
 'MOVETYPE':2,
         'BOOST':0.01,
@@ -513,8 +514,9 @@ async def game():
                     t = time.time()-AARockets[aarocket][4]
                     dist = t*AARockets[aarocket][6] + t*t*AARockets[aarocket][11]/2
                     if dist > AARockets[aarocket][12]:
-                        AARocketsHandler[aarocket] = AARockets[aarocket].copy()
-                        delarr.append(aarocket)
+                        AARockets[aarocket][10] = 4
+                        # AARocketsHandler[aarocket] = AARockets[aarocket].copy()
+                        # delarr.append(aarocket)
                     AARockets[aarocket][2] = math.cos(AARockets[aarocket][5]/180*math.pi)*dist
                     AARockets[aarocket][3] = math.sin(AARockets[aarocket][5]/180*math.pi)*dist
 
@@ -526,49 +528,48 @@ async def game():
                     prevDist = prevT * AARockets[aarocket][6] + prevT * prevT * AARockets[aarocket][11] / 2
                     deltaS = dist - prevDist
                     AARockets[aarocket][8] = LineString([[AARockets[aarocket][0]+AARockets[aarocket][2],AARockets[aarocket][1]+AARockets[aarocket][3]],[AARockets[aarocket][0]+AARockets[aarocket][2]-math.cos(AARockets[aarocket][5]/180*math.pi)*deltaS,AARockets[aarocket][1]+AARockets[aarocket][3]-math.sin(AARockets[aarocket][5]/180*math.pi)*deltaS]])
-                    try:
-                        for _ in MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['PLAYERS']:
+                    if AARockets[aarocket][10] != 3 and AARockets[aarocket][10] != 2:
+                        try:
+                            for _ in MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['PLAYERS']:
 
-                            if _ in PlayersData.keys() and _ !=AARockets[aarocket][7] and PlayersData[_]['Z'] ==1:
+                                if _ in PlayersData.keys() and _ !=AARockets[aarocket][7] and PlayersData[_]['Z'] ==1:
 
-                                if PlayersData[_]['COL'].intersects(AARockets[aarocket][8]):
+                                    if PlayersData[_]['COL'].intersects(AARockets[aarocket][8]):
 
-                                    if PlayersData[_]['STATUS'] == 'ALIVE' and not _ in Teams[PlayersData[_]['TEAM']]:
+                                        if PlayersData[_]['STATUS'] == 'ALIVE' and not _ in Teams[PlayersData[_]['TEAM']]:
 
 
-                                        # Point(2, 1).buffer(1.5)
-                                        pcrds = AARockets[aarocket][8].intersection(PlayersData[_]['COL']).coords[:][0]
-                                        p = Point(pcrds).buffer(0.02)
-                                        PlayersData[_]['HP'] -= int(AARockets[aarocket][9] * p.intersection(PlayersData[_]['COL']).area / p.area)
+                                            # Point(2, 1).buffer(1.5)
+                                            PlayersData[_]['HP'] -= AARockets[aarocket][9]
 
-                                        PlayersData[_]['LASTDMG'] = datetime.datetime.now()
+                                            PlayersData[_]['LASTDMG'] = datetime.datetime.now()
 
-                                        PlayersData[AARockets[aarocket][7]]['SCORES'] += AARockets[aarocket][9]+PlayersData[_]['HP']
-                                        PlayersData[_]['KILLER'] = AARockets[aarocket][7]
-                                        if PlayersData[_]['HP'] <= 0:
-                                            PlayersData[_]['STATUS'] = 'BURNING'
-                                            for i in PlayersData[_]['CAN']:
-                                                i[8] = 3
-                                            PlayersData[_]['BURNTIMER'] = 5*TPS
+                                            PlayersData[AARockets[aarocket][7]]['SCORES'] += AARockets[aarocket][9]+PlayersData[_]['HP']
                                             PlayersData[_]['KILLER'] = AARockets[aarocket][7]
-                                            # try:
-                                            #     # PlayersData[Torpedos[torpedo][7]]['SCORES'] += 1+PlayersData[Torpedos[torpedo][7]]['KSR']
-                                            #     if not PlayersAccs[Torpedos[torpedo][7]]['NICK']=='':
-                                            #         PlayersAccs[Torpedos[torpedo][7]]['money'] += PlayersData[Torpedos[torpedo][7]]['KSR']*10
-                                            #         SQLctx.execute(
-                                            #             f"""UPDATE Account set money = money+{PlayersData[Torpedos[torpedo][7]]['KSR']*10} WHERE nickname = '{PlayersAccs[Torpedos[torpedo][7]]['NICK']}' AND password = '{PlayersAccs[Torpedos[torpedo][7]]['PSW']}'""")
-                                            #         SQL.commit()
-                                            #         PlayersData[Torpedos[torpedo][7]]['MSGTURN'].append(f'\nl,You received {PlayersData[Torpedos[torpedo][7]]["KSR"]*10} goldshell{"s"*int(PlayersData[Torpedos[torpedo][7]]["KSR"]>0)} !,{LastMSGI}')
-                                            #         LastMSGI+=1
-                                            #     PlayersData[Torpedos[torpedo][7]]['KSR'] +=1
-                                            # except:pass
-                                            PlayersData[_]['HP'] = 0
-                                    AARockets[aarocket][10]=1
-                    except KeyError:
-                        # pass
-                        delarr.append(aarocket)
-                        # logging.exception("message")
-                    if AARockets[aarocket][10]==1:
+                                            if PlayersData[_]['HP'] <= 0:
+                                                PlayersData[_]['STATUS'] = 'BURNING'
+                                                for i in PlayersData[_]['CAN']:
+                                                    i[8] = 3
+                                                PlayersData[_]['BURNTIMER'] = 5*TPS
+                                                PlayersData[_]['KILLER'] = AARockets[aarocket][7]
+                                                # try:
+                                                #     # PlayersData[Torpedos[torpedo][7]]['SCORES'] += 1+PlayersData[Torpedos[torpedo][7]]['KSR']
+                                                #     if not PlayersAccs[Torpedos[torpedo][7]]['NICK']=='':
+                                                #         PlayersAccs[Torpedos[torpedo][7]]['money'] += PlayersData[Torpedos[torpedo][7]]['KSR']*10
+                                                #         SQLctx.execute(
+                                                #             f"""UPDATE Account set money = money+{PlayersData[Torpedos[torpedo][7]]['KSR']*10} WHERE nickname = '{PlayersAccs[Torpedos[torpedo][7]]['NICK']}' AND password = '{PlayersAccs[Torpedos[torpedo][7]]['PSW']}'""")
+                                                #         SQL.commit()
+                                                #         PlayersData[Torpedos[torpedo][7]]['MSGTURN'].append(f'\nl,You received {PlayersData[Torpedos[torpedo][7]]["KSR"]*10} goldshell{"s"*int(PlayersData[Torpedos[torpedo][7]]["KSR"]>0)} !,{LastMSGI}')
+                                                #         LastMSGI+=1
+                                                #     PlayersData[Torpedos[torpedo][7]]['KSR'] +=1
+                                                # except:pass
+                                                PlayersData[_]['HP'] = 0
+                                        AARockets[aarocket][10]=1
+                        except KeyError:
+                            # pass
+                            delarr.append(aarocket)
+                            # logging.exception("message")
+                    if AARockets[aarocket][10]==1 or  AARockets[aarocket][10]==4:
                         AARocketsHandler[aarocket] = AARockets[aarocket].copy()
                         delarr.append(aarocket)
                         continue
@@ -1188,7 +1189,7 @@ async def game():
                     #     else:
                     #         PlayersData[player]['STR'] = f'{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},1,' + '+' * int(PlayersData[player]['GAS'] >= 0) + str(PlayersData[player]['GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{str(int(PlayersData[player]["HP"]))},{str(int(PlayersData[player]["HPMAX"]))},{str(PlayersData[player]["X"])},{str(PlayersData[player]["Y"])},{PlayersAccs[player]["money"]},{WH},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))
                     elif PlayersCosmetics[player]['VEHICLE'] == 8:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])+','+str(PlayersData[player]['AAROCKETS'])
                     PlayersData[player]['STR'] += ','
                     for _ in Zones:
                         PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM'])))
@@ -1303,7 +1304,7 @@ async def game():
                     #         PlayersData[player]['STR'] += f'\n*,{_},'+str(int((Zones[_][0]-PlayersData[player]['X'])*320+PlayersInputs[player]['w']/2))+','+str(int((Zones[_][1]-PlayersData[player]['Y'])*320+PlayersInputs[player]['h']/2))+','+str(q)
                     if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==1 and PlayersInputs[player]['spk'] and PlayersData[player]["AAROCKETS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTAAROCKET"]).total_seconds() > 0.3:
                         PlayersData[player]["AAROCKETS"]-=1
-                        AARockets[LastAARocketI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,time.time(),PlayersData[player]["DIR"]+round(random.random()*20-10),PlayersData[player]['SPEED'],player,None,15,3,0.5,2]
+                        AARockets[LastAARocketI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,time.time(),PlayersData[player]["DIR"]+round(random.random()*20-10),PlayersData[player]['SPEED'],player,None,40,3,0.5,1.25]
                         LastAARocketI +=1
                         PlayersData[player]["LASTAAROCKET"] = datetime.datetime.now()
                     if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==0 and PlayersInputs[player]['spk'] and PlayersData[player]["TORPEDOS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTTORPEDO"]).seconds > 5:
@@ -1603,7 +1604,7 @@ async def game():
                     logger.info("change_player_data",
                                 {"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
                                  'delta': delta, 'money': money})
-                    requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})
+                    await requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})
 
                 try:
 
@@ -2060,7 +2061,7 @@ async def handler(websocket):
                 resp = ""
                 try:
                     print(API_SERV_ADDRESS + "item_check_for_acc")
-                    resp = requests.post(API_SERV_ADDRESS+"item_check_for_acc",{'nickname':message[1:].split('\n')[3],"password":message[1:].split('\n')[4],"color":PlayersCosmetics[name]["COLOR"],"vehicle":PlayersCosmetics[name]["VEHICLE"]}).text
+                    resp = (await requests.post(API_SERV_ADDRESS+"item_check_for_acc",{'nickname':message[1:].split('\n')[3],"password":message[1:].split('\n')[4],"color":PlayersCosmetics[name]["COLOR"],"vehicle":PlayersCosmetics[name]["VEHICLE"]})).text
 
                 except:
                     print('!')
@@ -2089,7 +2090,7 @@ async def handler(websocket):
                         await websocket.send('M'+MAPJSON)
                 except:
                     print(API_SERV_ADDRESS + "item_check")
-                    resp = requests.post(API_SERV_ADDRESS + "item_check",{ "color": PlayersCosmetics[name]["COLOR"],"vehicle": PlayersCosmetics[name]["VEHICLE"]}).text
+                    resp = (await requests.post(API_SERV_ADDRESS + "item_check",{ "color": PlayersCosmetics[name]["COLOR"],"vehicle": PlayersCosmetics[name]["VEHICLE"]})).text
                     print(resp)
                     respJSON = json.loads(resp)
                     if respJSON['color'] < 0:

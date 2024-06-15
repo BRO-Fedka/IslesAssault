@@ -974,6 +974,7 @@ updatep:function(playername,argarr){
             document.getElementById('SmkInv').style.display = "none";
             document.getElementById('CmodInv').style.display = "none";
             document.getElementById('CarryInv').style.display = "none";
+            document.getElementById('AARocketInv').style.display = ''
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -1015,7 +1016,7 @@ updatep:function(playername,argarr){
         spdnum.innerHTML = 'SPD: '+argarr[6];
         xnum.innerHTML = 'X: ' + Math.round(argarr[3]*100)/100;
         ynum.innerHTML = 'Y: ' + Math.round(argarr[4]*100)/100;
-
+        aarnum.innerText= argarr[10]
         if (Cmod ) {
                 let sin = 0
                 let cos = 0

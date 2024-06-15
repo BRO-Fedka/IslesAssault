@@ -135,6 +135,7 @@ let GameW = 0
 PIXI.sound.add("bang","static\\bang.mp3")
 PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
+PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
 
 PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
 PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
@@ -469,7 +470,7 @@ function startgame() {
 
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
-					console.log(PING)
+//					console.log(PING)
 //                    console.log(Date.now())
 //                    console.log(INFO)
 					let infarr = INFO.split('\n');
@@ -739,7 +740,7 @@ function startgame() {
 //                            console.log('!')
                                 if (!(AARocketsData.has(larr[1]))){
 //                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
-                                AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()-3*PING,Number(larr[7])])
+                                AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()-1.5*PING,Number(larr[7])])
                                 }
                             }else{
 //                            console.log('!dis')
@@ -950,6 +951,7 @@ let gasnum = document.getElementById('GasNum');
 let spdnum = document.getElementById('SpdNum');
 let dirnum = document.getElementById('DirNum');
 let tornum = document.getElementById('TorNum');
+let aarnum = document.getElementById('AARocketNum');
 let carrynum = document.getElementById('CarryNum');
 let smknum = document.getElementById('SmkNum');
 let tracernum = document.getElementById('TracerNum');
@@ -2012,16 +2014,24 @@ if (ParticlesProcessing){
 		if(AARocketsData.get(_)[3] == 1){
 			AARocketsData.get(_)[3]=0
 
-            PIXI.sound.play('wtrBang');
-			for (let i = 0; i < 5; i++) {
+//            PIXI.sound.play('wtrBang');
+			for (let i = 0; i < 15; i++) {
+			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.75))
 //			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
-                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
+//                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
             }
 			ShakeXbnds += 10
 			ShakeYbnds += 10
 		}else if(AARocketsData.get(_)[3] == 2){
-                    PIXI.sound.play('lnchTrpd');
+                    PIXI.sound.play('lnchRckt');
                      AARocketsData.get(_)[3] = 0
+		}else if(AARocketsData.get(_)[3] == 4){
+			for (let i = 0; i < 3; i++) {
+			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.5))
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+//                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
+            }
+            AARocketsData.get(_)[3]=0
 		}
 //		tornum.innerText = OBJs[0].get('<').get(_)[4];
 //		if (OBJs[1].get('<').has(_)) {
