@@ -99,7 +99,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                     if(fire){
                         let a = Math.random()*Math.PI * 2;
 
-                        firePrts.push(new firePrt(X+(nX-X)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin), Y+(nY-Y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos),0.75));
+                        firePrts.push(new firePrt(X+(nX-X)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin), Y+(nY-Y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos),firesize));
 
                     }
         }

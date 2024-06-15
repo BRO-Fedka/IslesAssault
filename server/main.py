@@ -22,6 +22,7 @@ WH = 16
 # SQL = sqlite3.connect(os.environ['DB_PATH'])
 API_SERV_ADDRESS = os.environ['API_ADDRESS']
 API_KEY = os.environ['API_KEY']
+isDEV = os.environ['DEV']
 # SQLctx = SQL.cursor()
 # print(SQLctx.execute(f"SELECT * FROM Account WHERE nickname = 'LOL'").fetchone())
 TPS = 15
@@ -52,6 +53,7 @@ vehicleinfo = {
         'SPWEP':0,
         'MOVETYPE':0,
         'TORPEDOS':12,
+        'AAROCKETS':0,
         'SMOKES':8,
         'HP':1000,
 'BOOST':0.02,
@@ -74,6 +76,7 @@ vehicleinfo = {
 'COLP': True,
 'TAKEN':False,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'SMOKES':0,
 'GROUNDSPEED':0.25,
 'CARRIER':False,
@@ -101,6 +104,7 @@ vehicleinfo = {
 
 'SMOKES':4,
 'TORPEDOS':4,
+'AAROCKETS':0,
         'HP': 30,
         'HPMAX': 30,
         'COLS': True,
@@ -117,6 +121,7 @@ vehicleinfo = {
 "PENDMGDST":0.05,
 "DEGDMGCOF":0.1,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'GROUNDSPEED':0.15,
         'HP': 1000,
 'CARRIER':True,
@@ -142,6 +147,7 @@ vehicleinfo = {
 "PENDMGDST":0.05,
 "DEGDMGCOF":0.75,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'CARRIER':True,
 'TAKEN':False,
 'CARVEH':[8],
@@ -178,7 +184,8 @@ vehicleinfo = {
 'Z':1,
         'HPMAX': 30,
         'COLS': False,
-'SPWEP':None,
+'AAROCKETS':1000,
+'SPWEP':1,
 'MOVETYPE':2,
         'BOOST':0.01,
         'MAXSPEED': 0.4,
@@ -281,6 +288,7 @@ for x in range(0,WH):
         MAP['Q'][(x, y)]['BULLETS'] = set()
         MAP['Q'][(x, y)]['TORPEDOS'] = set()
         MAP['Q'][(x, y)]['SMOKES'] = set()
+        MAP['Q'][(x,y)]['AAROCKETS'] = set()
 Zones = {'A':[8,8,'','',0,1],
 'B':[4.35,7.5,'','',0,1],
          } ### X,Y,p/t,name,perc
@@ -294,13 +302,16 @@ TeamRec={} #Player=>team
 TeamsOwners = {}
 Bullets = {}
 Torpedos = {}
+AARockets = {}
 TorpedosHandler = {}
 BulletsHandler = {}
+AARocketsHandler = {}
 Smokes = {}
 #Bodies = {}
 LastBulletI = 0
 LastTorpedoI = 0
 LastSmokeI = 0
+LastAARocketI = 0
 LastMSGI = 0
 ServInfoJSON = open('SERVINFO.json', 'r').read()
 def lookat(x,y):
@@ -334,12 +345,14 @@ async def game():
     global LastBulletI
     global LastTorpedoI
     global LastSmokeI
+    global LastAARocketI
     global LastMSGI
     while True:
         try:
             await asyncio.sleep(1/TPS)
             if LastBulletI >1000: LastBulletI = 0
             if LastTorpedoI >1000: LastTorpedoI = 0
+            if LastAARocketI > 1000: LastAARocketI = 0
             if LastSmokeI > 1000: LastSmokeI = 0
             if LastMSGI > 1000: LastMSGI = 0
             delarr = []
@@ -474,8 +487,8 @@ async def game():
                         # print(BulletsHandler)
                         delarr.append(bullet)
                         continue
-                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
-                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+1):
+                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+2):
+                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+2):
                             try:
                                 # del MAP['Q'][(x, y)]['BULLETS'][bullet]
                                 MAP['Q'][(x, y)]['BULLETS'].discard(bullet)
@@ -493,6 +506,93 @@ async def game():
                     del Bullets[bullet]
                 except:pass
                 ################################################
+            delarr=[]
+            for aarocket in AARockets.keys():
+                try:
+                    # AARockets[aarocket][4]+= AARockets[aarocket][6]/TPS
+                    t = time.time()-AARockets[aarocket][4]
+                    dist = t*AARockets[aarocket][6] + t*t*AARockets[aarocket][11]/2
+                    if dist > AARockets[aarocket][12]:
+                        AARocketsHandler[aarocket] = AARockets[aarocket].copy()
+                        delarr.append(aarocket)
+                    AARockets[aarocket][2] = math.cos(AARockets[aarocket][5]/180*math.pi)*dist
+                    AARockets[aarocket][3] = math.sin(AARockets[aarocket][5]/180*math.pi)*dist
+
+                    if AARockets[aarocket][10]==2:
+                        AARockets[aarocket][10] = 0
+                    elif AARockets[aarocket][10]==3:
+                        AARockets[aarocket][10] = 2
+                    prevT = time.time()-AARockets[aarocket][4] - 1/TPS
+                    prevDist = prevT * AARockets[aarocket][6] + prevT * prevT * AARockets[aarocket][11] / 2
+                    deltaS = dist - prevDist
+                    AARockets[aarocket][8] = LineString([[AARockets[aarocket][0]+AARockets[aarocket][2],AARockets[aarocket][1]+AARockets[aarocket][3]],[AARockets[aarocket][0]+AARockets[aarocket][2]-math.cos(AARockets[aarocket][5]/180*math.pi)*deltaS,AARockets[aarocket][1]+AARockets[aarocket][3]-math.sin(AARockets[aarocket][5]/180*math.pi)*deltaS]])
+                    try:
+                        for _ in MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['PLAYERS']:
+
+                            if _ in PlayersData.keys() and _ !=AARockets[aarocket][7] and PlayersData[_]['Z'] ==1:
+
+                                if PlayersData[_]['COL'].intersects(AARockets[aarocket][8]):
+
+                                    if PlayersData[_]['STATUS'] == 'ALIVE' and not _ in Teams[PlayersData[_]['TEAM']]:
+
+
+                                        # Point(2, 1).buffer(1.5)
+                                        pcrds = AARockets[aarocket][8].intersection(PlayersData[_]['COL']).coords[:][0]
+                                        p = Point(pcrds).buffer(0.02)
+                                        PlayersData[_]['HP'] -= int(AARockets[aarocket][9] * p.intersection(PlayersData[_]['COL']).area / p.area)
+
+                                        PlayersData[_]['LASTDMG'] = datetime.datetime.now()
+
+                                        PlayersData[AARockets[aarocket][7]]['SCORES'] += AARockets[aarocket][9]+PlayersData[_]['HP']
+                                        PlayersData[_]['KILLER'] = AARockets[aarocket][7]
+                                        if PlayersData[_]['HP'] <= 0:
+                                            PlayersData[_]['STATUS'] = 'BURNING'
+                                            for i in PlayersData[_]['CAN']:
+                                                i[8] = 3
+                                            PlayersData[_]['BURNTIMER'] = 5*TPS
+                                            PlayersData[_]['KILLER'] = AARockets[aarocket][7]
+                                            # try:
+                                            #     # PlayersData[Torpedos[torpedo][7]]['SCORES'] += 1+PlayersData[Torpedos[torpedo][7]]['KSR']
+                                            #     if not PlayersAccs[Torpedos[torpedo][7]]['NICK']=='':
+                                            #         PlayersAccs[Torpedos[torpedo][7]]['money'] += PlayersData[Torpedos[torpedo][7]]['KSR']*10
+                                            #         SQLctx.execute(
+                                            #             f"""UPDATE Account set money = money+{PlayersData[Torpedos[torpedo][7]]['KSR']*10} WHERE nickname = '{PlayersAccs[Torpedos[torpedo][7]]['NICK']}' AND password = '{PlayersAccs[Torpedos[torpedo][7]]['PSW']}'""")
+                                            #         SQL.commit()
+                                            #         PlayersData[Torpedos[torpedo][7]]['MSGTURN'].append(f'\nl,You received {PlayersData[Torpedos[torpedo][7]]["KSR"]*10} goldshell{"s"*int(PlayersData[Torpedos[torpedo][7]]["KSR"]>0)} !,{LastMSGI}')
+                                            #         LastMSGI+=1
+                                            #     PlayersData[Torpedos[torpedo][7]]['KSR'] +=1
+                                            # except:pass
+                                            PlayersData[_]['HP'] = 0
+                                    AARockets[aarocket][10]=1
+                    except KeyError:
+                        # pass
+                        delarr.append(aarocket)
+                        # logging.exception("message")
+                    if AARockets[aarocket][10]==1:
+                        AARocketsHandler[aarocket] = AARockets[aarocket].copy()
+                        delarr.append(aarocket)
+                        continue
+                    for x in range(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1)-1,int((AARockets[aarocket][2]+AARockets[aarocket][0])//1)+2):
+                        for y in range(int((AARockets[aarocket][3]+AARockets[aarocket][1])//1)-1,int((AARockets[aarocket][3]+AARockets[aarocket][1])//1)+2):
+                            try:
+
+                                # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
+                                MAP['Q'][(x, y)]['AAROCKETS'].discard(aarocket)
+                            except:
+                                pass
+                    try:
+                        MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['AAROCKETS'].add(aarocket)
+                    except:pass
+                except Exception:
+                    pass
+                    # logging.exception("message")
+            for aarocket in delarr:
+                try:
+                    del AARockets[aarocket]
+                except:pass
+
+
+            ################################################
             delarr=[]
             for torpedo in Torpedos.keys():
                 try:
@@ -564,8 +664,8 @@ async def game():
                         TorpedosHandler[torpedo] = Torpedos[torpedo].copy()
                         delarr.append(torpedo)
                         continue
-                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+1):
-                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
+                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+2):
+                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+2):
                             try:
 
                                 # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
@@ -614,18 +714,21 @@ async def game():
                     if len(players) > 1:
                         gvgt = True
                         for player in range(1,len(players)):
-                            if PlayersData[players[player]]['TEAM'] != PlayersData[players[player-1]]['TEAM'] and not PlayersData[players[player]]['TEAM'] is None: gvgt = False
+                            if PlayersData[players[player]]['TEAM'] != PlayersData[players[player-1]]['TEAM'] and not PlayersData[players[player]]['TEAM'] is None:
+                                gvgt = False
+                                break
                         if gvgt:
                             Zones[zone][2] = 'team'
                             Zones[zone][3] = PlayersData[players[0]]['TEAM']
                             for pl in players:
                                 if (datetime.datetime.now() - PlayersData[pl]['EQZNUPDTTIMER']).seconds > 30:
-                                    if PlayersData[pl]['SMOKES'] < \
-                                            vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['SMOKES']:
+                                    if PlayersData[pl]['SMOKES'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['SMOKES']:
                                         PlayersData[pl]['SMOKES'] += 1
-                                    if PlayersData[pl]['TORPEDOS'] < \
-                                            vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['TORPEDOS']:
+                                    if PlayersData[pl]['TORPEDOS'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['TORPEDOS']:
                                         PlayersData[pl]['TORPEDOS'] += 1
+                                    if PlayersData[pl]['AAROCKETS'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['AAROCKETS']:
+                                        PlayersData[pl]['AAROCKETS'] += 1
+
                                     PlayersData[pl]['EQZNUPDTTIMER'] = datetime.datetime.now()
                                 PlayersData[pl]['AMMO'] = vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['AMMO'].copy()
 
@@ -642,6 +745,9 @@ async def game():
                                     PlayersData[players[0]]['SMOKES'] += 1
                                 if PlayersData[players[0]]['TORPEDOS'] < vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['TORPEDOS']:
                                     PlayersData[players[0]]['TORPEDOS'] += 1
+                                if PlayersData[players[0]]['AAROCKETS'] < vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['AAROCKETS']:
+                                        PlayersData[players[0]]['AAROCKETS'] += 1
+
                                 PlayersData[players[0]]['EQZNUPDTTIMER'] = datetime.datetime.now()
                             PlayersData[players[0]]['AMMO'] = vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['AMMO'].copy()
                             PlayersData[players[0]]['AMMOUPDATE'] = False
@@ -697,6 +803,9 @@ async def game():
                         # PlayersData[player]['HP'] = PlayersData[player]['HPMAX']
                         # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] < 2:PlayersData[player]['DIR'] = (PlayersData[player]['DIR']+180)%360
                         PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS']
+                        PlayersData[player]['SMOKES'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SMOKES']
+                        PlayersData[player]['AAROCKETS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS']
+
                         PlayersData[player]['KSR'] = 1
                         PlayersData[player]['AMMO'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AMMO'].copy()
                         PlayersData[player]['AMMOUPDATE'] = False
@@ -837,8 +946,9 @@ async def game():
                                     PlayersData[_]['CARRY'].add(player)
                                     # PlayersData[player]['HP'] = PlayersData[player]['HPMAX']
                                     PlayersData[player]['DIR'] = PlayersData[_]['DIR']
-                                    PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                                        'TORPEDOS']
+                                    PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS']
+                                    PlayersData[player]['AAROCKETS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS']
+
                                     # PlayersData[player]['CAN'] = []
                                     PlayersData[player]['KSR'] = 1
                                     PlayersData[player]['AMMO'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AMMO'].copy()
@@ -1086,10 +1196,13 @@ async def game():
                     OldVisTor = PlayersData[player]['VISTOR'].copy()
                     OldVisBul = PlayersData[player]['VISBUL'].copy()
                     OldVisSmk = PlayersData[player]['VISSMK'].copy()
+                    OldVisAar = PlayersData[player]['VISAAR'].copy()
                     PlayersData[player]['VISS'] = set()
                     PlayersData[player]['VISBUL'] = set()
                     PlayersData[player]['VISTOR'] = set()
                     PlayersData[player]['VISSMK'] = set()
+                    PlayersData[player]['VISAAR'] = set()
+
                     PlayersData[player]['VISBRIDGES'] = set()
                     part = ''
                     for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X-1, int(PlayersData[player]['X'] // 1) + VIEW_X+2):
@@ -1131,6 +1244,8 @@ async def game():
                                     PlayersData[player]['VISBUL'].add(_)
                                 for _ in MAP['Q'][(x, y)]['TORPEDOS']:
                                     PlayersData[player]['VISTOR'].add(_)
+                                for _ in MAP['Q'][(x, y)]['AAROCKETS']:
+                                    PlayersData[player]['VISAAR'].add(_)
                                 for _ in MAP['Q'][(x, y)]['SMOKES']:
                                     PlayersData[player]['VISSMK'].add(_)
                                 for _ in MAP['Q'][(x, y)]['BRIDGES']:
@@ -1142,6 +1257,7 @@ async def game():
                     SmokesAppeared = PlayersData[player]['VISSMK'] - OldVisSmk
                     TorpedosAppeared = PlayersData[player]['VISTOR'] - OldVisTor
                     BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
+                    AARocketsAppeared = PlayersData[player]['VISAAR'] - OldVisAar
                     # print(PlayersData[player]['VISTOR'])
                     while len(PlayersData[player]['MSGTURN']) >0:
                                                         PlayersData[player]['STR'] +=PlayersData[player]['MSGTURN'][0]
@@ -1185,7 +1301,11 @@ async def game():
                     #         q = 0
                     #         if (Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM']): q =1
                     #         PlayersData[player]['STR'] += f'\n*,{_},'+str(int((Zones[_][0]-PlayersData[player]['X'])*320+PlayersInputs[player]['w']/2))+','+str(int((Zones[_][1]-PlayersData[player]['Y'])*320+PlayersInputs[player]['h']/2))+','+str(q)
-
+                    if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==1 and PlayersInputs[player]['spk'] and PlayersData[player]["AAROCKETS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTAAROCKET"]).total_seconds() > 0.3:
+                        PlayersData[player]["AAROCKETS"]-=1
+                        AARockets[LastAARocketI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,time.time(),PlayersData[player]["DIR"]+round(random.random()*20-10),PlayersData[player]['SPEED'],player,None,15,3,0.5,2]
+                        LastAARocketI +=1
+                        PlayersData[player]["LASTAAROCKET"] = datetime.datetime.now()
                     if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==0 and PlayersInputs[player]['spk'] and PlayersData[player]["TORPEDOS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTTORPEDO"]).seconds > 5:
                         PlayersData[player]["TORPEDOS"]-=1
                         Torpedos[LastTorpedoI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,0,PlayersData[player]["DIR"],0.225,player,None,500,3]
@@ -1350,6 +1470,31 @@ async def game():
                             print('>')
 
                             PlayersData[player]['STR'] += f'\n<,{_},{TorpedosHandler[_][10]}'
+                    for _ in AARocketsAppeared:
+                        # print('<')
+                        try:
+                            PlayersData[player]['STR'] += f'\nr,{_},{(AARockets[_][0])},{AARockets[_][1]},{AARockets[_][5]},{AARockets[_][10]},{AARockets[_][6]},{AARockets[_][11]}'
+                        except KeyError:
+                            pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in AARocketsHandler:
+                        if _ in PlayersData[player]['VISAAR']:
+                            print('>')
+
+                            PlayersData[player]['STR'] += f'\nr,{_},{AARocketsHandler[_][10]}'
+
+            AARocketsHandlerKeys = list(AARocketsHandler.keys())
+            for aarocket in AARocketsHandlerKeys:
+
+                for x in range(int((AARocketsHandler[aarocket][2] + AARocketsHandler[aarocket][0]) // 1) - 1,
+                               int((AARocketsHandler[aarocket][2] + AARocketsHandler[aarocket][0]) // 1) + 1):
+                    for y in range(int((AARocketsHandler[aarocket][3] + AARocketsHandler[aarocket][1]) // 1) - 1,
+                                   int((AARocketsHandler[aarocket][3] + AARocketsHandler[aarocket][1]) // 1) + 1):
+                        try:
+                            MAP['Q'][(x, y)]['AAROCKETS'].discard(aarocket)
+                        except:
+                            pass
+                AARocketsHandler.pop(aarocket)
             TorpedosHandlerKeys = list(TorpedosHandler.keys())
             for torpedo in TorpedosHandlerKeys:
 
@@ -1705,7 +1850,9 @@ async def handler(websocket):
                                 'KILLS':0,
                                 'SMOKES': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SMOKES'],
                                 'TORPEDOS':vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS'],
+                                'AAROCKETS': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS'],
                                 'LASTTORPEDO':datetime.datetime.now(),
+                                'LASTAAROCKET': datetime.datetime.now(),
                                 'LASTSMOKE':datetime.datetime.now(),
                                 'STATUS':'ALIVE',
                                 'KILLER': None,
@@ -1728,6 +1875,7 @@ async def handler(websocket):
                                 'VISG':set(),
                                 'VISS': set(),
                                 'VISBUL':set(),
+                                'VISAAR': set(),
                                 'VISTOR':set(),
                                 'VISSMK': set(),
                                 'VISBRIDGES':set(),
@@ -1921,7 +2069,7 @@ async def handler(websocket):
                     print(resp)
                     respJSON = json.loads(resp)
                     for _ in PlayersAccs.keys():
-                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name:
+                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name and isDEV == False:
                             PlayersSockets.pop(name)
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)

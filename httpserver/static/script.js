@@ -153,6 +153,7 @@ PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 var Players=[];
 var TorpedosData = new Map();
+var AARocketsData = new Map();
 var BulletsData = new Map();
 var SmokesData = new Map();
 var ColorPack = 'Summer';
@@ -187,6 +188,12 @@ function WtrPrt0(x, y) {
 	this.y=y;
 	this.life=1;
 	this.rad = Math.random()+1;
+}
+function RcktTPrt0(x, y) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.rad = Math.random()+0.25;
 }
 function Particle0(x, y, xs, ys,rad) {
 	this.x=x;
@@ -462,7 +469,7 @@ function startgame() {
 
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
-					// console.log(PING)
+					console.log(PING)
 //                    console.log(Date.now())
 //                    console.log(INFO)
 					let infarr = INFO.split('\n');
@@ -726,6 +733,21 @@ function startgame() {
                             }catch{}
                             }
 
+						}else 	if (larr[0] == 'r'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(AARocketsData.has(larr[1]))){
+//                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+                                AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()-3*PING,Number(larr[7])])
+                                }
+                            }else{
+//                            console.log('!dis')
+                            try{
+                                AARocketsData.get(larr[1])[3] = larr[2]
+                                AARocketsData.get(larr[1])[5] = true
+                            }catch{}
+                            }
 						}else 	if (larr[0] == '<'){
 
                             if (larr.length > 3){
@@ -741,14 +763,6 @@ function startgame() {
                                 TorpedosData.get(larr[1])[5] = true
                             }catch{}
                             }
-//							if (MSGs.indexOf(Number(larr[2]))==-1){
-//								let div = document.createElement('div');
-//								div.className = "MSGj";
-//								div.innerHTML = '<img src="static/checkmark.svg" onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()">' + '   '+larr[1];
-//								chatview.append(div);
-//								div.scrollIntoView();
-//								MSGs.push(Number(larr[2]))
-//							}
 						}else 	if (larr[0] == '>'){
 
                             if (larr.length > 3){
@@ -984,6 +998,7 @@ let SnowParticles0max = 100;
 let FireParticles0 = [];
 let FireParticles1 = [];
 let FireParticles2 = [];
+let RocketTraceParticles = [];
 let CanBangParticles0 = [];
 let CanBangParticles1 = [];
 let FireParticles0max = 20;
@@ -1991,6 +2006,73 @@ if (ParticlesProcessing){
 	}
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(69,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(69,NoTeamTag(Players[_][0]));}
+	}
+
+	for (let _ of AARocketsData.keys()) {
+		if(AARocketsData.get(_)[3] == 1){
+			AARocketsData.get(_)[3]=0
+
+            PIXI.sound.play('wtrBang');
+			for (let i = 0; i < 5; i++) {
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
+            }
+			ShakeXbnds += 10
+			ShakeYbnds += 10
+		}else if(AARocketsData.get(_)[3] == 2){
+                    PIXI.sound.play('lnchTrpd');
+                     AARocketsData.get(_)[3] = 0
+		}
+//		tornum.innerText = OBJs[0].get('<').get(_)[4];
+//		if (OBJs[1].get('<').has(_)) {
+//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
+//		}else{
+			grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+//		}
+		if (Math.random() < 1){
+
+		       RocketTraceParticles.push(new RcktTPrt0(AARocketsData.get(_)[0]-Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20, AARocketsData.get(_)[1]-Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20));
+		}
+		grad.addColorStop(1,"#FF880088");
+		grad.addColorStop(0,"#cc0000ff");
+		ctx.strokeStyle = grad;
+		ctx.lineWidth= 2/320*Zoom;
+//		ctx.lineCap='round';
+		ctx.beginPath()
+		 ctx.lineCap='round';
+        ctx.moveTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.lineTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+//		}
+		ctx.stroke();
+        ctx.closePath()
+//        ctx.lineCap='round';
+        t = (Date.now()-AARocketsData.get(_)[8])/1000
+        distanceFromStart = AARocketsData.get(_)[4]*t+AARocketsData.get(_)[9]*t*t/2
+		AARocketsData.get(_)[0]= AARocketsData.get(_)[6]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
+		AARocketsData.get(_)[1]= AARocketsData.get(_)[7]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
+		if (AARocketsData.get(_)[5] || AARocketsData.get(_)[0] > 20 || AARocketsData.get(_)[0] < -4 || AARocketsData.get(_)[1] > 19 || AARocketsData.get(_)[1] < -4){
+		    AARocketsData.delete(_)
+		}
+	}
+	if (ParticlesProcessing){
+	for (i=RocketTraceParticles.length-1; i>=0; i--) {
+	            //stage.fillStyle = "rgba(255,0,0,1)";
+            ctx.fillStyle = "rgba(" + (150+105*RocketTraceParticles[i].life).toString() + "," + (150+105*RocketTraceParticles[i].life).toString()+","+(150-150*RocketTraceParticles[i].life)+"," +255*RocketTraceParticles[i].life+")";
+
+            ctx.beginPath();
+            //*Math.sin(particles[i].life/60*Math.PI)
+            ctx.arc(OffsetX+(RocketTraceParticles[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(RocketTraceParticles[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,RocketTraceParticles[i].rad*(RocketTraceParticles[i].life**0.3)*2/320*Zoom,0,2*Math.PI);
+            ctx.closePath();
+            ctx.fill();
+
+            RocketTraceParticles[i].life *= 0.7
+            if (RocketTraceParticles[i].life < 0.05) {
+                RocketTraceParticles.splice(i, 1);
+                i--;
+            }
+	}
+	}else{
+	RocketTraceParticles = []
 	}
 	ctx. globalCompositeOperation = "color"
 		for (i=0; i<TracerParticles1.length; i++) {
