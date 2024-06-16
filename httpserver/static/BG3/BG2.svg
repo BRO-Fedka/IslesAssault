@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2304 1080">
+  <defs>
+    <linearGradient id="a" x1="337.12" y1="295.21" x2="352.69" y2="295.21" gradientTransform="matrix(0.65, -0.18, -0.2, 0.9, 276.46, 146.52)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fcee21" stop-opacity="0" />
+      <stop offset="1" stop-color="#fcee21" />
+    </linearGradient>
+  <linearGradient id="g" x1="660.63" y1="431.24" x2="726.85" y2="431.24" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+    <linearGradient id="h" x1="719" y1="468.59" x2="795.26" y2="468.59" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+  </defs>
+
+
+
+
+
+
+
+
+  <line x1="662.13" y1="421.36" x2="725.35" y2="441.12" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px;stroke:url(#g)" />
+  <line x1="721" y1="458" x2="793.26" y2="479.17" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:4px;stroke:url(#h)" />
+</svg>

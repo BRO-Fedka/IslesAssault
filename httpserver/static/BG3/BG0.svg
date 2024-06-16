@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2304 1080">
+  <defs>
+    <linearGradient id="a" x1="337.12" y1="295.21" x2="352.69" y2="295.21" gradientTransform="matrix(0.65, -0.18, -0.2, 0.9, 276.46, 146.52)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fcee21" stop-opacity="0" />
+      <stop offset="1" stop-color="#fcee21" />
+    </linearGradient>
+    <linearGradient id="b" x1="428.43" y1="338.65" x2="476.27" y2="338.65" xlink:href="#a" />
+    <linearGradient id="c" x1="387.74" y1="315.46" x2="436.31" y2="315.46" xlink:href="#a" />
+  </defs>
+
+
+  <path d="M725,353c-34,49-76.48,51.31-130,58-8,1-15.37,0-22-1-26-4-59-42.95-59-92A100,100,0,0,1,614,218C633,218,729.45,346.58,725,353Z" transform="translate(-4)" style="fill:#afa36d" />
+  <path d="M730,326a11,11,0,0,1-.06,1.14,14.58,14.58,0,0,1-1,3.95c-1.45,3.73-4.34,7.66-8.15,11.62l-.64.66-1,.95c-1.46,1.44-3,2.87-4.69,4.3-1.22,1.05-2.5,2.1-3.81,3.14-1.77,1.42-3.61,2.81-5.5,4.19s-3.73,2.68-5.64,4c-1,.71-2.07,1.4-3.11,2.1l-.09.05a7.19,7.19,0,0,0-.94.61l0,0c-.61.41-1.21.8-1.82,1.18l-3.07,2c-3.56,2.22-7.06,4.32-10.39,6.25C668,379.1,658.42,383.8,658,384h0l-85,26-8.83-2.57L192,299,4,244,9,133l.19-2.31L19.9,0H292L674,236s46.67,40.83,54.8,79.14a55.43,55.43,0,0,1,1.12,8.08C730,324.15,730,325.08,730,326Z" transform="translate(-4)" style="fill:#cec48d" />
+  <polygon points="569 410 0 244 5 133 654 384 569 410" style="fill:#afa36d" />
+  <polygon points="695 302 692.5 307 684.8 322.41 669.2 353.6 654.01 383.99 654 384 510.52 328.51 188 203.78 5.01 133 5 133 5.2 130.69 16.32 0 124.84 0 188 33.46 560.81 230.92 684.69 296.54 695 302" style="fill:#bcaf75" />
+  <path d="M691,384c-8.5,2.08-33,0-33,0l41-82,15,9s24.77,10.9,15,34C718,371,703.89,380.85,691,384Z" transform="translate(-4)" style="fill:#bcaf75" />
+  <ellipse cx="426" cy="338.51" rx="26" ry="11.56" style="fill:#6d6d6d" />
+  <path d="M451.67,340.24c0,5.43-4.91,16.76-22.25,16.76s-21.95-11.33-21.95-16.76,9.89-9.82,22.1-9.82S451.67,334.82,451.67,340.24Z" transform="translate(-4)" style="fill:#939393" />
+  <line x1="428.89" y1="345.44" x2="436.98" y2="346.6" style="fill:none;stroke:#aaa;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6.9333336353302px" />
+  <circle cx="436.98" cy="346.6" r="3.47" style="fill:#757575" />
+  <circle cx="704" cy="380" r="19" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="723" cy="353" r="22" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="685.5" cy="365.5" r="11.5" style="fill:#ffb600;opacity:0.67" />
+  <circle cx="689" cy="344" r="22" style="fill:#ff6700;opacity:0.67" />
+  <circle cx="711.5" cy="326.5" r="17.5" style="fill:#ff4e00;opacity:0.67" />
+  <circle cx="706.5" cy="359.5" r="17.5" style="fill:#ff4e00;opacity:0.67" />
+  <circle cx="758.5" cy="308.5" r="13.5" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="745" cy="331" r="17" style="fill:#ff6d00;opacity:0.67" />
+  <circle cx="696.5" cy="369.5" r="8.5" style="fill:#ff2a00;opacity:0.67" />
+  <circle cx="723" cy="342" r="19" style="fill:#ffce00;opacity:0.67" />
+  <line x1="437" y1="347" x2="445" y2="348" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#a)" />
+  <line x1="488.73" y1="363.21" x2="515" y2="370" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#b)" />
+  <line x1="466.73" y1="351.21" x2="494.04" y2="355.3" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#c)" />
+
+</svg>

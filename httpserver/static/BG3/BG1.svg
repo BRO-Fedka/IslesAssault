@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2304 1080">
+
+
+
+
+
+
+
+
+
+
+
+  <ellipse cx="1297.95" cy="241.89" rx="4.93" ry="13.16" transform="translate(-26.35 240.47) rotate(-10.49)" style="fill:#fff;opacity:0.5" />
+  <polygon points="1322.17 276.81 1307.61 279.5 1303.12 210.09 1317.67 207.39 1322.17 276.81" style="fill:#19300c" />
+  <polygon points="1321.33 245.19 1295.45 249.98 1292.34 242.19 1318.21 237.4 1351.87 229.49 1350.85 233.03 1321.33 245.19" style="fill:#1a3a10" />
+  <polygon points="1352.73 241.04 1345.88 242.31 1344.3 217.81 1351.14 216.54 1352.73 241.04" style="fill:#214f10" />
+  <polygon points="1318.21 237.4 1292.34 242.19 1292.46 233.81 1318.33 229.01 1351.27 226.26 1351.87 229.49 1318.21 237.4" style="fill:#214f10" />
+  <polygon points="1319.05 269.02 1299.65 272.62 1295.15 203.2 1314.56 199.61 1319.05 269.02" style="fill:#1a3f06" />
+  <polygon points="1351.57 227.88 1340.25 229.97 1343.9 222.6 1348.76 221.71 1351.57 227.88" style="fill:#326d1d" />
+  <circle cx="1083.61" cy="263.49" r="2.29" style="fill:#545338;opacity:0.51" />
+  <circle cx="1078.46" cy="264.5" r="2.98" style="fill:#897e3b;opacity:0.74" />
+  <circle cx="1071.81" cy="265.84" r="4.02" style="fill:#c1b033;opacity:0.82" />
+  <line x1="1057.38" y1="268" x2="1050.04" y2="269.34" style="fill:none;stroke:#606345;stroke-linecap:square;stroke-miterlimit:10;stroke-width:2.815843674386767px" />
+  <path d="M1049,270.13c-.18-.67,3-2.17,4-2.37s.71.46.9,1.39.73,1.79-.2,2S1049.15,270.81,1049,270.13Z" transform="translate(-4)" style="fill:#bc0000" />
+  <circle cx="1063.55" cy="267.31" r="5.05" style="fill:#ff0;opacity:0.78" />
+
+
+</svg>
