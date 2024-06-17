@@ -2,7 +2,8 @@ TracerCL = new Map()
 Vehicles = {
 0:{
 hp:1000,
-
+views:1,
+viewsIcons:[''],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -106,8 +107,10 @@ updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
 //        console.log(this)
-            document.getElementById('TracerInv').style.display = "none";
-            document.getElementById('CarryInv').style.display = "none";
+            document.getElementById('TorInv').style.display = "";
+            document.getElementById('SmkInv').style.display = "";
+            document.getElementById('CmodInv').style.display = "";
+            document.getElementById('XmodInv').style.display = "";
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -212,7 +215,8 @@ update:function(playername,argarr){
 
 2:{ //TODO
 hp:30,
-
+views:1,
+viewsIcons:[''],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -314,8 +318,9 @@ drawp:function(layer, playername){
 updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-            document.getElementById('TracerInv').style.display = "none";
-            document.getElementById('CarryInv').style.display = "none";
+            document.getElementById('TorInv').style.display = "";
+            document.getElementById('SmkInv').style.display = "";
+            document.getElementById('XmodInv').style.display = "";
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -414,7 +419,8 @@ update:function(playername,argarr){
 },
 4:{ //TODO
 hp:2500,
-
+views:1,
+viewsIcons:[''],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -576,9 +582,9 @@ drawp:function(layer, playername){
 updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-        document.getElementById('TracerInv').style.display = "none";
-        document.getElementById('TorInv').style.display = "none";
-        document.getElementById('SmkInv').style.display = "none";
+            document.getElementById('CarryInv').style.display = "";
+            document.getElementById('CmodInv').style.display = "";
+            document.getElementById('XmodInv').style.display = "";
 
             PlayersData.set(playername,
             {
@@ -667,7 +673,8 @@ update:function(playername,argarr){
 },
 1:{//TODO
 hp:90,
-
+views:1,
+viewsIcons:[''],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -768,10 +775,7 @@ drawp:function(layer, playername){
 updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-                document.getElementById('TracerInv').style.display = "none";
-        document.getElementById('TorInv').style.display = "none";
-        document.getElementById('SmkInv').style.display = "none";
-        document.getElementById('CarryInv').style.display = "none";
+            document.getElementById('XmodInv').style.display = "";
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -850,7 +854,8 @@ update:function(playername,argarr){
 },
 8:{ //TODO
 hp:30,
-
+views:1,
+viewsIcons:[''],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -970,11 +975,9 @@ drawp:function(layer, playername){
 updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-            document.getElementById('TorInv').style.display = "none";
-            document.getElementById('SmkInv').style.display = "none";
-            document.getElementById('CmodInv').style.display = "none";
-            document.getElementById('CarryInv').style.display = "none";
+            document.getElementById('XmodInv').style.display = "";
             document.getElementById('AARocketInv').style.display = ''
+            document.getElementById('TracerInv').style.display = ''
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -1161,7 +1164,8 @@ update:function(playername,argarr){
 },
 3:{//TODO
 hp:1000,
-
+views:1,
+viewsIcons:[''],
 f:{
         '228': '#bbb26e'},
 draw:function(layer, playername){
@@ -1250,9 +1254,9 @@ drawp:function(layer, playername){
 updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
-        document.getElementById('TracerInv').style.display = "none";
-        document.getElementById('TorInv').style.display = "none";
-        document.getElementById('SmkInv').style.display = "none";
+            document.getElementById('CarryInv').style.display = "";
+            document.getElementById('CmodInv').style.display = "";
+            document.getElementById('XmodInv').style.display = "";
             PlayersData.set(playername,
             {
                 prevX : null,
@@ -1337,6 +1341,338 @@ update:function(playername,argarr){
      }
 
 }
+
+
+},
+5:{ //TODO
+hp:40,
+views:2,
+viewsIcons:['./static/HELMinv.svg','./static/SCOPEinv.svg'],
+f:{
+        '0': '#131313',
+        '1': '#2a200c',
+        '2': '#122b0b',
+        '3': '#10222b',
+        '4': '#323232',
+        '5': '#713567',
+        '6':'#723636'},
+draw:function(layer, playername){
+    if( layer==72  && PlayersData.get(playername).prevX!= null){
+        let sin = 0
+        let cos = 0
+        let sinc = 0
+        let cosc = 0
+        if ((PlayersData.get(playername).prevDIR < 360 && PlayersData.get(playername).prevDIR >270) && (PlayersData.get(playername).actDIR < 90 && PlayersData.get(playername).actDIR > -1)){
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }else if((PlayersData.get(playername).actDIR < 360 && PlayersData.get(playername).actDIR >270) && (PlayersData.get(playername).prevDIR < 90 && PlayersData.get(playername).prevDIR > -1)){
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }else{
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
+
+        drawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
+        drawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.25,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
+        if (PlayersData.get(playername).CN0STS == 1){
+        PIXI.sound.play('fcanon');
+        PlayersData.get(playername).CN0STS = 0
+        }
+
+        if(!(PlayersData.get(playername).CN0STS  <2)){
+
+                    if(Math.random()<1){
+                        let a = Math.random()*Math.PI * 2;
+
+                        FireParticles2.push(new FirePrt0(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin),PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos), 0.25));
+
+                    }
+        }
+
+
+
+                        if (PlayersData.get(playername).CN0STS == 3){
+                            for (let _ = 0; _ < 1; _++) {
+
+                                BangParticles2.push(new BangPrt0(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin),PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos)))
+                            }
+                            PlayersData.get(playername).CN0STS = 2
+                        }
+                        ctx.strokeStyle = MAPstatic.CT.l1
+
+
+
+
+
+
+    }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
+    DrawNickname(playername,PlayersData.get(playername).HP,40, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    }
+},
+drawp:function(layer, playername){
+//    console.log(layer)
+
+    if( layer==72){
+        let sin = 0
+        let cos = 0
+        let sinc = 0
+        let cosc = 0
+        if ((PlayersData.get(playername).prevDIR < 360 && PlayersData.get(playername).prevDIR >270) && (PlayersData.get(playername).actDIR < 90 && PlayersData.get(playername).actDIR > -1)){
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }else if((PlayersData.get(playername).actDIR < 360 && PlayersData.get(playername).actDIR >270) && (PlayersData.get(playername).prevDIR < 90 && PlayersData.get(playername).prevDIR > -1)){
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }else{
+            sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+            cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+        }
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)'
+        ctx.lineWidth = 10/320*Zoom;
+        ctx.beginPath()
+
+        ctx.arc(GameW/2 + OffsetX+(sin*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75) ,GameH/2 + OffsetY+(-cos*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75), (((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/100*Zoom/5,0,2*Math.PI)
+        ctx.closePath()
+        ctx.stroke()
+        //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
+        let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
+
+        PdrawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
+
+        PdrawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.25,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
+
+        if (PlayersData.get(playername).CN0STS == 1){
+        PIXI.sound.play('pcanon');
+        PlayersData.get(playername).CN0STS = 0
+        }
+        if(!(PlayersData.get(playername).CN0STS  <2)){
+
+                    if(Math.random()<1){
+                        let a = Math.random()*Math.PI * 2;
+
+                        FireParticles2.push(new FirePrt0(X+(nX-X)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin), Y+(nY-Y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos), 0.4));
+
+                    }
+        }
+
+
+
+                        if (PlayersData.get(playername).CN0STS == 3){
+                            for (let _ = 0; _ < 1; _++) {
+                                BangParticles2.push(new BangPrt0(X+(nX-X)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin),Y+(nY-Y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos)))
+
+                            }
+                            PlayersData.get(playername).CN0STS = 2
+                        }
+
+
+
+
+    }
+},
+updatep:function(playername,argarr){
+     if (argarr.length > 0){
+        if (!PlayersData.has(playername)){
+            document.getElementById('XmodInv').style.display = "";
+            document.getElementById('AARocketInv').style.display = ''
+            document.getElementById('TracerInv').style.display = ''
+            document.getElementById('ViewInv').style.display = ''
+            document.getElementById('BombInv').style.display = ''
+            PlayersData.set(playername,
+            {
+                prevX : null,
+                prevY : null,
+                actX : null,
+                actY : null,
+                prevDIR : null,
+                actDIR : null,
+                CN0STS:null,
+                COLOR:null,
+                lastTP1x: null,
+                lastTP1y: null,
+                lastTP2x: null,
+                lastTP2y: null,
+                TRACER:0,
+                CNs:[{pDIR:null,DIR: null , STS: 0}],
+                prevSpeed:0,
+                speed:0
+
+            } )
+        }
+
+        PlayersData.get(playername).prevX = PlayersData.get(playername).actX
+        PlayersData.get(playername).prevY = PlayersData.get(playername).actY
+        PlayersData.get(playername).actX = Number(argarr[3])
+        PlayersData.get(playername).actY = Number(argarr[4])
+        PlayersData.get(playername).prevDIR = PlayersData.get(playername).actDIR
+        PlayersData.get(playername).actDIR = Number(argarr[1])
+        PlayersData.get(playername).CN0STS = Number((argarr[7]));
+        PlayersData.get(playername).COLOR = Number(argarr[8])
+        PlayersData.get(playername).TRACER =Number( argarr[9])
+        Z = Number(argarr[5])
+        PlayersData.get(playername).CNs[0].pDIR = PlayersData.get(playername).CNs[0].DIR;
+        PlayersData.get(playername).CNs[0].DIR = Number((argarr[11]).substring(1));
+        PlayersData.get(playername).CNs[0].STS = Number((argarr[11]).substring(0,1));
+        nX=PlayersData.get(playername).actX
+        nY=PlayersData.get(playername).actY
+        X=PlayersData.get(playername).prevX
+        Y=PlayersData.get(playername).prevY
+        hp.innerHTML = argarr[2] + '/40'
+        PlayersData.get(playername).prevSpeed = PlayersData.get(playername).speed
+        PlayersData.get(playername).speed = Number(argarr[6])
+        gasnum.innerHTML = argarr[0]
+//        console.log(argarr)
+        dirnum.innerHTML = 'DIR: '+argarr[1]
+        spdnum.innerHTML = 'SPD: '+Math.round(Number(argarr[6]));
+        xnum.innerHTML = 'X: ' + Math.round(argarr[3]*100)/100;
+        ynum.innerHTML = 'Y: ' + Math.round(argarr[4]*100)/100;
+        aarnum.innerText= argarr[10]
+        if (Cmod ) {
+                let sin = 0
+                let cos = 0
+                let sinc = 0
+                let cosc = 0
+                if ((PlayersData.get(playername).prevDIR < 360 && PlayersData.get(playername).prevDIR >270) && (PlayersData.get(playername).actDIR < 90 && PlayersData.get(playername).actDIR > -1)){
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }else if((PlayersData.get(playername).actDIR < 360 && PlayersData.get(playername).actDIR >270) && (PlayersData.get(playername).prevDIR < 90 && PlayersData.get(playername).prevDIR > -1)){
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }else{
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }
+            let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
+            if( PlayersData.get(playername).lastTP1x == null){
+                let wtrprtx = poly[4][0]
+                let wtrprty = poly[4][1]
+                PlayersData.get(playername).lastTP1x = X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP1y = Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y,PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y ,PlayersData.get(playername).TRACER));
+                wtrprtx = poly[15][0]
+                wtrprty = poly[15][1]
+                PlayersData.get(playername).lastTP2x = X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP2y = Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).TRACER));
+
+
+            }else{
+                let wtrprtx = poly[4][0]
+                let wtrprty = poly[4][1]
+                TracerParticles1.push(new TrcrPrt1(X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin),Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos),PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y ,PlayersData.get(playername).TRACER));
+                PlayersData.get(playername).lastTP1x = X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP1y = Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                wtrprtx = poly[15][0]
+                wtrprty = poly[15][1]
+                TracerParticles1.push(new TrcrPrt1(X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin),Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos),PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).TRACER));
+                PlayersData.get(playername).lastTP2x = X+(nX-X)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP2y = Y+(nY-Y)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+
+            }
+
+        }else{
+            PlayersData.get(playername).lastTP1x = null
+            PlayersData.get(playername).lastTP1y = null
+            PlayersData.get(playername).lastTP2x = null
+            PlayersData.get(playername).lastTP2y = null
+        }
+
+     }
+//PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersInputs[player]['Cmod'])
+},
+update:function(playername,argarr){
+     if (argarr.length > 0){
+        if (!PlayersData.has(playername)){
+            PlayersData.set(playername,
+            {
+                prevX : null,
+                prevY : null,
+                actX : null,
+                actY : null,
+                prevDIR : null,
+                actDIR : null,
+                CN0STS:null,
+                HP:null,
+                Z:null,
+                lastTP1x: null,
+                lastTP1y: null,
+                lastTP2x: null,
+                lastTP2y: null,
+                TRACER:0,
+                CNs:[{pDIR:null,DIR: null , STS: 0}]
+
+
+            } )
+        }
+        PlayersData.get(playername).prevX = PlayersData.get(playername).actX
+        PlayersData.get(playername).prevY = PlayersData.get(playername).actY
+        PlayersData.get(playername).actX = Number(argarr[2])
+        PlayersData.get(playername).actY = Number(argarr[3])
+        PlayersData.get(playername).prevDIR = PlayersData.get(playername).actDIR
+        PlayersData.get(playername).actDIR = Number(argarr[0])
+        PlayersData.get(playername).CN0STS = Number((argarr[5]));
+        PlayersData.get(playername).CNs[0].pDIR = PlayersData.get(playername).CNs[0].DIR;
+        PlayersData.get(playername).CNs[0].DIR = Number((argarr[8]).substring(1));
+        PlayersData.get(playername).CNs[0].STS = Number((argarr[8]).substring(0,1));
+        PlayersData.get(playername).Z = Number(argarr[4])
+        PlayersData.get(playername).HP = Number(argarr[1])
+        PlayersData.get(playername).COLOR =Number( argarr[6])
+        PlayersData.get(playername).TRACER =Number( argarr[7])
+
+        if (PlayersData.get(playername).TRACER != 0  ) {
+                let sin = 0
+                let cos = 0
+                let sinc = 0
+                let cosc = 0
+                 if ((PlayersData.get(playername).prevDIR < 360 && PlayersData.get(playername).prevDIR >270) && (PlayersData.get(playername).actDIR < 90 && PlayersData.get(playername).actDIR > -1)){
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR+360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }else if((PlayersData.get(playername).actDIR < 360 && PlayersData.get(playername).actDIR >270) && (PlayersData.get(playername).prevDIR < 90 && PlayersData.get(playername).prevDIR > -1)){
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR-360)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }else{
+                    sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                    cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
+                }
+            let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
+            if( PlayersData.get(playername).lastTP1x == null){
+                let wtrprtx = poly[4][0]
+                let wtrprty = poly[4][1]
+                PlayersData.get(playername).lastTP1x = PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP1y = PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y,PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y ,PlayersData.get(playername).TRACER));
+                wtrprtx = poly[15][0]
+                wtrprty = poly[15][1]
+                PlayersData.get(playername).lastTP2x = PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP2y = PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).TRACER));
+
+
+            }else{
+                let wtrprtx = poly[4][0]
+                let wtrprty = poly[4][1]
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin),PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos),PlayersData.get(playername).lastTP1x,PlayersData.get(playername).lastTP1y ,PlayersData.get(playername).TRACER));
+                PlayersData.get(playername).lastTP1x = PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP1y = PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+                wtrprtx = poly[15][0]
+                wtrprty = poly[15][1]
+                TracerParticles1.push(new TrcrPrt1(PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin),PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos),PlayersData.get(playername).lastTP2x,PlayersData.get(playername).lastTP2y,PlayersData.get(playername).TRACER));
+                PlayersData.get(playername).lastTP2x = PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX)*(Date.now() - LastPING) / PING+(wtrprty*cos)+(wtrprtx*sin)
+                PlayersData.get(playername).lastTP2y = PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY)*(Date.now() - LastPING) / PING+(wtrprty*sin)+(wtrprtx*-cos)
+
+            }
+
+        }else{
+            PlayersData.get(playername).lastTP1x = null
+            PlayersData.get(playername).lastTP1y = null
+            PlayersData.get(playername).lastTP2x = null
+            PlayersData.get(playername).lastTP2y = null
+        }
+     }
+     }
 
 
 }

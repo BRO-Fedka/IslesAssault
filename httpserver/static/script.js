@@ -425,7 +425,7 @@ function startgame() {
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
                         ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
                     }
-                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
                 //
 //                    document.body.innerHTML += '<script type="text/javascript" id="MapJSON" src="'+event.data.substring(1)+'" onload = "onMapJSONLoad()"></script>'
 //                    console.log(document.getElementById("MapJSON"))
@@ -443,7 +443,7 @@ function startgame() {
 
                         let children = document.getElementById('Inventory').children;
                         for (let i = 0; i < children.length; i++) {
-                          children[i].style.display = ""
+                          children[i].style.display = "none"
                         }
                         document.getElementById('MainScreen').style.display = '';
                         document.getElementById('MainForm').style.display = '';
@@ -864,14 +864,14 @@ function startgame() {
 
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m/team chat '+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m/team chat '+messageinput.value);
 					    }else{
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m'+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m'+messageinput.value);
 					    }
 						messageinput.value = ''
 						Send=false
 					}else{
-						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
 					}
 					SENDB = ''
 					SENDS = ''
@@ -908,6 +908,7 @@ function startgame() {
 		}
 	}
 }
+let curView = 0
 let Xmod = false
 let Cmod = false
 let LoadScrHidn = false
@@ -1185,6 +1186,12 @@ function keydown(event) {
 			Send = true;
 		}
 
+
+	}else if ( (event.keyCode == 86 )) {
+
+		curView = (curView+1)%Vehicles[CurVehicle].views
+//		console
+		document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
 
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
 		map.style.display = 'block';
@@ -2031,7 +2038,7 @@ if (ParticlesProcessing){
 //			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
 //                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
             }
-            AARocketsData.get(_)[3]=0
+
 		}
 //		tornum.innerText = OBJs[0].get('<').get(_)[4];
 //		if (OBJs[1].get('<').has(_)) {

@@ -51,6 +51,12 @@
       8,
       "./static/veh8.svg",
       4
+    ],
+        [
+      "Light bomber",
+      5,
+      "./static/veh5.svg",
+      20
     ]
   ]
 }
