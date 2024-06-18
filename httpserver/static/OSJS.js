@@ -214,7 +214,7 @@ update:function(playername,argarr){
 
 
 2:{ //TODO
-hp:30,
+hp:50,
 views:1,
 viewsIcons:[''],
 f:{
@@ -1345,7 +1345,7 @@ update:function(playername,argarr){
 
 },
 5:{ //TODO
-hp:40,
+hp:30,
 views:2,
 viewsIcons:['./static/HELMinv.svg','./static/SCOPEinv.svg'],
 f:{
@@ -1430,13 +1430,13 @@ drawp:function(layer, playername){
             sin = Math.sin((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
             cos = Math.cos((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).actDIR-PlayersData.get(playername).prevDIR)+PlayersData.get(playername).prevDIR+90)/180*Math.PI)
         }
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)'
-        ctx.lineWidth = 10/320*Zoom;
-        ctx.beginPath()
-
-        ctx.arc(GameW/2 + OffsetX+(sin*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75) ,GameH/2 + OffsetY+(-cos*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75), (((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/100*Zoom/5,0,2*Math.PI)
-        ctx.closePath()
-        ctx.stroke()
+//        ctx.strokeStyle = 'rgba(255,255,255,0.25)'
+//        ctx.lineWidth = 10/320*Zoom;
+//        ctx.beginPath()
+//
+//        ctx.arc(GameW/2 + OffsetX+(sin*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75) ,GameH/2 + OffsetY+(-cos*Zoom)*((((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/75), (((Date.now() - LastPING)/ PING)*(PlayersData.get(playername).speed-PlayersData.get(playername).prevSpeed)+PlayersData.get(playername).prevSpeed)/100*Zoom/5,0,2*Math.PI)
+//        ctx.closePath()
+//        ctx.stroke()
         //_0 = posScr(PlayersData[enemy]['COL'],PlayersData[player]['X'],PlayersData[player]['Y'],Zoom,PlayersInputs[player]["w"],PlayersInputs[player]["h"])
         let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
 
@@ -1477,7 +1477,6 @@ updatep:function(playername,argarr){
      if (argarr.length > 0){
         if (!PlayersData.has(playername)){
             document.getElementById('XmodInv').style.display = "";
-            document.getElementById('AARocketInv').style.display = ''
             document.getElementById('TracerInv').style.display = ''
             document.getElementById('ViewInv').style.display = ''
             document.getElementById('BombInv').style.display = ''
@@ -1529,7 +1528,7 @@ updatep:function(playername,argarr){
         spdnum.innerHTML = 'SPD: '+Math.round(Number(argarr[6]));
         xnum.innerHTML = 'X: ' + Math.round(argarr[3]*100)/100;
         ynum.innerHTML = 'Y: ' + Math.round(argarr[4]*100)/100;
-        aarnum.innerText= argarr[10]
+        bmbnum.innerText= argarr[10]
         if (Cmod ) {
                 let sin = 0
                 let cos = 0
