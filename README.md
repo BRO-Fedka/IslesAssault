@@ -58,11 +58,14 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+### 1.5v "Flying danger" update
+*Meet light bombers and bombs.
+*AA rockets for fighters were added.
 #### 1.4.1v Fixes
 * New display of aircarrier.
 * Nicknames size depends on zoom.
 * Some bugs were fixed.
-### 1.4 Inventory and server structure refactor
+### 1.4v Inventory and server structure refactor
 * New inventory system.
 * API for game servers was created.
 * Red color added.
