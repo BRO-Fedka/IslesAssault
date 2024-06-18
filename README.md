@@ -59,8 +59,8 @@ ___
 ___
 ## :clipboard: Changelog:
 ### 1.5v "Flying danger" update
-*Meet light bombers and bombs.
-*AA rockets for fighters were added.
+* Meet light bombers and bombs.
+* AA rockets for fighters were added.
 #### 1.4.1v Fixes
 * New display of aircarrier.
 * Nicknames size depends on zoom.
