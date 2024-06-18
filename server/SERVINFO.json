@@ -8,7 +8,7 @@
   ],
   "js": "%js%",
   "map": "../static/MAPchNew.png",
-  "bg": [[0,"../static/BG1/BG.svg"],[0.0625,"../static/BG1/BG0.svg"],[0.03125,"../static/BG1/BG1.svg"],[0.015625,"../static/BG1/BG2.svg"],[0.0078125,"../static/BG1/BG3.svg"],[-0.00390625,"../static/BG1/BG4.svg"]],
+  "bg": [[0,"../static/BG3/BG.svg"],[-0.005,"../static/BG3/BG0.svg"],[-0.01,"../static/BG3/BG1.svg"],[0.005,"../static/BG3/BG2.svg"],[0.02,"../static/BG3/BG3.svg"],[0.07,"../static/BG3/BG4.svg"],[0.14,"../static/BG3/BG5.svg"]],
   "online": "%online%",
   "text": "%text%",
   "VIEW_X": 6,
@@ -51,6 +51,12 @@
       8,
       "./static/veh8.svg",
       4
+    ],
+        [
+      "Light bomber",
+      5,
+      "./static/veh5.svg",
+      20
     ]
   ]
 }

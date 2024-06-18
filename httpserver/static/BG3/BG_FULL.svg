@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2304 1080">
+  <defs>
+    <linearGradient id="a" x1="337.12" y1="295.21" x2="352.69" y2="295.21" gradientTransform="matrix(0.65, -0.18, -0.2, 0.9, 276.46, 146.52)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fcee21" stop-opacity="0" />
+      <stop offset="1" stop-color="#fcee21" />
+    </linearGradient>
+    <linearGradient id="b" x1="428.43" y1="338.65" x2="476.27" y2="338.65" xlink:href="#a" />
+    <linearGradient id="c" x1="387.74" y1="315.46" x2="436.31" y2="315.46" xlink:href="#a" />
+    <linearGradient id="d" x1="961" y1="657.03" x2="1098.9" y2="657.03" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+    <linearGradient id="e" x1="868" y1="621" x2="941" y2="621" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+    <linearGradient id="f" x1="905.03" y1="575.58" x2="982.93" y2="575.58" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+    <linearGradient id="g" x1="660.63" y1="431.24" x2="726.85" y2="431.24" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+    <linearGradient id="h" x1="719" y1="468.59" x2="795.26" y2="468.59" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#a" />
+  </defs>
+  <title>BG-1.5u</title>
+  <rect x="188" width="1920" height="1080" style="fill:#47c3f4" />
+  <path d="M725,353c-34,49-76.48,51.31-130,58-8,1-15.37,0-22-1-26-4-59-42.95-59-92A100,100,0,0,1,614,218C633,218,729.45,346.58,725,353Z" transform="translate(-4)" style="fill:#afa36d" />
+  <path d="M730,326a11,11,0,0,1-.06,1.14,14.58,14.58,0,0,1-1,3.95c-1.45,3.73-4.34,7.66-8.15,11.62l-.64.66-1,.95c-1.46,1.44-3,2.87-4.69,4.3-1.22,1.05-2.5,2.1-3.81,3.14-1.77,1.42-3.61,2.81-5.5,4.19s-3.73,2.68-5.64,4c-1,.71-2.07,1.4-3.11,2.1l-.09.05a7.19,7.19,0,0,0-.94.61l0,0c-.61.41-1.21.8-1.82,1.18l-3.07,2c-3.56,2.22-7.06,4.32-10.39,6.25C668,379.1,658.42,383.8,658,384h0l-85,26-8.83-2.57L192,299,4,244,9,133l.19-2.31L19.9,0H292L674,236s46.67,40.83,54.8,79.14a55.43,55.43,0,0,1,1.12,8.08C730,324.15,730,325.08,730,326Z" transform="translate(-4)" style="fill:#cec48d" />
+  <polygon points="569 410 0 244 5 133 654 384 569 410" style="fill:#afa36d" />
+  <polygon points="695 302 692.5 307 684.8 322.41 669.2 353.6 654.01 383.99 654 384 510.52 328.51 188 203.78 5.01 133 5 133 5.2 130.69 16.32 0 124.84 0 188 33.46 560.81 230.92 684.69 296.54 695 302" style="fill:#bcaf75" />
+  <path d="M691,384c-8.5,2.08-33,0-33,0l41-82,15,9s24.77,10.9,15,34C718,371,703.89,380.85,691,384Z" transform="translate(-4)" style="fill:#bcaf75" />
+  <ellipse cx="426" cy="338.51" rx="26" ry="11.56" style="fill:#6d6d6d" />
+  <path d="M451.67,340.24c0,5.43-4.91,16.76-22.25,16.76s-21.95-11.33-21.95-16.76,9.89-9.82,22.1-9.82S451.67,334.82,451.67,340.24Z" transform="translate(-4)" style="fill:#939393" />
+  <line x1="428.89" y1="345.44" x2="436.98" y2="346.6" style="fill:none;stroke:#aaa;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6.9333336353302px" />
+  <circle cx="436.98" cy="346.6" r="3.47" style="fill:#757575" />
+  <circle cx="704" cy="380" r="19" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="723" cy="353" r="22" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="685.5" cy="365.5" r="11.5" style="fill:#ffb600;opacity:0.67" />
+  <circle cx="689" cy="344" r="22" style="fill:#ff6700;opacity:0.67" />
+  <circle cx="711.5" cy="326.5" r="17.5" style="fill:#ff4e00;opacity:0.67" />
+  <circle cx="706.5" cy="359.5" r="17.5" style="fill:#ff4e00;opacity:0.67" />
+  <circle cx="758.5" cy="308.5" r="13.5" style="fill:#ff9100;opacity:0.67" />
+  <circle cx="745" cy="331" r="17" style="fill:#ff6d00;opacity:0.67" />
+  <circle cx="696.5" cy="369.5" r="8.5" style="fill:#ff2a00;opacity:0.67" />
+  <circle cx="723" cy="342" r="19" style="fill:#ffce00;opacity:0.67" />
+  <line x1="437" y1="347" x2="445" y2="348" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#a)" />
+  <line x1="488.73" y1="363.21" x2="515" y2="370" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#b)" />
+  <line x1="466.73" y1="351.21" x2="494.04" y2="355.3" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;stroke:url(#c)" />
+  <polygon points="1233.24 626.43 1243.62 594.85 1252.44 591.51 1250.11 623.67 1233.24 626.43" style="fill:#992c2c" />
+  <polygon points="1313.56 655.7 1193.03 613.31 1204.99 609.58 1325.04 651.87 1313.56 655.7" style="fill:#660c0c" />
+  <polygon points="1493.12 668.06 1119.25 543.53 1155.33 531.35 1531.69 658.72 1493.12 668.06" style="fill:#491717" />
+  <line x1="1150.28" y1="612.94" x2="1157.5" y2="551.16" style="fill:none;stroke:#4c2525;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px" />
+  <line x1="1163.22" y1="614.5" x2="1171.81" y2="545.86" style="fill:none;stroke:#4c2525;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px" />
+  <line x1="1451.37" y1="713.78" x2="1471.74" y2="657.68" style="fill:none;stroke:#4c2525;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px" />
+  <line x1="1464.31" y1="715.34" x2="1486.05" y2="652.37" style="fill:none;stroke:#4c2525;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6px" />
+  <polygon points="1307.19 654.43 1266.99 656.61 1231.28 631.13 1232.07 627.21 1325.99 595.98 1307.19 654.43" style="fill:#7a1e1e" />
+  <polygon points="1360.55 673.23 1307.19 654.43 1325.99 595.98 1377.38 614.38 1360.55 673.23" style="fill:#333" />
+  <polygon points="1284.25 662.09 1266.01 656.41 1307.19 654.43 1360.55 673.23 1284.25 662.09" style="fill:#490f0f" />
+  <polygon points="1477.26 727.1 1122.62 608.44 1144.77 603.68 1501.24 724.45 1477.26 727.1" style="fill:#4f1a1a" />
+  <path d="M1394.15,647.52c-8.91,29.15-36.7,51-63.33,41.42-25.69-9.21-35.67-43.55-26.32-72.55s36.26-48.85,62.94-39.46C1392.12,585.63,1403,618.69,1394.15,647.52Z" transform="translate(-4)" style="fill:#fff;opacity:0.47" />
+  <path d="M1356.07,635.73c-1.44,4.72-5.94,8.25-10.25,6.7s-5.78-7-4.27-11.75,5.87-7.91,10.2-6.38C1355.74,625.7,1357.5,631.06,1356.07,635.73Z" transform="translate(-4)" style="fill:#604040" />
+  <line x1="1185.59" y1="627.63" x2="1202.45" y2="624.87" style="fill:none;stroke:#5b4242;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px" />
+  <line x1="1188.73" y1="632.33" x2="1199.89" y2="631.19" style="fill:none;stroke:#606345;stroke-linecap:round;stroke-miterlimit:10;stroke-width:9px" />
+  <path d="M1213.91,631c.26,2.22-4.17,5.47-7.2,5.7a5.5,5.5,0,1,1-.81-11C1208.93,625.45,1213.64,628.73,1213.91,631Z" transform="translate(-4)" style="fill:#bc0000" />
+  <line x1="1213.24" y1="637.22" x2="1230.11" y2="634.47" style="fill:none;stroke:#5b4242;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px" />
+  <line x1="1412.93" y1="704.58" x2="1429.79" y2="701.82" style="fill:none;stroke:#5b4242;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px" />
+  <line x1="1416.07" y1="709.28" x2="1427.23" y2="708.14" style="fill:none;stroke:#606345;stroke-linecap:round;stroke-miterlimit:10;stroke-width:9px" />
+  <path d="M1441.25,707.9c.26,2.22-4.17,5.47-7.2,5.7a5.5,5.5,0,0,1-.81-11C1436.27,702.4,1441,705.68,1441.25,707.9Z" transform="translate(-4)" style="fill:#bc0000" />
+  <line x1="1386.05" y1="696.16" x2="1402.92" y2="693.41" style="fill:none;stroke:#5b4242;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px" />
+  <ellipse cx="1297.95" cy="241.89" rx="4.93" ry="13.16" transform="translate(-26.35 240.47) rotate(-10.49)" style="fill:#fff;opacity:0.5" />
+  <polygon points="1322.17 276.81 1307.61 279.5 1303.12 210.09 1317.67 207.39 1322.17 276.81" style="fill:#19300c" />
+  <polygon points="1321.33 245.19 1295.45 249.98 1292.34 242.19 1318.21 237.4 1351.87 229.49 1350.85 233.03 1321.33 245.19" style="fill:#1a3a10" />
+  <polygon points="1352.73 241.04 1345.88 242.31 1344.3 217.81 1351.14 216.54 1352.73 241.04" style="fill:#214f10" />
+  <polygon points="1318.21 237.4 1292.34 242.19 1292.46 233.81 1318.33 229.01 1351.27 226.26 1351.87 229.49 1318.21 237.4" style="fill:#214f10" />
+  <polygon points="1319.05 269.02 1299.65 272.62 1295.15 203.2 1314.56 199.61 1319.05 269.02" style="fill:#1a3f06" />
+  <polygon points="1351.57 227.88 1340.25 229.97 1343.9 222.6 1348.76 221.71 1351.57 227.88" style="fill:#326d1d" />
+  <circle cx="1083.61" cy="263.49" r="2.29" style="fill:#545338;opacity:0.51" />
+  <circle cx="1078.46" cy="264.5" r="2.98" style="fill:#897e3b;opacity:0.74" />
+  <circle cx="1071.81" cy="265.84" r="4.02" style="fill:#c1b033;opacity:0.82" />
+  <line x1="1057.38" y1="268" x2="1050.04" y2="269.34" style="fill:none;stroke:#606345;stroke-linecap:square;stroke-miterlimit:10;stroke-width:2.815843674386767px" />
+  <path d="M1049,270.13c-.18-.67,3-2.17,4-2.37s.71.46.9,1.39.73,1.79-.2,2S1049.15,270.81,1049,270.13Z" transform="translate(-4)" style="fill:#bc0000" />
+  <circle cx="1063.55" cy="267.31" r="5.05" style="fill:#ff0;opacity:0.78" />
+  <circle cx="1680.6" cy="682.35" r="7.65" style="fill:#545338;opacity:0.51" />
+  <circle cx="1690.95" cy="681.3" r="9.95" style="fill:#897e3b;opacity:0.74" />
+  <circle cx="1701" cy="679.79" r="13.39" style="fill:#c1b033;opacity:0.82" />
+  <circle cx="1716.46" cy="678.58" r="16.83" style="fill:#ff0;opacity:0.78" />
+  <line x1="1728.02" y1="677.33" x2="1746.9" y2="675.4" style="fill:none;stroke:#606345;stroke-linecap:round;stroke-miterlimit:10;stroke-width:15.222414929801872px" />
+  <path d="M1767.85,675c.45,3.76-7,9.26-12.17,9.64a9.31,9.31,0,0,1-1.38-18.56C1759.43,665.69,1767.4,671.24,1767.85,675Z" transform="translate(-4)" style="fill:#bc0000" />
+  <line x1="963.5" y1="623.5" x2="1096.4" y2="690.55" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:5px;stroke:url(#d)" />
+  <line x1="870.5" y1="604.5" x2="938.5" y2="637.5" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:5px;stroke:url(#e)" />
+  <line x1="907.53" y1="560.55" x2="980.43" y2="590.6" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:5px;stroke:url(#f)" />
+  <line x1="662.13" y1="421.36" x2="725.35" y2="441.12" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3px;stroke:url(#g)" />
+  <line x1="721" y1="458" x2="793.26" y2="479.17" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:4px;stroke:url(#h)" />
+</svg>

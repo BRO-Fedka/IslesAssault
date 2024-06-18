@@ -1,5 +1,5 @@
 function drawCannon(playername,CN = 0, r = 10,turcrd = [0,0],firesize = 1,l = 20,shtSND = "mcannon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,
-bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false){
+bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false,fill = true, strokeW = 2){
     if(PlayersData.get(playername).CNs[CN].STS  <2){
         ctx.fillStyle = MAPstatic.CT.o0;
         ctx.strokeStyle = MAPstatic.CT.o0;
@@ -18,12 +18,12 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                 ctx.fillStyle = 'rgba(0,0,0,0.2)'
                 ctx.strokeStyle = 'rgba(0,0,0,0.2)'
     }
-    ctx.lineWidth= 2/320*Zoom;
+    ctx.lineWidth= strokeW/320*Zoom;
     ctx.lineJoin = 'miter';
     ctx.beginPath()
     ctx.arc((PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r/320*Zoom,0, Math.PI * 2);
     ctx.closePath();
-    ctx.fill();
+    if(fill) ctx.fill();
     ctx.stroke();
     if(!(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody)){
         ctx.strokeStyle = MAPstatic.CT.os;
@@ -87,7 +87,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
         ctx.stroke();
 }
 function PdrawCannon(playername,CN = 0, r = 10,turcrd = [0,0],firesize = 1,l = 20,shtSND = "mcannon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,
-bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false){
+bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 ,cos =0 , sin =0, lw = [5,3], fire = true, underbody = false, fill = true,strokeW = 2){
 	    ctx.lineJoin = 'miter';
         ctx.beginPath()
         if(PlayersData.get(playername).CNs[CN].STS  <2){
@@ -99,7 +99,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                     if(fire){
                         let a = Math.random()*Math.PI * 2;
 
-                        firePrts.push(new firePrt(X+(nX-X)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin), Y+(nY-Y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos),0.75));
+                        firePrts.push(new firePrt(X+(nX-X)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin), Y+(nY-Y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos),firesize));
 
                     }
         }
@@ -107,10 +107,10 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
                     ctx.fillStyle = 'rgba(0,0,0,0.2)'
                     ctx.strokeStyle = 'rgba(0,0,0,0.2)'
         }
-        ctx.lineWidth= 2/320*Zoom;
+        ctx.lineWidth= strokeW/320*Zoom;
         ctx.arc(GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r/320*Zoom,0, Math.PI * 2);
         ctx.closePath();
-        ctx.fill();
+        if (fill) ctx.fill();
         ctx.stroke();
 
         ctx.strokeStyle = MAPstatic.CT.os;

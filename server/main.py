@@ -12,7 +12,8 @@ import random
 from shapely.geometry import Polygon,LineString, Point,LinearRing
 
 from loguru import logger
-import requests
+import asynchronous_requests as requests
+import requests as req_sync
 import time
 import dotenv
 dotenv.load_dotenv()
@@ -22,17 +23,18 @@ WH = 16
 # SQL = sqlite3.connect(os.environ['DB_PATH'])
 API_SERV_ADDRESS = os.environ['API_ADDRESS']
 API_KEY = os.environ['API_KEY']
+isDEV = os.environ['DEV']
 # SQLctx = SQL.cursor()
 # print(SQLctx.execute(f"SELECT * FROM Account WHERE nickname = 'LOL'").fetchone())
 TPS = 15
 VIEW_X = 6
 VIEW_Y = 3
 availablecls = [1,2,3,4,5]
-logger.info(requests.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
+logger.info(req_sync.post(API_SERV_ADDRESS+"connect",{'key':API_KEY}).text)
 
 def exit_handler():
     logger.info("Bye, bye !")
-    requests.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
+    req_sync.post(API_SERV_ADDRESS + "disconnect", {'key': API_KEY})
 atexit.register(exit_handler)
 # http://localhost:90/server/connect
 TEAM_HELP = '''/team create [team name] /team join [team name] /team kick [player name] /team leave /team list /team chat [message]'''
@@ -45,6 +47,7 @@ vehicleinfo = {
         'COLS':True,
         'Z':0,
 "DEGDMGCOF":1,
+'BOMBS':0,
 'COLP': True,
         'TAKEN':False,
         'CARRIER':False,
@@ -52,6 +55,8 @@ vehicleinfo = {
         'SPWEP':0,
         'MOVETYPE':0,
         'TORPEDOS':12,
+        'AAROCKETS':0,
+        'GASTYPE': 0,
         'SMOKES':8,
         'HP':1000,
 'BOOST':0.02,
@@ -61,7 +66,7 @@ vehicleinfo = {
         "PENDMGDST":0.06,
         'TURN':20,
 'AMMO': {'m':150,'p':0,'t':0,'h':0,'f':0},
-        'CAN':[['m',0,0,50,datetime.datetime.now(),None,True,0,0],['m',0-0.1,0,50,datetime.datetime.now(),None,True,0,0]],
+        'CAN':[['m',0,0,50,datetime.datetime.now(),None,True,0,0,0],['m',0-0.1,0,50,datetime.datetime.now(),None,True,0,0,0]],
         },
     1: {'DEFCOL':Polygon([[0.06, 0.04], [-0.06, 0.04], [-0.06, -0.04], [0.06, -0.04]]),
         'COLB': False,
@@ -69,11 +74,14 @@ vehicleinfo = {
 "DEGDMGCOF":0.5,
 "PENDMGDST":0.05,
 'SPAWN':1,
+'GASTYPE': 0,
 'Z':0,
 'GROUNDBOOST':0.15,
 'COLP': True,
+'BOMBS':0,
 'TAKEN':False,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'SMOKES':0,
 'GROUNDSPEED':0.25,
 'CARRIER':False,
@@ -85,31 +93,33 @@ vehicleinfo = {
         'MAXSPEED': 0.05,
         'TURN': 60,
 'AMMO': {'m':0,'p':0,'t':100,'h':0,'f':0},
-'CAN':[['t',0+0.01,0,100,datetime.datetime.now(),None,True,0,0]],
+'CAN':[['t',0+0.01,0,100,datetime.datetime.now(),None,True,0,0,0]],
         },
     2: {'DEFCOL':Polygon([[0.075, 0], [0, 0.03], [-0.065, 0.02], [-0.065, -0.02], [0, -0.03]]),
         'COLB': True,
 'COLP': True,
 "DEGDMGCOF":0.25,
 'Z':0,
+'GASTYPE': 0,
 "PENDMGDST":0.04,
 'TAKEN':False,
 'CARRIER':False,
 'SPAWN':0,
 'GROUNDSPEED':0.2,
 'BOOST':0.02,
-
+'BOMBS':0,
 'SMOKES':4,
 'TORPEDOS':4,
-        'HP': 30,
-        'HPMAX': 30,
+'AAROCKETS':0,
+        'HP': 50,
+        'HPMAX': 50,
         'COLS': True,
 'SPWEP':0,
 'MOVETYPE':0,
         'MAXSPEED': 0.2,
         'TURN': 45,
 'AMMO': {'m':0,'p':0,'t':0,'h':300,'f':0},
-'CAN':[['h',0,0,250,datetime.datetime.now(),None,True,0,0]],
+'CAN':[['h',0,0,250,datetime.datetime.now(),None,True,0,0,0]],
         },
     3: {'DEFCOL':Polygon([[-0.3, 0],[-0.325, 0.055],[-0.2, 0.04],[0, 0.06],[0.225, 0.06],[0.275, 0.04],[0.3, 0],[0.275, -0.04],[0.225, -0.06],[0, -0.06],[-0.2, -0.04],[-0.325, -0.055]]),
         'COLB': False,
@@ -117,8 +127,11 @@ vehicleinfo = {
 "PENDMGDST":0.05,
 "DEGDMGCOF":0.1,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'GROUNDSPEED':0.15,
         'HP': 1000,
+'GASTYPE': 0,
+'BOMBS':0,
 'CARRIER':True,
 'TAKEN':False,
 'CARVEH':[8],
@@ -134,7 +147,7 @@ vehicleinfo = {
         'MAXSPEED': 0.15,
         'TURN': 7,
 'AMMO': {'m':0,'p':5000,'t':0,'h':0,'f':0},
-'CAN':[['p',-0.2, 0,2500,datetime.datetime.now(),None,True,0,0],['p',0.265, 0,2500,datetime.datetime.now(),None,True,0,0]],
+'CAN':[['p',-0.2, 0,2500,datetime.datetime.now(),None,True,0,0,0],['p',0.265, 0,2500,datetime.datetime.now(),None,True,0,0,0]],
         },
     4: {'DEFCOL':Polygon([[0.3, -0.03],[0.3, 0.03],[0.275, 0.03],[0.25, 0.055],[0.06, 0.055],[0.045, 0.08],[-0.045, 0.08],[-0.06, 0.055],[-0.25, 0.055],[-0.275, 0.03],[-0.3, 0.03],[-0.3, -0.03],[-0.275, -0.03],[-0.25, -0.055],[0.25, -0.055],[0.275, -0.03]]),
         'COLB': True,
@@ -142,11 +155,14 @@ vehicleinfo = {
 "PENDMGDST":0.05,
 "DEGDMGCOF":0.75,
 'TORPEDOS':0,
+'AAROCKETS':0,
 'CARRIER':True,
+'GASTYPE': 0,
 'TAKEN':False,
-'CARVEH':[8],
+'CARVEH':[8,5],
 'CARRY':10,
 'SPAWN':0,
+'BOMBS':0,
 'GROUNDSPEED':0.1,
         'HP': 2500,
 'COLP': True,
@@ -171,6 +187,7 @@ vehicleinfo = {
 'GROUNDSPEED':0.4,
 "DEGDMGCOF":0.1,
         'HP': 30,
+'GASTYPE': 1,
 'SPAWN':2,
 'COLP': False,
 'CARRIER':False,
@@ -178,13 +195,41 @@ vehicleinfo = {
 'Z':1,
         'HPMAX': 30,
         'COLS': False,
-'SPWEP':None,
+'AAROCKETS':4,
+'SPWEP':1,
 'MOVETYPE':2,
+'BOMBS':0,
         'BOOST':0.01,
         'MAXSPEED': 0.4,
         'TURN': 80,
 'AMMO': {'m':0,'p':0,'t':0,'h':0,'f':250},
-'CAN':[['f',0, 0,250,datetime.datetime.now(),None,True,0,0]],
+'CAN':[['f',0, 0,250,datetime.datetime.now(),None,True,0,0,0]],
+        },
+    5: {'DEFCOL':Polygon([[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]),
+        'COLB': False,
+'SMOKES':0,
+"PENDMGDST":0.02,
+'TORPEDOS':0,
+'GROUNDSPEED':0.35,
+"DEGDMGCOF":0.1,
+        'HP': 30,
+'GASTYPE': 1,
+'SPAWN':2,
+'COLP': False,
+'CARRIER':False,
+'TAKEN':True,
+'Z':1,
+        'HPMAX': 30,
+        'COLS': False,
+'AAROCKETS':0,
+'BOMBS':5,
+'SPWEP':2,
+'MOVETYPE':2,
+        'BOOST':0.0075,
+        'MAXSPEED': 0.35,
+        'TURN': 80,
+'AMMO': {'m':0,'p':100,'t':0,'h':0,'f':0},
+'CAN':[['p',0-0.025, 0,100,datetime.datetime.now(),None,True,0,0,1]],
         },
 }
 
@@ -281,6 +326,8 @@ for x in range(0,WH):
         MAP['Q'][(x, y)]['BULLETS'] = set()
         MAP['Q'][(x, y)]['TORPEDOS'] = set()
         MAP['Q'][(x, y)]['SMOKES'] = set()
+        MAP['Q'][(x,y)]['AAROCKETS'] = set()
+        MAP['Q'][(x, y)]['BOMBS'] = set()
 Zones = {'A':[8,8,'','',0,1],
 'B':[4.35,7.5,'','',0,1],
          } ### X,Y,p/t,name,perc
@@ -294,13 +341,19 @@ TeamRec={} #Player=>team
 TeamsOwners = {}
 Bullets = {}
 Torpedos = {}
+AARockets = {}
+Bombs = {}
 TorpedosHandler = {}
 BulletsHandler = {}
+AARocketsHandler = {}
+BombsHandler = {}
 Smokes = {}
 #Bodies = {}
 LastBulletI = 0
 LastTorpedoI = 0
 LastSmokeI = 0
+LastAARocketI = 0
+LastBombI = 0
 LastMSGI = 0
 ServInfoJSON = open('SERVINFO.json', 'r').read()
 def lookat(x,y):
@@ -334,13 +387,17 @@ async def game():
     global LastBulletI
     global LastTorpedoI
     global LastSmokeI
+    global LastAARocketI
+    global LastBombI
     global LastMSGI
     while True:
         try:
             await asyncio.sleep(1/TPS)
             if LastBulletI >1000: LastBulletI = 0
             if LastTorpedoI >1000: LastTorpedoI = 0
+            if LastAARocketI > 1000: LastAARocketI = 0
             if LastSmokeI > 1000: LastSmokeI = 0
+            if LastBombI > 1000: LastBombI = 0
             if LastMSGI > 1000: LastMSGI = 0
             delarr = []
             for smoke in Smokes.keys():
@@ -474,8 +531,8 @@ async def game():
                         # print(BulletsHandler)
                         delarr.append(bullet)
                         continue
-                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+1):
-                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+1):
+                    for x in range(int((Bullets[bullet][2]+Bullets[bullet][0])//1)-1,int((Bullets[bullet][2]+Bullets[bullet][0])//1)+2):
+                        for y in range(int((Bullets[bullet][3]+Bullets[bullet][1])//1)-1,int((Bullets[bullet][3]+Bullets[bullet][1])//1)+2):
                             try:
                                 # del MAP['Q'][(x, y)]['BULLETS'][bullet]
                                 MAP['Q'][(x, y)]['BULLETS'].discard(bullet)
@@ -493,6 +550,180 @@ async def game():
                     del Bullets[bullet]
                 except:pass
                 ################################################
+            delarr=[]
+            for bomb in Bombs.keys():
+
+                    # [PlayersData[player]["X"], PlayersData[player]["Y"], x, y, time.time(), player, None, 40, 3, 0.5, 3]
+                    # AARockets[aarocket][4]+= AARockets[aarocket][6]/TPS
+                    relt = (time.time()-Bombs[bomb][4])/Bombs[bomb][10]
+                    if relt > 1:
+                        # print("!!!!!!")
+
+                        point = Point((Bombs[bomb][2],Bombs[bomb][3]))
+                        col = Point((Bombs[bomb][2],Bombs[bomb][3])).buffer(0.05)
+                        print(Bombs[bomb][2],Bombs[bomb][3])
+                        status = 4
+                        try:
+                            for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['B']:
+                                if MAP['B'][_].intersects(point):
+                                    status = 1
+                            for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['S']:
+                                if MAP['S'][_].intersects(point):
+                                    status = 1
+                            for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['PLAYERS']:
+                                if _ in PlayersData.keys() and _ !=Bombs[bomb][5] and PlayersData[_]['Z'] ==0:
+                                    if PlayersData[_]['COL'].intersects(point):
+                                        status = 1
+                                    if PlayersData[_]['COL'].intersects(col):
+
+                                        if PlayersData[_]['STATUS'] == 'ALIVE' and not _ in Teams[PlayersData[_]['TEAM']]:
+
+
+                                            # Point(2, 1).buffer(1.5)
+                                            dmg = int(Bombs[bomb][7]*PlayersData[_]['COL'].intersection(col).area*100)
+                                            PlayersData[_]['HP'] -= dmg
+
+                                            PlayersData[_]['LASTDMG'] = datetime.datetime.now()
+
+                                            PlayersData[Bombs[bomb][5]]['SCORES'] += dmg
+                                            PlayersData[_]['KILLER'] = Bombs[bomb][5]
+                                            if PlayersData[_]['HP'] <= 0:
+                                                PlayersData[_]['STATUS'] = 'BURNING'
+                                                for i in PlayersData[_]['CAN']:
+                                                    i[8] = 3
+                                                PlayersData[_]['BURNTIMER'] = 5*TPS
+                                                # try:
+                                                #     # PlayersData[Torpedos[torpedo][7]]['SCORES'] += 1+PlayersData[Torpedos[torpedo][7]]['KSR']
+                                                #     if not PlayersAccs[Torpedos[torpedo][7]]['NICK']=='':
+                                                #         PlayersAccs[Torpedos[torpedo][7]]['money'] += PlayersData[Torpedos[torpedo][7]]['KSR']*10
+                                                #         SQLctx.execute(
+                                                #             f"""UPDATE Account set money = money+{PlayersData[Torpedos[torpedo][7]]['KSR']*10} WHERE nickname = '{PlayersAccs[Torpedos[torpedo][7]]['NICK']}' AND password = '{PlayersAccs[Torpedos[torpedo][7]]['PSW']}'""")
+                                                #         SQL.commit()
+                                                #         PlayersData[Torpedos[torpedo][7]]['MSGTURN'].append(f'\nl,You received {PlayersData[Torpedos[torpedo][7]]["KSR"]*10} goldshell{"s"*int(PlayersData[Torpedos[torpedo][7]]["KSR"]>0)} !,{LastMSGI}')
+                                                #         LastMSGI+=1
+                                                #     PlayersData[Torpedos[torpedo][7]]['KSR'] +=1
+                                                # except:pass
+                                                PlayersData[_]['HP'] = 0
+
+                        except KeyError:
+                            # pass
+                            delarr.append(bomb)
+                        Bombs[bomb][8] = status
+                            # logging.exception("message")
+                    if Bombs[bomb][8]==2:
+                        Bombs[bomb][8] = 0
+                    elif Bombs[bomb][8]==3:
+                        Bombs[bomb][8] = 2
+
+                    if Bombs[bomb][8]==1 or Bombs[bomb][8]==4:
+                        BombsHandler[bomb] = Bombs[bomb].copy()
+                        delarr.append(bomb)
+                        continue
+                    for x in range(int(Bombs[bomb][2])-1,int(Bombs[bomb][3])+2):
+                        for y in range(int(Bombs[bomb][2])-1,int(Bombs[bomb][3])+2):
+                            try:
+
+                                # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
+                                MAP['Q'][(x, y)]['BOMBS'].discard(bomb)
+                            except:
+                                pass
+                    try:
+                        MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['BOMBS'].add(bomb)
+                    except:pass
+
+                    # logging.exception("message")
+            for bomb in delarr:
+                try:
+                    del Bombs[bomb]
+                except:pass
+                ################################################
+            delarr=[]
+            for aarocket in AARockets.keys():
+                try:
+                    # AARockets[aarocket][4]+= AARockets[aarocket][6]/TPS
+                    t = time.time()-AARockets[aarocket][4]
+                    dist = t*AARockets[aarocket][6] + t*t*AARockets[aarocket][11]/2
+                    if dist > AARockets[aarocket][12]:
+                        AARockets[aarocket][10] = 4
+                        # AARocketsHandler[aarocket] = AARockets[aarocket].copy()
+                        # delarr.append(aarocket)
+                    AARockets[aarocket][2] = math.cos(AARockets[aarocket][5]/180*math.pi)*dist
+                    AARockets[aarocket][3] = math.sin(AARockets[aarocket][5]/180*math.pi)*dist
+
+                    if AARockets[aarocket][10]==2:
+                        AARockets[aarocket][10] = 0
+                    elif AARockets[aarocket][10]==3:
+                        AARockets[aarocket][10] = 2
+                    prevT = time.time()-AARockets[aarocket][4] - 1/TPS
+                    prevDist = prevT * AARockets[aarocket][6] + prevT * prevT * AARockets[aarocket][11] / 2
+                    deltaS = dist - prevDist
+                    AARockets[aarocket][8] = LineString([[AARockets[aarocket][0]+AARockets[aarocket][2],AARockets[aarocket][1]+AARockets[aarocket][3]],[AARockets[aarocket][0]+AARockets[aarocket][2]-math.cos(AARockets[aarocket][5]/180*math.pi)*deltaS,AARockets[aarocket][1]+AARockets[aarocket][3]-math.sin(AARockets[aarocket][5]/180*math.pi)*deltaS]])
+                    if AARockets[aarocket][10] != 3 and AARockets[aarocket][10] != 2:
+                        try:
+                            for _ in MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['PLAYERS']:
+
+                                if _ in PlayersData.keys() and _ !=AARockets[aarocket][7] and PlayersData[_]['Z'] ==1:
+
+                                    if PlayersData[_]['COL'].intersects(AARockets[aarocket][8]):
+
+                                        if PlayersData[_]['STATUS'] == 'ALIVE' and not _ in Teams[PlayersData[_]['TEAM']]:
+
+
+                                            # Point(2, 1).buffer(1.5)
+                                            PlayersData[_]['HP'] -= AARockets[aarocket][9]
+
+                                            PlayersData[_]['LASTDMG'] = datetime.datetime.now()
+
+                                            PlayersData[AARockets[aarocket][7]]['SCORES'] += AARockets[aarocket][9]+PlayersData[_]['HP']
+                                            PlayersData[_]['KILLER'] = AARockets[aarocket][7]
+                                            if PlayersData[_]['HP'] <= 0:
+                                                PlayersData[_]['STATUS'] = 'BURNING'
+                                                for i in PlayersData[_]['CAN']:
+                                                    i[8] = 3
+                                                PlayersData[_]['BURNTIMER'] = 5*TPS
+                                                PlayersData[_]['KILLER'] = AARockets[aarocket][7]
+                                                # try:
+                                                #     # PlayersData[Torpedos[torpedo][7]]['SCORES'] += 1+PlayersData[Torpedos[torpedo][7]]['KSR']
+                                                #     if not PlayersAccs[Torpedos[torpedo][7]]['NICK']=='':
+                                                #         PlayersAccs[Torpedos[torpedo][7]]['money'] += PlayersData[Torpedos[torpedo][7]]['KSR']*10
+                                                #         SQLctx.execute(
+                                                #             f"""UPDATE Account set money = money+{PlayersData[Torpedos[torpedo][7]]['KSR']*10} WHERE nickname = '{PlayersAccs[Torpedos[torpedo][7]]['NICK']}' AND password = '{PlayersAccs[Torpedos[torpedo][7]]['PSW']}'""")
+                                                #         SQL.commit()
+                                                #         PlayersData[Torpedos[torpedo][7]]['MSGTURN'].append(f'\nl,You received {PlayersData[Torpedos[torpedo][7]]["KSR"]*10} goldshell{"s"*int(PlayersData[Torpedos[torpedo][7]]["KSR"]>0)} !,{LastMSGI}')
+                                                #         LastMSGI+=1
+                                                #     PlayersData[Torpedos[torpedo][7]]['KSR'] +=1
+                                                # except:pass
+                                                PlayersData[_]['HP'] = 0
+                                        AARockets[aarocket][10]=1
+                        except KeyError:
+                            # pass
+                            delarr.append(aarocket)
+                            # logging.exception("message")
+                    if AARockets[aarocket][10]==1 or  AARockets[aarocket][10]==4:
+                        AARocketsHandler[aarocket] = AARockets[aarocket].copy()
+                        delarr.append(aarocket)
+                        continue
+                    for x in range(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1)-1,int((AARockets[aarocket][2]+AARockets[aarocket][0])//1)+2):
+                        for y in range(int((AARockets[aarocket][3]+AARockets[aarocket][1])//1)-1,int((AARockets[aarocket][3]+AARockets[aarocket][1])//1)+2):
+                            try:
+
+                                # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
+                                MAP['Q'][(x, y)]['AAROCKETS'].discard(aarocket)
+                            except:
+                                pass
+                    try:
+                        MAP['Q'][(int((AARockets[aarocket][2]+AARockets[aarocket][0])//1), int((AARockets[aarocket][3]+AARockets[aarocket][1])//1))]['AAROCKETS'].add(aarocket)
+                    except:pass
+                except Exception:
+                    pass
+                    # logging.exception("message")
+            for aarocket in delarr:
+                try:
+                    del AARockets[aarocket]
+                except:pass
+
+
+            ################################################
             delarr=[]
             for torpedo in Torpedos.keys():
                 try:
@@ -564,8 +795,8 @@ async def game():
                         TorpedosHandler[torpedo] = Torpedos[torpedo].copy()
                         delarr.append(torpedo)
                         continue
-                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+1):
-                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+1):
+                    for x in range(int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)-1,int((Torpedos[torpedo][2]+Torpedos[torpedo][0])//1)+2):
+                        for y in range(int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)-1,int((Torpedos[torpedo][3]+Torpedos[torpedo][1])//1)+2):
                             try:
 
                                 # del MAP['Q'][aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(x, y)]['TORPEDOS'][torpedo]
@@ -614,18 +845,22 @@ async def game():
                     if len(players) > 1:
                         gvgt = True
                         for player in range(1,len(players)):
-                            if PlayersData[players[player]]['TEAM'] != PlayersData[players[player-1]]['TEAM'] and not PlayersData[players[player]]['TEAM'] is None: gvgt = False
+                            if PlayersData[players[player]]['TEAM'] != PlayersData[players[player-1]]['TEAM'] and not PlayersData[players[player]]['TEAM'] is None:
+                                gvgt = False
+                                break
                         if gvgt:
                             Zones[zone][2] = 'team'
                             Zones[zone][3] = PlayersData[players[0]]['TEAM']
                             for pl in players:
                                 if (datetime.datetime.now() - PlayersData[pl]['EQZNUPDTTIMER']).seconds > 30:
-                                    if PlayersData[pl]['SMOKES'] < \
-                                            vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['SMOKES']:
+                                    if PlayersData[pl]['SMOKES'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['SMOKES']:
                                         PlayersData[pl]['SMOKES'] += 1
-                                    if PlayersData[pl]['TORPEDOS'] < \
-                                            vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['TORPEDOS']:
+                                    if PlayersData[pl]['TORPEDOS'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['TORPEDOS']:
                                         PlayersData[pl]['TORPEDOS'] += 1
+                                    if PlayersData[pl]['AAROCKETS'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['AAROCKETS']:
+                                        PlayersData[pl]['AAROCKETS'] += 1
+                                    if PlayersData[pl]['BOMBS'] < vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['BOMBS']:
+                                        PlayersData[pl]['BOMBS'] += 1
                                     PlayersData[pl]['EQZNUPDTTIMER'] = datetime.datetime.now()
                                 PlayersData[pl]['AMMO'] = vehicleinfo[PlayersCosmetics[pl]['VEHICLE']]['AMMO'].copy()
 
@@ -642,6 +877,10 @@ async def game():
                                     PlayersData[players[0]]['SMOKES'] += 1
                                 if PlayersData[players[0]]['TORPEDOS'] < vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['TORPEDOS']:
                                     PlayersData[players[0]]['TORPEDOS'] += 1
+                                if PlayersData[players[0]]['AAROCKETS'] < vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['AAROCKETS']:
+                                    PlayersData[players[0]]['AAROCKETS'] += 1
+                                if PlayersData[players[0]]['BOMBS'] < vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['BOMBS']:
+                                    PlayersData[players[0]]['BOMBS'] += 1
                                 PlayersData[players[0]]['EQZNUPDTTIMER'] = datetime.datetime.now()
                             PlayersData[players[0]]['AMMO'] = vehicleinfo[PlayersCosmetics[players[0]]['VEHICLE']]['AMMO'].copy()
                             PlayersData[players[0]]['AMMOUPDATE'] = False
@@ -683,7 +922,7 @@ async def game():
 
                     # PlayersData[player]["X"] += math.cos(PlayersData[player]['DIR']/180*math.pi)*(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS*(PlayersData[player]['GAS']/100)
                     # PlayersData[player]["Y"] += math.sin(PlayersData[player]['DIR']/180*math.pi)*(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS*(PlayersData[player]['GAS']/100)
-                    if  vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2:
+                    if  vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE'] == 1:
                         if type(PlayersData[player]['GAS']) == type(0): PlayersData[player]['GAS'] = 'FLYING'
                         PlayersData[player]["SPEED"] += ((vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']* (0.25 + 0.75*int(PlayersData[player]['GAS']!='LANDING'))) - PlayersData[player]["SPEED"]) * vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['BOOST']
                     else:
@@ -697,6 +936,10 @@ async def game():
                         # PlayersData[player]['HP'] = PlayersData[player]['HPMAX']
                         # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] < 2:PlayersData[player]['DIR'] = (PlayersData[player]['DIR']+180)%360
                         PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS']
+                        PlayersData[player]['SMOKES'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SMOKES']
+                        PlayersData[player]['AAROCKETS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS']
+                        PlayersData[player]['BOMBS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['BOMBS']
+
                         PlayersData[player]['KSR'] = 1
                         PlayersData[player]['AMMO'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AMMO'].copy()
                         PlayersData[player]['AMMOUPDATE'] = False
@@ -837,8 +1080,9 @@ async def game():
                                     PlayersData[_]['CARRY'].add(player)
                                     # PlayersData[player]['HP'] = PlayersData[player]['HPMAX']
                                     PlayersData[player]['DIR'] = PlayersData[_]['DIR']
-                                    PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                                        'TORPEDOS']
+                                    PlayersData[player]['TORPEDOS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS']
+                                    PlayersData[player]['AAROCKETS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS']
+                                    PlayersData[player]['BOMBS'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['BOMBS']
                                     # PlayersData[player]['CAN'] = []
                                     PlayersData[player]['KSR'] = 1
                                     PlayersData[player]['AMMO'] = vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AMMO'].copy()
@@ -997,25 +1241,26 @@ async def game():
                                 [PlayersData[player]['X'] + a[0], PlayersData[player]['Y'] + a[1]])
                         PlayersData[player]['COL'] = Polygon(PlayersData[player]['COL'])
                     PlayersData[player]['PrevDIR'] = PlayersData[player]['DIR']
-                    if PlayersInputs[player]['wk']:
+                    if PlayersInputs[player]['wk'] and PlayersData[player]['STATUS'] != "BURNING":
                         # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
                         #     PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']+25,-100,100)
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE']==0:
                             PlayersData[player]['GAS'] = 100
-                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==2:
+                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE']==1:
                             PlayersData[player]['GAS'] = 'FLYING'
-                    elif PlayersInputs[player]['sk']:
+                    elif PlayersInputs[player]['sk'] and PlayersData[player]['STATUS'] != "BURNING":
                         # if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 0:
                         #     PlayersData[player]['GAS'] = barrier(PlayersData[player]['GAS']-25,-100,100)
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE'] == 0:
                             PlayersData[player]['GAS'] = -100
-                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==2:
+                        elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE']==1:
                             PlayersData[player]['GAS'] = 'LANDING'
                     else:
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 1 or vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE']==0:
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE'] == 0:
                             PlayersData[player]['GAS'] =0
-                    if PlayersInputs[player]['ak'] :
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2:
+                    # if (PlayersCosmetics[player]['VEHICLE'] in [5] and PlayersInputs[player]['view'] > 0):
+                    if PlayersInputs[player]['ak']  and PlayersData[player]['STATUS'] != "BURNING":
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2  or (PlayersCosmetics[player]['VEHICLE'] in [5] and PlayersInputs[player]['view'] > 0):
                             if not PlayersData[player]['ONGROUND']:
                                 if  PlayersData[player]['SPEED'] > vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']:
                                     PlayersData[player]['DIR'] = barrier(
@@ -1023,15 +1268,15 @@ async def game():
                                 else:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']-vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*2),min=0,minrep = 359,max=359,maxrep=0)
                             else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']-vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
-                    elif PlayersInputs[player]['dk'] :
-                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2:
+                    elif PlayersInputs[player]['dk'] and PlayersData[player]['STATUS'] != "BURNING" :
+                        if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] <2  or (PlayersCosmetics[player]['VEHICLE'] in [5] and PlayersInputs[player]['view'] > 0):
                             if not PlayersData[player]['ONGROUND']:
                                 if PlayersData[player]['SPEED'] > vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR'] + vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN'] / TPS * math.sin(2), min=0, minrep=359, max=359,maxrep=0)
                                 else:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*2),min=0,minrep = 359,max=359,maxrep=0)
                             else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
-                    if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 :
+                    if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 or PlayersCosmetics[player]['VEHICLE'] in [5]:
                         if  PlayersData[player]['STATUS'] != "BURNING" :
                             PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
                         else:
@@ -1077,8 +1322,10 @@ async def game():
                     #         PlayersData[player]['STR'] = f'{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},1,'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{str(int(PlayersData[player]["HP"]))},{str(int(PlayersData[player]["HPMAX"]))},{str(PlayersData[player]["X"])},{str(PlayersData[player]["Y"])},{PlayersAccs[player]["money"]},{WH},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))
                     #     else:
                     #         PlayersData[player]['STR'] = f'{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},1,' + '+' * int(PlayersData[player]['GAS'] >= 0) + str(PlayersData[player]['GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{str(int(PlayersData[player]["HP"]))},{str(int(PlayersData[player]["HPMAX"]))},{str(PlayersData[player]["X"])},{str(PlayersData[player]["Y"])},{PlayersAccs[player]["money"]},{WH},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))
+                    elif PlayersCosmetics[player]['VEHICLE'] == 5:
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*1000)/10)+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])+','+str(PlayersData[player]['BOMBS']) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]}'
                     elif PlayersCosmetics[player]['VEHICLE'] == 8:
-                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])
+                        PlayersData[player]['STR'] = f'{PlayersCosmetics[player]["VEHICLE"]},{("["+str(PlayersData[player]["TEAM"])+"]")*int(not PlayersData[player]["TEAM"] is None)+player},{PlayersAccs[player]["money"]},'+str(PlayersData[player]['GAS'])+f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"]*1000)/1000},{int(PlayersData[player]["Y"]*1000)/1000},{PlayersData[player]["Z"]*2+int(PlayersData[player]["ONGROUND"])},'+str(int(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*100))+f',{PlayersData[player]["CAN"][0][8]},'+ str(int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player]['STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])+','+str(PlayersCosmetics[player]['TRACER'])+','+str(PlayersData[player]['AAROCKETS'])
                     PlayersData[player]['STR'] += ','
                     for _ in Zones:
                         PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM'])))
@@ -1086,10 +1333,15 @@ async def game():
                     OldVisTor = PlayersData[player]['VISTOR'].copy()
                     OldVisBul = PlayersData[player]['VISBUL'].copy()
                     OldVisSmk = PlayersData[player]['VISSMK'].copy()
+                    OldVisAar = PlayersData[player]['VISAAR'].copy()
+                    OldVisBmb = PlayersData[player]['VISBMB'].copy()
                     PlayersData[player]['VISS'] = set()
                     PlayersData[player]['VISBUL'] = set()
                     PlayersData[player]['VISTOR'] = set()
                     PlayersData[player]['VISSMK'] = set()
+                    PlayersData[player]['VISAAR'] = set()
+                    PlayersData[player]['VISBMB'] = set()
+
                     PlayersData[player]['VISBRIDGES'] = set()
                     part = ''
                     for x in range(int(PlayersData[player]['X'] // 1) - VIEW_X-1, int(PlayersData[player]['X'] // 1) + VIEW_X+2):
@@ -1131,6 +1383,10 @@ async def game():
                                     PlayersData[player]['VISBUL'].add(_)
                                 for _ in MAP['Q'][(x, y)]['TORPEDOS']:
                                     PlayersData[player]['VISTOR'].add(_)
+                                for _ in MAP['Q'][(x, y)]['AAROCKETS']:
+                                    PlayersData[player]['VISAAR'].add(_)
+                                for _ in MAP['Q'][(x, y)]['BOMBS']:
+                                    PlayersData[player]['VISBMB'].add(_)
                                 for _ in MAP['Q'][(x, y)]['SMOKES']:
                                     PlayersData[player]['VISSMK'].add(_)
                                 for _ in MAP['Q'][(x, y)]['BRIDGES']:
@@ -1142,6 +1398,8 @@ async def game():
                     SmokesAppeared = PlayersData[player]['VISSMK'] - OldVisSmk
                     TorpedosAppeared = PlayersData[player]['VISTOR'] - OldVisTor
                     BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
+                    AARocketsAppeared = PlayersData[player]['VISAAR'] - OldVisAar
+                    BombsAppeared = PlayersData[player]['VISBMB'] - OldVisBmb
                     # print(PlayersData[player]['VISTOR'])
                     while len(PlayersData[player]['MSGTURN']) >0:
                                                         PlayersData[player]['STR'] +=PlayersData[player]['MSGTURN'][0]
@@ -1185,7 +1443,21 @@ async def game():
                     #         q = 0
                     #         if (Zones[_][2] == 'player' and Zones[_][3]==player)or(Zones[_][2] == 'team' and Zones[_][3]==PlayersData[player]['TEAM']): q =1
                     #         PlayersData[player]['STR'] += f'\n*,{_},'+str(int((Zones[_][0]-PlayersData[player]['X'])*320+PlayersInputs[player]['w']/2))+','+str(int((Zones[_][1]-PlayersData[player]['Y'])*320+PlayersInputs[player]['h']/2))+','+str(q)
-
+                    if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==2 and PlayersInputs[player]['spk'] and PlayersData[player]["BOMBS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTBOMB"]).total_seconds() > 0.5:
+                        PlayersData[player]["BOMBS"]-=1
+                        randDir = random.random()*2*math.pi
+                        randDst = random.random()*0.1*PlayersData[player]["SPEED"]/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']
+                        x = PlayersData[player]["X"] + 2*PlayersData[player]["SPEED"] * math.cos(PlayersData[player]["DIR"]/180*math.pi) + math.cos(randDir) * randDst
+                        y = PlayersData[player]["Y"] + 2*PlayersData[player]["SPEED"] * math.sin(PlayersData[player]["DIR"]/180*math.pi) + math.sin(randDir) * randDst
+                        # print("!!!")
+                        Bombs[LastBombI] = [PlayersData[player]["X"],PlayersData[player]["Y"],x,y,time.time(),player,PlayersData[player]["DIR"],750,3,0.5,4]
+                        LastBombI +=1
+                        PlayersData[player]["LASTBOMB"] = datetime.datetime.now()
+                    if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==1 and PlayersInputs[player]['spk'] and PlayersData[player]["AAROCKETS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTAAROCKET"]).total_seconds() > 0.3:
+                        PlayersData[player]["AAROCKETS"]-=1
+                        AARockets[LastAARocketI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,time.time(),PlayersData[player]["DIR"]+round(random.random()*20-10),PlayersData[player]['SPEED'],player,None,40,3,0.5,1.25]
+                        LastAARocketI +=1
+                        PlayersData[player]["LASTAAROCKET"] = datetime.datetime.now()
                     if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPWEP']==0 and PlayersInputs[player]['spk'] and PlayersData[player]["TORPEDOS"]>0 and (datetime.datetime.now() - PlayersData[player]["LASTTORPEDO"]).seconds > 5:
                         PlayersData[player]["TORPEDOS"]-=1
                         Torpedos[LastTorpedoI] = [PlayersData[player]["X"],PlayersData[player]["Y"],0,0,0,PlayersData[player]["DIR"],0.225,player,None,500,3]
@@ -1200,7 +1472,7 @@ async def game():
                         #print('ooo')
                     wasShot = False
                     for _ in PlayersData[player]['CAN']:
-                        if PlayersData[player]['TAKEN']:continue
+                        if PlayersData[player]['TAKEN']  and _[9] == PlayersInputs[player]['view']:continue
                         # _[5] = False
                         d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                         deg = lookat(_[1], _[2])
@@ -1223,7 +1495,7 @@ async def game():
                                 if j.intersects(i[5]):
                                     if caninfo[i[0]][9] >=caninfo[_[0]][9]: g = False
                         h = False
-                        if g and PlayersData[player]["STATUS"] == 'ALIVE' and PlayersInputs[player]['m0'] and PlayersData[player]['AMMO'][_[0]]>0 and (datetime.datetime.now()-_[4]).microseconds+(datetime.datetime.now()-_[4]).seconds*1000000>=caninfo[_[0]][4]:
+                        if g and PlayersData[player]["STATUS"] == 'ALIVE' and PlayersInputs[player]['m0'] and PlayersData[player]['AMMO'][_[0]]>0 and (datetime.datetime.now()-_[4]).microseconds+(datetime.datetime.now()-_[4]).seconds*1000000>=caninfo[_[0]][4] and _[9] == PlayersInputs[player]['view']:
                                 # print(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['CAN'])
                             #if (PlayersInputs[player]['Xmod']==1 and (_[0] == 'p' or _[0] == 'h'or _[0] == 'f')) or PlayersInputs[player]['Xmod']==0:    ############### BETA
                                 PlayersData[player]['AMMO'][_[0]]-=1
@@ -1271,6 +1543,8 @@ async def game():
                                     PlayersData[player]['STR'] += f'\n+,{("["+str(PlayersData[enemy]["TEAM"])+"]")*int(not PlayersData[enemy]["TEAM"] is None)+enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy]['STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," +str(len( PlayersData[enemy]['CARRY']))
                                 elif PlayersCosmetics[enemy]["VEHICLE"] == 8:
                                     PlayersData[player]['STR'] +=   f'\n+,{("["+str(PlayersData[enemy]["TEAM"])+"]")*int(not PlayersData[enemy]["TEAM"] is None)+enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' +  f',{PlayersData[enemy]["CAN"][0][8]},' + str(int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy]['STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ','+str(int(PlayersInputs[enemy]['Cmod'])*PlayersCosmetics[enemy]['TRACER'])
+                                elif PlayersCosmetics[enemy]["VEHICLE"] == 5:
+                                    PlayersData[player]['STR'] +=   f'\n+,{("["+str(PlayersData[enemy]["TEAM"])+"]")*int(not PlayersData[enemy]["TEAM"] is None)+enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' +  f',{PlayersData[enemy]["CAN"][0][8]},' + str(int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy]['STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ','+str(int(PlayersInputs[enemy]['Cmod'])*PlayersCosmetics[enemy]['TRACER'])+ f',{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]}'
                                 elif PlayersCosmetics[enemy]['VEHICLE'] == 3:
                                     PlayersData[player]['STR'] += f'\n+,{("["+str(PlayersData[enemy]["TEAM"])+"]")*int(not PlayersData[enemy]["TEAM"] is None)+enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy]['STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," +str(len( PlayersData[enemy]['CARRY']))
                                 # if PlayersInputs[player]['Xmod']==PlayersData[enemy]['Z']:
@@ -1350,6 +1624,53 @@ async def game():
                             print('>')
 
                             PlayersData[player]['STR'] += f'\n<,{_},{TorpedosHandler[_][10]}'
+                    for _ in AARocketsAppeared:
+                        # print('<')
+                        try:
+                            PlayersData[player]['STR'] += f'\nr,{_},{(AARockets[_][0])},{AARockets[_][1]},{AARockets[_][5]},{AARockets[_][10]},{AARockets[_][6]},{AARockets[_][11]}'
+                        except KeyError:
+                            pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in AARocketsHandler:
+                        if _ in PlayersData[player]['VISAAR']:
+                            print('>')
+
+                            PlayersData[player]['STR'] += f'\nr,{_},{AARocketsHandler[_][10]}'
+                    for _ in BombsAppeared:
+                        # print('<')
+                        try:
+                            PlayersData[player]['STR'] += f'\nb,{_},{(Bombs[_][0])},{Bombs[_][1]},{Bombs[_][2]},{Bombs[_][3]},{Bombs[_][8]},{Bombs[_][10]},{Bombs[_][6]}'
+                        except KeyError:
+                            pass
+                    # print(PlayersData[player]['VISTOR'])
+                    for _ in BombsHandler:
+                        if _ in PlayersData[player]['VISBMB']:
+                            print(f'\nb,{_},{BombsHandler[_][8]}')
+
+                            PlayersData[player]['STR'] += f'\nb,{_},{BombsHandler[_][8]}'
+
+            BombsHandlerKeys = list(BombsHandler.keys())
+            for bomb in BombsHandlerKeys:
+
+                for x in range(int(BombsHandler[bomb][2]) - 1,int(BombsHandler[bomb][2]) + 1):
+                    for y in range(int(BombsHandler[bomb][3]) - 1,int(BombsHandler[bomb][3]) + 1):
+                        try:
+                            MAP['Q'][(x, y)]['BOMBS'].discard(bomb)
+                        except:
+                            pass
+                BombsHandler.pop(bomb)
+            AARocketsHandlerKeys = list(AARocketsHandler.keys())
+            for aarocket in AARocketsHandlerKeys:
+
+                for x in range(int((AARocketsHandler[aarocket][2] + AARocketsHandler[aarocket][0]) // 1) - 1,
+                               int((AARocketsHandler[aarocket][2] + AARocketsHandler[aarocket][0]) // 1) + 1):
+                    for y in range(int((AARocketsHandler[aarocket][3] + AARocketsHandler[aarocket][1]) // 1) - 1,
+                                   int((AARocketsHandler[aarocket][3] + AARocketsHandler[aarocket][1]) // 1) + 1):
+                        try:
+                            MAP['Q'][(x, y)]['AAROCKETS'].discard(aarocket)
+                        except:
+                            pass
+                AARocketsHandler.pop(aarocket)
             TorpedosHandlerKeys = list(TorpedosHandler.keys())
             for torpedo in TorpedosHandlerKeys:
 
@@ -1458,8 +1779,8 @@ async def game():
                     logger.info("change_player_data",
                                 {"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
                                  'delta': delta, 'money': money})
-                    requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})
-
+                    resp = (await requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})).text
+                    #TODO !!!!
                 try:
 
                     PlayersData.pop(_)
@@ -1511,13 +1832,14 @@ async def handler(websocket):
                                 'tbk': bool(int(message[7])),
                                 'Cmod': bool(int(message[8])),
                                 'Xmod': int(message[9]),
-                                'x':float(message[10:].split(',')[0]),
-                                'y':float(message[10:].split(',')[1]),
+                                'view': int(message[10]),
+                                'x':float(message[11:].split(',')[0]),
+                                'y':float(message[11:].split(',')[1]),
                                 'last':datetime.datetime.now()
 
                             }
                             if player in PlayersData:
-                                for _ in message[10:].split(',')[2:]:
+                                for _ in message[11:].split(',')[2:]:
                                     if len(_) < 2: continue
                                     elif _[0] == 'm':
 
@@ -1705,8 +2027,12 @@ async def handler(websocket):
                                 'KILLS':0,
                                 'SMOKES': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SMOKES'],
                                 'TORPEDOS':vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TORPEDOS'],
+                                'AAROCKETS': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['AAROCKETS'],
+                                'BOMBS': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['BOMBS'],
                                 'LASTTORPEDO':datetime.datetime.now(),
+                                'LASTAAROCKET': datetime.datetime.now(),
                                 'LASTSMOKE':datetime.datetime.now(),
+                                'LASTBOMB':datetime.datetime.now(),
                                 'STATUS':'ALIVE',
                                 'KILLER': None,
                                 'TEAM':None,
@@ -1728,6 +2054,8 @@ async def handler(websocket):
                                 'VISG':set(),
                                 'VISS': set(),
                                 'VISBUL':set(),
+                                'VISBMB': set(),
+                                'VISAAR': set(),
                                 'VISTOR':set(),
                                 'VISSMK': set(),
                                 'VISBRIDGES':set(),
@@ -1742,6 +2070,7 @@ async def handler(websocket):
                                 'LASTDMG':datetime.datetime.now()
                                 # 'INFOG':False
                             }
+                            if PlayersCosmetics[player]['VEHICLE'] in [5,8]: PlayersData[player]['SPEED'] = 0.9 *vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']
                             if player in TeamRec.keys():
                                 if TeamRec[player][0] in Teams.keys():
                                     PlayersData[player]['TEAM'] = TeamRec[player][0]
@@ -1912,7 +2241,7 @@ async def handler(websocket):
                 resp = ""
                 try:
                     print(API_SERV_ADDRESS + "item_check_for_acc")
-                    resp = requests.post(API_SERV_ADDRESS+"item_check_for_acc",{'nickname':message[1:].split('\n')[3],"password":message[1:].split('\n')[4],"color":PlayersCosmetics[name]["COLOR"],"vehicle":PlayersCosmetics[name]["VEHICLE"]}).text
+                    resp = (await requests.post(API_SERV_ADDRESS+"item_check_for_acc",{'nickname':message[1:].split('\n')[3],"password":message[1:].split('\n')[4],"color":PlayersCosmetics[name]["COLOR"],"vehicle":PlayersCosmetics[name]["VEHICLE"]})).text
 
                 except:
                     print('!')
@@ -1921,7 +2250,7 @@ async def handler(websocket):
                     print(resp)
                     respJSON = json.loads(resp)
                     for _ in PlayersAccs.keys():
-                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name:
+                        if message[1:].split('\n')[3] == PlayersAccs[name]['NICK'] and _ != name and isDEV == False:
                             PlayersSockets.pop(name)
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)
@@ -1941,7 +2270,7 @@ async def handler(websocket):
                         await websocket.send('M'+MAPJSON)
                 except:
                     print(API_SERV_ADDRESS + "item_check")
-                    resp = requests.post(API_SERV_ADDRESS + "item_check",{ "color": PlayersCosmetics[name]["COLOR"],"vehicle": PlayersCosmetics[name]["VEHICLE"]}).text
+                    resp = (await requests.post(API_SERV_ADDRESS + "item_check",{ "color": PlayersCosmetics[name]["COLOR"],"vehicle": PlayersCosmetics[name]["VEHICLE"]})).text
                     print(resp)
                     respJSON = json.loads(resp)
                     if respJSON['color'] < 0:

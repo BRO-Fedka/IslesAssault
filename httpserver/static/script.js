@@ -135,6 +135,8 @@ let GameW = 0
 PIXI.sound.add("bang","static\\bang.mp3")
 PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
+PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
+PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
 
 PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
 PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
@@ -153,6 +155,8 @@ PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 var Players=[];
 var TorpedosData = new Map();
+var AARocketsData = new Map();
+var BombsData = new Map();
 var BulletsData = new Map();
 var SmokesData = new Map();
 var ColorPack = 'Summer';
@@ -187,6 +191,12 @@ function WtrPrt0(x, y) {
 	this.y=y;
 	this.life=1;
 	this.rad = Math.random()+1;
+}
+function RcktTPrt0(x, y) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.rad = Math.random()+0.25;
 }
 function Particle0(x, y, xs, ys,rad) {
 	this.x=x;
@@ -258,6 +268,7 @@ function Particle2(W,H) {
 	this.ra = Math.random()*Math.PI*2;
 	this.as = -0.1 + Math.random()*0.2;
 }
+
 function Particle3(id) {
     this.id =id;
     this.hp = 500+Math.random()*500
@@ -266,7 +277,12 @@ function Particle3(id) {
     this.dir = (Math.random()*2-1)*Math.PI;
     this.spd = Math.random()*2 -1;
 }
-
+function Particle4() {
+	this.x= Math.random()*(GameW+500)-250;
+	this.y= Math.random()*(GameH+500)-250;
+	this.dir= Math.random()*360
+	this.life = 0.01
+}
 function GetServerInfo(){
             try{
                 let soc = new WebSocket(document.getElementById('ServerAddress').value);
@@ -417,7 +433,7 @@ function startgame() {
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
                         ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
                     }
-                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
                 //
 //                    document.body.innerHTML += '<script type="text/javascript" id="MapJSON" src="'+event.data.substring(1)+'" onload = "onMapJSONLoad()"></script>'
 //                    console.log(document.getElementById("MapJSON"))
@@ -435,7 +451,7 @@ function startgame() {
 
                         let children = document.getElementById('Inventory').children;
                         for (let i = 0; i < children.length; i++) {
-                          children[i].style.display = ""
+                          children[i].style.display = "none"
                         }
                         document.getElementById('MainScreen').style.display = '';
                         document.getElementById('MainForm').style.display = '';
@@ -462,7 +478,7 @@ function startgame() {
 
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
-					// console.log(PING)
+//					console.log(PING)
 //                    console.log(Date.now())
 //                    console.log(INFO)
 					let infarr = INFO.split('\n');
@@ -726,6 +742,36 @@ function startgame() {
                             }catch{}
                             }
 
+						}else 	if (larr[0] == 'b'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(BombsData.has(larr[1]))){
+//                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+                                BombsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false,Number(larr[8])])
+                                }
+                            }else{
+//                            console.log('!dis')
+                            try{
+                                BombsData.get(larr[1])[4] = larr[2]
+                                BombsData.get(larr[1])[7] = true
+                            }catch{}
+                            }
+						}else 	if (larr[0] == 'r'){
+
+                            if (larr.length > 3){
+//                            console.log('!')
+                                if (!(AARocketsData.has(larr[1]))){
+//                                console.log(Number(larr[6])/3.75,Number(larr[6])*PING/1000*2)
+                                AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()-1.5*PING,Number(larr[7])])
+                                }
+                            }else{
+//                            console.log('!dis')
+                            try{
+                                AARocketsData.get(larr[1])[3] = larr[2]
+                                AARocketsData.get(larr[1])[5] = true
+                            }catch{}
+                            }
 						}else 	if (larr[0] == '<'){
 
                             if (larr.length > 3){
@@ -741,14 +787,6 @@ function startgame() {
                                 TorpedosData.get(larr[1])[5] = true
                             }catch{}
                             }
-//							if (MSGs.indexOf(Number(larr[2]))==-1){
-//								let div = document.createElement('div');
-//								div.className = "MSGj";
-//								div.innerHTML = '<img src="static/checkmark.svg" onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()">' + '   '+larr[1];
-//								chatview.append(div);
-//								div.scrollIntoView();
-//								MSGs.push(Number(larr[2]))
-//							}
 						}else 	if (larr[0] == '>'){
 
                             if (larr.length > 3){
@@ -849,14 +887,14 @@ function startgame() {
 
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m/team chat '+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m/team chat '+messageinput.value);
 					    }else{
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m'+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m'+messageinput.value);
 					    }
 						messageinput.value = ''
 						Send=false
 					}else{
-						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
 					}
 					SENDB = ''
 					SENDS = ''
@@ -893,6 +931,7 @@ function startgame() {
 		}
 	}
 }
+let curView = 0
 let Xmod = false
 let Cmod = false
 let LoadScrHidn = false
@@ -936,6 +975,8 @@ let gasnum = document.getElementById('GasNum');
 let spdnum = document.getElementById('SpdNum');
 let dirnum = document.getElementById('DirNum');
 let tornum = document.getElementById('TorNum');
+let aarnum = document.getElementById('AARocketNum');
+let bmbnum = document.getElementById('BombNum');
 let carrynum = document.getElementById('CarryNum');
 let smknum = document.getElementById('SmkNum');
 let tracernum = document.getElementById('TracerNum');
@@ -979,11 +1020,14 @@ ctx.globalCompositeOperation='xor';
 resize();
 let BURNING = false;
 WtrParticles0 = [];
+let RainParticles0 = [];
+let RainParticles0max = 500;
 let SnowParticles0 = [];
 let SnowParticles0max = 100;
 let FireParticles0 = [];
 let FireParticles1 = [];
 let FireParticles2 = [];
+let RocketTraceParticles = [];
 let CanBangParticles0 = [];
 let CanBangParticles1 = [];
 let FireParticles0max = 20;
@@ -1169,6 +1213,12 @@ function keydown(event) {
 		}
 
 
+	}else if ( (event.keyCode == 86 )) {
+
+		curView = (curView+1)%Vehicles[CurVehicle].views
+//		console
+		document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
+
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
 		map.style.display = 'block';
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 78) ) {
@@ -1211,6 +1261,21 @@ try{
     }else{
         if (SnowParticles0.length > 0){
         SnowParticles0 = []
+        }
+    }
+    if(MAPstatic.CT.weather == 'Rain' ){
+        if (RainParticles0.length < RainParticles0max){
+            for(var i = RainParticles0.length; i < RainParticles0max; i++)
+            {
+            if(Math.random() <0.05) {
+
+            RainParticles0.push(new Particle4())
+            }
+            }
+    }
+    }else{
+        if (RainParticles0.length > 0){
+        RainParticles0 = []
         }
     }
     timenow = Date.now()
@@ -1992,6 +2057,134 @@ if (ParticlesProcessing){
 	for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(69,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(69,NoTeamTag(Players[_][0]));}
 	}
+//    AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false])
+    for (let _ of BombsData.keys()){
+
+
+
+//		ctx.lineCap='round';
+        let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
+//        console.log(relt)
+
+        let x = BombsData.get(_)[0]+(BombsData.get(_)[2]-BombsData.get(_)[0])*relt
+        let y = BombsData.get(_)[1]+(BombsData.get(_)[3]-BombsData.get(_)[1])*relt
+//        console.log(x,y)
+//        console.log(BombsData.get(_)[4])
+        if(BombsData.get(_)[4] == 1){
+			BombsData.get(_)[4]=0
+
+//            PIXI.sound.play('wtrBang');
+            PIXI.sound.play('bang');
+            for (let i = 0; i < 5; i++) {
+                BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
+
+            }
+			ShakeXbnds += 10
+			ShakeYbnds += 10
+		}else if(BombsData.get(_)[4] == 2){
+                    PIXI.sound.play('bombFall');
+                     BombsData.get(_)[4] = 0
+		}else if(BombsData.get(_)[4] == 4){
+            PIXI.sound.play('wtrBang');
+			for (let i = 0; i < 5; i++) {
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+                WtrBangParticles0.push(new BangPrt0(BombsData.get(_)[2],BombsData.get(_)[3]))
+            }
+            ShakeXbnds += 5
+			ShakeYbnds += 5
+
+		}
+		ctx.strokeStyle = '#111';
+		ctx.lineWidth= 3/320*Zoom;
+		ctx.beginPath()
+		 ctx.lineCap='round';
+		 bmbLen = 0.015
+        ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+//		}
+		ctx.stroke();
+        ctx.closePath()
+//        ctx.lineCap='round';
+
+		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
+		console.log(x,y)
+		    BombsData.delete(_)
+		}
+    }
+	for (let _ of AARocketsData.keys()) {
+		if(AARocketsData.get(_)[3] == 1){
+			AARocketsData.get(_)[3]=0
+
+//            PIXI.sound.play('wtrBang');
+			for (let i = 0; i < 15; i++) {
+			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.75))
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+//                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
+            }
+			ShakeXbnds += 10
+			ShakeYbnds += 10
+		}else if(AARocketsData.get(_)[3] == 2){
+                    PIXI.sound.play('lnchRckt');
+                     AARocketsData.get(_)[3] = 0
+		}else if(AARocketsData.get(_)[3] == 4){
+			for (let i = 0; i < 3; i++) {
+			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.5))
+//			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
+//                WtrBangParticles0.push(new BangPrt0(AARocketsData.get(_)[0], AARocketsData.get(_)[1]))
+            }
+
+		}
+//		tornum.innerText = OBJs[0].get('<').get(_)[4];
+//		if (OBJs[1].get('<').has(_)) {
+//			grad=ctx.createLinearGradient(OffsetX+Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING), OffsetY+Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING),Number(OBJs[0].get('<').get(_)[0]+ (OBJs[1].get('<').get(_)[0] - OBJs[0].get('<').get(_)[0]) * (Date.now() - LastPING) / PING)-Math.cos(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30, Number(OBJs[0].get('<').get(_)[1]+ (OBJs[1].get('<').get(_)[1] - OBJs[0].get('<').get(_)[1]) * (Date.now() - LastPING) / PING)-Math.sin(OBJs[0].get('<').get(_)[2]/180*Math.PI)*30);
+//		}else{
+			grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+//		}
+		if (Math.random() < 1){
+
+		       RocketTraceParticles.push(new RcktTPrt0(AARocketsData.get(_)[0]-Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20, AARocketsData.get(_)[1]-Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20));
+		}
+		grad.addColorStop(1,"#FF880088");
+		grad.addColorStop(0,"#cc0000ff");
+		ctx.strokeStyle = grad;
+		ctx.lineWidth= 2/320*Zoom;
+//		ctx.lineCap='round';
+		ctx.beginPath()
+		 ctx.lineCap='round';
+        ctx.moveTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.lineTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+//		}
+		ctx.stroke();
+        ctx.closePath()
+//        ctx.lineCap='round';
+        let t = (Date.now()-AARocketsData.get(_)[8])/1000
+        distanceFromStart = AARocketsData.get(_)[4]*t+AARocketsData.get(_)[9]*t*t/2
+		AARocketsData.get(_)[0]= AARocketsData.get(_)[6]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
+		AARocketsData.get(_)[1]= AARocketsData.get(_)[7]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
+		if (AARocketsData.get(_)[5] || AARocketsData.get(_)[0] > 20 || AARocketsData.get(_)[0] < -4 || AARocketsData.get(_)[1] > 19 || AARocketsData.get(_)[1] < -4){
+		    AARocketsData.delete(_)
+		}
+	}
+	if (ParticlesProcessing){
+	for (i=RocketTraceParticles.length-1; i>=0; i--) {
+	            //stage.fillStyle = "rgba(255,0,0,1)";
+            ctx.fillStyle = "rgba(" + (150+105*RocketTraceParticles[i].life).toString() + "," + (150+105*RocketTraceParticles[i].life).toString()+","+(150-150*RocketTraceParticles[i].life)+"," +255*RocketTraceParticles[i].life+")";
+
+            ctx.beginPath();
+            //*Math.sin(particles[i].life/60*Math.PI)
+            ctx.arc(OffsetX+(RocketTraceParticles[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(RocketTraceParticles[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,RocketTraceParticles[i].rad*(RocketTraceParticles[i].life**0.3)*2/320*Zoom,0,2*Math.PI);
+            ctx.closePath();
+            ctx.fill();
+
+            RocketTraceParticles[i].life *= 0.7
+            if (RocketTraceParticles[i].life < 0.05) {
+                RocketTraceParticles.splice(i, 1);
+                i--;
+            }
+	}
+	}else{
+	RocketTraceParticles = []
+	}
 	ctx. globalCompositeOperation = "color"
 		for (i=0; i<TracerParticles1.length; i++) {
 
@@ -2202,6 +2395,26 @@ if (ParticlesProcessing){
 		ctx.arc(SnowParticles0[i].x, SnowParticles0[i].y, SnowParticles0[i].r, 0, Math.PI*2, true);
 		ctx.closePath();
 		ctx.fill();
+	}
+	for(i=0; i<RainParticles0.length; i++)
+	{
+		// console.log(SnowParticles0[i].x,SnowParticles0[i].y)
+		// console.log(newDeg)
+		if (!(Math.abs(nX-X) >1 || Math.abs(nY-Y) > 1)){
+
+		RainParticles0[i].x -= (nX-X)*Zoom/2;
+		RainParticles0[i].y -=  (nY-Y)*Zoom/2;
+		}
+		RainParticles0[i].life *= 1.05
+		ctx.fillStyle = "rgba(64, 64, 255, "+ Math.sin(RainParticles0[i].life*Math.PI)*0.25+")";
+		ctx.beginPath();
+		ctx.arc(RainParticles0[i].x, RainParticles0[i].y, (1-(RainParticles0[i].life)*0.5)*10, 0, Math.PI*2, true);
+		ctx.closePath();
+		ctx.fill();
+		if (RainParticles0[i].life > 1){
+            RainParticles0.splice(i, 1);
+			i--;
+		}
 	}
     for (let _ = 0; _ < Players.length; _++) {
                         if (Players[_][0]  == PlayerName){Vehicles[Players[_][1]].drawp(85,NoTeamTag(Players[_][0]))} else{Vehicles[Players[_][1]].draw(85,NoTeamTag(Players[_][0]));}
