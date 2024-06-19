@@ -55,7 +55,7 @@ draw:function(layer, playername){
     }
     else if(layer == 87 && PlayersData.get(playername).prevX!= null){
 
-        DrawNickname(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 
 },
@@ -272,7 +272,7 @@ draw:function(layer, playername){
 	    drawCannon(playername,CN = 0, r = 7,turcrd = [0,0],firesize = 0.75,l = 18,shtSND = "hcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 2, bangCnt = 3 ,cos =cos,sin = sin,lw=[4,2])
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -504,9 +504,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        DrawNickname(playername,PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
@@ -726,7 +726,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,90, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -917,7 +917,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -1205,9 +1205,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        DrawNickname(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
@@ -1409,7 +1409,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,40, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){

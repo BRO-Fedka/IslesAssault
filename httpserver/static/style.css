@@ -443,6 +443,7 @@ background-image: url(../static/BG1/BG4.svg);
         text-align: center;
 }
 #MainCanvas{
+    cursor: crosshair;
 	display: block;
 	background: #2879AD;
 	text-align: center;
@@ -1716,4 +1717,10 @@ color:rgba(255,255,255,1);
     width:100%;
     left: 0;
     text-align: center;
+}
+#chkInterfaceHide:checked ~ .interface{
+    display: none !important;
+}
+#chkInterfaceHide:checked ~ .ammonum{
+    display: none !important;
 }
