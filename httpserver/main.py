@@ -90,6 +90,8 @@ class Server(db.Model):
     key = db.Column(db.String(16), nullable=False)
     status = db.Column(db.String(16), nullable=False, default = "offline")
     version = db.Column(db.String(16), nullable=False, default = "???")
+    def __repr__(self):
+        return str(self.id)+'-Server: ' +self.name+"|"+self.key
 
 # try:
 # a = Account.query.filter_by(nickname="CHECK").first()
@@ -400,6 +402,7 @@ def server_connect():
         if isDEV: return 'OK'
         print(request.form['key'])
         hashkey = hashlib.sha224(request.form['key'].encode('utf-8')).hexdigest()
+        print(Server.query.all())
         serv = Server.query.filter_by(key = hashkey).first()
         print(serv)
         serv.status = "online"

@@ -1276,7 +1276,7 @@ async def game():
                                 else:
                                     PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED']*2),min=0,minrep = 359,max=359,maxrep=0)
                             else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
-                    if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 or PlayersCosmetics[player]['VEHICLE'] in [5]:
+                    if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 and(not(PlayersCosmetics[player]['VEHICLE'] in [5] and PlayersInputs[player]['view'] > 0)):
                         if  PlayersData[player]['STATUS'] != "BURNING" :
                             PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
                         else:
@@ -1776,10 +1776,11 @@ async def game():
                     kills = PlayersData[_]['KILLS']
                     delta = round((datetime.datetime.now() - PlayersData[_]['STARTTIME']).total_seconds())
                     money = PlayersAccs[_]["money"]
-                    logger.info("change_player_data",
-                                {"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
-                                 'delta': delta, 'money': money})
-                    resp = (await requests.post(API_SERV_ADDRESS + "change_player_data",{"key":API_KEY,'nickname':nickname,'password':password,'xp':xp,'kills':kills,'delta':delta,'money':money})).text
+                    logger.info("change_player_data: " + str({"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
+                                 'delta': delta, 'money': money}))
+                    async def change_player_data():
+                        await requests.post(API_SERV_ADDRESS + "change_player_data",{"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,'delta': delta, 'money': money})
+                    asyncio.create_task(change_player_data())
                     #TODO !!!!
                 try:
 
