@@ -139,6 +139,7 @@ PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
 PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
 PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
+PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
 
 PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
 PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
@@ -2138,7 +2139,7 @@ if (ParticlesProcessing){
 		if(AARocketsData.get(_)[3] == 1){
 			AARocketsData.get(_)[3]=0
 
-//            PIXI.sound.play('wtrBang');
+            PIXI.sound.play('rocketHit');
 			for (let i = 0; i < 15; i++) {
 			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.75))
 //			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
