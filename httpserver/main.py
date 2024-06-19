@@ -36,6 +36,7 @@ print(os.environ['DB_PATH'])
 app.config['SQLALCHEMY_DATABASE_URI'] =os.environ['DB_PATH'] # 'sqlite:///../data.db' # sqlite:////root/IslesAssault/data.db
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 VERSION = os.environ['VERSION']
+UPDATE_NAME = os.environ['UPDATE_NAME']
 isDEV = os.environ['DEV']
 print()
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
@@ -310,7 +311,7 @@ def index():
         # for i in Servers.keys():
         #     servers.append([i, Servers[i]])
         # print(arr)
-        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors, colorslen = len(colors),vehicles = [], lenvehicles = 0 , version = VERSION) #,logged = logged, name = session['name']
+        return render_template('index.html',servers = servers, money = str(m),logged = logged, name = session['name'], passw = session['pswh'], colors = colors, colorslen = len(colors),vehicles = [], lenvehicles = 0 , version = VERSION,updateName = UPDATE_NAME) #,logged = logged, name = session['name']
 
     servers = []
     if isDEV:
