@@ -1849,8 +1849,13 @@ if (ParticlesProcessing){
 //            if (Math.random() < 0.15){
 //                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
 //            }
-            grad.addColorStop(1,"#FFFFFF00");
-            grad.addColorStop(0,"#FFFF0088");
+            if (Z < 2){
+                grad.addColorStop(1,"#FFFF4400");
+                grad.addColorStop(0,"#FFFF4488");
+            }else{
+                grad.addColorStop(1,"#ffff8800");
+                grad.addColorStop(0,"#ffff8877");
+            }
             ctx.strokeStyle = grad;
             ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
     //		ctx.lineCap='round';
@@ -2227,7 +2232,7 @@ if (ParticlesProcessing){
 	ctx. globalCompositeOperation = "source-over"
 	    for (let _ of BulletsData.keys()) {
 
-                if (BulletsData.get(_)[4] == 1 ){
+                if (BulletsData.get(_)[4] == 1  ){
                         if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
                 if (Math.random() < 1){
 
@@ -2259,8 +2264,14 @@ if (ParticlesProcessing){
 //            if (Math.random() < 0.15){
 //                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
 //            }
-            grad.addColorStop(1,"#FFFFFF00");
-            grad.addColorStop(0,"#FFFF0088");
+            if (Z == 2){
+                grad.addColorStop(1,"#FFFF4400");
+                grad.addColorStop(0,"#FFFF4488");
+            }else{
+                grad.addColorStop(1,"#ffffaa00");
+                grad.addColorStop(0,"#ffffaa88");
+            }
+
             ctx.strokeStyle = grad;
             ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
     //		ctx.lineCap='round';
