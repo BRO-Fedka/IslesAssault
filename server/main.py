@@ -175,7 +175,7 @@ vehicleinfo = {
         'MAXSPEED': 0.1,
         'TURN': 10, #5
 'AMMO': {'m':0,'p':7500,'t':0,'h':750,'f':0},
-'CAN':[['h',0.025, 0.055,250,datetime.datetime.now(),None,True,0,0],['h',-0.025, 0.055,250,datetime.datetime.now(),None,True,0,0]],
+'CAN':[['h',0.025, 0.055,250,datetime.datetime.now(),None,True,0,0,0],['h',-0.025, 0.055,250,datetime.datetime.now(),None,True,0,0,0]],
         },
 
 
@@ -391,7 +391,7 @@ async def game():
     global LastBombI
     global LastMSGI
     while True:
-        try:
+        # try:
             await asyncio.sleep(1/TPS)
             if LastBulletI >1000: LastBulletI = 0
             if LastTorpedoI >1000: LastTorpedoI = 0
@@ -1299,6 +1299,7 @@ async def game():
                     # PlayersData[player]['CAMCOL'] = Polygon([[PlayersData[player]['X']-5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']+4],[PlayersData[player]['X']-5,PlayersData[player]['Y']+4]])
                     # if PlayersCosmetics[player]['VEHICLE'] ==  8 : PlayersData[player]["TRACER"] = PlayersInputs[player]['Cmod']
                     for _ in PlayersData[player]['CAN']:
+
                         if _[9] != PlayersInputs[player]['view']:
                             _[7] = PlayersData[player]['DIR']
                         if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']  : continue
@@ -1806,9 +1807,9 @@ async def game():
                 PlayersCosmetics.pop(_)
                 PlayersAccs.pop(_)
 
-        except Exception:
+        # except Exception:
             # pass
-            logging.exception("message")
+            # logging.exception("message")
 
 @logger.catch()
 async def handler(websocket):
