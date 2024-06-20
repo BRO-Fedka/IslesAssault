@@ -58,6 +58,10 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+#### 1.5.1v Aircraft fixes
+* Movement of planes reworked.
+* Ability to hide game interface added (press F2, F3).
+* Added color difference between different altitude bullets.
 ### 1.5v "Flying danger" update
 * Meet light bombers and bombs.
 * AA rockets for fighters were added.
