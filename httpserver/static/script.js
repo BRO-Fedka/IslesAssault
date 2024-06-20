@@ -1,5 +1,5 @@
 document.onkeydown=function(event) {
-    if (event.keyCode == 9) {  //tab pressed
+    if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
         event.preventDefault(); // stops its action
     }
 }
@@ -69,6 +69,8 @@ function ExitGame(){
                         document.getElementById('MainScreen').style.display = '';
                         document.getElementById('MainForm').style.display = '';
                         document.getElementById('AboutForm').style.display = '';
+                        document.getElementById('UpdateName').style.display = '';
+                        document.getElementById("chkInterfaceHide").checked = false
                         document.getElementById('SelectForm').style.display = '';
                         document.getElementById('NEbar').style.display = '';
                         chatview.innerHTML = ""
@@ -137,6 +139,7 @@ PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
 PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
 PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
+PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
 
 PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
 PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
@@ -152,7 +155,7 @@ PIXI.sound.add("pcanon","static\\pcanon.mp3")
 PIXI.sound.add("tcanon","static\\mcanon.mp3")
 PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
-
+var cameraMode = false;
 var Players=[];
 var TorpedosData = new Map();
 var AARocketsData = new Map();
@@ -412,8 +415,10 @@ function startgame() {
 					document.getElementById('TitleScreen').classList = ['titlescrh']
 					document.getElementById('MainScreen').style.display = '';
 					document.getElementById('MainForm').style.display = '';
+					document.getElementById('UpdateName').style.display = '';
 					document.getElementById('AboutForm').style.display = '';
 					document.getElementById('SelectForm').style.display = '';
+					document.getElementById("chkInterfaceHide").checked = false
 					document.getElementById('NEbar').style.display = '';
 //					document.getElementById('MoneyNum').style.display = 'flex';
 					alert( event.data.split(',')[1])
@@ -455,6 +460,8 @@ function startgame() {
                         }
                         document.getElementById('MainScreen').style.display = '';
                         document.getElementById('MainForm').style.display = '';
+                        document.getElementById("chkInterfaceHide").checked = false
+                        document.getElementById('UpdateName').style.display = '';
                         document.getElementById('AboutForm').style.display = '';
                         document.getElementById('SelectForm').style.display = '';
                         document.getElementById('NEbar').style.display = '';
@@ -912,13 +919,16 @@ function startgame() {
 				document.getElementById('TitleScreen').classList = ['titlescrh']
 				document.getElementById('MainScreen').style.display = '';
 				document.getElementById('MainForm').style.display = '';
+				document.getElementById('UpdateName').style.display = '';
 				document.getElementById('AboutForm').style.display = '';
 				document.getElementById('SelectForm').style.display = '';
 				document.getElementById('NEbar').style.display = '';
+				document.getElementById("chkInterfaceHide").checked = false
 				console.log('ERROR')
 			}
 			document.getElementById('MainScreen').style.display = 'none';
 			document.getElementById('MainForm').style.display = 'none';
+			document.getElementById('UpdateName').style.display = 'none';
 			document.getElementById('AboutForm').style.display = 'none';
 			document.getElementById('SelectForm').style.display = 'none';
 
@@ -927,6 +937,7 @@ function startgame() {
 //		    console.log()
 		    console.log(err,err.stack)
 			document.getElementById('MainForm').style.display = 'none';
+			document.getElementById('UpdateName').style.display = 'none';
 			// document.getElementById('ErrorForm').style.display = 'block';
 		}
 	}
@@ -1213,12 +1224,20 @@ function keydown(event) {
 		}
 
 
-	}else if ( (event.keyCode == 86 )) {
+	}else if ( (event.keyCode == 113 )) {
+        document.getElementById("chkInterfaceHide").checked = (!(document.getElementById("chkInterfaceHide").checked))
+        cameraMode = document.getElementById("chkInterfaceHide").checked
+	}else if ( (event.keyCode == 114 )) {
+	    if(document.getElementById("MainCanvas").style.cursor == 'crosshair'){
+	        document.getElementById("MainCanvas").style.cursor = 'none'
+	    }else{
+	        document.getElementById("MainCanvas").style.cursor = 'crosshair'
+	    }
 
+	}else if ( (event.keyCode == 86 )) {
 		curView = (curView+1)%Vehicles[CurVehicle].views
 //		console
 		document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
-
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
 		map.style.display = 'block';
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 78) ) {
@@ -1831,8 +1850,13 @@ if (ParticlesProcessing){
 //            if (Math.random() < 0.15){
 //                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
 //            }
-            grad.addColorStop(1,"#FFFFFF00");
-            grad.addColorStop(0,"#FFFF0088");
+            if (Z < 2){
+                grad.addColorStop(1,"#FFFF4400");
+                grad.addColorStop(0,"#FFFF4488");
+            }else{
+                grad.addColorStop(1,"#ffff8800");
+                grad.addColorStop(0,"#ffff8877");
+            }
             ctx.strokeStyle = grad;
             ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
     //		ctx.lineCap='round';
@@ -2115,7 +2139,7 @@ if (ParticlesProcessing){
 		if(AARocketsData.get(_)[3] == 1){
 			AARocketsData.get(_)[3]=0
 
-//            PIXI.sound.play('wtrBang');
+            PIXI.sound.play('rocketHit');
 			for (let i = 0; i < 15; i++) {
 			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.75))
 //			    console.log(TorpedosData.get(_)[0], TorpedosData.get(_)[1])
@@ -2209,7 +2233,7 @@ if (ParticlesProcessing){
 	ctx. globalCompositeOperation = "source-over"
 	    for (let _ of BulletsData.keys()) {
 
-                if (BulletsData.get(_)[4] == 1 ){
+                if (BulletsData.get(_)[4] == 1  ){
                         if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
                 if (Math.random() < 1){
 
@@ -2241,8 +2265,14 @@ if (ParticlesProcessing){
 //            if (Math.random() < 0.15){
 //                    WtrParticles0.push(new WtrPrt0(BulletsData.get(_)[0], BulletsData.get(_)[1]));
 //            }
-            grad.addColorStop(1,"#FFFFFF00");
-            grad.addColorStop(0,"#FFFF0088");
+            if (Z == 2){
+                grad.addColorStop(1,"#FFFF4400");
+                grad.addColorStop(0,"#FFFF4488");
+            }else{
+                grad.addColorStop(1,"#ffffaa00");
+                grad.addColorStop(0,"#ffffaa88");
+            }
+
             ctx.strokeStyle = grad;
             ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
     //		ctx.lineCap='round';

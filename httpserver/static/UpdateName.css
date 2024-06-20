@@ -1,0 +1,8 @@
+#UpdateName{
+ font-size: 40px !important;
+ margin-top:0;
+ color: rgba(255,64,0,0.75)
+}
+#UpdateName:hover{
+ color: rgba(255,64,0,1)
+}

@@ -229,17 +229,17 @@ function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 	    ctx.stroke();
 }
 function DrawNickname(name, hp, hpmax,x,y){
-
+    if (cameraMode) return
     var p = NoTeamTag(PlayerName)
 //      console.log(PlayerTags)
 //    console.log(p,PlayerTags.get(p),PlayerTags.get(name))
     if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
-    ctx.fillStyle = '#0000ff';
+    ctx.fillStyle = 'rgba(0,0,255,0.75)';
     }else{
-    ctx.fillStyle = '#ff0000';
+    ctx.fillStyle = 'rgba(255,0,0,0.75)';
     }
 
-    ctx.strokeStyle = '#000'
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
     ctx.lineWidth = 1
     ctx.textAlign = 'center'
     ctx.font = Math.round(20/320*Zoom)+"px Arial";
@@ -248,8 +248,8 @@ function DrawNickname(name, hp, hpmax,x,y){
     }else{
         ctx.fillText(name, x, y-50/320*Zoom);
     }
-    ctx.fillStyle = '#00ff00';
-    ctx.fillStyle = 'rgb('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0)'
+
+    ctx.fillStyle = 'rgba('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0,0.75)'
     ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
     ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
 }

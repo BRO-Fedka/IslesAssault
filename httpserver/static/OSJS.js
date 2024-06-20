@@ -55,7 +55,7 @@ draw:function(layer, playername){
     }
     else if(layer == 87 && PlayersData.get(playername).prevX!= null){
 
-        DrawNickname(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 
 },
@@ -272,7 +272,7 @@ draw:function(layer, playername){
 	    drawCannon(playername,CN = 0, r = 7,turcrd = [0,0],firesize = 0.75,l = 18,shtSND = "hcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 2, bangCnt = 3 ,cos =cos,sin = sin,lw=[4,2])
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -504,9 +504,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87  && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        DrawNickname(playername,PlayersData.get(playername).HP,2500, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
@@ -726,7 +726,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,90, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -917,7 +917,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,30, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -1205,9 +1205,9 @@ draw:function(layer, playername){
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
     if (PlayersData.get(playername).CARRY>0){
-        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername+"["+"✈".repeat(PlayersData.get(playername).CARRY)+"]",PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }else{
-        DrawNickname(playername,PlayersData.get(playername).HP,1000, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+        DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
     }
 },
@@ -1376,7 +1376,7 @@ draw:function(layer, playername){
         let poly = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
 
         drawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
-        drawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.25,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
+        drawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.1,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
         if (PlayersData.get(playername).CN0STS == 1){
         PIXI.sound.play('fcanon');
         PlayersData.get(playername).CN0STS = 0
@@ -1409,7 +1409,7 @@ draw:function(layer, playername){
 
 
     }else if (layer == 87 && PlayersData.get(playername).prevX!= null){
-    DrawNickname(playername,PlayersData.get(playername).HP,40, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
+    DrawNickname(playername,PlayersData.get(playername).HP,this.hp, (PlayersData.get(playername).actX+(PlayersData.get(playername).actX-PlayersData.get(playername).prevX-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 +OffsetY  ,(PlayersData.get(playername).actY+(PlayersData.get(playername).actY-PlayersData.get(playername).prevY-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY)
     }
 },
 drawp:function(layer, playername){
@@ -1442,7 +1442,7 @@ drawp:function(layer, playername){
 
         PdrawF(playername,poly=poly,cos=cos,sin=sin,cls = this.f)
 
-        PdrawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.25,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
+        PdrawCannon(playername,CN = 0, r = 3,turcrd = [-0.025, 0],firesize = 0.1,l = 6,shtSND = "pcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles2,bangPrt = BangPrt0,bangPrts = BangParticles2,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 0, bangCnt = 5 ,cos =cos,sin = sin,lw=[1,1],fire = false,underbody = false, fill = false, strokeW = 1)
 
         if (PlayersData.get(playername).CN0STS == 1){
         PIXI.sound.play('pcanon');
