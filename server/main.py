@@ -1301,7 +1301,7 @@ async def game():
                     for _ in PlayersData[player]['CAN']:
                         if _[9] != PlayersInputs[player]['view']:
                             _[7] = PlayersData[player]['DIR']
-                        if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN'] or PlayersData[player]['STATUS'] != "ALIVE": continue
+                        if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']  : continue
                         d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                         deg = lookat(_[1], _[2])
                         a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
@@ -1313,7 +1313,7 @@ async def game():
                                 b = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
                             else:
                                 b = lookat(PlayersInputs[player]['x'] - a[0],PlayersInputs[player]['y']-a[1]  )
-                        _[7] = b
+                        if PlayersData[player]['STATUS'] == "ALIVE": _[7] = b
                     # print(PlayersData[player]['ZOOM'],PlayersInputs[player]['z'])
                     # print(PlayersAccs)
                     if PlayersCosmetics[player]['VEHICLE'] == 0:
@@ -1487,7 +1487,7 @@ async def game():
                         #print('ooo')
                     wasShot = False
                     for _ in PlayersData[player]['CAN']:
-                        if PlayersData[player]['TAKEN']  or _[9] != PlayersInputs[player]['view'] or PlayersData[player]['STATUS'] != "ALIVE":continue
+                        if PlayersData[player]['TAKEN']  or _[9] != PlayersInputs[player]['view'] :continue
                         # _[5] = False
                         d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                         deg = lookat(_[1], _[2])
