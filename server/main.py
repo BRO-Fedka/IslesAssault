@@ -201,7 +201,7 @@ vehicleinfo = {
 'BOMBS':0,
         'BOOST':0.01,
         'MAXSPEED': 0.4,
-        'TURN': 80,
+        'TURN': 240,
 'AMMO': {'m':0,'p':0,'t':0,'h':0,'f':250},
 'CAN':[['f',0, 0,250,datetime.datetime.now(),None,True,0,0,0]],
         },
@@ -1278,15 +1278,30 @@ async def game():
                             else:PlayersData[player]['DIR'] = barrier(PlayersData[player]['DIR']+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS*(math.sin(PlayersData[player]['SPEED']/vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*math.pi)*0.5+0.75),min=0,minrep = 359,max=359,maxrep=0)
                     if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2 and(not(PlayersCosmetics[player]['VEHICLE'] in [5] and PlayersInputs[player]['view'] > 0)):
                         if  PlayersData[player]['STATUS'] != "BURNING" :
-                            PlayersData[player]['DIR'] = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
-                        else:
-                            PlayersData[player]['DIR'] += (random.random()*2-1)*15
+                            dir = lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y'])
+                            if abs(PlayersData[player]['DIR'] - dir) < vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS:
+                                PlayersData[player]['DIR'] = dir
+                            else:
+                                dir1 = dir - PlayersData[player]['DIR']
+                                dir2 = PlayersData[player]['DIR'] - dir+360 * (1 - 2* int(PlayersData[player]['DIR']  > dir))
+                                if abs(dir2) < abs(dir1):
+                                    PlayersData[player]['DIR'] -= dir2/abs(dir2)* vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS
+                                else:
+                                    PlayersData[player]['DIR'] += dir1/abs(dir1)* vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['TURN']/TPS
+                                PlayersData[player]['DIR'] = PlayersData[player]['DIR'] % 360
+                                if PlayersData[player]['DIR'] < 0:
+                                    PlayersData[player]['DIR'] += 360
+                    if  PlayersData[player]['STATUS'] == "BURNING" and vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MOVETYPE'] == 2:
+                        PlayersData[player]['DIR'] += (random.random()*2-1)*15
                     if PlayersData[player]['TAKEN']:
                         PlayersData[player]['X'] = PlayersData[PlayersData[player]['TAKENON']]['X']
                         PlayersData[player]['Y'] = PlayersData[PlayersData[player]['TAKENON']]['Y']
-                    PlayersData[player]['CAMCOL'] = Polygon([[PlayersData[player]['X']-5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']+4],[PlayersData[player]['X']-5,PlayersData[player]['Y']+4]])
-                    if PlayersCosmetics[player]['VEHICLE'] ==  8 : PlayersData[player]["TRACER"] = PlayersInputs[player]['Cmod']
+                    # PlayersData[player]['CAMCOL'] = Polygon([[PlayersData[player]['X']-5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']-4],[PlayersData[player]['X']+5,PlayersData[player]['Y']+4],[PlayersData[player]['X']-5,PlayersData[player]['Y']+4]])
+                    # if PlayersCosmetics[player]['VEHICLE'] ==  8 : PlayersData[player]["TRACER"] = PlayersInputs[player]['Cmod']
                     for _ in PlayersData[player]['CAN']:
+                        if _[9] != PlayersInputs[player]['view']:
+                            _[7] = PlayersData[player]['DIR']
+                        if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN'] or PlayersData[player]['STATUS'] != "ALIVE": continue
                         d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                         deg = lookat(_[1], _[2])
                         a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
@@ -1472,7 +1487,7 @@ async def game():
                         #print('ooo')
                     wasShot = False
                     for _ in PlayersData[player]['CAN']:
-                        if PlayersData[player]['TAKEN']  and _[9] == PlayersInputs[player]['view']:continue
+                        if PlayersData[player]['TAKEN']  or _[9] != PlayersInputs[player]['view'] or PlayersData[player]['STATUS'] != "ALIVE":continue
                         # _[5] = False
                         d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                         deg = lookat(_[1], _[2])
@@ -2060,7 +2075,7 @@ async def handler(websocket):
                                 'VISTOR':set(),
                                 'VISSMK': set(),
                                 'VISBRIDGES':set(),
-                                'CAMCOL':Polygon([[-5,-4],[5,-4],[5,4],[-5,4]]),
+                                # 'CAMCOL':Polygon([[-5,-4],[5,-4],[5,4],[-5,4]]),
                                 'MSGTURN':[],
                                 'SENDB': set(),
                                 'SENDS':set(),
