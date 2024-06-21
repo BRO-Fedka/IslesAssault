@@ -102,20 +102,20 @@
             <label for="ServerTab1" class="ServerTab">Servers</label>
             <label for="ServerTab2" class="ServerTab">Direct</label>
 
-        <select id="ServerSelect" onchange="document.getElementById('ServerAddress').value = this.value;GetServerInfo()">
+        <select id="ServerSelect" onchange="document.getElementById('ServerAddress').value = this.value;forgetServer();GetServerInfo()">
             {%for i in servers%}
 
                 <option value = "{{i[1]}}">{{i[0]}}</option>
             {%endfor%}
 
         </select>
-            <input id="ServerAddress" onchange="GetServerInfo()">
+            <input id="ServerAddress" onkeydown="forgetServer();" onchange="GetServerInfo()">
 
         <br>
         <div id="online">?/?</div>
 
         <div id="text">No information yet</div>
-        <div id="dmpprev"><img id="impprev" alt=""><div class="loader"></div></div>
+        <div id="dmpprev"><img id="impprev" alt="" src=""><div class="loader"></div></div>
 
     </div>
     <div id="SettingsForm" style="display:none;" class="unselectable scrollbar interface" >
@@ -201,7 +201,7 @@
         <div id="YNum" class="unselectable Sensor">Y-16</div>
         <div id="SpdNum" class="unselectable Sensor">SPD+100</div>
     </div>
-    <div id="MapForm" class="unselectable"><div class="mapmark" id="PlayerMark"></div><img  id="Map"></div>
+    <div id="MapForm" class="unselectable"><div class="mapmark" id="PlayerMark"></div><img  id="Map" src=""></div>
 <!--    <div id="GameMenuForm" class="unselectable">-->
 <!--        <div class="menubtn"></div>-->
 <!--    </div>-->

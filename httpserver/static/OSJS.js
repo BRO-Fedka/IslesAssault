@@ -1519,7 +1519,7 @@ updatep:function(playername,argarr){
         nY=PlayersData.get(playername).actY
         X=PlayersData.get(playername).prevX
         Y=PlayersData.get(playername).prevY
-        hp.innerHTML = argarr[2] + '/40'
+        hp.innerHTML = argarr[2] + '/30'
         PlayersData.get(playername).prevSpeed = PlayersData.get(playername).speed
         PlayersData.get(playername).speed = Number(argarr[6])
         gasnum.innerHTML = argarr[0]
