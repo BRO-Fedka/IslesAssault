@@ -36,7 +36,12 @@ function UpdateBG(e){
 UpdateBG()
 document.addEventListener('mousemove', onMouseUpdate, false);
 document.addEventListener('mouseenter', onMouseUpdate, false);
+function forgetServer(){
+    document.getElementById('online').innerHTML = '?/?'
+    document.getElementById('text').innerHTML = 'No information yet'
+    document.getElementById('impprev').src = ''
 
+}
 function onMouseUpdate(e) {
   let x = e.pageX;
   for (let i = 0; i < BGLayers.length; i++) {
@@ -399,7 +404,7 @@ function startgame() {
 
 		try {
 //console.log('1')
-			socket = new WebSocket(document.getElementById('ServerSelect').value);
+			socket = new WebSocket(document.getElementById('ServerAddress').value);
 //			console.log('2')
 			socket.addEventListener('open', function (event) {
 
@@ -724,7 +729,7 @@ function startgame() {
 								//+<a onclick="Send = true; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1]
                                 if (larr[1].split(']').length >1 && larr[1] != "[SERVER]"){
 //                                    console.warn("!!!!")
-                                    div.innerHTML = '<b><a onclick="Send = true;messagebtn.innerText = "Global"; messageinput.value = \'/team join '+larr[1].split(']')[0].slice(1)+'\';">['+larr[1].split(']')[0].slice(1) +"]</a>" +larr[1].split(']')[1]+'</b> ' +larr[2];
+                                    div.innerHTML = '<b><a onclick="Send = true;messagebtn.innerText = \'Global\'; messageinput.value = \'/team join '+larr[1].split(']')[0].slice(1)+'\';">['+larr[1].split(']')[0].slice(1) +"]</a>" +larr[1].split(']')[1]+'</b> ' +larr[2];
                                 }else{
                                     div.innerHTML = "<b>"+larr[1]+"</b> "+larr[2];
                                 }
@@ -837,7 +842,7 @@ function startgame() {
 							//onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()"
 							    if (larr[_].split(']').length > 1){
 								tbl.innerHTML += '    <tr class=\"bg' + ((_ - 1) / 2 % 2) + '\">\n' +
-									'        <td><b><a onclick="Send = true;messagebtn.innerText = "Global"; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1] + '</b></td>\n' +
+									'        <td><b><a onclick="Send = true;messagebtn.innerText = \'Global\'; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1] + '</b></td>\n' +
 									'        <td class=\"td2\"><b>' + larr[_ + 1] + '</b></td>\n' +
 									'    </tr>'
 
@@ -874,10 +879,11 @@ function startgame() {
 					    b = true
 					    for (_ of Players){
 //					        console .log(_, _[0] == key)
-					        if (_[0] == key){
+					        if (NoTeamTag(_[0]) == key){
 					        b = false
 					        }
 					    }
+
                        if (b){
 //                            console.log('del',key)
                             dellarr.push(key)
