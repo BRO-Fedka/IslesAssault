@@ -328,7 +328,7 @@ def index():
     for color in allColors:
         colors.append([color.info, color.imgLink])
 
-    return render_template('index.html',servers = servers,logged = False, name = '', colors = colors,colorslen = len(colors),vehicles = [],lenvehicles=0,money = '',passw='', version = VERSION)
+    return render_template('index.html',servers = servers,logged = False, name = '', colors = colors,colorslen = len(colors),vehicles = [],lenvehicles=0,money = '',passw='', version = VERSION,updateName = UPDATE_NAME)
 @app.route('/login',methods=['POST','GET'])
 def login():
     if 'logged' in session and session['logged'] ==True:
