@@ -218,12 +218,12 @@ height:100%;
 	border-radius: 10px;
 	position: fixed;
 	text-align: center;
-	transform: translateX(-50%) translateY(-310px);
+	transform: translateX(-50%) translateY(-50%);
 	background-color: rgba(0,0,0,0.2);
 	top: 50%;
 	left:50%;
 	width: 300px;
-	height: 150px;
+	height: 300px;
 	z-index: 10;
 }
 #SettingsForm > input[type="range"]{
@@ -520,27 +520,29 @@ cursor:pointer;
 	top: 5px;
 
 }
-.NEbar {
+label.NEbar {
+    position:fixed;
 	cursor: pointer;
+	right:10px;
+	z-index:10;
 	padding:5px;
 	border-radius: 5px;
 	margin-bottom: 5px;
 	width: 40px;
 	height: 40px;
 	background-color: rgba(0,0,0,0.2);
+	display:block;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-origin: content-box;
 }
-a:hover > .NEbar {
+
+label.NEbar:hover {
 
 	background-color: rgba(0,0,0,0.5);
 }
-.NEbar:hover {
 
-	background-color: rgba(0,0,0,0.5);
-}
-.NEbar > img{
-	width: 40px;
-	height: 40px;
-}
+
 #TitleCannon{
 	width: 100px;
 	height: 100px;
@@ -643,22 +645,6 @@ transform:  none;
 	color: #ff4400;
 	}
 }
-
-
-
-
-/*div.ShopCard > div.colorimg{*/
-/*	margin-top: 5px;*/
-/*	width: 150px;*/
-/*	height: 150px;*/
-/*	!*background-color: rgba(0,0,0,0.2);*!*/
-/*	border-radius: 5px;*/
-/*}*/
-/*div.ShopCard > span{*/
-/*	display: block;*/
-
-/*}*/
-
 
 
 .hidden{
@@ -803,7 +789,7 @@ color:rgba(255,255,255,1);
 #MoneyNum{
 	position:fixed;
 	z-index: 20;
-	right: 60px;
+	right: 70px;
 	top: 5px;
 	padding:5px;
 	border-radius: 5px;

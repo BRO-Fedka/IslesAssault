@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../static/style-chat.css">
     <link rel="stylesheet" type="text/css" href="../static/style-map.css">
     <link rel="stylesheet" type="text/css" href="../static/style-playerlist.css">
+    <link rel="stylesheet" type="text/css" href="../static/style-game.css">
     <link rel="stylesheet" type="text/css" href="../static/UpdateName.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -49,51 +50,48 @@
                 <img src="..\static\settings.svg" class="unselectable">
             </div>
     </div>
-    <div id="NEbar">
-        <a href="account" onclick="SaveMusicPos()">
-            <div class="NEbar">
+   <input id="chk-form-play" type="radio" name="form" value="play" checked>
+ <label id="lbl-form-play" for="chk-form-play" class="NEbar" style="top:10px;background-image:url(static/play.svg)" ></label>
+  <input id="chk-form-user" type="radio" name="form" value="user">
+ <label id="lbl-form-user" for="chk-form-user" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
+ <input id="chk-form-shop" type="radio" name="form" value="shop">
+ <label id="lbl-form-shop" for="chk-form-shop" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
+ <input id="chk-form-settings" type="radio" name="form" value="settings" >
+ <label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
 
-                <img src="static\user.svg" class="unselectable">
-            </div>
-        </a>
-        {% if logged %}
-        <a href="shop" onclick="SaveMusicPos()">
-            <div class="NEbar">
+ <style  rel="stylesheet" type="text/css" >
+     #chk-form-play:checked ~ #lbl-form-play,
+     #chk-form-user:checked ~ #lbl-form-user,
+     #chk-form-shop:checked ~ #lbl-form-shop,
+     #chk-form-settings:checked ~ #lbl-form-settings
+     {
+        background-color: rgba(0,0,0,0.5);
+     }
 
-                <img src="static\shop.svg" class="unselectable">
-            </div>
-        </a>
-        {%endif%}
+     .Form{
+     display:none;
+     position:fixed;
+     z-index:20;
+     }
 
-        <div class="NEbar" onclick="ChSttSettings()">
+     #chk-form-play:checked ~ #PlayForm{
+        display: block;
+     }
+     #chk-form-settings:checked ~ #SettingsForm{
+        display: block;
+     }
+ </style>
 
-                <img src="..\static\settings.svg" class="unselectable">
-        </div>
-        <a href="about" onclick="SaveMusicPos()">
-            <div class="NEbar">
-
-                <img src="static\about.svg" class="unselectable">
-            </div>
-        </a>
-        <a href="https://vk.com/islesassault">
-            <div class="NEbar" id="SNvk">
-
-                <img src="static\vk-logo.svg" class="unselectable">
-            </div>
-        </a>
-        <a href="https://github.com/BRO-Fedka/IslesAssault">
-            <div class="NEbar"  id="SNgh">
-
-                <img src="static\github-mark-white.svg" class="unselectable">
-            </div>
-        </a>
-        <a href="https://discord.gg/GBBevHTt3H">
-            <div class="NEbar" id="SNdiscord">
-
-                <img src="static\discord-logo.svg" class="unselectable">
-            </div>
-        </a>
+     <div id="SettingsForm"class="unselectable scrollbar interface Form" >
+        <h2>Master volume</h2>
+        <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
+        <h2>Music volume</h2>
+        <input type="range" onchange="UpdtVolumes()" id="MusicRange" min="0" max="1" step="0.01" value="0.5">
+        <h2 style="display:inline">Particles</h2><input style="width:20px;height:20px;left: 5px;top:2px;position:relative" type="checkbox" onchange="UpdtParticles()" id="ParticlesChk" >
+        <br>
+        <br>
     </div>
+ <div id="PlayForm" class="Form">
     <div id="AboutForm" class="scrollbar unselectable">
 
         <div id="divServUpdt" onclick="GetServerInfo()">
@@ -121,15 +119,7 @@
         <div id="dmpprev"><img id="impprev" alt="" src=""><div class="loader"></div></div>
 
     </div>
-    <div id="SettingsForm" style="display:none;" class="unselectable scrollbar interface" >
-        <h2>Master volume</h2>
-        <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
-        <h2>Music volume</h2>
-        <input type="range" onchange="UpdtVolumes()" id="MusicRange" min="0" max="1" step="0.01" value="0.5">
-        <h2 style="display:inline">Particles</h2><input style="width:20px;height:20px;left: 5px;top:2px;position:relative" type="checkbox" onchange="UpdtParticles()" id="ParticlesChk" >
-        <br>
-        <br>
-    </div>
+
     <h1 id="UpdateName">
         {{updateName}}
     </h1>
@@ -190,9 +180,8 @@
 
            </ul>
     </div>
-<!--    <div id="ErrorForm">-->
-<!--            ERROR-->
-<!--    </div>-->
+
+    </div>
     <div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>
     <div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>
     <div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>
