@@ -1,0 +1,146 @@
+#ChatForm{
+	pointer-events: none;
+	width: 300px;
+	height:300px  ;
+	overflow: hidden;
+	/*padding: 10px;*/
+
+	border-radius: 10px;
+	position: fixed;
+	bottom: 0;
+	left:0;
+	/*background-color: rgba(0,0,0,0.2);*/
+	background-color: transparent;
+	/*display: none;*/
+}
+#ChatView{
+	pointer-events: none;
+	overflow-y: hidden;
+	overflow-x: hidden;
+	padding: 5px;
+	height:280px;
+	border-radius: 10px;
+	/* position: fixed; */
+	/* bottom: 0;
+	left:0; */
+	/*background-color: rgba(0,0,0,0.2);*/
+	background-color: transparent;
+	/*display: none;*/
+}
+#MessageField{
+	position: absolute;
+	top:50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+
+}
+#MessageFieldTxt{
+
+	color: #ffffff;
+	background-color: rgba(0,0,0,0.2);
+	font-family: 'Arial', bold;
+	font-size: 24px;
+	border-radius: 4px;
+	outline:0;
+	border: none;
+	width: 280px;
+
+}
+#MessageFieldBtn{
+	color: rgba(255,255,255,0.5);
+	background-color: rgba(0,0,0,0.2);
+	font-family:  'Fredoka One', cursive;
+	font-size: 24px;
+	border-radius: 4px;
+	outline:0;
+	border: none;
+	width: 280px;
+    text-align:  center;
+    display: inline-block;
+	width: 80px;
+
+}
+.MSGl{
+	font-size:16px;
+	font-family: arial,cursive;
+	color: #0f0;
+}
+.crewMSG{
+font-size:16px;
+font-family: arial;
+color: #ff0;
+}
+.crewMSG > b{
+color: #00f;
+}
+.TeamMSG{
+font-size:16px;
+font-family: arial;
+color: #00f;
+}
+.KickMSG{
+font-size:16px;
+font-family: arial;
+color: #00f;
+}
+.KickMSG > b{
+color: #0f0;
+}
+.ErrMSG{
+font-size:16px;
+font-family: arial;
+color: #f00;
+}
+.MSGk > b{
+    font-family: arial;
+    color: #00ff00;
+}
+.MSGk{
+font-size:16px;
+font-family: arial;
+color: #f00;
+}
+.MSG{
+font-size:16px;
+font-family: arial;
+color: #fff;
+}
+.MSG > b{
+color: #00ff00;
+}
+.MSG > b > a{
+cursor: pointer;
+    pointer-events: auto;
+}
+.MSG > b > a:hover{
+    text-decoration: underline;
+}
+.ServerMSG{
+font-size:16px;
+font-family: arial;
+color: #fff;
+}
+.ServerMSG > b{
+color: #888;
+}
+.MSGj{
+	padding: 5px;
+	font-size:16px;
+	font-family: 'ZCOOL QingKe HuangYou',cursive;
+	color: #fff;
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 2px;
+}
+.MSGj > img{
+	cursor: pointer;
+	pointer-events: auto;
+	background-color: rgba(0,0,0,0.2);
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border-radius: 2px;
+
+}
+.MSGj > img:hover{
+	background-color: rgba(0,0,0,0.5);
+}

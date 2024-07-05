@@ -548,4 +548,4 @@ def err404(e):
 def err500(e):
     return render_template('error.html',reason = "Sorry", code = '500'), 500
 if __name__ == "__main__":
-    app.run(host=os.environ['HOST'],port = int(os.environ['PORT'])) #26.223.93.1
+    app.run(host=os.environ['HOST'],port = int(os.environ['PORT']),debug=True) #26.223.93.1
