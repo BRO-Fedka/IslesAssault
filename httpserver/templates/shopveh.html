@@ -1,36 +1,5 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
-    <title>Isles.io</title>
-</head>
- <body>
-   <audio src="..\static/mainMenuMusic.mp3"></audio>
-  <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
-<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
-<script src="..\static/Music.js"></script>
-   {% if logged %}
- <div id="MoneyNum" class="unselectable">
-     <img src="..\\static\goldshell.svg"><b>   {{money}}</b></div>
-{%endif%}
 
-     <div id="NEbar">
-        <a href="{% if logged %}/shop{%else%}/{%endif%}" onclick="SaveMusicPos()">
-
-            <div class="NEbar">
-
-                <img src="..\static\exit.svg" class="unselectable">
-            </div>
-        </a>
-    </div>
-   <!--    ((1, 'Battleship', 0, 0, 'V', 'static\\veh0.svg', 0), False)-->
-    <div id="MainForm">
+    <div class="CenterForm">
         {% if vehicle[4] == 'V' %}
             <img src="{{vehicle[5]}}" class="unselectable svimgveh">
         {%endif%}
@@ -40,11 +9,19 @@
         {% if vehicle[4] == 'I' %}
                     <img src="{{vehicle[5]}}" class="unselectable" >
         {%endif%}
-<!--        <img src="..\static\veh{{id}}.svg" class="unselectable">-->
     </div>
-    <div id="SelectForm" class="scrollbar">
+    {%if desc%}
+        <div class="scrollbar LeftForm">
+               <ul type="disc">
+
+                   {%for i in desc%}
+                        <li>{{i}}</li>
+                    {%endfor%}
+               </ul>
+        </div>
+    {%endif%}
+    <div class="RightForm" style="overflow-y: hidden;">
             <h1> {{vehicle[1]}}</h1>
-        {% if logged %}
             {% if vehicle[2] ==0 and vehicle[3] ==0%}
             <h2>Free</h2>
             {% elif vehicle[2] ==0 %}
@@ -52,17 +29,11 @@
             {%else%}
             <h2><img src="..\\static\goldshell.svg" width="20px" height="20px">   {{vehicle[2]}}</h2>
             {%endif%}
-        {%endif%}
-           <ul type="disc">
 
-               {%for i in desc%}
-                    <li>{{i}}</li>
-                {%endfor%}
-           </ul>
         {% if logged %}
             {% if purch %}
             <form >
-            <input disabled="disabled" id="PlayBTN" type="submit" value="Purchased"  style="pointer-events: none; "/>
+            <input disabled="disabled" id="ItemBuyBTN" type="submit" value="Purchased"  style="pointer-events: none; "/>
             </form>
             {%else%}
                 {% if vehicle[2] > 0 %}
@@ -72,7 +43,7 @@
                 {%else%}
                     {% if vehicle[3] <= lvl %}
                         <form action="/shop/{{id}}" method="post" >
-                        <input  id="PlayBTN" type="submit" value="Get it !" onclick="SaveMusicPos()"/>
+                        <input  id="ItemBuyBTN" type="submit" value="Get it !" onclick="SaveMusicPos()"/>
                         </form>
                     {%endif%}
                 {%endif%}
@@ -83,5 +54,4 @@
 
     </div>
 
- </body>
-</html>
+

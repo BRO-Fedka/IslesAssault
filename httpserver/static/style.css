@@ -198,11 +198,8 @@ height:100%;
 	/*width: 100%;*/
 	/*height: 100%;*/
 }
-#MainForm img{
-width:100%;
-height:100%;
-}
-#MainForm{
+
+.CenterForm{
 	overflow: hidden;
 	border-radius: 10px;
 	position: fixed;
@@ -229,7 +226,7 @@ height:100%;
 #SettingsForm > input[type="range"]{
     width: 250px;
 }
-#AboutForm{
+.LeftForm{
 	overflow-x: hidden;
 
 
@@ -243,7 +240,7 @@ height:100%;
 	height: 300px;
 	z-index: 10;
 }
-#SelectForm{
+.RightForm{
 	overflow-x: hidden;
 	overflow-y: scroll;
 
@@ -778,7 +775,7 @@ color:rgba(255,255,255,1);
 
 
 #UpdateName{
-    position: absolute;
+    position: fixed;
     z-index: 6;
     top: calc(50% - 200px);
     width:100%;

@@ -8,6 +8,8 @@
     <link rel="stylesheet" type="text/css" href="../static/style-map.css">
     <link rel="stylesheet" type="text/css" href="../static/style-playerlist.css">
     <link rel="stylesheet" type="text/css" href="../static/style-game.css">
+    <link rel="stylesheet" type="text/css" href="../static/style-shop.css">
+    <link rel="stylesheet" type="text/css" href="../static/style-account.css">
     <link rel="stylesheet" type="text/css" href="../static/UpdateName.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -34,9 +36,7 @@
         <h1 id="IslesTitle">ISLES-ASSAULT</h1>
         <img src="static/titlecannon.svg" id="TitleCannon">
     </div>
-    {% if logged %}
-        <div id="MoneyNum" class="unselectable interface"><img src="static/goldshell.svg"><b id="MoneyB">   {{money}}</b></div>
-    {%endif%}
+    <div id="MoneyNum" class="unselectable interface"><img src="static/goldshell.svg"><b id="MoneyB">   {{money}}</b></div>
 
      <div id="GMbar" class="interface">
 
@@ -54,18 +54,25 @@
  <label id="lbl-form-play" for="chk-form-play" class="NEbar" style="top:10px;background-image:url(static/play.svg)" ></label>
   <input id="chk-form-user" type="radio" name="form" value="user">
  <label id="lbl-form-user" for="chk-form-user" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
- <input id="chk-form-shop" type="radio" name="form" value="shop">
- <label id="lbl-form-shop" for="chk-form-shop" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
+ <input id="chk-form-shop" type="radio" name="form" value="shop" class="hideBG">
+ <label id="lbl-form-shop" for="chk-form-shop" onclick="refresh_shop_form()" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
  <input id="chk-form-settings" type="radio" name="form" value="settings" >
  <label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
+ <input id="chk-form-item" type="radio" name="form" value="settings" class="hideBG">
+ <label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px;background-image:url(static/settings.svg)"></label>
 
  <style  rel="stylesheet" type="text/css" >
+     #lbl-form-item{
+        display:none;
+     }
      #chk-form-play:checked ~ #lbl-form-play,
      #chk-form-user:checked ~ #lbl-form-user,
      #chk-form-shop:checked ~ #lbl-form-shop,
+     #chk-form-item:checked ~ #lbl-form-item,
      #chk-form-settings:checked ~ #lbl-form-settings
      {
         background-color: rgba(0,0,0,0.5);
+        display:block !important;
      }
 
      .Form{
@@ -73,15 +80,88 @@
      position:fixed;
      z-index:20;
      }
-
+     #chk-form-item:checked ~ #ItemForm{
+        display: flex;
+     }
+     #chk-form-shop:checked ~ #ShopForm{
+        display: flex;
+     }
+     #chk-form-user:checked ~ #UserForm{
+        display: block;
+     }
      #chk-form-play:checked ~ #PlayForm{
         display: block;
      }
      #chk-form-settings:checked ~ #SettingsForm{
         display: block;
      }
+     .FormBG{
+     transition: 0.4s;
+     position: fixed;
+     width:100%;
+     height:100%;
+     top:0;left:0;
+     z-index:5;
+     opacity:0;
+     background:rgba(255,255,255,0.75);
+     }
+     input.hideBG:checked ~ .FormBG{
+        opacity:100%;
+     }
  </style>
+ <div class="FormBG"></div>
+     <div id="ItemForm" class="scrollbar Form">
 
+    </div>
+    <div id="ShopForm" class="scrollbar Form">
+
+    </div>
+     <div id="UserForm" class="Form">
+     <div class="scrollbar RightForm" style="padding:10px; width:280px; height:280px" >
+        <a href="/image"  onclick="SaveMusicPos()">
+            <div id="avvobv">
+
+                <img src="static/playerIcons/1.svg">
+            </div>
+        </a>
+        <h2>Awards</h2>
+    </div>
+	<div  class="scrollbar CenterForm" >
+
+        <h1>-</h1>
+
+        <div id="XPscreen" class="scrollbar">
+
+            <span id="xp"><b id="lvl">0lvl</b>0xp</span>
+
+
+
+        </div>
+    </div>
+	<div class="LeftForm" >
+
+        <h2>Statistics</h2>
+        <div class="statpan">
+        Total kills:
+        <b>-</b>
+        </div>
+        <div class="statpan">
+            Total deats:
+            <b>-</b>
+        </div>
+        <div class="statpan">
+            Total time:
+            <b>-</b>
+        </div>
+        <div class="statpan">
+            (Kills/Deaths):
+            <b>-</b>
+        </div>
+
+
+    </div>
+        <div id="SEbar" > <a href="\logout"  onclick="SaveMusicPos()">Logout</a></div>
+    </div>
      <div id="SettingsForm"class="unselectable scrollbar interface Form" >
         <h2>Master volume</h2>
         <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
@@ -92,7 +172,7 @@
         <br>
     </div>
  <div id="PlayForm" class="Form">
-    <div id="AboutForm" class="scrollbar unselectable">
+    <div  class="scrollbar unselectable LeftForm">
 
         <div id="divServUpdt" onclick="GetServerInfo()">
             <img id="imgServUpdt" alt="" src="static\update.svg">
@@ -123,7 +203,7 @@
     <h1 id="UpdateName">
         {{updateName}}
     </h1>
-    <div id="MainForm" class="unselectable">
+    <div class="unselectable CenterForm">
         <div class="hidden" id="NICK">{{name}}</div>
         <div class="hidden" id="PASS">{{passw}}</div>
         <h1 >ISLES-ASSAULT</h1>
@@ -135,7 +215,7 @@
 
         <input onclick="startgamebtn()" id="PlayBTN" value="Play" type="button">
     </div>
-    <div id="SelectForm" class="scrollbar unselectable" >
+    <div class="scrollbar unselectable RightForm" >
         <h2>Color</h2>
 
         <div id="ColorMenu" class="scrollbar">
@@ -269,6 +349,7 @@
  	<canvas id="MainCanvas"></canvas>
      
  	<script type="text/javascript" src="../static/script.js"></script>
+ 	<script type="text/javascript" src="../static/index.js"></script>
     <script type="text/javascript" src="../static/DrawAPI.js"></script>
     <script type="text/javascript" id="prevmpjs"></script>
     <script type="text/javascript" >

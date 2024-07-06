@@ -368,7 +368,7 @@ def index():
         colors.append([color.info, color.imgLink])
 
     return render_template('index.html', servers=servers, logged=False, name='', colors=colors, colorslen=len(colors),
-                           vehicles=[], lenvehicles=0, money='', passw='', version=VERSION)
+                           vehicles=[], lenvehicles=0, money=0, passw='', version=VERSION)
 
 
 @app.route('/login', methods=['POST', 'GET'])
