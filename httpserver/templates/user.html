@@ -1,0 +1,58 @@
+{
+"userKills":"{{kills}}",
+"userDeaths":"{{deaths}}",
+"userTime":"{{time}}",
+"userKD":"{{KD}}",
+"userFormNickname":"{{nickname}}",
+"src":{
+   "imgAvatar": "{{ava}}"
+}
+}$
+    <span id="xp"><b id="lvl">{{lvl}}lvl</b>{{xp}}xp</span>
+            <div id="pbar" style="width: {{maxlvl*150+50}}px;">
+                <div style="width:{{lvl*150+xppx}}px"></div>
+            </div>
+            {% for i in range(1,maxlvl) %}
+                    {% if i<= lvl %}
+<div class="lvlsign completedsign" style="left:{{i*150}}px">
+    <b class="unselectable">{{i}}</b>
+
+        <div class="root"></div>
+    {% for j in lvlitems[i-1] %}
+        <div class="vroot"></div>
+
+        {% if j[2] == 'V' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
+        {%endif%}
+        {% if j[2] == 'S' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
+
+        {%endif%}
+        {% if j[2] == 'I' %}
+    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
+
+        {%endif%}
+    {% endfor %}
+</div>
+                    {% else %}
+<div class="lvlsign incompletedsign" style="left:{{i*150}}px">
+    <b class="unselectable">{{i}}</b>
+    <div class="root"></div>
+    {% for j in lvlitems[i-1] %}
+        <span class="accItemTitle">{{j[1]}}</span>
+        <div class="vroot"></div>
+        {% if j[2] == 'V' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
+        {%endif%}
+        {% if j[2] == 'S' %}
+        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
+
+        {%endif%}
+        {% if j[2] == 'I' %}
+    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
+
+        {%endif%}
+    {% endfor %}
+</div>
+{% endif %}
+{% endfor %}

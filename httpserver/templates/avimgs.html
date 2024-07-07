@@ -1,21 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
-    <title>Isles.io - Select image</title>
-</head>
-<body class="scrollbar" style="overflow-y:scroll;">
-  <audio src="static/mainMenuMusic.mp3"></audio>
-  <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
-<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
-<script src="static/Music.js"></script>
-<form action="/image" method="post">
+
+<form name="avimgs">
     {%for i in avas%}
 <label class="unselectable">
   <input type="radio" name="img" value="{{i[0]}}"  {% if i[0] == curimg %} checked {%endif%} >
@@ -26,10 +10,7 @@
 
 
     <div id="navpanfxd">
-        <input id="SelBTN" type="submit" value="Select" onclick="SaveMusicPos()">
+        <input id="SelBTN" type="button" value="Select" onclick="set_avimg()">
 
     </div>
 </form>
-
-</body>
-</html>

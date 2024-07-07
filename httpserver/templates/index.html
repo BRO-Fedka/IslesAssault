@@ -53,22 +53,28 @@
    <input id="chk-form-play" type="radio" name="form" value="play" checked>
  <label id="lbl-form-play" for="chk-form-play" class="NEbar" style="top:10px;background-image:url(static/play.svg)" ></label>
   <input id="chk-form-user" type="radio" name="form" value="user">
- <label id="lbl-form-user" for="chk-form-user" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
+ <label id="lbl-form-user" for="chk-form-user" onclick="refresh_user_form()" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
  <input id="chk-form-shop" type="radio" name="form" value="shop" class="hideBG">
  <label id="lbl-form-shop" for="chk-form-shop" onclick="refresh_shop_form()" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
  <input id="chk-form-settings" type="radio" name="form" value="settings" >
  <label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
- <input id="chk-form-item" type="radio" name="form" value="settings" class="hideBG">
- <label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px;background-image:url(static/settings.svg)"></label>
+ <input id="chk-form-item" type="radio" name="form" value="item" class="hideBG">
+ <label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px"></label>
+ <input id="chk-form-avimg" type="radio" name="form" value="avimg">
+ <label id="lbl-form-avimg" for="chk-form-avimg" class="NEbar" style="top:310px;background-image:url(static/i.svg)"></label>
 
  <style  rel="stylesheet" type="text/css" >
-     #lbl-form-item{
+     #lbl-form-item,
+     #lbl-form-avimg
+     {
         display:none;
      }
+
      #chk-form-play:checked ~ #lbl-form-play,
      #chk-form-user:checked ~ #lbl-form-user,
      #chk-form-shop:checked ~ #lbl-form-shop,
      #chk-form-item:checked ~ #lbl-form-item,
+     #chk-form-avimg:checked ~ #lbl-form-avimg,
      #chk-form-settings:checked ~ #lbl-form-settings
      {
         background-color: rgba(0,0,0,0.5);
@@ -79,6 +85,9 @@
      display:none;
      position:fixed;
      z-index:20;
+     }
+     #chk-form-avimg:checked ~ #AvimgForm{
+        display: flex;
      }
      #chk-form-item:checked ~ #ItemForm{
         display: flex;
@@ -110,6 +119,9 @@
      }
  </style>
  <div class="FormBG"></div>
+      <div id="AvimgForm" class="scrollbar Form">
+
+    </div>
      <div id="ItemForm" class="scrollbar Form">
 
     </div>
@@ -118,17 +130,14 @@
     </div>
      <div id="UserForm" class="Form">
      <div class="scrollbar RightForm" style="padding:10px; width:280px; height:280px" >
-        <a href="/image"  onclick="SaveMusicPos()">
-            <div id="avvobv">
+            <div id="avvobv" onclick="open_avimg_form()">
 
-                <img src="static/playerIcons/1.svg">
+                <img id="imgAvatar" src="static/playerIcons/1.svg">
             </div>
-        </a>
-        <h2>Awards</h2>
     </div>
 	<div  class="scrollbar CenterForm" >
 
-        <h1>-</h1>
+        <h1 id="userFormNickname">-</h1>
 
         <div id="XPscreen" class="scrollbar">
 
@@ -143,19 +152,19 @@
         <h2>Statistics</h2>
         <div class="statpan">
         Total kills:
-        <b>-</b>
+        <b id="userKills">-</b>
         </div>
         <div class="statpan">
-            Total deats:
-            <b>-</b>
+            Total deaths:
+            <b id="userDeaths">-</b>
         </div>
         <div class="statpan">
             Total time:
-            <b>-</b>
+            <b id="userTime">-</b>
         </div>
         <div class="statpan">
-            (Kills/Deaths):
-            <b>-</b>
+            Kills/Deaths:
+            <b id="userKD">-</b>
         </div>
 
 

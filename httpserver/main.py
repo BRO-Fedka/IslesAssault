@@ -151,17 +151,19 @@ def shopveh(id):
 
     if request.method == 'GET':
         curItem = (curItem.id, curItem.name, curItem.cost, curItem.lvl, curItem.type, curItem.imgLink, curItem.info)
-        if (not 'logged' in session or session['logged'] == False):
+        if not 'logged' in session or session['logged'] == False:
             return render_template('shopveh.html', money=0, id=id, purch=False,
                                    vehicle=curItem, desc=Description[id], logged=False, lvl=0)
         else:
             acc = Account.query.filter_by(nickname=session['name']).first()
 
             return render_template('shopveh.html', money=acc.money, id=id,
-                                   purch=Account_Item.query.filter_by(accID=acc.id, itemID=curItem[0]).first() != None,
-                                   vehicle=curItem, desc=Description[id], logged=True, lvl=acc.lvl)
+                                   purch=Account_Item.query.filter_by(accID=acc.id,
+                                                                      itemID=curItem[0]).first() is not None,
+                                   vehicle=curItem, desc=Description[id], logged=True, lvl=acc.lvl,
+                                   method=request.method)
     elif request.method == 'POST':
-        if (not 'logged' in session or session['logged'] == False):
+        if not 'logged' in session or session['logged'] == False:
             return redirect('/')
         acc = Account.query.filter_by(nickname=session['name']).first()
         if (not acc.money < curItem.cost) and Account_Item.query.filter_by(accID=acc.id,
@@ -170,8 +172,10 @@ def shopveh(id):
             acc_item = Account_Item(accID=acc.id, itemID=curItem.id)
             db.session.add(acc_item)
             db.session.commit()
-        return redirect('/shop')
-        # return render_template('shopveh.html', money = str(acc.money),id = id,purch = Account_Item.query.filter_by(accID=acc.id,itemID=curItem[0]).first() != None, vehicle = curItem,desc =Description[id],lvl = acc.lvl)
+        curItem = (curItem.id, curItem.name, curItem.cost, curItem.lvl, curItem.type, curItem.imgLink, curItem.info)
+        return render_template('shopveh.html', money=acc.money, id=id,
+                               purch=Account_Item.query.filter_by(accID=acc.id, itemID=curItem[0]).first() is not None,
+                               vehicle=curItem, desc=Description[id], logged=True, lvl=acc.lvl, method=request.method)
 
 
 # @app.route('/fp',methods=['POST','GET'])
@@ -257,7 +261,7 @@ def image():
         return redirect('/account')
 
 
-@app.route('/account')
+@app.route('/user')
 def account():
     if not 'logged' in session or session['logged'] == False:
         return redirect('/login')
@@ -288,16 +292,9 @@ def account():
             lvls.append(itemslst)
         else:
             lvls.append([])
-    # for j in range(0,20):
-    #     for i in PREM_ITEM.keys():
-    #       #  print(j,PREM_ITEM[i][0],PREM_ITEM[lvlplace[PREM_ITEM[i][2]]])
-    #         if PREM_ITEM[i][0] == 1 and PREM_ITEM[i][lvlplace[PREM_ITEM[i][2]]] == j+1:
-    #             lvls.append([PREM_ITEM[i]])
-    #             break
-    #     if len(lvls) == j:
-    #         lvls.append([])
+
     print(lvls)
-    return render_template('account.html', lvlitems=lvls, ava=img, maxlvl=maxLevel + 1,
+    return render_template('user.html', lvlitems=lvls, ava=img, maxlvl=maxLevel + 1,
                            xppx=int(acc.xp / (acc.lvl ** 2 + 50 * acc.lvl + 100) * 150), lvl=acc.lvl,
                            xp=str(acc.xp) + '/' + str(acc.lvl ** 2 + 50 * acc.lvl + 100), money=str(acc.money),
                            nickname=acc.nickname, kills=str(acc.kills), deaths=str(acc.deaths),

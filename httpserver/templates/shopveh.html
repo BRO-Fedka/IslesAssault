@@ -1,4 +1,5 @@
-
+{"MoneyB":{{money}}}$
+{% if method == 'GET' %}
     <div class="CenterForm">
         {% if vehicle[4] == 'V' %}
             <img src="{{vehicle[5]}}" class="unselectable svimgveh">
@@ -20,7 +21,8 @@
                </ul>
         </div>
     {%endif%}
-    <div class="RightForm" style="overflow-y: hidden;">
+    <div id="ItemBuyForm" class="RightForm" style="overflow-y: hidden;">
+        {%endif%}
             <h1> {{vehicle[1]}}</h1>
             {% if vehicle[2] ==0 and vehicle[3] ==0%}
             <h2>Free</h2>
@@ -32,26 +34,26 @@
 
         {% if logged %}
             {% if purch %}
-            <form >
+
             <input disabled="disabled" id="ItemBuyBTN" type="submit" value="Purchased"  style="pointer-events: none; "/>
-            </form>
+
             {%else%}
                 {% if vehicle[2] > 0 %}
-                    <form action="/shop/{{id}}" method="post" >
-                    <input {% if vehicle[2] > money %} disabled="disabled" style="pointer-events: none; "{%endif%} id="PlayBTN" type="submit" value="Buy" onclick="SaveMusicPos()"/>
-                    </form>
+
+                    <input {% if vehicle[2] > money %} disabled="disabled" style="pointer-events: none; "{%endif%} id="ItemBuyBTN" type="submit" value="Buy" onclick="buy_item(this,{{id}})"/>
+
                 {%else%}
                     {% if vehicle[3] <= lvl %}
-                        <form action="/shop/{{id}}" method="post" >
-                        <input  id="ItemBuyBTN" type="submit" value="Get it !" onclick="SaveMusicPos()"/>
-                        </form>
+
+                        <input  id="ItemBuyBTN" type="submit" value="Get it !" onclick="buy_item(this,{{id}})"/>
+
                     {%endif%}
                 {%endif%}
 
             {%endif%}
 {%endif%}
 <br><br>
-
+{% if method == 'GET' %}
     </div>
-
+{%endif%}
 
