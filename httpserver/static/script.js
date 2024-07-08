@@ -19,13 +19,8 @@ function ZoomCorrection(){
         }
     }}
 }
-   //let svg = document.querySelector("svg");
 let GameStatus = "MainMenu"
-//let l0 = document.getElementById("SvgLayer0");
-//let l1 = document.getElementById("SvgLayer1");
-//let l2 = document.getElementById("SvgLayer2");
-//let l3 = document.getElementById("SvgLayer3");
-//let l4 = document.getElementById("SvgLayer4");
+
 let BGLayers = [[0,"../static/BG1/BG.svg"],[0.0625,"../static/BG1/BG0.svg"],[ 0.03125,"../static/BG1/BG1.svg"],[0.015625,"../static/BG1/BG2.svg"],[ 0.0078125,"../static/BG1/BG3.svg"],[-0.00390625,"../static/BG1/BG4.svg"]]
 function UpdateBG(e){
     MainScreen.innerHTML = ""
@@ -48,17 +43,12 @@ function onMouseUpdate(e) {
 //        MainScreen.innerHTML += '<div class="BGSVGLayer" id="SvgLayer'+i+'" style="background-image: url('+UpdateBG[1]+');"></div>'
         document.getElementById("SvgLayer"+i).style.transform= 'translateX('+((x - window.innerWidth / 2) * BGLayers[i][0])*1920/window.innerWidth+'px)'
   }
-//  let y = e.pageY;
-//  l0.style.transform = 'translateX('+((x - window.innerWidth / 2) / 16)*1920/window.innerWidth+'px)';
-//  l1.style.transform ='translateX('+((x - window.innerWidth / 2) / 32)*1920/window.innerWidth+'px)';
-// l2.style.transform = 'translateX('+((x - window.innerWidth / 2) / 64)*1920/window.innerWidth+'px)';
-//  l3.style.transform = 'translateX('+((x - window.innerWidth / 2) / 128)*1920/window.innerWidth+'px)';
-// l4.style.transform = 'translateX('+((x - window.innerWidth / 2) / -256)*1920/window.innerWidth +'px)';
-// console.log(window.innerWidth )
+
 }
 window.onresize = resize
 function ExitGame(){
     Send = true
+
     messagebtn.innerText = "Global"
     messageinput.value = "/leave"
     setTimeout(function(){
@@ -71,16 +61,17 @@ function ExitGame(){
                         for (let i = 0; i < children.length; i++) {
                           children[i].style.display = ""
                         }
-                        document.getElementById('MainScreen').style.display = '';
-                        document.getElementById('MainForm').style.display = '';
-                        document.getElementById('AboutForm').style.display = '';
-                        document.getElementById('UpdateName').style.display = '';
+//                        document.getElementById('MainScreen').style.display = '';
+//                        document.getElementById('MainForm').style.display = '';
+//                        document.getElementById('AboutForm').style.display = '';
+//                        document.getElementById('UpdateName').style.display = '';
+                        document.getElementById('chk-game').checked = false
                         document.getElementById("chkInterfaceHide").checked = false
-                        document.getElementById('SelectForm').style.display = '';
-                        document.getElementById('NEbar').style.display = '';
+//                        document.getElementById('SelectForm').style.display = '';
+//                        document.getElementById('NEbar').style.display = '';
                         chatview.innerHTML = ""
 //                        PIXI.sound.play('MainMenuMusic');
-                        StartMainMusicPlay = Date.now()
+//                        StartMainMusicPlay = Date.now()
                         Players = []
                         socket.close();
         }
@@ -385,7 +376,7 @@ let currentZoom = 320
 let socket = null
 
 function startgame() {
-
+    document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
     PIXI.sound.stop('MainMenuMusic')
 	if (true) {
@@ -394,9 +385,6 @@ function startgame() {
 		document.addEventListener("mouseup", mrelease, false);
 		document.addEventListener('mousemove', mousepos, false);
 		document.addEventListener('fullscreenchange', fresize  );
-		// map.addEventListener('wheel', mapsize);
-		// map.addEventListener('mousemove', mapmove);
-		// map.addEventListener('mouseout',mapout);
 		document.addEventListener('keydown',keydown);
 		document.addEventListener('keyup', keyup);
 		messagefield.addEventListener("focusout",mifo)
@@ -405,7 +393,6 @@ function startgame() {
 		try {
 //console.log('1')
 			socket = new WebSocket(document.getElementById('ServerAddress').value);
-//			console.log('2')
 			socket.addEventListener('open', function (event) {
 
 				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
@@ -413,19 +400,10 @@ function startgame() {
 
 			});
 			function taken(event) {
-//			    console.log(event.data)
 				if (event.data[0] == 'E'){
 				    GameStatus= "Error"
-//				    console.log('EEEEEEEEEEEEE')
 					document.getElementById('TitleScreen').classList = ['titlescrh']
-					document.getElementById('MainScreen').style.display = '';
-					document.getElementById('MainForm').style.display = '';
-					document.getElementById('UpdateName').style.display = '';
-					document.getElementById('AboutForm').style.display = '';
-					document.getElementById('SelectForm').style.display = '';
 					document.getElementById("chkInterfaceHide").checked = false
-					document.getElementById('NEbar').style.display = '';
-//					document.getElementById('MoneyNum').style.display = 'flex';
 					alert( event.data.split(',')[1])
 				}else if(event.data[0] == 'M'){
 //				console.log(event.data.substring(1))
@@ -436,23 +414,15 @@ function startgame() {
                     xmlHttp.send( null );
 //                    console.log("!!!!!!!!!gdasg")
                     MAPstatic = JSON.parse(xmlHttp.responseText);
-                //				console.log(MAPstatic)
+
                     WH = MAPstatic['WH']
-                //				console.log(MAPstatic)
+
                     ZonesNum.innerHTML = ''
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
                         ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
                     }
                     socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
-                //
-//                    document.body.innerHTML += '<script type="text/javascript" id="MapJSON" src="'+event.data.substring(1)+'" onload = "onMapJSONLoad()"></script>'
-//                    console.log(document.getElementById("MapJSON"))
 
-//                    document.getElementById("MapJSON").src = event.data.substring(1)
-
-
-
-//                    document.getElementById("MapJSON").onload = onMapJSONLoad
 				}
 				else if (event.data[0] == 'D'){
 
@@ -463,13 +433,9 @@ function startgame() {
                         for (let i = 0; i < children.length; i++) {
                           children[i].style.display = "none"
                         }
-                        document.getElementById('MainScreen').style.display = '';
-                        document.getElementById('MainForm').style.display = '';
+
                         document.getElementById("chkInterfaceHide").checked = false
-                        document.getElementById('UpdateName').style.display = '';
-                        document.getElementById('AboutForm').style.display = '';
-                        document.getElementById('SelectForm').style.display = '';
-                        document.getElementById('NEbar').style.display = '';
+
                         chatview.innerHTML = ""
 //                        PIXI.sound.play('MainMenuMusic');
                         StartMainMusicPlay = Date.now()
@@ -511,13 +477,7 @@ function startgame() {
                             tmp.style.background = '#f00'
                         }
 					}
-//					console.log("!!!")
-//					console.log(Zones)
 
-//                    if(Zoom == undefined){
-//                        Zoom = 320
-////                        console.log('!')
-//                    }
 					argarr = []
 					for (let _ = 3; _ < splstr.length; _++){
                                 argarr.push(splstr[_])
@@ -2493,5 +2453,5 @@ document.documentElement.requestFullscreen()
 }
 function startgamebtn() {
 document.getElementById('TitleScreen').classList = ['titlescrs']
-setTimeout(startgame,1500)
+setTimeout(startgame,1000)
 }

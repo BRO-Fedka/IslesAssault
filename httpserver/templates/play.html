@@ -1,0 +1,14 @@
+{
+"MoneyB":{{money}},
+"NICK":"{{name}}",
+"PASS":"{{passw}}"
+}
+$
+{%for i in range(0,colorslen)%}
+
+    <label onclick="changeColor()" >
+
+        <input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i ==0%} checked {%endif%} >
+        <div class="cl" style="background:{{colors[i][1]}}" ></div>
+    </label>
+{%endfor%}

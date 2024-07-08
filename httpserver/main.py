@@ -198,7 +198,7 @@ def shopveh(id):
 @app.route('/shop', methods=['GET'])
 def shop():
     if not 'logged' in session or session['logged'] == False:
-        return redirect('/')
+        return "LOGIN"
     acc = Account.query.filter_by(nickname=session['name']).first()
     itemsArr = []
     allItems = Item.query.all()
@@ -206,17 +206,8 @@ def shop():
 
     for item in allItems:
         if acc.lvl >= item.lvl:
-            # print(Account_Item.query.filter_by(accID=acc.id,itemID=item.id).first())
             itemsArr.append(
                 (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() != None))
-
-    # for _ in range(0, len(acc.invent)):
-    #     if _ in PREM_ITEM.keys() and PREM_ITEM[_][hiderplace[PREM_ITEM[_][2]]]:
-    #         if (PREM_ITEM[_][0] ==1 and not bool(int(acc.invent[_]))) : continue
-    #
-    #         arr.append([_,int(bool(int(acc.invent[_])) or PREM_ITEM[_][0]==0) ]+list(PREM_ITEM[_]))
-
-    print(itemsArr)
 
     return render_template('shop.html', money=str(acc.money), vehicles=itemsArr, lenvehicles=len(itemsArr))
 
@@ -230,12 +221,12 @@ def logout():
 @app.route('/image', methods=['POST', 'GET'])
 def image():
     if not 'logged' in session or session['logged'] == False:
-        return redirect('/login')
+        return "LOGIN"
     if request.method == 'GET':
         acc = Account.query.filter_by(nickname=session['name']).first()
         if acc is None:
             session['logged'] = False
-            return redirect('/login')
+            return "LOGIN"
         # acc = Account.query.filter_by(nickname=session['name']).first()
         avas = []
         purchItems = Account_Item.query.filter_by(accID=acc.id).all()
@@ -243,32 +234,27 @@ def image():
             item = Item.query.filter_by(id=pitem.itemID).first()
             if item.type == "I":
                 avas.append((item.id, item.name, item.imgLink))
-
-        # for _ in range(0, len(acc.invent)):
-        #     if _ in PREM_ITEM.keys() and bool(int(acc.invent[_])) and PREM_ITEM[_][2] == 'image':
-        #         avas.append([PREM_ITEM[_][3],PREM_ITEM[_][1]])
-
         print(avas)
         return render_template('avimgs.html', avas=avas, curimg=acc.img)
     else:
         acc = Account.query.filter_by(nickname=session['name']).first()
         if acc is None:
             session['logged'] = False
-            return redirect('/login')
-        if Account_Item.query.filter_by(accID=acc.id, itemID=request.form['img']) != None:
+            return "LOGIN"
+        if Account_Item.query.filter_by(accID=acc.id, itemID=request.form['img']) is not None:
             acc.img = request.form['img']
             db.session.commit()
-        return redirect('/account')
+        return "OK"
 
 
 @app.route('/user')
 def account():
     if not 'logged' in session or session['logged'] == False:
-        return redirect('/login')
+        return "LOGIN"
     acc = Account.query.filter_by(nickname=session['name']).first()
     if acc is None:
         session['logged'] = False
-        return redirect('/login')
+        return "LOGIN"
     img = Item.query.filter_by(id=acc.img, type="I").first()
     if img is None:
         acc.img = 12
@@ -276,9 +262,6 @@ def account():
         db.session.commit()
     else:
         img = img.imgLink
-    if acc is None:
-        session['logged'] = False
-        return redirect('/login')
     lvls = []
     maxLevel = db.session.query(func.max(Item.lvl)).scalar()
     print(maxLevel)
@@ -322,15 +305,6 @@ def index():
         for color in allColors:
             if not Account_Item.query.filter_by(accID=acc.id, itemID=color.id).first() is None:
                 colors.append([color.info, color.imgLink])
-        # for _ in range(0,len(acc.invent)):
-        #
-        #     if _ in PREM_ITEM.keys() and (bool(int(acc.invent[_])) or PREM_ITEM[_][0] == 0):
-        #         if PREM_ITEM[_][2] == 'vehicle':
-        #             arr.append([_] + list(PREM_ITEM[_]))
-        #         elif PREM_ITEM[_][2] == 'skin':
-        #             if colors =='':colors += str(PREM_ITEM[_][4])
-        #             else:
-        #                 colors += ','+str(PREM_ITEM[_][4])
         m = acc.money
         servers = []
         if isDEV:
@@ -340,11 +314,6 @@ def index():
             onlineServers = Server.query.filter_by().all()
             for server in onlineServers:
                 servers.append([server.name, server.address])
-
-        # servers = []
-        # for i in Servers.keys():
-        #     servers.append([i, Servers[i]])
-        # print(arr)
         return render_template('index.html', servers=servers, money=str(m), logged=logged, name=session['name'],
                                passw=session['pswh'], colors=colors, colorslen=len(colors), vehicles=[], lenvehicles=0,
                                version=VERSION, updateName=UPDATE_NAME)  # ,logged = logged, name = session['name']
@@ -357,8 +326,6 @@ def index():
         onlineServers = Server.query.filter_by(status="online").all()
         for server in onlineServers:
             servers.append([server.name, server.address])
-    # for _ in PREM_ITEM.keys():
-    #     if PREM_ITEM[_][0] == 0 and PREM_ITEM[_][2] == 'vehicle': arr.append([_]+list(PREM_ITEM[_]))
     colors = []
     allColors = Item.query.filter_by(type="S", lvl=0, cost=0).all()
     for color in allColors:
@@ -368,74 +335,79 @@ def index():
                            vehicles=[], lenvehicles=0, money=0, passw='', version=VERSION)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/play')
+def play():
+    logged = False
+    if 'logged' in session:
+        logged = session['logged']
+    if logged and Account.query.filter_by(nickname=session['name']).first():
+        acc = Account.query.filter_by(nickname=session['name']).first()
+        colors = []
+        allColors = Item.query.filter_by(type="S").all()
+        for color in allColors:
+            if not Account_Item.query.filter_by(accID=acc.id, itemID=color.id).first() is None:
+                colors.append([color.info, color.imgLink])
+        m = acc.money
+        return render_template('play.html', money=str(m), name=session['name'],
+                               passw=session['pswh'], colors=colors, colorslen=len(colors))
+
+    colors = []
+    allColors = Item.query.filter_by(type="S", lvl=0, cost=0).all()
+    for color in allColors:
+        colors.append([color.info, color.imgLink])
+
+    return render_template('play.html', money="0", name=session['name'],
+                           passw=session['pswh'], colors=colors, colorslen=len(colors))
+
+
+@app.route('/login', methods=['POST'])
 def login():
     if 'logged' in session and session['logged'] == True:
         return redirect('/')
-    if request.method == 'POST':
-        email = request.form['email'].replace(' ', '')
-        hashp = hashlib.sha224(request.form['psw'].encode('utf-8')).hexdigest()
-        print(email, hashp)
-        print(Account.query.filter_by(email='LOL'))
-        print('0!')
-        if len(Account.query.filter_by(email=email).all()) > 0:
-            print('1!')
-            if Account.query.filter_by(email=email).first().password == hashp:
-                print('2!')
-                session.permanent = True
-                session['logged'] = True
-                session['name'] = Account.query.filter_by(email=email).first().nickname
-                session['pswh'] = hashp
+    email = request.form['email'].replace(' ', '')
+    hashp = hashlib.sha224(request.form['psw'].encode('utf-8')).hexdigest()
+    print(email, hashp)
+    print(Account.query.filter_by(email='LOL'))
+    print('0!')
+    if len(Account.query.filter_by(email=email).all()) > 0:
+        print('1!')
+        if Account.query.filter_by(email=email).first().password == hashp:
+            print('2!')
+            session.permanent = True
+            session['logged'] = True
+            session['name'] = Account.query.filter_by(email=email).first().nickname
+            session['pswh'] = hashp
 
-                return redirect('/')
-            return render_template('login.html', errs=True, errt="Wrong password or email :(")
-        return render_template('login.html', errs=True, errt="Wrong password or email :(")
-    return render_template('login.html')
+            return "OK"
+    return "Wrong password or email"
 
 
-@app.route('/register', methods=['POST', 'GET'])
+@app.route('/register', methods=['POST'])
 def register():
     if 'logged' in session and session['logged'] == True:
         return redirect('/')
-    if request.method == 'POST':
-        name = request.form['nick'].replace(' ', '')
-        email = request.form['email'].replace(' ', '')
-        # is_valid = validate_email(email, verify=True)
-        hashp = hashlib.sha224(request.form['psw'].encode('utf-8')).hexdigest()
-        if len(Account.query.filter_by(nickname=name).all()) > 0:
-            return render_template('login.html', errs=True, errt="This name is occupied :(")
-        if len(Account.query.filter_by(email=email).all()) > 0:
-            return render_template('login.html', errs=True, errt="This email is occupied :(")
-        # invent = ''
-        # for i in range(0,64):
-        #     if i in PREM_ITEM.keys() and PREM_ITEM[i][0] ==0: invent += '1'
-        #     else: invent+='0'
-        account = Account(nickname=name, email=email, password=hashp, money=10, img=12)
-        acc = Account.query.filter_by(nickname=session['name']).first()
-        freeItems = Item.query.filter_by(cost=0, lvl=0).all()
-        # print(allItems)
+    name = request.form['nick'].replace(' ', '')
+    email = request.form['email'].replace(' ', '')
+    hashp = hashlib.sha224(request.form['psw'].encode('utf-8')).hexdigest()
+    if len(Account.query.filter_by(nickname=name).all()) > 0:
+        return "This name is occupied :("
+    if len(Account.query.filter_by(email=email).all()) > 0:
+        return "This email is occupied :("
+    account = Account(nickname=name, email=email, password=hashp, money=10, img=12)
+    acc = Account.query.filter_by(nickname=session['name']).first()
+    freeItems = Item.query.filter_by(cost=0, lvl=0).all()
+    # print(allItems)
 
-        for item in freeItems:
-            acc_item = None
-            try:
-                acc_item = Account_Item(accID=acc.id + 1, itemID=item.id)
-            except:
-                acc_item = Account_Item(accID=1, itemID=item.id)
-            db.session.add(acc_item)
-            # itemsArr.append(
-            #     (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() != None))
-
-        # veh = Vehicles(nickname = name,zepelin = True,carrier = True,rat=True,t28=True)
-        # try:
-        db.session.add(account)
-        # db.session.add(veh)
-        db.session.commit()
-        return redirect('/login')
-        # except:
-        #     return 'НА СЕРВЕРЕ ПИЗДЕЦ'
-    else:
-        return render_template('register.html')
-
+    for item in freeItems:
+        acc_item = None
+        try:
+            acc_item = Account_Item(accID=acc.id + 1, itemID=item.id)
+        except:
+            acc_item = Account_Item(accID=1, itemID=item.id)
+        db.session.add(acc_item)
+    db.session.add(account)
+    db.session.commit()
+    return "OK"
 
 @app.route('/about', methods=['GET'])
 def about():

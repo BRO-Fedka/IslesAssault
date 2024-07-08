@@ -181,6 +181,7 @@ background: rgba(255,255,255,0.8)
 background: rgba(255,255,255,1)
 }
 #avvobv{
+cursor:pointer;
 background: #e6decf;
 width:calc(90%-20px);
 height:calc(90%-20px);

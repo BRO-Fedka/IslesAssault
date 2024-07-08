@@ -45,12 +45,9 @@
                 <img src="..\static\exit.svg" class="unselectable">
             </div>
 
-            <div class="NEbar" onclick="ChSttSettings()">
-
-                <img src="..\static\settings.svg" class="unselectable">
-            </div>
     </div>
-   <input id="chk-form-play" type="radio" name="form" value="play" checked>
+   <input id="chk-game" type="checkbox" style="display:none;">
+    <input id="chk-form-play" type="radio" name="form" value="play" checked>
  <label id="lbl-form-play" for="chk-form-play" class="NEbar" style="top:10px;background-image:url(static/play.svg)" ></label>
   <input id="chk-form-user" type="radio" name="form" value="user">
  <label id="lbl-form-user" for="chk-form-user" onclick="refresh_user_form()" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
@@ -60,11 +57,18 @@
  <label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
  <input id="chk-form-item" type="radio" name="form" value="item" class="hideBG">
  <label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px"></label>
+  <input id="chk-form-login" type="radio" name="form" value="login">
+ <label id="lbl-form-login" for="chk-form-login" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
+   <input id="chk-form-reg" type="radio" name="form" value="reg">
+ <label id="lbl-form-reg" for="chk-form-reg" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
  <input id="chk-form-avimg" type="radio" name="form" value="avimg">
  <label id="lbl-form-avimg" for="chk-form-avimg" class="NEbar" style="top:310px;background-image:url(static/i.svg)"></label>
+     <a href="about" id="lbl-form-about" class="NEbar" style="top:250px;background-image:url(static/about.svg)" target="_blank"></a>
 
  <style  rel="stylesheet" type="text/css" >
      #lbl-form-item,
+     #lbl-form-login,
+     #lbl-form-reg,
      #lbl-form-avimg
      {
         display:none;
@@ -74,11 +78,29 @@
      #chk-form-user:checked ~ #lbl-form-user,
      #chk-form-shop:checked ~ #lbl-form-shop,
      #chk-form-item:checked ~ #lbl-form-item,
+     #chk-form-login:checked ~ #lbl-form-login,
      #chk-form-avimg:checked ~ #lbl-form-avimg,
+     #chk-form-reg:checked ~ #lbl-form-reg,
      #chk-form-settings:checked ~ #lbl-form-settings
      {
         background-color: rgba(0,0,0,0.5);
         display:block !important;
+     }
+
+     #chk-game:checked ~ #lbl-form-play,
+     #chk-game:checked ~ #lbl-form-user,
+     #chk-game:checked ~ #lbl-form-shop,
+     #chk-game:checked ~ #lbl-form-item,
+     #chk-game:checked ~ #lbl-form-login,
+     #chk-game:checked ~ #lbl-form-avimg,
+     #chk-game:checked ~ #lbl-form-reg,
+     #chk-game:checked ~ #lbl-form-about
+     {
+        display:none !important;
+     }
+
+     #chk-game:checked ~ #lbl-form-settings{
+        top:70px !important;
      }
 
      .Form{
@@ -86,11 +108,17 @@
      position:fixed;
      z-index:20;
      }
+     #chk-form-reg:checked ~ #RegForm{
+        display: block;
+     }
+     #chk-form-login:checked ~ #LoginForm{
+        display: block;
+     }
      #chk-form-avimg:checked ~ #AvimgForm{
         display: flex;
      }
      #chk-form-item:checked ~ #ItemForm{
-        display: flex;
+        display: block;
      }
      #chk-form-shop:checked ~ #ShopForm{
         display: flex;
@@ -114,25 +142,72 @@
      opacity:0;
      background:rgba(255,255,255,0.75);
      }
+
      input.hideBG:checked ~ .FormBG{
         opacity:100%;
      }
+     #chk-game:checked ~ .HiddenInGame{
+     display:none !important;
+     }
+
+     #lbl-form-about{
+        display:block;
+     }
  </style>
- <div class="FormBG"></div>
-      <div id="AvimgForm" class="scrollbar Form">
+ <div class="FormBG HiddenInGame"></div>
+
+        <div id="RegForm" class="scrollbar Form HiddenInGame">
+            <div id="errnavReg" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
+            <div class="CenterForm">
+            <form  name="registerForm" >
+                <label class="inp">Nickname:</label>
+                <br>
+                <input class="inp" type="text" name="nick" value="" required/>
+            <label class="inp">E-mail:</label>
+                <br>
+                <input class="inp" type="text" name="email" value="" required/>
+            <label class="inp">Password:</label>
+                <br>
+                <input class="inp" type="password" name="psw" value="" required/>
+                <br>
+                <span class="inp" onclick="document.getElementById('chk-form-login').checked = true">Log in</span>
+                <br>
+            <input id="RegBTN" type="button" value="Sign in" onclick="register()"/>
+            </form>
+            </div>
+        </div>
+    <div id="LoginForm" class="scrollbar Form HiddenInGame">
+        <div id="errnavLogin" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
+        <div class="CenterForm" style="overflow:visible">
+            <form name="loginForm">
+
+            <label class="inp"> E-mail</label>
+                <br>
+                <input class="inp" type="text" name="email" value="" required />
+            <label class="inp"> Password</label>
+                <br>
+                <input class="inp" type="password" name="psw" value="" required />
+
+                <span class="inp" onclick="document.getElementById('chk-form-reg').checked = true">Sign in</span>
+                <br>
+            <input id="LoginBTN" type="button" value="Log in" onclick="login()"/>
+            </form>
+        </div>
+    </div>
+    <div id="AvimgForm" class="scrollbar Form HiddenInGame">
 
     </div>
-     <div id="ItemForm" class="scrollbar Form">
+    <div id="ItemForm" class="scrollbar Form HiddenInGame">
 
     </div>
-    <div id="ShopForm" class="scrollbar Form">
+    <div id="ShopForm" class="scrollbar Form HiddenInGame">
 
     </div>
-     <div id="UserForm" class="Form">
+     <div id="UserForm" class="Form HiddenInGame">
      <div class="scrollbar RightForm" style="padding:10px; width:280px; height:280px" >
             <div id="avvobv" onclick="open_avimg_form()">
 
-                <img id="imgAvatar" src="static/playerIcons/1.svg">
+                <img id="imgAvatar" src="">
             </div>
     </div>
 	<div  class="scrollbar CenterForm" >
@@ -169,9 +244,9 @@
 
 
     </div>
-        <div id="SEbar" > <a href="\logout"  onclick="SaveMusicPos()">Logout</a></div>
+        <div id="SEbar" onclick="logout()">Logout</div>
     </div>
-     <div id="SettingsForm"class="unselectable scrollbar interface Form" >
+     <div id="SettingsForm" class="unselectable scrollbar interface Form" >
         <h2>Master volume</h2>
         <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
         <h2>Music volume</h2>
@@ -180,7 +255,7 @@
         <br>
         <br>
     </div>
- <div id="PlayForm" class="Form">
+ <div id="PlayForm" class="Form HiddenInGame" >
     <div  class="scrollbar unselectable LeftForm">
 
         <div id="divServUpdt" onclick="GetServerInfo()">
