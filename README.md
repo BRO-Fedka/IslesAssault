@@ -58,6 +58,8 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+#### 1.6v Single page update
+* Added music and menu sounds.
 #### 1.5.1v Aircraft fixes
 * Movement of planes reworked.
 * Ability to hide game interface added (press F2, F3).
