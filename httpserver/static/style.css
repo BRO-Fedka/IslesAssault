@@ -448,6 +448,9 @@ span.inp{
 	border:0;outline:0;
 	border: none;
 }
+#LoginBTN:hover{
+	background-color: rgba(0,0,0,0.5);
+}
 #PlayBTN{
 	cursor: pointer;
 
