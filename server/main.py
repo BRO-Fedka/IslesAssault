@@ -439,7 +439,7 @@ async def game():
                 if player in PlayersSockets.keys():
                     TeamRec[player][1] = datetime.datetime.now()
                     continue
-                if (datetime.datetime.now() - TeamRec[player][1]).minutes > 10:
+                if (datetime.datetime.now() - TeamRec[player][1]).seconds/60 > 10:
                     # print(datetime.datetime.now() - TeamRec[player][1],2432)
                     delarr.append(player)
             for _ in delarr:
