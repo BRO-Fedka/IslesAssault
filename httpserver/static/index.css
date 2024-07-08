@@ -1,0 +1,79 @@
+     #lbl-form-item,
+     #lbl-form-login,
+     #lbl-form-reg,
+     #lbl-form-avimg
+     {
+        display:none;
+     }
+
+     #chk-form-play:checked ~ #lbl-form-play,
+     #chk-form-user:checked ~ #lbl-form-user,
+     #chk-form-shop:checked ~ #lbl-form-shop,
+     #chk-form-item:checked ~ #lbl-form-item,
+     #chk-form-login:checked ~ #lbl-form-login,
+     #chk-form-avimg:checked ~ #lbl-form-avimg,
+     #chk-form-reg:checked ~ #lbl-form-reg,
+     #chk-form-settings:checked ~ #lbl-form-settings
+     {
+        background-color: rgba(0,0,0,0.5);
+        display:block !important;
+     }
+
+     #chk-game:checked ~ #lbl-form-play,
+     #chk-game:checked ~ #lbl-form-user,
+     #chk-game:checked ~ #lbl-form-shop,
+     #chk-game:checked ~ #lbl-form-item,
+     #chk-game:checked ~ #lbl-form-login,
+     #chk-game:checked ~ #lbl-form-avimg,
+     #chk-game:checked ~ #lbl-form-reg,
+     #chk-game:checked ~ #lbl-form-about
+     {
+        display:none !important;
+     }
+
+     #chk-game:checked ~ #lbl-form-settings{
+        top:60px !important;
+     }
+
+     .Form{
+     display:none;
+     position:fixed;
+     color:transparent;
+     z-index:15;
+     }
+     #chk-form-reg:checked ~ #RegForm{
+        display: block;
+     }
+     #chk-form-login:checked ~ #LoginForm{
+        display: block;
+     }
+     #chk-form-avimg:checked ~ #AvimgForm{
+        display: flex;
+     }
+     #chk-form-item:checked ~ #ItemForm{
+        display: block;
+     }
+     #chk-form-shop:checked ~ #ShopForm{
+        display: flex;
+     }
+     #chk-form-user:checked ~ #UserForm{
+        display: block;
+     }
+     #chk-form-play:checked ~ #PlayForm{
+        display: block;
+     }
+     #chk-form-settings:checked ~ #SettingsForm{
+        display: block;
+     }
+
+     input.hideBG:checked ~ #MainScreen > .BGSVGLayer{
+        opacity:25%;
+     }
+     #chk-game:checked ~ .HiddenInGame
+     {
+     display:none !important;
+     }
+
+     #lbl-form-about{
+        display:block;
+     }

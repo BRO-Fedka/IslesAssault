@@ -27,10 +27,10 @@
             </div>
         </a>
     </div>
-    <div id="MainForm" style="overflow:visible">
+    <div class="CenterForm" style="overflow:visible">
         {% if errs %}
-<div class="unselectable errnav" onclick="this.style.display = 'none'">{{errt}}</div>
-    {%endif%}
+        <div class="unselectable errnav" onclick="this.style.display = 'none'">{{errt}}</div>
+        {%endif%}
         <form action="/login" method="post" class="form-contact">
 
         <label class="inp"> E-mail</label>
@@ -44,11 +44,6 @@
             <br>
         <input id="PlayBTN" type="submit" value="Log in" onclick="SaveMusicPos()"/>
         </form>
-<!--        <h1 >Isles.io</h1>-->
-<!--        <h2>Nickname:</h2>-->
-<!--        <input id="NameField">-->
-
-<!--        <input id="PlayBTN" value="Play" type="button">-->
     </div>
 
 

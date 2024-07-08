@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="30"
+   height="30"
+   version="1.1"
+   id="svg38"
+   sodipodi:docname="I.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs42" />
+  <sodipodi:namedview
+     id="namedview40"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="19.728279"
+     inkscape:cx="15.079876"
+     inkscape:cy="12.063901"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg38" />
+  <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+  <g
+     id="g26">
+    <title
+       id="title23">background</title>
+    <rect
+       fill="none"
+       id="canvas_background"
+       height="32"
+       width="32"
+       y="-1"
+       x="-1"
+       style="display:none;fill:#ff00ff;fill-opacity:1" />
+  </g>
+  <g
+     id="g36"
+     transform="translate(0.20275463)">
+    <title
+       id="title28">Layer 1</title>
+    <circle
+       id="svg_5"
+       cy="11.03987"
+       cx="15"
+       fill-opacity="null"
+       stroke-width="2"
+       stroke="#ffffff"
+       fill="none"
+       r="4.4460602" />
+    <path
+       id="svg_8"
+       d="m -36.8221,-11.62774 c 0,0 -7.87171,1.16618 -7.78427,1.2779 -0.08745,-0.11172 2.828,10.09235 2.91545,10.20407"
+       opacity="0.5"
+       fill-opacity="null"
+       stroke-opacity="null"
+       stroke-width="2"
+       stroke="#ffffff"
+       fill="none" />
+    <line
+       stroke-linecap="null"
+       stroke-linejoin="null"
+       id="svg_12"
+       y2="20.094797"
+       x2="10.277397"
+       y1="27.691536"
+       x1="4.1023784"
+       fill-opacity="null"
+       stroke-opacity="null"
+       stroke-width="2.33872"
+       stroke="#ffffff"
+       fill="none"
+       style="stroke-linecap:round" />
+    <line
+       stroke-linecap="null"
+       stroke-linejoin="null"
+       id="svg_13"
+       y2="19.713329"
+       x2="20"
+       y1="19.713329"
+       x1="10.40817"
+       fill-opacity="null"
+       stroke-opacity="null"
+       stroke-width="2"
+       stroke="#ffffff"
+       fill="none"
+       style="stroke-linecap:round" />
+    <line
+       stroke-linecap="null"
+       stroke-linejoin="null"
+       id="svg_14"
+       y2="27.944979"
+       x2="25.853827"
+       y1="20.036394"
+       x1="20.021095"
+       fill-opacity="null"
+       stroke-opacity="null"
+       stroke-width="2.33872"
+       stroke="#ffffff"
+       fill="none"
+       style="stroke-linecap:round" />
+  </g>
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+     id="rect933"
+     width="28"
+     height="28"
+     x="1.1658392"
+     y="1.0137732" />
+</svg>

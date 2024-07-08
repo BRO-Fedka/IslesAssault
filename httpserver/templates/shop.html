@@ -1,35 +1,7 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
-    <title>Isles.io</title>
-</head>
- <body>
-    <audio src="..\static/mainMenuMusic.mp3"></audio>
-  <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
-<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
-<script src="..\static/Music.js"></script>
- <div id="MoneyNum" class="unselectable"><img src="static/goldshell.svg"><b>   {{money}}</b></div>
-     <div id="NEbar">
-        <a href="/">
-
-            <div class="NEbar">
-
-                <img src="static\exit.svg" class="unselectable">
-            </div>
-        </a>
-    </div>
-<div id="ShopForm" class="scrollbar">
-
+{"MoneyB":{{money}}}$
             {%for i in range(0,lenvehicles)%}
-                <a href="/shop/{{vehicles[i][0][0]}}" class="ShopCard {{vehicles[i][0][4]}} {% if vehicles[i][1] == False%}notPurchased{%elif vehicles[i][1] == True%}Purchased{%endif%}"  onclick="SaveMusicPos()">
-                <div class="ShopCard">
+
+                <div class="ShopCard" onclick="open_item_page({{vehicles[i][0][0]}},'{{vehicles[i][0][4]}}')">
                     <div class="item-lbl">
                         <span>{{vehicles[i][0][1]}}</span>
                     </div>
@@ -41,6 +13,7 @@
 
                     {%endif%}
                     {% if vehicles[i][0][4] == 'S' %}
+
                     <img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicles[i][0][5]}}">
                     {%endif%}
                     {% if vehicles[i][0][4] == 'I' %}
@@ -56,10 +29,4 @@
                     <div class="MoneyNum" class="unselectable"><img src="static/checkmark.svg"><b>Purchased</b></div>
                     {%endif%}
                     </div>
-                    </a>
-<!--                <option value="{{i[0]}}">{{i[2]}}</option>-->
             {%endfor%}
-</div>
-
- </body>
-</html>
