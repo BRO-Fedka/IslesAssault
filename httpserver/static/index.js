@@ -1,3 +1,12 @@
+PIXI.sound.add("MenuBtnPress",{
+    url: "static\\MenuBtnPress.mp3",
+    preload: true
+   })
+
+function play_click_sound(){
+PIXI.sound.play('MenuBtnPress')
+}
+
 function parse_set_common_data_return_content(resp){
     if (resp == "LOGIN"){
         document.getElementById('chk-form-login').checked = true
@@ -8,9 +17,7 @@ function parse_set_common_data_return_content(resp){
         return resp
     }
     var content = resp.slice(sepIndex+1)
-    console.log(resp.slice(0,sepIndex))
     var data = JSON.parse(resp.slice(0,sepIndex))
-    console.log(data)
     for(var key in data) {
         if (key == 'src' || key == 'val') continue
         document.getElementById(key).innerHTML = data[key]
@@ -25,10 +32,14 @@ function parse_set_common_data_return_content(resp){
 }
 
 
-function refresh_user_form(){
+function refresh_user_form(ignore=false){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onload = function(){
-        XPscreen.innerHTML = parse_set_common_data_return_content(xmlHttp.responseText)
+        if (ignore){
+            XPscreen.innerHTML = xmlHttp.responseText
+        }else{
+            XPscreen.innerHTML = parse_set_common_data_return_content(xmlHttp.responseText)
+        }
     }
     xmlHttp.open( "GET", 'user', true );
     xmlHttp.send( null );
@@ -46,6 +57,7 @@ function refresh_play_form(){
 
 
 function login(){
+    play_click_sound()
     var formData = new FormData(document.forms.loginForm);
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onload = function(){
@@ -54,6 +66,8 @@ function login(){
             errnavLogin.style.display= "none"
             document.getElementById('chk-form-play').checked = true
             refresh_play_form()
+            refresh_user_form()
+            refresh_shop_form()
         }else{
             errnavLogin.style.display= "block"
             errnavLogin.innerHTML = resp
@@ -65,6 +79,7 @@ function login(){
 
 
 function register(){
+    play_click_sound()
     var formData = new FormData(document.forms.registerForm);
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onload = function(){
@@ -83,6 +98,7 @@ function register(){
 
 
 function logout(){
+    play_click_sound()
     document.getElementById('chk-form-play').checked = true
     var xmlHttp = new XMLHttpRequest()
     xmlHttp.onload = function(){
@@ -96,10 +112,15 @@ function logout(){
 }
 
 
-function refresh_shop_form(){
+function refresh_shop_form(ignore=false){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onload = function(){
-        ShopForm.innerHTML = parse_set_common_data_return_content(xmlHttp.responseText)
+        if (ignore){
+            ShopForm.innerHTML = xmlHttp.responseText
+        }else{
+            ShopForm.innerHTML = parse_set_common_data_return_content(xmlHttp.responseText)
+        }
+
     }
     xmlHttp.open( "GET", 'shop', true );
     xmlHttp.send( null );
@@ -107,17 +128,20 @@ function refresh_shop_form(){
 
 
 function set_avimg(){
+    play_click_sound()
     var formData = new FormData(document.forms.avimgs);
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", "image");
     xmlHttp.send(formData);
     var _void = xmlHttp.responseText
-    document.getElementById('chk-form-user').checked = true
     refresh_user_form()
+    document.getElementById('chk-form-user').checked = true
+
 }
 
 
 function open_avimg_form(){
+    play_click_sound()
     AvimgForm.innerHTML = ""
     document.getElementById('chk-form-avimg').checked = true
     var xmlHttp = new XMLHttpRequest()
@@ -128,7 +152,8 @@ function open_avimg_form(){
 }
 
 
-function open_item_page(index,type){
+function open_item_page(index,type='V'){
+    play_click_sound()
     ItemForm.innerHTML = ''
     document.getElementById('chk-form-item').checked = true
     document.getElementById('lbl-form-item').style.backgroundImage = "url(static/"+type+'.svg)'
@@ -141,13 +166,13 @@ function open_item_page(index,type){
 
 
 function buy_item(button,index){
+    play_click_sound()
     button.disabled = true;
     var xmlHttp = new XMLHttpRequest();
 
     xmlHttp.open( "POST", 'shop/'+index, false );
     xmlHttp.send( null );
     ItemBuyForm.innerHTML = parse_set_common_data_return_content(xmlHttp.responseText);
-
     button.disabled = false;
 
 }
@@ -155,6 +180,50 @@ function buy_item(button,index){
 
 document.onkeydown = function(event) {
     if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
-        event.preventDefault(); // stops its action
+        event.preventDefault();
     }
 }
+
+
+function user_form_select(){
+    if (!document.getElementById('chk-form-user').checked){
+        play_click_sound()
+        refresh_user_form()
+    }
+}
+
+
+function play_form_select(){
+    if (!document.getElementById('chk-form-play').checked){
+        play_click_sound()
+        refresh_play_form()
+    }
+}
+
+
+function shop_form_select(){
+    if (!document.getElementById('chk-form-shop').checked){
+        play_click_sound()
+        refresh_shop_form()
+    }
+}
+
+
+function image_select(obj){
+    if (!obj.checked){
+        play_click_sound()
+    }
+}
+
+
+function settings_form_select(){
+    if (!document.getElementById('chk-form-settings').checked){
+        play_click_sound()
+    }
+}
+
+
+refresh_shop_form(true)
+refresh_user_form(true)
+
+

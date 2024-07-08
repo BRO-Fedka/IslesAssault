@@ -187,7 +187,7 @@ function drawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 		if (cls[PlayersData.get(playername).COLOR] != undefined){
 		    ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
 		}else{
-		    ctx.fillStyle =  FColors.get(PlayersData.get(playername).COLOR)
+		    ctx.fillStyle =  "#fff"
 		}
 		ctx.strokeStyle = MAPstatic.CT.fs
 		if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
@@ -211,7 +211,7 @@ function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
 		if (cls[PlayersData.get(playername).COLOR] != undefined){
 		    ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]
 		}else{
-		    ctx.fillStyle =  FColors.get(PlayersData.get(playername).COLOR)
+		    ctx.fillStyle =  "#fff"
 
 		}
 //		ctx.fillStyle =  cls[PlayersData.get(playername).COLOR]

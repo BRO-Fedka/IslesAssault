@@ -22,14 +22,14 @@
         <div class="vroot"></div>
 
         {% if j[2] == 'V' %}
-        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
+        <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="{{j[3]}}" class="unselectable svimgveh"></div>
         {%endif%}
         {% if j[2] == 'S' %}
-        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
+        <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></div>
 
         {%endif%}
         {% if j[2] == 'I' %}
-    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
+    <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="{{j[3]}}" class="unselectable" ></div>
 
         {%endif%}
     {% endfor %}
@@ -42,14 +42,14 @@
         <span class="accItemTitle">{{j[1]}}</span>
         <div class="vroot"></div>
         {% if j[2] == 'V' %}
-        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable svimgveh"></a></div>
+        <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="{{j[3]}}" class="unselectable svimgveh"></div>
         {%endif%}
         {% if j[2] == 'S' %}
-        <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></a></div>
+        <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{j[3]}}"></div>
 
         {%endif%}
         {% if j[2] == 'I' %}
-    <div class="lvl-item"><a href="shop\{{j[0]}}"><img src="{{j[3]}}" class="unselectable" ></a></div>
+    <div class="lvl-item" onclick="open_item_page('{{j[0]}}','{{j[2]}}')"><img src="{{j[3]}}" class="unselectable" ></div>
 
         {%endif%}
     {% endfor %}

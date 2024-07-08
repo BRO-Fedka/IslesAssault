@@ -38,7 +38,8 @@
      .Form{
      display:none;
      position:fixed;
-     z-index:20;
+     color:transparent;
+     z-index:15;
      }
      #chk-form-reg:checked ~ #RegForm{
         display: block;

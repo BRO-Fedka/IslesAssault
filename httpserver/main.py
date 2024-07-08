@@ -394,7 +394,7 @@ def register():
     if len(Account.query.filter_by(email=email).all()) > 0:
         return "This email is occupied :("
     account = Account(nickname=name, email=email, password=hashp, money=10, img=12)
-    acc = Account.query.filter_by(nickname=session['name']).first()
+    acc = Account.query.filter_by(nickname=name).first()
     freeItems = Item.query.filter_by(cost=0, lvl=0).all()
     # print(allItems)
 

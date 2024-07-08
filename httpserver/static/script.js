@@ -1,3 +1,11 @@
+PIXI.sound.add("MainMenuMusic",{
+    url: "static\\mainMenuMusic.mp3",
+    preload: true,
+    autoPlay:true
+   })
+
+
+
 document.onkeydown=function(event) {
     if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
         event.preventDefault(); // stops its action
@@ -52,7 +60,7 @@ function ExitGame(){
 
 						GameStatus = "MainMenu"
 						PlayersData = new Map()
-
+                        PIXI.sound.play('MainMenuMusic');
                         let children = document.getElementById('Inventory').children;
                         for (let i = 0; i < children.length; i++) {
                           children[i].style.display = ""
@@ -61,6 +69,7 @@ function ExitGame(){
                         document.getElementById("chkInterfaceHide").checked = false
                         chatview.innerHTML = ""
                         Players = []
+
                         socket.close();
         }
     },500)
@@ -118,27 +127,29 @@ function NoTeamTag(name, updTags=true){
 let GameH = 0
 let GameW = 0
 
-PIXI.sound.add("bang","static\\bang.mp3")
-PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
-PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
-PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
-PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
-PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
+PIXI.sound.add("bang","static\\bang.mp3",preload=true)
+PIXI.sound.add("wtrBang","static\\wtrBang.mp3",preload=true)
+PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3",preload=true)
+PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3",preload=true)
+PIXI.sound.add("bombFall","static\\bombFall4s.mp3",preload=true)
+PIXI.sound.add("rocketHit","static\\rocketHit.mp3",preload=true)
 
-PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
-PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
-PIXI.sound.add("dmg2","static\\dmg\\2.mp3")
-PIXI.sound.add("dmg3","static\\dmg\\3.mp3")
+PIXI.sound.add("dmg0","static\\dmg\\0.mp3",preload=true)
+PIXI.sound.add("dmg1","static\\dmg\\1.mp3",preload=true)
+PIXI.sound.add("dmg2","static\\dmg\\2.mp3",preload=true)
+PIXI.sound.add("dmg3","static\\dmg\\3.mp3",preload=true)
 
-PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3")
-PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3")
-PIXI.sound.add("Sdmg2","static\\Sdmg\\2.mp3")
+PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3",preload=true)
+PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3",preload=true)
+PIXI.sound.add("Sdmg2","static\\Sdmg\\2.mp3",preload=true)
 
-PIXI.sound.add("mcanon","static\\mcanon.mp3")
-PIXI.sound.add("pcanon","static\\pcanon.mp3")
-PIXI.sound.add("tcanon","static\\mcanon.mp3")
-PIXI.sound.add("hcanon","static\\pcanon.mp3")
-PIXI.sound.add("fcanon","static\\pcanon.mp3")
+PIXI.sound.add("mcanon","static\\mcanon.mp3",preload=true)
+PIXI.sound.add("pcanon","static\\pcanon.mp3",preload=true)
+PIXI.sound.add("tcanon","static\\mcanon.mp3",preload=true)
+PIXI.sound.add("hcanon","static\\pcanon.mp3",preload=true)
+PIXI.sound.add("fcanon","static\\pcanon.mp3",preload=true)
+
+
 var cameraMode = false;
 var Players=[];
 var TorpedosData = new Map();
@@ -155,7 +166,7 @@ var VIEW_Y = 0
 var PlayerName;
 var CurVehicle;
 var Zones = '';
-
+var SelectedVehicleShopId = null
 function onWheel(e){
     if (e.deltaY > 0){
         Zoom -= 10
@@ -170,10 +181,7 @@ function ShowPrevVeh(){
 	for (let _ of VehList) {
         if(_[1]==document.getElementById('VehicleSelect').value){
             document.getElementById('vehprev').src = _[2];
-
-            document.getElementById('ShopVehLink').href = location.href+"shop/"+_[3]
-
-
+            SelectedVehicleShopId = _[3]
             break;
         }
 	}
@@ -201,6 +209,7 @@ function GetServerInfo(){
                     document.getElementById('prevmpjs').src = data.js;
                     BGLayers = data.bg;
                     UpdateBG()
+                    MainScreen.style.background = data.bg_cl
                     VIEW_X = data.VIEW_X
                     VIEW_Y = data.VIEW_Y
                     VehList = data.vehicleAvailable;
@@ -263,11 +272,7 @@ var MAPstatic = {
 
 	}
 };
-var FColors = new Map()
-function AddFColor(clval, cl){
-FColors.set(Number(clval),cl)
 
-}
 let Zoom = 320
 let currentZoom = 320
 let socket = null
@@ -451,6 +456,7 @@ function startgame() {
 				else if (event.data[0] == 'D'){
 						GameStatus = "MainMenu"
 						PlayersData = new Map()
+						PIXI.sound.play('MainMenuMusic');
                         let children = document.getElementById('Inventory').children;
                         for (let i = 0; i < children.length; i++) {
                           children[i].style.display = "none"
@@ -1825,6 +1831,7 @@ document.documentElement.requestFullscreen()
 }
 }
 function startgamebtn() {
+PIXI.sound.stop('MainMenuMusic');
 document.getElementById('TitleScreen').classList = ['titlescrs']
 setTimeout(startgame,1500)
 }
