@@ -1,447 +1,220 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="../static/style.css">
+	<link rel="stylesheet" type="text/css" href="../static/index.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-chat.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-map.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-playerlist.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-game.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-shop.css">
+	<link rel="stylesheet" type="text/css" href="../static/style-account.css">
+	<link rel="stylesheet" type="text/css" href="../static/UpdateName.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+	<title>ISLES-ASSAULT</title>
+	<link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon"> </head>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="../static/style.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-chat.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-map.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-playerlist.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-game.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-shop.css">
-    <link rel="stylesheet" type="text/css" href="../static/style-account.css">
-    <link rel="stylesheet" type="text/css" href="../static/UpdateName.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
-    <title>ISLES-ASSAULT</title>
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-</head>
-<input type="checkbox" id="chkInterfaceHide" style="display:none" >
- <body>
- <audio src="static/mainMenuMusic.mp3"></audio>
- <script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
-<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
-<script src="static/Music.js"></script>
-
- <div id="MainScreen">
-     <div class="loader"></div>
-
- </div>
-
-    <div id="TitleScreen" class="unselectable">
-        <h1 id="LoadingTitle">Loading</h1>
-        <h1 id="IslesTitle">ISLES-ASSAULT</h1>
-        <img src="static/titlecannon.svg" id="TitleCannon">
-    </div>
-    <div id="MoneyNum" class="unselectable interface"><img src="static/goldshell.svg"><b id="MoneyB">   {{money}}</b></div>
-
-     <div id="GMbar" class="interface">
-
-            <div class="NEbar" onclick="ExitGame()">
-
-                <img src="..\static\exit.svg" class="unselectable">
-            </div>
-
-    </div>
-   <input id="chk-game" type="checkbox" style="display:none;">
-    <input id="chk-form-play" type="radio" name="form" value="play" checked>
- <label id="lbl-form-play" for="chk-form-play" class="NEbar" style="top:10px;background-image:url(static/play.svg)" ></label>
-  <input id="chk-form-user" type="radio" name="form" value="user">
- <label id="lbl-form-user" for="chk-form-user" onclick="refresh_user_form()" class="NEbar" style="top:70px;background-image:url(static/user.svg)" ></label>
- <input id="chk-form-shop" type="radio" name="form" value="shop" class="hideBG">
- <label id="lbl-form-shop" for="chk-form-shop" onclick="refresh_shop_form()" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
- <input id="chk-form-settings" type="radio" name="form" value="settings" >
- <label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
- <input id="chk-form-item" type="radio" name="form" value="item" class="hideBG">
- <label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px"></label>
-  <input id="chk-form-login" type="radio" name="form" value="login">
- <label id="lbl-form-login" for="chk-form-login" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
-   <input id="chk-form-reg" type="radio" name="form" value="reg">
- <label id="lbl-form-reg" for="chk-form-reg" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
- <input id="chk-form-avimg" type="radio" name="form" value="avimg">
- <label id="lbl-form-avimg" for="chk-form-avimg" class="NEbar" style="top:310px;background-image:url(static/i.svg)"></label>
-     <a href="about" id="lbl-form-about" class="NEbar" style="top:250px;background-image:url(static/about.svg)" target="_blank"></a>
-
- <style  rel="stylesheet" type="text/css" >
-     #lbl-form-item,
-     #lbl-form-login,
-     #lbl-form-reg,
-     #lbl-form-avimg
-     {
-        display:none;
-     }
-
-     #chk-form-play:checked ~ #lbl-form-play,
-     #chk-form-user:checked ~ #lbl-form-user,
-     #chk-form-shop:checked ~ #lbl-form-shop,
-     #chk-form-item:checked ~ #lbl-form-item,
-     #chk-form-login:checked ~ #lbl-form-login,
-     #chk-form-avimg:checked ~ #lbl-form-avimg,
-     #chk-form-reg:checked ~ #lbl-form-reg,
-     #chk-form-settings:checked ~ #lbl-form-settings
-     {
-        background-color: rgba(0,0,0,0.5);
-        display:block !important;
-     }
-
-     #chk-game:checked ~ #lbl-form-play,
-     #chk-game:checked ~ #lbl-form-user,
-     #chk-game:checked ~ #lbl-form-shop,
-     #chk-game:checked ~ #lbl-form-item,
-     #chk-game:checked ~ #lbl-form-login,
-     #chk-game:checked ~ #lbl-form-avimg,
-     #chk-game:checked ~ #lbl-form-reg,
-     #chk-game:checked ~ #lbl-form-about
-     {
-        display:none !important;
-     }
-
-     #chk-game:checked ~ #lbl-form-settings{
-        top:70px !important;
-     }
-
-     .Form{
-     display:none;
-     position:fixed;
-     z-index:20;
-     }
-     #chk-form-reg:checked ~ #RegForm{
-        display: block;
-     }
-     #chk-form-login:checked ~ #LoginForm{
-        display: block;
-     }
-     #chk-form-avimg:checked ~ #AvimgForm{
-        display: flex;
-     }
-     #chk-form-item:checked ~ #ItemForm{
-        display: block;
-     }
-     #chk-form-shop:checked ~ #ShopForm{
-        display: flex;
-     }
-     #chk-form-user:checked ~ #UserForm{
-        display: block;
-     }
-     #chk-form-play:checked ~ #PlayForm{
-        display: block;
-     }
-     #chk-form-settings:checked ~ #SettingsForm{
-        display: block;
-     }
-     .FormBG{
-     transition: 0.4s;
-     position: fixed;
-     width:100%;
-     height:100%;
-     top:0;left:0;
-     z-index:5;
-     opacity:0;
-     background:rgba(255,255,255,0.75);
-     }
-
-     input.hideBG:checked ~ .FormBG{
-        opacity:100%;
-     }
-     #chk-game:checked ~ .HiddenInGame{
-     display:none !important;
-     }
-
-     #lbl-form-about{
-        display:block;
-     }
- </style>
- <div class="FormBG HiddenInGame"></div>
-
-        <div id="RegForm" class="scrollbar Form HiddenInGame">
-            <div id="errnavReg" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
-            <div class="CenterForm">
-            <form  name="registerForm" >
-                <label class="inp">Nickname:</label>
-                <br>
-                <input class="inp" type="text" name="nick" value="" required/>
-            <label class="inp">E-mail:</label>
-                <br>
-                <input class="inp" type="text" name="email" value="" required/>
-            <label class="inp">Password:</label>
-                <br>
-                <input class="inp" type="password" name="psw" value="" required/>
-                <br>
-                <span class="inp" onclick="document.getElementById('chk-form-login').checked = true">Log in</span>
-                <br>
-            <input id="RegBTN" type="button" value="Sign in" onclick="register()"/>
-            </form>
-            </div>
-        </div>
-    <div id="LoginForm" class="scrollbar Form HiddenInGame">
-        <div id="errnavLogin" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
-        <div class="CenterForm" style="overflow:visible">
-            <form name="loginForm">
-
-            <label class="inp"> E-mail</label>
-                <br>
-                <input class="inp" type="text" name="email" value="" required />
-            <label class="inp"> Password</label>
-                <br>
-                <input class="inp" type="password" name="psw" value="" required />
-
-                <span class="inp" onclick="document.getElementById('chk-form-reg').checked = true">Sign in</span>
-                <br>
-            <input id="LoginBTN" type="button" value="Log in" onclick="login()"/>
-            </form>
-        </div>
-    </div>
-    <div id="AvimgForm" class="scrollbar Form HiddenInGame">
-
-    </div>
-    <div id="ItemForm" class="scrollbar Form HiddenInGame">
-
-    </div>
-    <div id="ShopForm" class="scrollbar Form HiddenInGame">
-
-    </div>
-     <div id="UserForm" class="Form HiddenInGame">
-     <div class="scrollbar RightForm" style="padding:10px; width:280px; height:280px" >
-            <div id="avvobv" onclick="open_avimg_form()">
-
-                <img id="imgAvatar" src="">
-            </div>
-    </div>
-	<div  class="scrollbar CenterForm" >
-
-        <h1 id="userFormNickname">-</h1>
-
-        <div id="XPscreen" class="scrollbar">
-
-            <span id="xp"><b id="lvl">0lvl</b>0xp</span>
-
-
-
-        </div>
-    </div>
-	<div class="LeftForm" >
-
-        <h2>Statistics</h2>
-        <div class="statpan">
-        Total kills:
-        <b id="userKills">-</b>
-        </div>
-        <div class="statpan">
-            Total deaths:
-            <b id="userDeaths">-</b>
-        </div>
-        <div class="statpan">
-            Total time:
-            <b id="userTime">-</b>
-        </div>
-        <div class="statpan">
-            Kills/Deaths:
-            <b id="userKD">-</b>
-        </div>
-
-
-    </div>
-        <div id="SEbar" onclick="logout()">Logout</div>
-    </div>
-     <div id="SettingsForm" class="unselectable scrollbar interface Form" >
-        <h2>Master volume</h2>
-        <input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
-        <h2>Music volume</h2>
-        <input type="range" onchange="UpdtVolumes()" id="MusicRange" min="0" max="1" step="0.01" value="0.5">
-        <h2 style="display:inline">Particles</h2><input style="width:20px;height:20px;left: 5px;top:2px;position:relative" type="checkbox" onchange="UpdtParticles()" id="ParticlesChk" >
-        <br>
-        <br>
-    </div>
- <div id="PlayForm" class="Form HiddenInGame" >
-    <div  class="scrollbar unselectable LeftForm">
-
-        <div id="divServUpdt" onclick="GetServerInfo()">
-            <img id="imgServUpdt" alt="" src="static\update.svg">
-        </div>
-
-            <input type="radio" id="ServerTab1" checked name="ServerFormRadios">
-            <input type="radio" id="ServerTab2"  name="ServerFormRadios">
-            <label for="ServerTab1" class="ServerTab">Servers</label>
-            <label for="ServerTab2" class="ServerTab">Direct</label>
-
-        <select id="ServerSelect" onchange="document.getElementById('ServerAddress').value = this.value;forgetServer();GetServerInfo()">
-            {%for i in servers%}
-
-                <option value = "{{i[1]}}">{{i[0]}}</option>
-            {%endfor%}
-
-        </select>
-            <input id="ServerAddress" onkeydown="forgetServer();" onchange="GetServerInfo()">
-
-        <br>
-        <div id="online">?/?</div>
-
-        <div id="text">No information yet</div>
-        <div id="dmpprev"><img id="impprev" alt="" src=""><div class="loader"></div></div>
-
-    </div>
-
-    <h1 id="UpdateName">
+<body>
+    <input type="checkbox" id="chkInterfaceHide" style="display:none">
+	<audio src="static/mainMenuMusic.mp3"></audio>
+	<script src="https://unpkg.com/pixi.js@8.1.1/dist/pixi.min.js"></script>
+	<script src="https://unpkg.com/@pixi/sound/dist/pixi-sound.js"></script>
+	<script src="static/Music.js"></script>
+	<div id="TitleScreen" class="unselectable">
+		<h1 id="LoadingTitle">Loading</h1>
+		<h1 id="IslesTitle">ISLES-ASSAULT</h1> <img src="static/titlecannon.svg" id="TitleCannon"> </div>
+	<div id="MoneyNum" class="unselectable interface"><img src="static/goldshell.svg"><b id="MoneyB">   {{money}}</b></div>
+	<div id="GMbar" class="interface">
+		<div class="NEbar" onclick="ExitGame()"> <img src="..\static\exit.svg" class="unselectable"> </div>
+	</div>
+	<input id="chk-game" type="checkbox" style="display:none;">
+	<input id="chk-form-play" type="radio" name="form" value="play" checked>
+	<label id="lbl-form-play" for="chk-form-play" onclick="refresh_play_form()" class="NEbar" style="top:10px;background-image:url(static/play.svg)"></label>
+	<input id="chk-form-user" type="radio" name="form" value="user" class="hideBG">
+	<label id="lbl-form-user" for="chk-form-user" onclick="refresh_user_form()" class="NEbar" style="top:70px;background-image:url(static/user.svg)"></label>
+	<input id="chk-form-shop" type="radio" name="form" value="shop" class="hideBG">
+	<label id="lbl-form-shop" for="chk-form-shop" onclick="refresh_shop_form()" class="NEbar" style="top:130px;background-image:url(static/shop.svg)"></label>
+	<input id="chk-form-settings" type="radio" name="form" value="settings" class="hideBG">
+	<label id="lbl-form-settings" for="chk-form-settings" class="NEbar" style="top:190px;background-image:url(static/settings.svg)"></label>
+	<input id="chk-form-item" type="radio" name="form" value="item" class="hideBG">
+	<label id="lbl-form-item" for="chk-form-item" class="NEbar" style="top:310px"></label>
+	<input id="chk-form-login" type="radio" name="form" value="login" class="hideBG">
+	<label id="lbl-form-login" for="chk-form-login" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
+	<input id="chk-form-reg" type="radio" name="form" value="reg" class="hideBG">
+	<label id="lbl-form-reg" for="chk-form-reg" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
+	<input id="chk-form-avimg" type="radio" name="form" value="avimg" class="hideBG">
+	<label id="lbl-form-avimg" for="chk-form-avimg" class="NEbar" style="top:310px;background-image:url(static/i.svg)"></label>
+	<a href="about" id="lbl-form-about" class="NEbar" style="top:250px;background-image:url(static/about.svg)" target="_blank"></a>
+	<div id="MainScreen" class="HiddenInGame">
+		<div class="loader"></div>
+	</div>
+	<div id="RegForm" class="scrollbar Form HiddenInGame">
+		<div id="errnavReg" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
+		<div class="CenterForm">
+			<form name="registerForm">
+				<label class="inp">Nickname:</label>
+				<br>
+				<input class="inp" type="text" name="nick" value="" required/>
+				<label class="inp">E-mail:</label>
+				<br>
+				<input class="inp" type="text" name="email" value="" required/>
+				<label class="inp">Password:</label>
+				<br>
+				<input class="inp" type="password" name="psw" value="" required/>
+				<br> <span class="inp" onclick="document.getElementById('chk-form-login').checked = true">Log in</span>
+				<br>
+				<input id="RegBTN" type="button" value="Sign in" onclick="register()" /> </form>
+		</div>
+	</div>
+	<div id="LoginForm" class="scrollbar Form HiddenInGame">
+		<div id="errnavLogin" class="unselectable errnav" onclick="this.style.display = 'none'" style="display:none;"></div>
+		<div class="CenterForm" style="overflow:visible">
+			<form name="loginForm">
+				<label class="inp"> E-mail</label>
+				<br>
+				<input class="inp" type="text" name="email" value="" required />
+				<label class="inp"> Password</label>
+				<br>
+				<input class="inp" type="password" name="psw" value="" required /> <span class="inp" onclick="document.getElementById('chk-form-reg').checked = true">Sign in</span>
+				<br>
+				<input id="LoginBTN" type="button" value="Log in" onclick="login()" /> </form>
+		</div>
+	</div>
+	<div id="AvimgForm" class="scrollbar Form HiddenInGame"> </div>
+	<div id="ItemForm" class="scrollbar Form HiddenInGame"> </div>
+	<div id="ShopForm" class="scrollbar Form HiddenInGame"> </div>
+	<div id="UserForm" class="Form HiddenInGame">
+		<div class="scrollbar RightForm" style="padding:10px; width:280px; height:280px">
+			<div id="avvobv" onclick="open_avimg_form()"> <img id="imgAvatar" src=""> </div>
+		</div>
+		<div class="scrollbar CenterForm">
+			<h1 id="userFormNickname">-</h1>
+			<div id="XPscreen" class="scrollbar"> <span id="xp"><b id="lvl">0lvl</b>0xp</span> </div>
+		</div>
+		<div class="LeftForm">
+			<h2>Statistics</h2>
+			<div class="statpan"> Total kills: <b id="userKills">-</b> </div>
+			<div class="statpan"> Total deaths: <b id="userDeaths">-</b> </div>
+			<div class="statpan"> Total time: <b id="userTime">-</b> </div>
+			<div class="statpan"> Kills/Deaths: <b id="userKD">-</b> </div>
+		</div>
+		<div id="SEbar" onclick="logout()">Logout</div>
+	</div>
+	<div id="SettingsForm" class="unselectable scrollbar interface Form">
+		<h2>Master volume</h2>
+		<input type="range" onchange="UpdtVolumes()" id="VolumeRange" min="0" max="1" step="0.01" value="0.5">
+		<h2>Music volume</h2>
+		<input type="range" onchange="UpdtVolumes()" id="MusicRange" min="0" max="1" step="0.01" value="0.5">
+		<h2 style="display:inline">Particles</h2>
+		<input style="width:20px;height:20px;left: 5px;top:2px;position:relative" type="checkbox" onchange="UpdtParticles()" id="ParticlesChk">
+		<br>
+		<br> </div>
+	<div id="PlayForm" class="Form HiddenInGame">
+		<div class="scrollbar unselectable LeftForm">
+			<div id="divServUpdt" onclick="GetServerInfo()"> <img id="imgServUpdt" alt="" src="static\update.svg"> </div>
+			<input type="radio" id="ServerTab1" checked name="ServerFormRadios">
+			<input type="radio" id="ServerTab2" name="ServerFormRadios">
+			<label for="ServerTab1" class="ServerTab">Servers</label>
+			<label for="ServerTab2" class="ServerTab">Direct</label>
+			<select id="ServerSelect" onchange="document.getElementById('ServerAddress').value = this.value;forgetServer();GetServerInfo()"> {%for i in servers%}
+				<option value="{{i[1]}}">{{i[0]}}</option> {%endfor%} </select>
+			<input id="ServerAddress" onkeydown="forgetServer();" onchange="GetServerInfo()">
+			<br>
+			<div id="online">?/?</div>
+			<div id="text">No information yet</div>
+			<div id="dmpprev"><img id="impprev" alt="" src="">
+				<div class="loader"></div>
+			</div>
+		</div>
+		<h1 id="UpdateName" class="unselectable">
         {{updateName}}
     </h1>
-    <div class="unselectable CenterForm">
-        <div class="hidden" id="NICK">{{name}}</div>
-        <div class="hidden" id="PASS">{{passw}}</div>
-        <h1 >ISLES-ASSAULT</h1>
-        <h2>Nickname:</h2>
-        <input id="NameField" onkeyup="this.value = this.value.replaceAll(',','').replaceAll(' ','').replaceAll(']','').replaceAll('[',''); sessionStorage.setItem('NameFieldVal',this.value)">
-        <br>
-        <br>
-        <br>
-
-        <input onclick="startgamebtn()" id="PlayBTN" value="Play" type="button">
-    </div>
-    <div class="scrollbar unselectable RightForm" >
-        <h2>Color</h2>
-
-        <div id="ColorMenu" class="scrollbar">
-
-            {%for i in range(0,colorslen)%}
-
-                <label onclick="changeColor()" >
-
-                    <input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i ==0%} checked {%endif%} >
-                    <div class="cl" style="background:{{colors[i][1]}}" ></div>
-                </label>
-            {%endfor%}
-        </div>
-
-        <h2>Vehicle</h2>
-        <select id="VehicleSelect" onchange="ShowPrevVeh()">
-
-            {%for i in vehicles%}
-
-                <option value = "{{i[0]}}">{{i[2]}}</option>
-            {%endfor%}
-
-
-
-        </select>
-        <a href=""  id="ShopVehLink" >
-        <div style="overflow:hidden;">
-
-        <img id="vehprev" src="" alt="">
-
-        </div>
-        </a>
-         <h2>How to play</h2>
-          <ul type="disc">
-
-                    <li>W/A/S/D to control a ship, tank or airship.</li>
-                    <li>W/S to Mouse to control a plane.</li>
-                    <li>X to change gunfire mode, can be aerial targets or surface based targets.</li>
-                    <li>C to change gun guidance mode or to turn on tracers.</li>
-                    <li>Space to launch torpedos</li>
-                    <li>G to blow up smokes</li>
-
-           </ul>
-    </div>
-
-    </div>
-    <div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>
-    <div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>
-    <div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>
-    <div id="Num8" class="unselectable ammonum NumAmmo"><span>8mm</span>1000</div>
-    <div id="Sensors" class="interface">
-        <div id="GasNum" class="unselectable Sensor">GAS+100</div>
-        <div id="DirNum" class="unselectable Sensor">DIR+100</div>
-        <div id="XNum" class="unselectable Sensor">X-16</div>
-        <div id="YNum" class="unselectable Sensor">Y-16</div>
-        <div id="SpdNum" class="unselectable Sensor">SPD+100</div>
-    </div>
-    <div id="MapForm" class="unselectable"><div class="mapmark" id="PlayerMark"></div><img  id="Map" src=""></div>
-<!--    <div id="GameMenuForm" class="unselectable">-->
-<!--        <div class="menubtn"></div>-->
-<!--    </div>-->
-    <div id="TabForm" class="scrollbar"></div>
-<!--    <div id="ClanForm" class="scrollbar" style="display: none;"></div>-->
-<!--    <input id="ClanInput" maxlength="7" style="display: none;">-->
-    <div id="ChatForm" class="unselectable interface" >
-        <div id="ChatView" class="unselectable">
-
-        </div>
-    </div>
-<span id="MessageField"  style="display: none">
+		<div class="unselectable CenterForm">
+			<div class="hidden" id="NICK">{{name}}</div>
+			<div class="hidden" id="PASS">{{passw}}</div>
+			<h1>ISLES-ASSAULT</h1>
+			<h2>Nickname:</h2>
+			<input id="NameField" onkeyup="this.value = this.value.replaceAll(',','').replaceAll(' ','').replaceAll(']','').replaceAll('[',''); sessionStorage.setItem('NameFieldVal',this.value)">
+			<br>
+			<br>
+			<br>
+			<input onclick="startgamebtn()" id="PlayBTN" value="Play" type="button"> </div>
+		<div class="scrollbar unselectable RightForm">
+			<h2>Color</h2>
+			<div id="ColorMenu" class="scrollbar"> {%for i in range(0,colorslen)%}
+				<label onclick="changeColor()">
+					<input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i==0%} checked {%endif%}>
+					<div class="cl" style="background:{{colors[i][1]}}"></div>
+				</label> {%endfor%} </div>
+			<h2>Vehicle</h2>
+			<select id="VehicleSelect" onchange="ShowPrevVeh()"> {%for i in vehicles%}
+				<option value="{{i[0]}}">{{i[2]}}</option> {%endfor%} </select>
+			<a href="" id="ShopVehLink">
+				<div style="overflow:hidden;"> <img id="vehprev" src="" alt=""> </div>
+			</a>
+			<h2>How to play</h2>
+			<ul type="disc">
+				<li>Click mouse to fire.</li>
+				<li>Scroll to zoom in and out.</li>
+				<li>W/A/S/D to control a ship, tank or airship.</li>
+				<li>W/S and Mouse to control a plane.</li>
+				<li>X to change gunfire mode, can be aerial targets or surface based targets.</li>
+				<li>C to change gun guidance mode or to turn on tracers.</li>
+				<li>Space to launch torpedos</li>
+				<li>G to blow up smokes</li>
+				<li>V to change seats</li>
+			</ul>
+		</div>
+	</div>
+	<div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>
+	<div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>
+	<div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>
+	<div id="Num8" class="unselectable ammonum NumAmmo"><span>8mm</span>1000</div>
+	<div id="Sensors" class="interface">
+		<div id="GasNum" class="unselectable Sensor">GAS+100</div>
+		<div id="DirNum" class="unselectable Sensor">DIR+100</div>
+		<div id="XNum" class="unselectable Sensor">X-16</div>
+		<div id="YNum" class="unselectable Sensor">Y-16</div>
+		<div id="SpdNum" class="unselectable Sensor">SPD+100</div>
+	</div>
+	<div id="MapForm" class="unselectable">
+		<div class="mapmark" id="PlayerMark"></div><img id="Map" src=""></div>
+	<div id="TabForm" class="scrollbar"></div>
+	<div id="ChatForm" class="unselectable interface">
+		<div id="ChatView" class="unselectable"> </div>
+	</div> <span id="MessageField" style="display: none">
     <span id="MessageFieldBtn">Global</span>
-    <input id="MessageFieldTxt">
-    </span>
-    <div id="Inventory" class="unselectable interface">
-        <div class="InvCeil" id="TorInv" style="display:none;">
-            <div class="invLoader" style="display:none;" id="TorLoading"></div>
-            <img src="./static/TORPEDOinv.svg" >
-            <b id="TorNum"></b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="SmkInv" style="display:none;">
-            <div class="invLoader" style="display:none;" id="SmkLoading"></div>
-            <img src="./static/SMOKEinv.svg" >
-            <b id="SmkNum"></b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="XmodInv">
-            <img id="XmodNum" src="./static/Xmodinv0.svg" >
-            <b >X</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="CmodInv" style="display:none;">
-            <img id="CmodNum" src="./static/Cmodinv0.svg" >
-            <b >C</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="TracerInv" style="display:none;">
-            <img id="TracerNum" src="./static/Tracerinv0.svg" >
-            <b >C</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="CarryInv" style="display:none;">
-            <img  src="./static/Carryinv.svg" >
-            <b id="CarryNum">0</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="AARocketInv" style="display:none;">
-            <img  src="./static/AAROCKETinv.svg" >
-            <b id="AARocketNum">0</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="ViewInv" style="display:none;">
-            <img id="ViewImg" src="./static/HELMinv.svg" >
-            <b >V</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-        <div class="InvCeil" id="BombInv" style="display:none;">
-            <img src="./static/BOMBinv.svg" >
-            <b id="BombNum">0</b>
-<!--            <b class="InvNum"></b>-->
-        </div>
-    </div>
-    <div id="HPNum" class="unselectable interface" ></div>
-    <div id="Zones" class="unselectable interface">
+	<input id="MessageFieldTxt"> </span>
+	<div id="Inventory" class="unselectable interface">
+		<div class="InvCeil" id="TorInv" style="display:none;">
+			<div class="invLoader" style="display:none;" id="TorLoading"></div> <img src="./static/TORPEDOinv.svg"> <b id="TorNum"></b> </div>
+		<div class="InvCeil" id="SmkInv" style="display:none;">
+			<div class="invLoader" style="display:none;" id="SmkLoading"></div> <img src="./static/SMOKEinv.svg"> <b id="SmkNum"></b> </div>
+		<div class="InvCeil" id="XmodInv"> <img id="XmodNum" src="./static/Xmodinv0.svg"> <b>X</b> </div>
+		<div class="InvCeil" id="CmodInv" style="display:none;"> <img id="CmodNum" src="./static/Cmodinv0.svg"> <b>C</b> </div>
+		<div class="InvCeil" id="TracerInv" style="display:none;"> <img id="TracerNum" src="./static/Tracerinv0.svg"> <b>C</b> </div>
+		<div class="InvCeil" id="CarryInv" style="display:none;"> <img src="./static/Carryinv.svg"> <b id="CarryNum">0</b> </div>
+		<div class="InvCeil" id="AARocketInv" style="display:none;"> <img src="./static/AAROCKETinv.svg"> <b id="AARocketNum">0</b> </div>
+		<div class="InvCeil" id="ViewInv" style="display:none;"> <img id="ViewImg" src="./static/HELMinv.svg"> <b>V</b> </div>
+		<div class="InvCeil" id="BombInv" style="display:none;"> <img src="./static/BOMBinv.svg"> <b id="BombNum">0</b> </div>
+	</div>
+	<div id="HPNum" class="unselectable interface"></div>
+	<div id="Zones" class="unselectable interface"> </div> <span id="GameVersion" class="interface">{{version}}v BETA</span>
+	<canvas id="MainCanvas"></canvas>
+	<script type="text/javascript" src="../static/script.js"></script>
+	<script type="text/javascript" src="../static/index.js"></script>
+	<script type="text/javascript" src="../static/DrawAPI.js"></script>
+	<script type="text/javascript" id="prevmpjs"></script>
+	<script type="text/javascript">
+	{% for i in range(0, colorslen) %}
+	AddFColor('{{colors[i][0]}}', '{{colors[i][1]}}')
+	{% endfor %}
+	</script>
+</body>
 
-    </div>
-<!--    <div id="HPDiv" >-->
-<!--        ?/?-->
-<!--    </div>-->
-     <span id="GameVersion" class="interface">{{version}}v BETA</span>
- 	<canvas id="MainCanvas"></canvas>
-     
- 	<script type="text/javascript" src="../static/script.js"></script>
- 	<script type="text/javascript" src="../static/index.js"></script>
-    <script type="text/javascript" src="../static/DrawAPI.js"></script>
-    <script type="text/javascript" id="prevmpjs"></script>
-    <script type="text/javascript" >
-        {%for i in range(0,colorslen)%}
-            AddFColor('{{colors[i][0]}}','{{colors[i][1]}}')
-        {%endfor%}
-    </script>
-<!--    <script type="text/javascript" id="MapJSON"></script>-->
-
- </body>
 </html>

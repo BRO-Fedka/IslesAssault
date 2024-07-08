@@ -253,3 +253,93 @@ function DrawNickname(name, hp, hpmax,x,y){
     ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
     ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
 }
+
+function BangPrt0(x, y,dir = Math.random()*2*Math.PI) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.dir = Math.random()*2*Math.PI;
+	this.xs = Math.cos(dir);
+	this.ys = Math.sin(dir);
+	this.rad = 1;
+}
+
+function CanPrt0(x, y,dir = Math.random()*2*Math.PI) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.xs = Math.cos(dir);
+	this.ys = Math.sin(dir);
+	this.rad = 1;
+}
+function WtrPrt0(x, y) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.rad = Math.random()+1;
+}
+function RcktTPrt0(x, y) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.rad = Math.random()+0.25;
+}
+function Particle0(x, y, xs, ys,rad) {
+	this.x=x;
+	this.y=y;
+	this.xs=xs;
+	this.ys=ys;
+	this.life=1.5;
+	this.rad = rad
+}
+function TrcrPrt1(x, y,x1,y1,cl = 1) {
+	this.x=x;
+	this.y=y;
+	this.life=1;
+	this.cl = cl;
+	this.x1=x1;
+	this.y1=y1;
+
+}
+function FirePrt0(x, y, rad = 1) {
+        this.x=x;
+        this.y=y;
+        this.deg= Math.random()*2*Math.PI;
+        this.dir= Math.random()*2*Math.PI;
+        this.life=60;
+        this.dirspd = 0
+        this.cof = 0.5 + Math.random()
+        this.speed = 0.5/2+ 0.5/2*Math.random();
+        this.rad = (5 + Math.random()*5)*rad
+    }
+function Particle1(x, y, deg,speed,rad) {
+	this.x=x;
+	this.y=y;
+	this.deg=deg;
+	this.life=1.5;
+	this.speed = speed;
+	this.rad = rad
+}
+function Particle2(W,H) {
+	this.x= Math.random()*W;
+	this.y= Math.random()*H;
+	this.r= 8-Math.floor(Math.sqrt(Math.sqrt(Math.random()*256))*2);
+	this.d= 1+Math.random()*0.25;
+	this.ra = Math.random()*Math.PI*2;
+	this.as = -0.1 + Math.random()*0.2;
+}
+
+function Particle3(id) {
+    this.id =id;
+    this.hp = 500+Math.random()*500
+    this.cl = Math.random()*64+191;
+	this.h= Math.random();
+    this.dir = (Math.random()*2-1)*Math.PI;
+    this.spd = Math.random()*2 -1;
+}
+function Particle4() {
+	this.x= Math.random()*(GameW+500)-250;
+	this.y= Math.random()*(GameH+500)-250;
+	this.dir= Math.random()*360
+	this.life = 0.01
+}

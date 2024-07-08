@@ -55,7 +55,7 @@ function login(){
             document.getElementById('chk-form-play').checked = true
             refresh_play_form()
         }else{
-            errnavLogin.style.display= ""
+            errnavLogin.style.display= "block"
             errnavLogin.innerHTML = resp
         }
     }
@@ -73,7 +73,7 @@ function register(){
             errnavReg.style.display= "none"
             document.getElementById('chk-form-login').checked = true
         }else{
-            errnavReg.style.display= ""
+            errnavReg.style.display= "block"
             errnavReg.innerHTML = resp
         }
     }
@@ -150,4 +150,11 @@ function buy_item(button,index){
 
     button.disabled = false;
 
+}
+
+
+document.onkeydown = function(event) {
+    if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
+        event.preventDefault(); // stops its action
+    }
 }
