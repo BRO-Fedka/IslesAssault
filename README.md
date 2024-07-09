@@ -21,7 +21,7 @@ __Why isles ?__ - Because it sounds well and they are the only locations where a
 * `Scroll` - to zoom in or zoom out.
 #### :eyes: Interface:
 * `M` - map
-* `N` - player list
+* `Tab` - player list
 * `Enter` - open chat or send message.
 * `Tab / Ctrl` - change chat mode to __"Global"__ or __"Team"__
 #### :abcd: Chat commands:
@@ -58,7 +58,11 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
-#### 1.6v Single page update
+#### 1.6.1v Fixes
+* Shift center bug solved.
+* Rebinded key for player list, now it's `Tab`.
+* _SEO stuff_
+### 1.6v Single page update
 * Added music and menu sounds.
 #### 1.5.1v Aircraft fixes
 * Movement of planes reworked.
