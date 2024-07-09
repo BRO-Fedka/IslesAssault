@@ -451,7 +451,7 @@ function startgame() {
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
                         ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
                     }
-                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString());
 				}
 				else if (event.data[0] == 'D'){
 						GameStatus = "MainMenu"
@@ -782,16 +782,17 @@ function startgame() {
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
                     }
+                    console.log(window.devicePixelRatio)
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m/team chat '+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
 					    }else{
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString()+',m'+messageinput.value);
+					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
 					    }
 						messageinput.value = ''
 						Send=false
 					}else{
-						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2)/Zoom).toString()+','+((mouseY-GameH/2)/Zoom).toString());
+						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
 					}
 					SENDB = ''
 					SENDS = ''
@@ -887,7 +888,7 @@ function keydown(event) {
 		document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
 	}else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
 		map.style.display = 'block';
-	}else if (messagefield.style.display == 'none' && (event.keyCode == 78) ) {
+	}else if (messagefield.style.display == 'none' && (event.keyCode == 9) ) {
 		input.set('Tab',true);
 		tab.style.display = 'block';
 	}else if(messagefield.style.display == 'none' && (event.keyCode == 67)){
@@ -904,7 +905,7 @@ function keyup(event) {
 		input.set(event.keyCode,false);
 	} else if (event.keyCode == 77 ) {
 		map.style.display = 'none';
-	}else if (event.keyCode == 78 ) {
+	}else if (event.keyCode == 9 ) {
 		tab.style.display = 'none';
 	}
 }

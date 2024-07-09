@@ -8,25 +8,25 @@
 
                     {% if vehicles[i][0][4] == 'V' %}
                     <div class="imgbg">
-                        <img src="{{vehicles[i][0][5]}}" class="unselectable">
+                        <img src="{{vehicles[i][0][5]}}" class="unselectable" alt="Vehicle icon">
                     </div>
 
                     {%endif%}
                     {% if vehicles[i][0][4] == 'S' %}
 
-                    <img src="static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicles[i][0][5]}}">
+                    <img src="static/paintBucket.svg" alt="Skin icon" class="unselectable" style = "background-color: {{vehicles[i][0][5]}}">
                     {%endif%}
                     {% if vehicles[i][0][4] == 'I' %}
-                    <img src="{{vehicles[i][0][5]}}" class="unselectable">
+                    <img src="{{vehicles[i][0][5]}}" alt="Image icon" class="unselectable">
                     {%endif%}
                     {% if vehicles[i][1] == False%}
                         {% if vehicles[i][0][2] != 0%}
-                            <div class="MoneyNum" class="unselectable"><img src="static/goldshell.svg"><b>{{vehicles[i][0][2]}}</b></div>
+                            <div class="MoneyNum" class="unselectable"><img  alt="goldshell" src="static/goldshell.svg"><b>{{vehicles[i][0][2]}}</b></div>
                         {%else%}
-                            <div class="MoneyNum" class="unselectable"><img class="alarm-mark" src="static/shop-alarm.svg"><b>Get it !</b></div>
+                            <div class="MoneyNum" class="unselectable"><img alt="attention mark" class="alarm-mark" src="static/shop-alarm.svg"><b>Get it !</b></div>
                         {%endif%}
                     {%elif vehicles[i][1] == True%}
-                    <div class="MoneyNum" class="unselectable"><img src="static/checkmark.svg"><b>Purchased</b></div>
+                    <div class="MoneyNum" class="unselectable"><img src="static/checkmark.svg" alt="checkmark"><b>Purchased</b></div>
                     {%endif%}
                     </div>
             {%endfor%}
