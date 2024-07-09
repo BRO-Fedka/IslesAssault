@@ -356,8 +356,8 @@ def play():
     for color in allColors:
         colors.append([color.info, color.imgLink])
 
-    return render_template('play.html', money="0", name=session['name'],
-                           passw=session['pswh'], colors=colors, colorslen=len(colors))
+    return render_template('play.html', money="0", name="",
+                           passw="", colors=colors, colorslen=len(colors))
 
 
 @app.route('/login', methods=['POST'])

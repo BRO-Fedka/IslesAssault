@@ -2,13 +2,13 @@
 {% if method == 'GET' %}
     <div class="CenterForm">
         {% if vehicle[4] == 'V' %}
-            <img src="{{vehicle[5]}}" class="unselectable svimgveh">
+            <img src="{{vehicle[5]}}" class="unselectable svimgveh" alt="Vehicle icon">
         {%endif%}
         {% if vehicle[4] == 'S' %}
-                    <img src="..\static\paintBucket.svg" class="unselectable" style = "background-color: {{vehicle[5]}}">
+                    <img alt="Skin icon" src="../static/paintBucket.svg" class="unselectable" style = "background-color: {{vehicle[5]}}">
         {%endif%}
         {% if vehicle[4] == 'I' %}
-                    <img src="{{vehicle[5]}}" class="unselectable" >
+                    <img alt="Image icon" src="{{vehicle[5]}}" class="unselectable" >
         {%endif%}
     </div>
     {%if desc%}
@@ -29,7 +29,7 @@
             {% elif vehicle[2] ==0 %}
             <h2>LVL required</h2>
             {%else%}
-            <h2><img src="..\\static\goldshell.svg" width="20px" height="20px">   {{vehicle[2]}}</h2>
+            <h2><img alt="goldshell" src="static/goldshell.svg" width="20px" height="20px">   {{vehicle[2]}}</h2>
             {%endif%}
 
         {% if logged %}

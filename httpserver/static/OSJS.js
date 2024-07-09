@@ -1066,7 +1066,8 @@ hp:1000,
 views:1,
 viewsIcons:[''],
 f:{
-        '228': '#bbb26e'},
+'0': '#131313',
+'228': '#bbb26e'},
 draw:function(layer, playername){
     if( layer=="Air+2" && PlayersData.get(playername).prevX!= null){
         let sin = 0

@@ -178,12 +178,6 @@ function buy_item(button,index){
 }
 
 
-document.onkeydown = function(event) {
-    if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
-        event.preventDefault();
-    }
-}
-
 
 function user_form_select(){
     if (!document.getElementById('chk-form-user').checked){
