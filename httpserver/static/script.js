@@ -141,7 +141,6 @@ PIXI.sound.add("dmg3","static\\dmg\\3.mp3",preload=true)
 
 PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3",preload=true)
 PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3",preload=true)
-PIXI.sound.add("Sdmg2","static\\Sdmg\\2.mp3",preload=true)
 
 PIXI.sound.add("mcanon","static\\mcanon.mp3",preload=true)
 PIXI.sound.add("pcanon","static\\pcanon.mp3",preload=true)
@@ -1312,7 +1311,7 @@ if (ParticlesProcessing){
                 BulletsData.get(_)[3]=0
             }else if(BulletsData.get(_)[3] == 2){
                 if (Math.random() < 1){
-                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
+                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
                 }
                 BulletsData.get(_)[3]=0
             }
@@ -1629,7 +1628,7 @@ if (ParticlesProcessing){
                 BulletsData.get(_)[3]=0
             }else if(BulletsData.get(_)[3] == 2){
                 if (Math.random() < 1){
-                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*3));
+                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
                 }
                 BulletsData.get(_)[3]=0
             }
