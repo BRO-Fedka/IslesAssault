@@ -328,6 +328,7 @@ def index():
         onlineServers = Server.query.filter_by(status="online").all()
         for server in onlineServers:
             servers.append([server.name, server.address])
+    print(servers)
     colors = []
     allColors = Item.query.filter_by(type="S", lvl=0, cost=0).all()
     for color in allColors:
