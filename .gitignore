@@ -8,5 +8,7 @@ venv/
 logs/*
 *.txt
 *.sql
+*.crt
+*.pem
 /SQL/
 /DEV/
