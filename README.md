@@ -1,5 +1,5 @@
-#  [IslesAssault](http://isles-assault.online/)
-![image](http://80.68.156.140/static/VKBG.png)
+#  [IslesAssault](https://isles-assault.online/)
+![image](https://isles-assault.online/static/VKBG.png)
 >[!CAUTION]
 > No mobile support.
 ## :pushpin: About 
