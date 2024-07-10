@@ -314,6 +314,8 @@ def index():
             onlineServers = Server.query.filter_by().all()
             for server in onlineServers:
                 servers.append([server.name, server.address])
+
+        print(servers)
         return render_template('index.html', servers=servers, money=str(m), logged=logged, name=session['name'],
                                passw=session['pswh'], colors=colors, colorslen=len(colors), vehicles=[], lenvehicles=0,
                                version=VERSION, updateName=UPDATE_NAME)  # ,logged = logged, name = session['name']
