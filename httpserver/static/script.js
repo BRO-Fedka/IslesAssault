@@ -1,6 +1,5 @@
 PIXI.sound.add("MainMenuMusic",{
     url: "static\\mainMenuMusic.mp3",
-    preload: true,
     autoPlay:true
    })
 
@@ -127,26 +126,26 @@ function NoTeamTag(name, updTags=true){
 let GameH = 0
 let GameW = 0
 
-PIXI.sound.add("bang","static\\bang.mp3",preload=true)
-PIXI.sound.add("wtrBang","static\\wtrBang.mp3",preload=true)
-PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3",preload=true)
-PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3",preload=true)
-PIXI.sound.add("bombFall","static\\bombFall4s.mp3",preload=true)
-PIXI.sound.add("rocketHit","static\\rocketHit.mp3",preload=true)
+PIXI.sound.add("bang","static\\bang.mp3")
+PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
+PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
+PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
+PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
+PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
 
-PIXI.sound.add("dmg0","static\\dmg\\0.mp3",preload=true)
-PIXI.sound.add("dmg1","static\\dmg\\1.mp3",preload=true)
-PIXI.sound.add("dmg2","static\\dmg\\2.mp3",preload=true)
-PIXI.sound.add("dmg3","static\\dmg\\3.mp3",preload=true)
+PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
+PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
+PIXI.sound.add("dmg2","static\\dmg\\2.mp3")
+PIXI.sound.add("dmg3","static\\dmg\\3.mp3")
 
-PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3",preload=true)
-PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3",preload=true)
+PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3")
+PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3")
 
-PIXI.sound.add("mcanon","static\\mcanon.mp3",preload=true)
-PIXI.sound.add("pcanon","static\\pcanon.mp3",preload=true)
-PIXI.sound.add("tcanon","static\\mcanon.mp3",preload=true)
-PIXI.sound.add("hcanon","static\\pcanon.mp3",preload=true)
-PIXI.sound.add("fcanon","static\\pcanon.mp3",preload=true)
+PIXI.sound.add("mcanon","static\\mcanon.mp3")
+PIXI.sound.add("pcanon","static\\pcanon.mp3")
+PIXI.sound.add("tcanon","static\\mcanon.mp3")
+PIXI.sound.add("hcanon","static\\pcanon.mp3")
+PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 
 var cameraMode = false;
