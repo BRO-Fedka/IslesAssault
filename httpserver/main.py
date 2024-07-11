@@ -291,9 +291,6 @@ def account():
 
 @app.route('/')
 def index():
-    agent = request.headers.get('User-Agent')
-    if ('iphone' or 'android' or 'blackberry') in agent.lower():
-        return render_template("noMobileSupportYet.html")
     logged = False
     if 'logged' in session:
         logged = session['logged']
