@@ -5,7 +5,7 @@ import logging
 import math
 import json
 import atexit
-# import ssl
+import ssl
 import os
 import datetime
 import random
@@ -24,6 +24,11 @@ WH = 16
 API_SERV_ADDRESS = os.environ['API_ADDRESS']
 API_KEY = os.environ['API_KEY']
 isDEV = os.environ['DEV']
+if not isDEV:
+    SSL_KEY = os.environ['SSL_KEY']
+    SSL_CERT = os.environ['SSL_CERT']
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_context.load_cert_chain(SSL_CERT, keyfile=SSL_KEY)
 # SQLctx = SQL.cursor()
 # print(SQLctx.execute(f"SELECT * FROM Account WHERE nickname = 'LOL'").fetchone())
 TPS = 15
@@ -2380,8 +2385,12 @@ async def handler(websocket):
         await asyncio.sleep(1/TPS)
 @logger.catch()
 async def main():
-    async with websockets.serve(handler, os.environ["HOST"], os.environ["PORT"]): #80.68.156.140
-        await asyncio.Future()
+    if isDEV:
+        async with websockets.serve(handler, os.environ["HOST"], os.environ["PORT"]): #80.68.156.140
+            await asyncio.Future()
+    else:
+        async with websockets.serve(handler, os.environ["HOST"], os.environ["PORT"], ssl=ssl_context): #80.68.156.140
+            await asyncio.Future()
 if __name__ == '__main__':
 
     # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
