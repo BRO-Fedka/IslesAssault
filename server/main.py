@@ -395,9 +395,12 @@ async def game():
     global LastAARocketI
     global LastBombI
     global LastMSGI
+    Delay = time.time()
     while True:
-        # try:
+        # try:print()
+            print(time.time() - Delay)
             await asyncio.sleep(1/TPS)
+            Delay = time.time()
             if LastBulletI >1000: LastBulletI = 0
             if LastTorpedoI >1000: LastTorpedoI = 0
             if LastAARocketI > 1000: LastAARocketI = 0
@@ -1786,16 +1789,18 @@ async def game():
                 except:pass
                 # print(PlayersData[_]['SCORES'])
                 print(PlayersAccs[_]["NICK"])
+
                 if PlayersAccs[_]["NICK"] != "":
-
-
-
-                    print('????')
                     nickname = PlayersAccs[_]['NICK']
                     password = PlayersAccs[_]['PSW']
-                    xp = PlayersData[_]['SCORES']
-                    kills = PlayersData[_]['KILLS']
-                    delta = round((datetime.datetime.now() - PlayersData[_]['STARTTIME']).total_seconds())
+                    try:
+                        xp = PlayersData[_]['SCORES']
+                        kills = PlayersData[_]['KILLS']
+                        delta = round((datetime.datetime.now() - PlayersData[_]['STARTTIME']).total_seconds())
+                    except:
+                        xp = 0
+                        kills = 0
+                        delta = 0
                     money = PlayersAccs[_]["money"]
                     logger.info("change_player_data: " + str({"key": API_KEY, 'nickname': nickname, 'password': password, 'xp': xp, 'kills': kills,
                                  'delta': delta, 'money': money}))
@@ -1811,7 +1816,7 @@ async def game():
                 PlayersSockets.pop(_)
                 PlayersCosmetics.pop(_)
                 PlayersAccs.pop(_)
-
+    logger.info("Game loop ended WTF ?!?")
         # except Exception:
             # pass
             # logging.exception("message")
@@ -1819,8 +1824,9 @@ async def game():
 @logger.catch()
 async def handler(websocket):
     logger.info("Connection")
-    global LastMSGI,PlayersData
+    global LastMSGI, PlayersData
     Exit = False
+    print('enter')
     # print('!')
     while not Exit:
         try:
@@ -2125,7 +2131,7 @@ async def handler(websocket):
                                         for j in range(-1, 2):
                                             try:
                                                 for _ in MAP['Q'][(int(x)+i, int(y)+j)]['S']:
-                                                    if MAP['S'][_].intersects(Point(x,y).buffer(0.5)):
+                                                    if MAP['S'][_].intersects(Point(x,y).buffer(0.25)):
                                                         inter = True
                                                         break
                                             except:pass
@@ -2133,16 +2139,17 @@ async def handler(websocket):
                                         for j in range(-1, 2):
                                             try:
                                                 for _ in MAP['Q'][(int(x)+i, int(y)+j)]['B']:
-                                                    if MAP['B'][_].intersects(Point(x,y).buffer(0.5)):
+                                                    if MAP['B'][_].intersects(Point(x,y).buffer(0.25)):
                                                         inter0 = True
                                                         break
                                             except:pass
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
-                                                if len(MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']) >0:
-                                                    inter1 =True
-                                                    break
+                                                for _ in MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']:
+                                                    if PlayersData[_]["COL"].intersects(Point(x,y).buffer(0.25)):
+                                                        inter1 =True
+                                                        break
                                             except:pass
                                 PlayersData[player]['X'] = x
                                 PlayersData[player]['Y'] = y
@@ -2177,9 +2184,10 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
-                                                if len(MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']) >0:
-                                                    inter1 =True
-                                                    break
+                                                for _ in MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']:
+                                                    if PlayersData[_]["COL"].intersects(Point(x,y).buffer(0.25)):
+                                                        inter1 =True
+                                                        break
                                             except:pass
                                 PlayersData[player]['X'] = x
                                 PlayersData[player]['Y'] = y
@@ -2194,9 +2202,10 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
-                                                if len(MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']) >0:
-                                                    inter1 =True
-                                                    break
+                                                for _ in MAP['Q'][(int(x)+i, int(y)+j)]['PLAYERS']:
+                                                    if PlayersData[_]["COL"].intersects(Point(x,y).buffer(0.25)):
+                                                        inter1 =True
+                                                        break
                                             except:pass
                                 PlayersData[player]['X'] = x
                                 PlayersData[player]['Y'] = y
@@ -2301,88 +2310,14 @@ async def handler(websocket):
                         PlayersCosmetics[name]["VEHICLE"] = 0
                     logger.info(f"Map to '{name}' sent")
                     await websocket.send('M' + MAPJSON)
-                # print(PlayersCosmetics[name])
-                # try:
-                #
-                #       PlayersAccs[name] = {'NICK': message[1:].split('\n')[3], 'PSW': message[1:].split('\n')[4], 'money': 0}
-                #     # print(PlayersAccs[name])
-                #     a = SQLctx.execute(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
-                #     c = SQLctx.execute(
-                #         f"SELECT invent FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'").fetchone()
-                #     # SQL.commit()
-                #     # print(PlayersAccs[name])
-                #     # print(a)
-                #     # print(f"SELECT money FROM Account WHERE nickname = '{PlayersAccs[name]['NICK']}' AND password = '{PlayersAccs[name]['PSW']}'")
-                #
-                #     if  a is None:
-                #
-                #         logger.info(f"'{name}' not logged")
-                #         # print('a = None')
-                #         PlayersAccs[name] = {'NICK': '','PSW': '','money':0}
-                #         raise Exception
-                #     else:
-                #         logger.info(f"'{name}' has {a} GSh")
-                #         PlayersAccs[name]['money'] = a[0]
-                #         b = False
-                #         for _ in PlayersAccs.keys():
-                #             if PlayersAccs[_]['NICK'] == PlayersAccs[name]['NICK'] and _ != name:
-                #                 b = True
-                #                 break
-                #         if b:
-                #             PlayersSockets.pop(name)
-                #             PlayersAccs.pop(name)
-                #             PlayersCosmetics.pop(name)
-                #
-                #             await websocket.send('E,Twin - ban')
-                #             logger.info(f"Twin '{name}'")
-                #             continue
-                #         else:
-                #             # print(c[0])
-                #             # print(PlayersCosmetics[name]['VEHICLE'])
-                #             # print(c[PlayersCosmetics[name]['VEHICLE']])
-                #             if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
-                #                 logger.info(f"Map to '{name}' sent")
-                #                 await websocket.send('M'+MAPJSON)
-                #             else:
-                #
-                #                 if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not (c[0][PlayersCosmetics[name]['VEHICLE']] == '1' or PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] ==0):
-                #                     logger.info(f"'{name}' should buy the vehicle.")
-                #                     await websocket.send('Rshop/'+str(PlayersCosmetics[name]['VEHICLE']))
-                #
-                #                 else:
-                #                     logger.info(f"'{name}' cheats :(")
-                #                     await websocket.send('E,NO CHEATS')
-                #                 PlayersSockets.pop(name)
-                #                 PlayersAccs.pop(name)
-                #                 PlayersCosmetics.pop(name)
-                #                 continue
-                #
-                # except Exception:
-                #     logger.info(f"'{name}' not logged")
-                #     # pass
-                #     # logging.exception("message")
-                #     PlayersAccs[name] = {'NICK': '', 'PSW': '','money':0}
-                #     # print(PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] )
-                #     if PlayersCosmetics[name]['COLOR'] in availablecls and PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
-                #         logger.info(f"Map to '{name}' sent")
-                #         await websocket.send('M'+MAPJSON)
-                #     else:
-                #
-                #         if PlayersCosmetics[name]['VEHICLE'] in vehicleinfo.keys() and not PREM_ITEM[PlayersCosmetics[name]['VEHICLE']][0] == 0:
-                #             logger.info(f"'{name}' should log in")
-                #             await websocket.send('Raccount')
-                #         else:
-                #             logger.info(f"'{name}' cheats :(")
-                #             await websocket.send('E,NO CHEATS')
-                #         PlayersSockets.pop(name)
-                #         PlayersAccs.pop(name)
-                #         PlayersCosmetics.pop(name)
-                #         continue
                 if PlayersCosmetics[name]['VEHICLE'] == 3: PlayersCosmetics[name]['COLOR'] = 228
                 PlayersAccs[name]['contime'] = datetime.datetime.now()
         elif message == 'info':
             await websocket.send(ServInfoJSON.replace('%js%',JSVEHs).replace('%text%','1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))))
+            Exit = True
         await asyncio.sleep(1/TPS)
+    print('exit')
+
 @logger.catch()
 async def main():
     if isDEV:
