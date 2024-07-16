@@ -370,17 +370,7 @@ def lookat(x,y):
     if x != abs(x):
        angle =  angle+180
     return angle%360
-def posScr(poly,x,y,t,w=1920,h=1080):
-    a = list(poly.exterior.coords)
-    for _ in range(0,len(a)):
-        a[_]=[a[_][0]*t-x*t+int(w/2),a[_][1]*t-y*t+int(h/2)]
-    return Polygon(a)
-def rotateandpos(poly,deg,x,y,t):
-    deg = deg/180*math.pi
-    a = list(poly.exterior.coords)
-    for _ in range(0,len(a)):
-        a[_]=[x+a[_][0]*math.cos(deg)*t,y+a[_][1]*math.sin(deg)*t]
-    return Polygon(a)
+
 def barrier(val,min = 0, max = None,minrep = None,maxrep = None):
     if minrep is None:minrep = min
     if maxrep is None: maxrep = max
