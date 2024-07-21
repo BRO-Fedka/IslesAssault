@@ -472,6 +472,7 @@ function startgame() {
 				}else {
  					MSGTKNDT = new Date();
 					INFO = event.data;
+					console.log(INFO)
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
 					let infarr = INFO.split('\n');
@@ -780,7 +781,7 @@ function startgame() {
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
                     }
-                    console.log(window.devicePixelRatio)
+                    //console.log(window.devicePixelRatio)
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
 					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
