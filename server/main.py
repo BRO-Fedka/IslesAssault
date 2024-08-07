@@ -11,8 +11,9 @@ dotenv.load_dotenv()
 
 if __name__ == "__main__":
     try:
-        connection = Connection()
         world = World()
+        connection = Connection(world)
+
 
         ioloop = asyncio.new_event_loop()
         asyncio.set_event_loop(ioloop)

@@ -4,7 +4,7 @@ import ssl
 import os
 from loguru import logger
 import requests as req_sync
-
+from server.World import World
 import sys
 from server.Player import Player
 
@@ -18,11 +18,13 @@ if not isDEV:
 
 ServInfoJSON = open('SERVINFO.json', 'r').read()
 JSVEHs = os.environ['JS_VEH']
+API_SERV_ADDRESS = os.environ['API_ADDRESS']
+API_KEY = os.environ['API_KEY']
 
 
 class Connection:
-    def __init__(self):
-        pass
+    def __init__(self,world: World):
+        self.world = world
 
     async def handler(self, websocket):
         logger.info("Connection")
@@ -32,12 +34,12 @@ class Connection:
                 sys.exit()
 
             elif message[0] == 'n' and len(message) > 1:
-                Player(websocket, message)
+                await Player.init(websocket, message, self.world)
 
             elif message == 'info':
                 await websocket.send(
                     ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',str(Player.get_amount())))
-                websocket.close()
+                await websocket.close()
                 return
         except:
             logger.exception("")
