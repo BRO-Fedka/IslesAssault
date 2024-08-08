@@ -908,7 +908,7 @@ async def game():
 
                 for phf in MAP['Q'][(int(Zones[zone][0] // 1), int(Zones[zone][1] // 1))]['PLAYERS']:
                     if (PlayersData[phf]['X'] - Zones[zone][0]) ** 2 + (PlayersData[phf]['Y'] - Zones[zone][1]) ** 2 < (
-                            Zones[zone][5] / 2) ** 2 and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
+                            Zones[zone][5] ) ** 2 and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
                         'MAXSPEED'] * 0.3 > PlayersData[phf]['SPEED'] and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
                         'MAXSPEED'] * -0.3 < PlayersData[phf]['SPEED']:
                         players.add(phf)
