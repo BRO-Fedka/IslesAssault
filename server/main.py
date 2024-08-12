@@ -2710,7 +2710,8 @@ async def handler(websocket):
                                                                                                          PlayersSockets))))
             Exit = True
         await asyncio.sleep(1 / TPS)
-    print('exit')
+    websocket.close()
+    logger.info("Exited")
 
 
 @logger.catch()
