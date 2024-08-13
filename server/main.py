@@ -26,6 +26,7 @@ WH = 16
 API_SERV_ADDRESS = os.environ['API_ADDRESS']
 API_KEY = os.environ['API_KEY']
 isDEV = os.environ['DEV']
+PLAYERS_LIMIT = int(os.environ['PLAYERS_LIMIT'])
 if not isDEV:
     SSL_KEY = os.environ['SSL_KEY']
     SSL_CERT = os.environ['SSL_CERT']
@@ -2618,7 +2619,9 @@ async def handler(websocket):
                                 logger.info(f"Player {player} is AFK")
                         Exit = True
                         continue
-
+        elif message != 'info' and PLAYERS_LIMIT <= len(PlayersSockets):
+            Exit = True
+            await websocket.send('E,Server is full')
         elif message[0] == 'n' and len(message) > 1:
 
             name = message[1:].split('\n')[0]
@@ -2705,9 +2708,7 @@ async def handler(websocket):
                 PlayersAccs[name]['contime'] = datetime.datetime.now()
         elif message == 'info':
             await websocket.send(
-                ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',
-                                                                                                     str(len(
-                                                                                                         PlayersSockets))))
+                ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))+'/'+str(PLAYERS_LIMIT)))
             Exit = True
         await asyncio.sleep(1 / TPS)
     websocket.close()
