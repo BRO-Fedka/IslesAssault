@@ -10,3 +10,4 @@ logs/*
 *.sql
 /SQL/
 /DEV/
+*.db
