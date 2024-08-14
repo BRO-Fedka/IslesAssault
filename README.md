@@ -58,6 +58,11 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+#### 1.6.2v Backend improvement
+* Now use *.json type maps.
+* Server has players optional limit.
+* TPS fix.
+* Client optimization. 
 #### 1.6.1v Fixes
 * Shift center bug solved.
 * Rebinded key for player list, now it's `Tab`.
