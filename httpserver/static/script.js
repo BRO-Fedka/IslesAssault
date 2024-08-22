@@ -1185,17 +1185,18 @@ if (ParticlesProcessing){
 		    TorpedosData.delete(_)
 		}
 	}
-	for (let __ of VisibleObjs['_']){
-	        let _ = MAPstatic['_'][__]
-                    ctx.beginPath()
-                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.closePath()
-                    ctx.strokeStyle = MAPstatic.CT.b2
-                    ctx.lineCap = 'square';
-                    ctx.lineWidth = 70/320*Zoom;
-                    ctx.stroke();
-    }
+    if(Z!=0){
+    for (let __ of VisibleObjs['_']){
+        let _ = MAPstatic['_'][__]
+                ctx.beginPath()
+                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.closePath()
+                ctx.strokeStyle = MAPstatic.CT.b2
+                ctx.lineCap = 'square';
+                ctx.lineWidth = 70/320*Zoom;
+                ctx.stroke();
+    }}
 
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
@@ -1233,11 +1234,23 @@ if (ParticlesProcessing){
 			ctx.fill();
 			ctx.stroke();
     }
+    if(Z==0){
+    for (let __ of VisibleObjs['_']){
+        let _ = MAPstatic['_'][__]
+                ctx.beginPath()
+                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.closePath()
+                ctx.strokeStyle = MAPstatic.CT.b2
+                ctx.lineCap = 'square';
+                ctx.lineWidth = (60)/320*Zoom;
+                ctx.stroke();
+    }}
     for (let __ of VisibleObjs['C']){
 	        let _ = MAPstatic['C'][__]
             ctx.fillStyle = MAPstatic.CT.cf;
             ctx.strokeStyle = MAPstatic.CT.cs;
-            ctx.lineWidth = 5/320*Zoom;
+            ctx.lineWidth = 2.5/320*Zoom;
             ctx.lineJoin = 'bevel';
             ctx.beginPath();
 			for (let l = 0; l < _.length; l += 1) {
@@ -1258,7 +1271,7 @@ if (ParticlesProcessing){
 
             ctx.beginPath();
             ctx.lineJoin = 'round';
-            ctx.lineCap = 'butt';
+            ctx.lineCap = 'round';
 			for (let l = 0; l < _.length; l += 1) {
 					if (l == 0) {
 						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1309,6 +1322,7 @@ if (ParticlesProcessing){
                 ctx.closePath()
                 ctx.stroke();
     }
+
     ctx.lineWidth=5;
     ctx.beginPath();
     ctx.rect(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, WH*Zoom, WH*Zoom);
@@ -1390,6 +1404,22 @@ if (ParticlesProcessing){
 	}else{
 	FireParticles0 = []
 	}
+    for (let __ of VisibleObjs['_']){
+	        ctx.lineCap = 'butt';
+	        let _ = MAPstatic['_'][__]
+            len = 0.1/Math.sqrt( (_[0]- _[2])*(_[0]- _[2])+(_[1]- _[3])*(_[1]- _[3]))
+            ctx.beginPath()
+            ctx.lineCap = 'butt';
+            ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+            ctx.moveTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.closePath()
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 60/320*Zoom;
+            ctx.stroke();
+    }
 	if (Z >0){
 	for (let __ of VisibleObjs['_']){
 	        ctx.lineCap = 'square';
