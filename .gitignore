@@ -11,3 +11,5 @@ logs/*
 /SQL/
 /DEV/
 *.db
+old_*.*
+_old_*.*

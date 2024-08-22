@@ -3,7 +3,24 @@ PIXI.sound.add("MainMenuMusic",{
     autoPlay:true
    })
 
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [
+     parseInt(result[1], 16),
+     parseInt(result[2], 16),
+     parseInt(result[3], 16)
+   ]: null;
+}
 
+function rgbToHex(r, g, b) {
+  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+let tree_size = new Map()
+tree_size.set(0,0.1)
+tree_size.set(1,0.15)
+tree_size.set(2,0.2)
+tree_size.set(3,0.25)
 
 document.onkeydown=function(event) {
     if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
@@ -1016,7 +1033,22 @@ try{
 			ctx.closePath();
 			ctx.stroke();
     }
-
+	for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+		    ctx.strokeStyle = MAPstatic.CT.zs;
+			ctx.lineJoin = 'bevel';
+			ctx.beginPath();
+            ctx.lineWidth = 60/320*Zoom;
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.stroke();
+    }
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
 		    ctx.strokeStyle = MAPstatic.CT.zf;
@@ -1039,6 +1071,22 @@ try{
 			ctx.lineJoin = 'bevel';
 			ctx.beginPath();
             ctx.lineWidth = 40/320*Zoom;
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.stroke();
+    }
+    	for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+		    ctx.strokeStyle = MAPstatic.CT.zf;
+			ctx.lineJoin = 'bevel';
+			ctx.beginPath();
+            ctx.lineWidth = 30/320*Zoom;
 			for (let l = 0; l < _.length; l += 1) {
 					if (l == 0) {
 						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1185,6 +1233,64 @@ if (ParticlesProcessing){
 			ctx.fill();
 			ctx.stroke();
     }
+    for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+            ctx.fillStyle = MAPstatic.CT.cf;
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 5/320*Zoom;
+            ctx.lineJoin = 'bevel';
+            ctx.beginPath();
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.fill();
+			ctx.stroke();
+    }
+    for (let __ of VisibleObjs['R']){
+	        let _ = MAPstatic['R'][__]
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 40/320*Zoom;
+
+            ctx.beginPath();
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'butt';
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+
+			ctx.stroke();
+			ctx.closePath();
+			ctx.lineCap = 'square';
+			ctx.lineJoin = 'bevel';
+    }
+        for (let __ of VisibleObjs['R']){
+	        let _ = MAPstatic['R'][__]
+            ctx.lineWidth = 2/320*Zoom;
+			ctx.strokeStyle = MAPstatic.CT.rd;
+            ctx.setLineDash([10/320*Zoom,10/320*Zoom])
+            ctx.beginPath();
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+
+			ctx.stroke();
+			ctx.setLineDash([])
+			ctx.closePath();
+
+    }
 
     for (let _ = 0; _ < MAPstatic['*'].length; _++) {
                 ctx.lineWidth= 10/320*Zoom;
@@ -1196,10 +1302,10 @@ if (ParticlesProcessing){
                     ctx.fillStyle = 'rgba(0,0,255,0.25)';
                 }
                 ctx.textAlign = 'center'
-                ctx.font = (300/320*Zoom).toString()+"px ZCOOL QingKe HuangYou";
+                ctx.font = (MAPstatic['*'][_][3]*300/320*Zoom).toString()+"px ZCOOL QingKe HuangYou";
                 ctx.beginPath()
-                ctx.arc(GameW/2 + OffsetX - (X - MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2+ OffsetY - (Y - MAPstatic['*'][_][2]+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, 160/320*Zoom, 0, Math.PI * 2);
-                ctx.fillText(MAPstatic['*'][_][0],GameW/2+ OffsetX - (X- MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2+ OffsetY- (Y- MAPstatic['*'][_][2] + (nY - Y) * (Date.now() - LastPING) / PING )*Zoom+100/320*Zoom);
+                ctx.arc(GameW/2 + OffsetX - (X - MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2+ OffsetY - (Y - MAPstatic['*'][_][2]+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, MAPstatic['*'][_][3]*Zoom/2, 0, Math.PI * 2);
+                ctx.fillText(MAPstatic['*'][_][0],GameW/2+ OffsetX - (X- MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2+ OffsetY- (Y- MAPstatic['*'][_][2] + (nY - Y) * (Date.now() - LastPING) / PING )*Zoom+MAPstatic['*'][_][3]*100/320*Zoom);
                 ctx.closePath()
                 ctx.stroke();
     }
@@ -1286,6 +1392,7 @@ if (ParticlesProcessing){
 	}
 	if (Z >0){
 	for (let __ of VisibleObjs['_']){
+	        ctx.lineCap = 'square';
 	        let _ = MAPstatic['_'][__]
                     ctx.beginPath()
                     ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1545,6 +1652,66 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
+	let alpha = 'ff'
+    if (Z == 1){
+        alpha = "88"
+    }
+    for (let __ of VisibleObjs['T']){
+
+	        let _ = MAPstatic['T'][__]
+
+
+			for (let l = 0; l < _.length; l += 1) {
+
+
+			    if (_[l][0] == 0){
+			        ctx.beginPath();
+
+			        ctx.fillStyle = MAPstatic.CT.tf+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.tm+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*24)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*15)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.tt+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*541)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.beginPath();
+			    }
+			    else if (_[l][0] == 1){
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.ff+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.fm+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*463)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.ft+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING  - tree_size.get(_[l][3])*Math.cos(l*765)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*245)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*1/3,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.beginPath();
+			    }
+			    else if (_[l][0] == 2){
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.pf+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.closePath();
+			    }
+
+			}
+
+
+
+    }
 
     for (let _ of BombsData.keys()){
         let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
