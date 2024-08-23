@@ -127,7 +127,7 @@ function UpdtVolumes(){
     //MusicRange
 }
 var PlayerTags = new Map()
-function NoTeamTag(name, updTags=true){
+function NoTeamTag(name, updTags=false){
     if (name == undefined){
     return undefined
     }
@@ -517,9 +517,11 @@ function startgame() {
                                 argarr.push(splstr[_])
 					}
                     if (!(PlayerName=="" || PlayerName == undefined)){
-                    PlayerName = splstr[1].split(']')[splstr[1].split(']').Count - 1]
+//                        console.log(PlayerName)
+                        PlayerName = NoTeamTag(PlayerName,true)
+//                        console.log(PlayerName)
                         Players.push([PlayerName,CurVehicle]);
-                        Vehicles[CurVehicle].updatep(NoTeamTag(PlayerName),argarr)
+                        Vehicles[CurVehicle].updatep(PlayerName,argarr)
                     }else{
                     UpdateObjs= true
                     }
@@ -561,7 +563,7 @@ function startgame() {
                             }
                             if (!(PN=="" || PN == undefined)){
                                 Players.push([PN,CV]);
-                                Vehicles[CV].update(NoTeamTag(PN),argarr)
+                                Vehicles[CV].update(NoTeamTag(PN,true),argarr)
                             }
 						}else 	if (larr[0] == 'a' ){
 							ammo.set('120mm',Number(larr[1]));
@@ -1641,6 +1643,51 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
+    for (let __ of VisibleObjs['#']){
+
+	        let _ = MAPstatic['#'][__]
+
+
+
+			for (let l = 0; l < _.length; l += 1) {
+
+                let poly = []
+                let cos = Math.cos(_[l][5]/180*Math.PI)
+                let sin = Math.sin(_[l][5]/180*Math.PI)
+                if (_[l][3] > _[l][4]){
+                    poly = [[0, -_[l][3]/2], [0, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
+                }else{
+                    poly = [[0, -_[l][4]/2], [0, _[l][4]/2], [_[l][3]/2, _[l][4]/2], [_[l][3]/2, -_[l][4]/2]]
+                }
+                ctx.beginPath();
+                ctx.fillStyle = MAPstatic.CT.rr
+                ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                for (let p = 1; p < poly.length; p+=1) {
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                }
+                ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                ctx.fill();
+                ctx.closePath();
+                if (_[l][3] > _[l][4]){
+                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [0, _[l][3]/2], [0, -_[l][3]/2]]
+                }else{
+                    poly = [[-_[l][3]/2, -_[l][4]/2], [-_[l][3]/2, _[l][4]/2], [0, _[l][4]/2], [0, -_[l][4]/2]]
+                }
+                ctx.beginPath();
+                ctx.fillStyle = MAPstatic.CT.rl
+                ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                for (let p = 1; p < poly.length; p+=1) {
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                }
+                ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                ctx.fill();
+                ctx.closePath();
+
+			}
+
+
+
+    }
 	if (ParticlesProcessing){
 	for (i=FireParticles1.length-1; i>=0; i--) {
             ctx.fillStyle = "rgba(255," + 255*FireParticles1[i].life/60+","+255*((FireParticles1[i].life/60)**3)+"," +( Math.sin(FireParticles1[i].life/60*Math.PI)*0.75)+")";

@@ -153,7 +153,8 @@ def shopveh(id):
         curItem = (curItem.id, curItem.name, curItem.cost, curItem.lvl, curItem.type, curItem.imgLink, curItem.info)
         if not 'logged' in session or session['logged'] == False:
             return render_template('shopveh.html', money=0, id=id, purch=False,
-                                   vehicle=curItem, desc=Description[id], logged=False, lvl=0)
+                                   vehicle=curItem, desc=Description[id], logged=False, lvl=0,
+                                   method=request.method)
         else:
             acc = Account.query.filter_by(nickname=session['name']).first()
 
