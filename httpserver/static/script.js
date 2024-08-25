@@ -710,6 +710,7 @@ function startgame() {
 						}else 	if (larr[0] == 'b'){
                             if (larr.length > 3){
                                 if (!(BombsData.has(larr[1]))){
+                                console.log(Number(larr[6]))
                                 BombsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false,Number(larr[8])])
                                 }
                             }else{
@@ -1906,6 +1907,8 @@ if (ParticlesProcessing){
 		}else if(BombsData.get(_)[4] == 2){
                     PIXI.sound.play('bombFall');
                      BombsData.get(_)[4] = 0
+		}else if(BombsData.get(_)[4] == 6){
+                     BombsData.get(_)[4] = 5
 		}else if(BombsData.get(_)[4] == 4){
             PIXI.sound.play('wtrBang');
 			for (let i = 0; i < 5; i++) {
@@ -1914,15 +1917,17 @@ if (ParticlesProcessing){
             ShakeXbnds += 5
 			ShakeYbnds += 5
 		}
-		ctx.strokeStyle = '#111';
-		ctx.lineWidth= 3/320*Zoom;
-		ctx.beginPath()
-		 ctx.lineCap='round';
-		 bmbLen = 0.015
-        ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-        ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		ctx.stroke();
-        ctx.closePath()
+        if (BombsData.get(_)[4] < 5) {
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth= 3/320*Zoom;
+            ctx.beginPath()
+             ctx.lineCap='round';
+             bmbLen = 0.015
+            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.stroke();
+            ctx.closePath()
+        }
 		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
 		console.log(x,y)
 		    BombsData.delete(_)

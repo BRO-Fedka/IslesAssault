@@ -2,8 +2,8 @@ TracerCL = new Map()
 Vehicles = {
 0:{
 hp:1000,
-views:1,
-viewsIcons:[''],
+views:2,
+viewsIcons:['./static/DirectFireinv.svg','./static/IndirectFireinv.svg'],
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -94,6 +94,8 @@ updatep:function(playername,argarr){
             document.getElementById('SmkInv').style.display = "";
             document.getElementById('CmodInv').style.display = "";
             document.getElementById('XmodInv').style.display = "";
+            document.getElementById('ViewInv').style.display = ''
+            document.getElementById('ViewImg').src = './static/DirectFireinv.svg'
             PlayersData.set(playername,
             {
                 prevX : null,

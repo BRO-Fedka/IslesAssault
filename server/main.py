@@ -595,7 +595,7 @@ async def game():
                 try:
                     for _ in MAP['Q'][(int((Bullets[bullet][2] + Bullets[bullet][0]) // 1),
                                        int((Bullets[bullet][3] + Bullets[bullet][1]) // 1))]['#']:
-                        for t in range(0,len(MAP['#'][_])):
+                        for t in range(0, len(MAP['#'][_])):
                             if Bullets[bullet][17] == 0:
                                 if MAP['#'][_][t].intersects(Bullets[bullet][12]):
                                     Bullets[bullet][14] = 1
@@ -646,7 +646,7 @@ async def game():
                 # print("!!!!!!")
 
                 point = Point((Bombs[bomb][2], Bombs[bomb][3]))
-                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(0.05)
+                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(0.075)
                 # print(Bombs[bomb][2], Bombs[bomb][3])
                 status = 4
                 try:
@@ -702,6 +702,10 @@ async def game():
                 Bombs[bomb][8] = 0
             elif Bombs[bomb][8] == 3:
                 Bombs[bomb][8] = 2
+            elif Bombs[bomb][8] == 6:
+                Bombs[bomb][8] = 5
+            elif Bombs[bomb][8] == 7:
+                Bombs[bomb][8] = 6
 
             if Bombs[bomb][8] == 1 or Bombs[bomb][8] == 4:
                 BombsHandler[bomb] = Bombs[bomb].copy()
@@ -1773,9 +1777,12 @@ async def game():
                 # if PlayersCosmetics[player]['VEHICLE'] ==  8 : PlayersData[player]["TRACER"] = PlayersInputs[player]['Cmod']
                 for _ in PlayersData[player]['CAN']:
 
-                    if _[9] != PlayersInputs[player]['view']:
+                    # print(PlayersInputs[player]['view'])
+                    # print(PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0)
+
+                    if _[9] != PlayersInputs[player]['view'] or (PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0):
                         _[7] = PlayersData[player]['DIR']
-                    if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']: continue
+                    if _[9] !=( PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']) and not (PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0): continue
                     d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                     deg = lookat(_[1], _[2])
                     a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
@@ -2048,7 +2055,8 @@ async def game():
                 # print('ooo')
                 wasShot = False
                 for _ in PlayersData[player]['CAN']:
-                    if PlayersData[player]['TAKEN'] or _[9] != PlayersInputs[player]['view']: continue
+                    if PlayersData[player]['TAKEN'] or (_[9] != PlayersInputs[player]['view'] and not (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0)): continue
                     # _[5] = False
                     d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                     deg = lookat(_[1], _[2])
@@ -2075,8 +2083,7 @@ async def game():
                     h = False
                     if g and PlayersData[player]["STATUS"] == 'ALIVE' and PlayersInputs[player]['m0'] and \
                             PlayersData[player]['AMMO'][_[0]] > 0 and (datetime.datetime.now() - _[4]).microseconds + (
-                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4] and _[9] == \
-                            PlayersInputs[player]['view']:
+                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4] :
                         # print(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['CAN'])
                         # if (PlayersInputs[player]['Xmod']==1 and (_[0] == 'p' or _[0] == 'h'or _[0] == 'f')) or PlayersInputs[player]['Xmod']==0:    ############### BETA
                         PlayersData[player]['AMMO'][_[0]] -= 1
@@ -2084,14 +2091,23 @@ async def game():
                         _[8] = 1
                         _[4] = datetime.datetime.now()
                         wasShot = True
-                        Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0, 0,
-                                                0, 0, 0,
-                                                _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2,
-                                                caninfo[_[0]][5], caninfo[_[0]][6], 0.3, player, None, caninfo[_[0]][3],
-                                                0, caninfo[_[0]][8] * (-1 + int(_[6]) * 2), '',
-                                                PlayersInputs[player]['Xmod'], _[0],
-                                                int(PlayersData[player]["ONGROUND"])]
-                        LastBulletI += 1
+                        if PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0:
+                            Bombs[LastBombI] = [PlayersData[player]["X"]+ a[0], PlayersData[player]["Y"]+ a[1],
+                                                PlayersData[player]["X"]+PlayersInputs[player]['x']+random.random()*0.3-0.15, PlayersData[player]["Y"]+PlayersInputs[player]['y']+random.random()*0.3-0.15, time.time(),
+                                                player,
+                                                lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y']), 750, 7, 0.5, 4]
+                            LastBombI += 1
+                        else:
+                            Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0,
+                                                    0,
+                                                    0, 0, 0,
+                                                    _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2,
+                                                    caninfo[_[0]][5], caninfo[_[0]][6], 0.3, player, None,
+                                                    caninfo[_[0]][3],
+                                                    0, caninfo[_[0]][8] * (-1 + int(_[6]) * 2), '',
+                                                    PlayersInputs[player]['Xmod'], _[0],
+                                                    int(PlayersData[player]["ONGROUND"])]
+                            LastBulletI += 1
                     if not wasShot and PlayersData[player]["STATUS"] == "ALIVE":
                         _[8] = 0
                     if (PlayersData[player]["STATUS"] == "BURNING" or PlayersData[player][
