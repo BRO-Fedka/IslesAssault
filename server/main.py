@@ -321,7 +321,7 @@ for i in range(0, len(MAP['C'])):
     srtg = (Polygon(
         LinearRing(MAP['C'][i]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
     MAPobjSIDEdir['C'][i] = True
-    if srtg.area < Polygon(MAP['B'][i]).area:
+    if srtg.area < Polygon(MAP['C'][i]).area:
         MAPobjSIDEdir['C'][i] = False
     MAP['C'][i] = Polygon(MAP['C'][i])
 
@@ -656,6 +656,9 @@ async def game():
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['S']:
                         if MAP['S'][_].intersects(point):
                             status = 1
+                    for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['C']:
+                        if MAP['C'][_].intersects(point):
+                            status = 1
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['PLAYERS']:
                         if _ in PlayersData.keys() and _ != Bombs[bomb][5] and PlayersData[_]['Z'] == 0:
                             if PlayersData[_]['COL'].intersects(point):
@@ -883,6 +886,13 @@ async def game():
                     pass
                     # delarr.append(torpedo)
                     # logging.exception("message")
+                try:
+                    for _ in MAP['Q'][(int((Torpedos[torpedo][2] + Torpedos[torpedo][0]) // 1),
+                                       int((Torpedos[torpedo][3] + Torpedos[torpedo][1]) // 1))]['C']:
+                        if MAP['C'][_].intersects(Torpedos[torpedo][8]):
+                            Torpedos[torpedo][10] = 1
+                except Exception:
+                    delarr.append(torpedo)
                 try:
                     for _ in MAP['Q'][(int((Torpedos[torpedo][2] + Torpedos[torpedo][0]) // 1),
                                        int((Torpedos[torpedo][3] + Torpedos[torpedo][1]) // 1))]['B']:
