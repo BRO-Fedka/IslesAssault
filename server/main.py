@@ -17,6 +17,8 @@ import requests as req_sync
 import time
 import dotenv
 
+import operator
+
 dotenv.load_dotenv()
 logger.add(f"./logs/logs_{time.strftime('%d_%b_%Y_%H_%M_%S', time.gmtime())}.log".lower(), enqueue=True,
            retention="1 week")
@@ -259,6 +261,14 @@ vehicleinfo = {
     },
 }
 
+BuildingHPcof = {
+    0: 100,
+    1: 50,
+    2: 250,
+    3: 10
+
+}
+
 caninfo = {
     'm': [12 / 320, 18 / 320, 6 / 320, 50, 1000000 * 3, 0.75, 6, 2, 4, 3, 0.1],  # last - DEGDMGCOF
     'p': [5 / 320, 12 / 320, 2 / 320, 1, 1000000 * 0.09, 1, 2, 3, 1, 0, 4],
@@ -282,16 +292,19 @@ MAPobjSIDEdir = {'S': {}, 'B': {}, 'C': {}, "#": {}}
 # print(MAP['B'])
 i = 0
 WH = MAP['WH']
+BuildingsHP = {}
+BuildingsSTS = {}
 for i in range(0, len(MAP['#'])):
     MAPobjSIDEdir['#'][i] = {}
+    BuildingsHP[i] = {}
+    BuildingsSTS[i] = {}
     for _ in range(0, len(MAP['#'][i])):
-
         cos = math.cos(MAP['#'][i][_][5] / 180 * math.pi)
         sin = math.sin(MAP['#'][i][_][5] / 180 * math.pi)
         poly = [[-MAP['#'][i][_][4] / 2, -MAP['#'][i][_][3] / 2], [-MAP['#'][i][_][4] / 2, MAP['#'][i][_][3] / 2],
                 [MAP['#'][i][_][4] / 2, MAP['#'][i][_][3] / 2], [MAP['#'][i][_][4] / 2, -MAP['#'][i][_][3] / 2]]
         npoly = []
-
+        idf = MAP['#'][i][_][0]
         for j in range(0, 4):
             npoly.append((MAP['#'][i][_][1] + poly[j][1] * cos + poly[j][0] * sin,
                           MAP['#'][i][_][2] + poly[j][1] * sin + poly[j][0] * -cos))
@@ -300,7 +313,10 @@ for i in range(0, len(MAP['#'])):
         MAPobjSIDEdir['#'][i][_] = True
         if srtg.area < Polygon(MAP['#'][i][_]).area:
             MAPobjSIDEdir['#'][i][_] = False
+
         MAP['#'][i][_] = Polygon(MAP['#'][i][_])
+        BuildingsHP[i][_] = BuildingHPcof[idf] * MAP['#'][i][_].area * 100
+        BuildingsSTS[i][_] = 0
 for i in range(0, len(MAP['S'])):
     srtg = (Polygon(
         LinearRing(MAP['S'][i]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
@@ -481,6 +497,10 @@ async def game():
         for _ in delarr:
             TeamRec.pop(_)
         delarr = []
+        for _ in range(0, len(MAP['#'])):
+            for t in range(0, len(MAP['#'][_])):
+                if BuildingsSTS[_][t] % 2 == 1:
+                    BuildingsSTS[_][t] -= 1
         for bullet in Bullets.keys():
             try:
                 if math.sqrt(Bullets[bullet][2] ** 2 + Bullets[bullet][3] ** 2) > Bullets[bullet][9]:
@@ -533,10 +553,7 @@ async def game():
                                                     b[1][1] - b[0][1])) / a_ / b_
                                             ilist.append((p.distance(Point(Bullets[bullet][12].coords[:][0])), c))
 
-                                    def getFirst(val):
-                                        return val[0]
-
-                                    ilist.sort(key=getFirst)
+                                    ilist.sort(key=operator.itemgetter(0))
                                     sin = math.sqrt(1 - ilist[0][1] ** 2)
 
                                     ln = LineString([(Bullets[bullet][12].coords[:][0][0] - (
@@ -596,7 +613,7 @@ async def game():
                     for _ in MAP['Q'][(int((Bullets[bullet][2] + Bullets[bullet][0]) // 1),
                                        int((Bullets[bullet][3] + Bullets[bullet][1]) // 1))]['#']:
                         for t in range(0, len(MAP['#'][_])):
-                            if Bullets[bullet][17] == 0:
+                            if Bullets[bullet][17] == 0 and BuildingsSTS[_][t] == 0:
                                 if MAP['#'][_][t].intersects(Bullets[bullet][12]):
                                     Bullets[bullet][14] = 1
                                     Bullets[bullet][2] = MAP['#'][_][t].intersection(Bullets[bullet][12]).coords[1][
@@ -604,6 +621,9 @@ async def game():
                                     Bullets[bullet][3] = MAP['#'][_][t].intersection(Bullets[bullet][12]).coords[1][
                                                              1] - Bullets[bullet][1]
                                     Bullets[bullet][14] = 2
+                                    BuildingsHP[_][t] -= Bullets[bullet][13]
+                                    if BuildingsHP[_][t] < 0:
+                                        BuildingsSTS[_][t] = 3
                 except Exception:
                     BulletsHandler[bullet] = Bullets[bullet].copy()
                     delarr.append(bullet)
@@ -646,7 +666,7 @@ async def game():
                 # print("!!!!!!")
 
                 point = Point((Bombs[bomb][2], Bombs[bomb][3]))
-                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(0.075)
+                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(Bombs[bomb][9]/2)
                 # print(Bombs[bomb][2], Bombs[bomb][3])
                 status = 4
                 try:
@@ -659,6 +679,15 @@ async def game():
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['C']:
                         if MAP['C'][_].intersects(point):
                             status = 1
+                    for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['#']:
+                        for t in range(0, len(MAP['#'][_])):
+                            if BuildingsSTS[_][t] == 0:
+                                if MAP['#'][_][t].intersects(col):
+                                    dmg = int(Bombs[bomb][7] * MAP['#'][_][t].intersection(col).area * 100)
+                                    BuildingsHP[_][t] -= dmg
+                                    if BuildingsHP[_][t] < 0:
+                                        BuildingsSTS[_][t] = 3
+
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['PLAYERS']:
                         if _ in PlayersData.keys() and _ != Bombs[bomb][5] and PlayersData[_]['Z'] == 0:
                             if PlayersData[_]['COL'].intersects(point):
@@ -1550,7 +1579,7 @@ async def game():
                             for t in range(0, len(MAP['#'][_])):
                                 # print(MAP['#'][_][t].exterior.coords[:])
 
-                                if PlayersData[player]['COL'].intersects(MAP['#'][_][t]):
+                                if BuildingsSTS[_][t] == 0 and PlayersData[player]['COL'].intersects(MAP['#'][_][t]):
                                     # print(t)
                                     cords = MAP['#'][_][t].exterior.coords
                                     for l in range(0, len(cords)):
@@ -1780,9 +1809,11 @@ async def game():
                     # print(PlayersInputs[player]['view'])
                     # print(PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0)
 
-                    if _[9] != PlayersInputs[player]['view'] or (PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0):
+                    if _[9] != PlayersInputs[player]['view'] or (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0):
                         _[7] = PlayersData[player]['DIR']
-                    if _[9] !=( PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']) and not (PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0): continue
+                    if _[9] != (PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']) and not (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0): continue
                     d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                     deg = lookat(_[1], _[2])
                     a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
@@ -1889,6 +1920,7 @@ async def game():
                 OldVisSmk = PlayersData[player]['VISSMK'].copy()
                 OldVisAar = PlayersData[player]['VISAAR'].copy()
                 OldVisBmb = PlayersData[player]['VISBMB'].copy()
+                OldVisBuildings = PlayersData[player]['VIS#'].copy()
                 PlayersData[player]['VISS'] = set()
                 PlayersData[player]['VIS#'] = set()
                 PlayersData[player]['VISBUL'] = set()
@@ -1965,6 +1997,7 @@ async def game():
                 BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
                 AARocketsAppeared = PlayersData[player]['VISAAR'] - OldVisAar
                 BombsAppeared = PlayersData[player]['VISBMB'] - OldVisBmb
+                BuildingsAppeared = PlayersData[player]['VIS#'] - OldVisBuildings
                 # print(PlayersData[player]['VISTOR'])
                 while len(PlayersData[player]['MSGTURN']) > 0:
                     PlayersData[player]['STR'] += PlayersData[player]['MSGTURN'][0]
@@ -2024,7 +2057,7 @@ async def game():
                         PlayersData[player]["DIR"] / 180 * math.pi) + math.sin(randDir) * randDst
                     # print("!!!")
                     Bombs[LastBombI] = [PlayersData[player]["X"], PlayersData[player]["Y"], x, y, time.time(), player,
-                                        PlayersData[player]["DIR"], 750, 3, 0.5, 4]
+                                        PlayersData[player]["DIR"], 750, 3, 0.25, 3]
                     LastBombI += 1
                     PlayersData[player]["LASTBOMB"] = datetime.datetime.now()
                 if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
@@ -2083,7 +2116,7 @@ async def game():
                     h = False
                     if g and PlayersData[player]["STATUS"] == 'ALIVE' and PlayersInputs[player]['m0'] and \
                             PlayersData[player]['AMMO'][_[0]] > 0 and (datetime.datetime.now() - _[4]).microseconds + (
-                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4] :
+                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4]:
                         # print(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['CAN'])
                         # if (PlayersInputs[player]['Xmod']==1 and (_[0] == 'p' or _[0] == 'h'or _[0] == 'f')) or PlayersInputs[player]['Xmod']==0:    ############### BETA
                         PlayersData[player]['AMMO'][_[0]] -= 1
@@ -2091,11 +2124,21 @@ async def game():
                         _[8] = 1
                         _[4] = datetime.datetime.now()
                         wasShot = True
+
                         if PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0:
-                            Bombs[LastBombI] = [PlayersData[player]["X"]+ a[0], PlayersData[player]["Y"]+ a[1],
-                                                PlayersData[player]["X"]+PlayersInputs[player]['x']+random.random()*0.3-0.15, PlayersData[player]["Y"]+PlayersInputs[player]['y']+random.random()*0.3-0.15, time.time(),
+                            dst = math.sqrt(PlayersInputs[player]['x']**2+PlayersInputs[player]['y']**2)
+                            if dst > 3:
+                                PlayersInputs[player]['x'] *= 3/dst
+                                PlayersInputs[player]['y'] *= 3/dst
+                            ab = random.random()*math.pi
+                            Bombs[LastBombI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1],
+                                                PlayersData[player]["X"] + PlayersInputs[player][
+                                                    'x'] + random.random() * math.cos(ab) * 0.15,
+                                                PlayersData[player]["Y"] + PlayersInputs[player][
+                                                    'y'] + random.random() * math.sin(ab) * 0.15, time.time(),
                                                 player,
-                                                lookat(PlayersInputs[player]['x'],PlayersInputs[player]['y']), 750, 7, 0.5, 4]
+                                                lookat(PlayersInputs[player]['x'], PlayersInputs[player]['y']), 75, 7,
+                                                0.2, 4]
                             LastBombI += 1
                         else:
                             Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0,
@@ -2280,6 +2323,18 @@ async def game():
                         # print(f'\nb,{_},{BombsHandler[_][8]}')
 
                         PlayersData[player]['STR'] += f'\nb,{_},{BombsHandler[_][8]}'
+
+                for _ in list(PlayersData[player]['VIS#']):
+                    substr = "\n#," + str(_)
+                    # print(BuildingsAppeared)
+                    abs_was = ((_ in BuildingsAppeared) or (datetime.datetime.now() - PlayersData[player]['STARTTIME']).seconds < 1)
+                    was = False
+                    for t in range(0, len(MAP['#'][_])):
+                        if BuildingsSTS[_][t] % 2 == 1 or abs_was:
+                            substr += f",{t},{BuildingsSTS[_][t]}"
+                            was = True
+                    if was:
+                        PlayersData[player]['STR'] += substr
 
         BombsHandlerKeys = list(BombsHandler.keys())
         for bomb in BombsHandlerKeys:

@@ -463,6 +463,11 @@ function startgame() {
                     xmlHttp.open( "GET", event.data.substring(1), false ); // false for synchronous request
                     xmlHttp.send( null );
                     MAPstatic = JSON.parse(xmlHttp.responseText);
+                    for (let _ in MAPstatic['#']){
+                        for(let t in MAPstatic['#'][_]){
+                            MAPstatic['#'][_][t].push(0)
+                        }
+                    }
                     WH = MAPstatic['WH']
                     ZonesNum.innerHTML = ''
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
@@ -695,6 +700,11 @@ function startgame() {
 								chatview.append(div);
 								div.scrollIntoView();
 								MSGs.push(Number(larr[3]))
+							}
+						}else 	if (larr[0] == '#'){
+
+							for (let _ = 2; _ < larr.length; _ += 2) {
+                                MAPstatic['#'][larr[1]][larr[_]][6] = larr[_+1]
 							}
 						}else 	if (larr[0] == 'p'){
 
@@ -1439,6 +1449,37 @@ if (ParticlesProcessing){
                         ctx.lineWidth = 50/320*Zoom;
                         ctx.stroke();
     }}
+        for (let __ of VisibleObjs['#']){
+
+	        let _ = MAPstatic['#'][__]
+
+
+
+			for (let l = 0; l < _.length; l += 1) {
+                if (_[l][6] == 2) {
+
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.cs
+                    ctx.lineWidth = 2/320*Zoom
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.closePath();
+                }
+
+
+			}
+
+
+
+    }
     for (let _ = 0; _ < Players.length; _++) {
         if (Players[_][0]  == PlayerName){
             Vehicles[Players[_][1]].drawp("OnGround-2",NoTeamTag(Players[_][0]))
@@ -1651,6 +1692,23 @@ if (ParticlesProcessing){
 
 
 			for (let l = 0; l < _.length; l += 1) {
+			    if (_[l][6]%2==1) {
+                    if (_[l][6] == 3){
+//                        PIXI.sound.play('bang');
+//                        for (let i = 0; i < 5; i++) {
+//                            BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
+//                        }
+                        ShakeXbnds += 5
+                        ShakeYbnds += 5
+                    }else{
+
+                    }
+                    _[l][6]-=1
+			    }
+                if (_[l][6] == 2) {
+
+                    continue
+                }
 
                 if (_[l][0] == 0){
                     let poly = []
