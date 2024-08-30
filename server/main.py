@@ -80,7 +80,7 @@ vehicleinfo = {
         'MAXSPEED': 0.125,
         "PENDMGDST": 0.06,
         'TURN': 20,
-        'AMMO': {'m': 150, 'p': 0, 't': 0, 'h': 0, 'f': 0},
+        'AMMO': {'m': 200, 'p': 0, 't': 0, 'h': 0, 'f': 0},
         'CAN': [['m', 0, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0],
                 ['m', 0 - 0.1, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0]],
         },
@@ -264,8 +264,8 @@ vehicleinfo = {
 BuildingHPcof = {
     0: 100,
     1: 50,
-    2: 250,
-    3: 10
+    2: 100,
+    3: 250
 
 }
 
@@ -294,10 +294,14 @@ i = 0
 WH = MAP['WH']
 BuildingsHP = {}
 BuildingsSTS = {}
+BuildingsRecover = {}
+BuildingsTypes = {}
 for i in range(0, len(MAP['#'])):
     MAPobjSIDEdir['#'][i] = {}
     BuildingsHP[i] = {}
     BuildingsSTS[i] = {}
+    BuildingsRecover[i] = {}
+    BuildingsTypes[i] = {}
     for _ in range(0, len(MAP['#'][i])):
         cos = math.cos(MAP['#'][i][_][5] / 180 * math.pi)
         sin = math.sin(MAP['#'][i][_][5] / 180 * math.pi)
@@ -317,6 +321,8 @@ for i in range(0, len(MAP['#'])):
         MAP['#'][i][_] = Polygon(MAP['#'][i][_])
         BuildingsHP[i][_] = BuildingHPcof[idf] * MAP['#'][i][_].area * 100
         BuildingsSTS[i][_] = 0
+        BuildingsRecover[i][_] = 0
+        BuildingsTypes[i][_] = idf
 for i in range(0, len(MAP['S'])):
     srtg = (Polygon(
         LinearRing(MAP['S'][i]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
@@ -501,6 +507,13 @@ async def game():
             for t in range(0, len(MAP['#'][_])):
                 if BuildingsSTS[_][t] % 2 == 1:
                     BuildingsSTS[_][t] -= 1
+                if BuildingsRecover[_][t] > BuildingHPcof[BuildingsTypes[_][t]] * 10:
+                    BuildingsHP[_][t] = BuildingHPcof[BuildingsTypes[_][t]] * MAP['#'][_][t].area * 100
+                    BuildingsRecover[_][t] = 0
+                    BuildingsSTS[_][t] = 1
+                if BuildingsSTS[_][t] == 2:
+                    BuildingsRecover[_][t] += 1
+
         for bullet in Bullets.keys():
             try:
                 if math.sqrt(Bullets[bullet][2] ** 2 + Bullets[bullet][3] ** 2) > Bullets[bullet][9]:
@@ -623,6 +636,8 @@ async def game():
                                     Bullets[bullet][14] = 2
                                     BuildingsHP[_][t] -= Bullets[bullet][13]
                                     if BuildingsHP[_][t] < 0:
+                                        BuildingsHP[_][t] = 0
+                                        BuildingsRecover[_][t] = 0
                                         BuildingsSTS[_][t] = 3
                 except Exception:
                     BulletsHandler[bullet] = Bullets[bullet].copy()
@@ -666,7 +681,7 @@ async def game():
                 # print("!!!!!!")
 
                 point = Point((Bombs[bomb][2], Bombs[bomb][3]))
-                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(Bombs[bomb][9]/2)
+                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(Bombs[bomb][9] / 2)
                 # print(Bombs[bomb][2], Bombs[bomb][3])
                 status = 4
                 try:
@@ -686,6 +701,8 @@ async def game():
                                     dmg = int(Bombs[bomb][7] * MAP['#'][_][t].intersection(col).area * 100)
                                     BuildingsHP[_][t] -= dmg
                                     if BuildingsHP[_][t] < 0:
+                                        BuildingsHP[_][t] = 0
+                                        BuildingsRecover[_][t] = 0
                                         BuildingsSTS[_][t] = 3
 
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['PLAYERS']:
@@ -1464,7 +1481,7 @@ async def game():
                                 ColT = 'P'
                                 break
                     except:
-                        pass
+                        logging.exception('')
                 if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['COLS'] and not PlayersData[player]['TAKEN']:
                     try:
 
@@ -1834,7 +1851,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player][
                             'COLOR']) + f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5 + 1 / TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5 + 1 / TPS)}"
@@ -1844,7 +1861,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])
                 elif PlayersCosmetics[player]['VEHICLE'] == 2:
@@ -1853,7 +1870,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player][
                             'COLOR']) + f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5 + 1 / TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5 + 1 / TPS)}"
@@ -1864,7 +1881,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," + str(
                         len(PlayersData[player]['CARRY']))
@@ -1874,7 +1891,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," + str(
                         len(PlayersData[player]['CARRY']))
@@ -1894,7 +1911,7 @@ async def game():
                         PlayersData[player][
                             'GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 1000) / 10) + f',{PlayersData[player]["CAN"][0][8]},' + str(int(not (
+                            'GROUNDSPEED'] * 1000) / 10) + f',{int(PlayersData[player]["CAN"][0][8])},' + str(int(not (
                             PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                         'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
                         PlayersCosmetics[player]['TRACER']) + ',' + str(PlayersData[player][
@@ -1905,7 +1922,7 @@ async def game():
                         PlayersData[player][
                             'GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]},' + str(int(not (
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])},' + str(int(not (
                             PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                         'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
                         PlayersCosmetics[player]['TRACER']) + ',' + str(PlayersData[player]['AAROCKETS'])
@@ -2126,19 +2143,16 @@ async def game():
                         wasShot = True
 
                         if PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0:
-                            dst = math.sqrt(PlayersInputs[player]['x']**2+PlayersInputs[player]['y']**2)
-                            if dst > 3:
-                                PlayersInputs[player]['x'] *= 3/dst
-                                PlayersInputs[player]['y'] *= 3/dst
-                            ab = random.random()*math.pi
+                            dst = math.sqrt((PlayersInputs[player]['x']) ** 2 + (PlayersInputs[player]['y']) ** 2)
+                            if dst > 3: dst = 3
+                            dst = dst + 0.05*dst - random.random()*dst*0.1
+                            shtdir = _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2
                             Bombs[LastBombI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1],
-                                                PlayersData[player]["X"] + PlayersInputs[player][
-                                                    'x'] + random.random() * math.cos(ab) * 0.15,
-                                                PlayersData[player]["Y"] + PlayersInputs[player][
-                                                    'y'] + random.random() * math.sin(ab) * 0.15, time.time(),
+                                                PlayersData[player]["X"] + a[0] + math.cos(shtdir/180*math.pi)*dst,
+                                                PlayersData[player]["Y"] + a[1] + math.sin(shtdir/180*math.pi)*dst, time.time(),
                                                 player,
-                                                lookat(PlayersInputs[player]['x'], PlayersInputs[player]['y']), 75, 7,
-                                                0.2, 4]
+                                                _[7], 40, 7,
+                                                0.125, 4]
                             LastBombI += 1
                         else:
                             Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0,
@@ -2179,41 +2193,41 @@ async def game():
                             #
                             if PlayersCosmetics[enemy]['VEHICLE'] == 0:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 1:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 2:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 4:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," + str(
                                     len(PlayersData[enemy]['CARRY']))
                             elif PlayersCosmetics[enemy]["VEHICLE"] == 8:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{PlayersData[enemy]["CAN"][0][8]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{int(PlayersData[enemy]["CAN"][0][8])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ',' + str(
                                     int(PlayersInputs[enemy]['Cmod']) * PlayersCosmetics[enemy]['TRACER'])
                             elif PlayersCosmetics[enemy]["VEHICLE"] == 5:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{PlayersData[enemy]["CAN"][0][8]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{int(PlayersData[enemy]["CAN"][0][8])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ',' + str(
                                     int(PlayersInputs[enemy]['Cmod']) * PlayersCosmetics[enemy][
                                         'TRACER']) + f',{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]}'
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 3:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," + str(
                                     len(PlayersData[enemy]['CARRY']))
@@ -2327,7 +2341,8 @@ async def game():
                 for _ in list(PlayersData[player]['VIS#']):
                     substr = "\n#," + str(_)
                     # print(BuildingsAppeared)
-                    abs_was = ((_ in BuildingsAppeared) or (datetime.datetime.now() - PlayersData[player]['STARTTIME']).seconds < 1)
+                    abs_was = ((_ in BuildingsAppeared) or (
+                            datetime.datetime.now() - PlayersData[player]['STARTTIME']).seconds < 1)
                     was = False
                     for t in range(0, len(MAP['#'][_])):
                         if BuildingsSTS[_][t] % 2 == 1 or abs_was:
@@ -2504,8 +2519,18 @@ async def handler(websocket):
     # print('enter')
     # print('!')
     while not Exit:
+        msg = ""
+        msgid = 0
+        message = ""
         try:
-            message = await websocket.recv()
+            msg = await websocket.recv()
+            try:
+                msgid = msg.split(',')[0]
+                message = msg[len(msgid) + 1:]
+                msgid = int(msgid)
+            except:
+                message = msg
+                msgid = 0
         except:
             for player in PlayersSockets.keys():
                 if PlayersSockets[player] == websocket:
@@ -2513,8 +2538,8 @@ async def handler(websocket):
             logger.info("Set AFK status")
             Exit = True
             continue
-        # print(message)
-        if message == os.environ['KILL_CODE']: exit()
+
+        if msg == os.environ['KILL_CODE']: exit()
         if message == '':
             # TODO can be leak :/
             logger.info("Empty message from client")
@@ -2800,6 +2825,8 @@ async def handler(websocket):
                                 'Y': 14.5,
                                 'Z': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['Z'],
                                 'STR': '',
+                                'STRID': 0,
+                                'STRARR': [],
                                 'COL': None,
                                 'PrevDIR': 0,
                                 'AMMOUPDATE': False,
@@ -2882,6 +2909,15 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['C']:
+                                                    if MAP['C'][_].intersects(Point(x, y).buffer(0.25)):
+                                                        inter = True
+                                                        break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
                                                 for _ in MAP['Q'][(int(x) + i, int(y) + j)]['PLAYERS']:
                                                     if PlayersData[_]["COL"].intersects(Point(x, y).buffer(0.25)):
                                                         inter1 = True
@@ -2914,6 +2950,25 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['C']:
+                                                    if MAP['C'][_].intersects(Point(x, y).buffer(0.15)):
+                                                        inter = True
+                                                        break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['#']:
+                                                    for t in MAP['#'][_]:
+                                                        if t.intersects(Point(x, y).buffer(0.15)):
+                                                            inter = True
+                                                            break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
                                                 for _ in MAP['Q'][(int(x) + i, int(y) + j)]['B']:
                                                     if MAP['B'][_].intersects(Point(x, y)):
                                                         inter0 = True
@@ -2931,6 +2986,7 @@ async def handler(websocket):
                                                 pass
                                 PlayersData[player]['X'] = x
                                 PlayersData[player]['Y'] = y
+                                PlayersData[player]['ONGROUND'] = True
                             elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPAWN'] == 2:
                                 inter1 = True
                                 x = 0
@@ -2962,14 +3018,35 @@ async def handler(websocket):
                         Exit = True
                         pass
                     try:
+                        additionalstr = ""
                         if PlayersData[player]['STATUS'] == 'DEAD':
                             PlayersData[player]['STR'] = 'D'
                             PlayersData[player]['STATUS'] = 'AFK'
                             logger.info(f"Player {player} informed about death")
-                        await websocket.send(PlayersData[player]['STR'])
+
+                        if msgid != PlayersData[player]['STRID'] - 1:
+                            # logger.info(f"Player {player} missed msg")
+                            for _ in range(0, len(PlayersData[player]['STRARR'])):
+                                if PlayersData[player]['STRARR'][len(PlayersData[player]['STRARR']) - 1 - _][
+                                    0] == msgid:
+                                    msgid = len(PlayersData[player]['STRARR']) - _ - 1
+                                    break
+                            for _ in range(msgid, len(PlayersData[player]['STRARR'])):
+                                lns = PlayersData[player]['STRARR'][_][1].split('\n')
+                                for i in range(1, len(lns)):
+                                    try:
+                                        additionalstr += '\n' + lns[i]
+                                    except:
+                                        pass
+                        PlayersData[player]['STRARR'].append((PlayersData[player]['STRID'], PlayersData[player]['STR']))
+                        await websocket.send(
+                            str(PlayersData[player]['STRID']) + ',' + PlayersData[player]['STR'] + additionalstr)
+                        PlayersData[player]['STRID'] += 1
+                        if PlayersData[player]['STRID'] > 100:
+                            PlayersData[player]['STRID'] = 1
+                        if len(PlayersData[player]['STRARR']) > TPS * 3:
+                            PlayersData[player]['STRARR'].pop(0)
                     except Exception:
-                        pass
-                        # logging.exception("message")
                         for player in PlayersSockets.keys():
                             if PlayersSockets[player] == websocket:
                                 PlayersData[player]['STATUS'] = 'AFK'
@@ -2978,7 +3055,7 @@ async def handler(websocket):
                         continue
         elif message != 'info' and PLAYERS_LIMIT <= len(PlayersSockets):
             Exit = True
-            await websocket.send('E,Server is full')
+            await websocket.send('0,E,Server is full')
         elif message[0] == 'n' and len(message) > 1:
 
             name = message[1:].split('\n')[0]
@@ -3005,7 +3082,7 @@ async def handler(websocket):
                     logger.info(f"'{name}' is better")
             if name in PlayersSockets.keys():
                 logger.info(f"Name '{name}' captured")
-                await websocket.send('E,Somebody already have this name !')
+                await websocket.send('0,E,Somebody already have this name !')
                 continue
             else:
                 PlayersSockets[name] = websocket
@@ -3035,7 +3112,7 @@ async def handler(websocket):
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)
 
-                            await websocket.send('E,Twin - ban')
+                            await websocket.send('0,E,Twin - ban')
                             logger.info(f"Twin '{name}'")
                             break
                     else:
@@ -3047,7 +3124,7 @@ async def handler(websocket):
                         logger.info(f"Map to '{name}' sent")
                         PlayersAccs[name]['NICK'] = message[1:].split('\n')[3]
                         PlayersAccs[name]['PSW'] = message[1:].split('\n')[4]
-                        await websocket.send('M' + MAPJSON)
+                        await websocket.send('0,M' + MAPJSON)
                 except:
                     print(API_SERV_ADDRESS + "item_check")
                     resp = (await requests.post(API_SERV_ADDRESS + "item_check",
@@ -3060,7 +3137,7 @@ async def handler(websocket):
                     if respJSON['vehicle'] < 0:
                         PlayersCosmetics[name]["VEHICLE"] = 0
                     logger.info(f"Map to '{name}' sent")
-                    await websocket.send('M' + MAPJSON)
+                    await websocket.send('0,M' + MAPJSON)
                 if PlayersCosmetics[name]['VEHICLE'] == 3: PlayersCosmetics[name]['COLOR'] = 228
                 PlayersAccs[name]['contime'] = datetime.datetime.now()
         elif message == 'info':

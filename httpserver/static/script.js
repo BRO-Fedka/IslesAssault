@@ -428,7 +428,7 @@ MAP.set('b',new Map())
 MAP.set('s',new Map())
 MAP.set('z',new Map())
 MAP.set('g',new Map())
-
+let lastMSGid = 0
 function startgame() {
     document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
@@ -452,15 +452,19 @@ function startgame() {
 				vehicle = Number(document.getElementById('VehicleSelect').value)
 			});
 			function taken(event) {
-				if (event.data[0] == 'E'){
+			    lastMSGid = event.data.split(',')[0]
+			    let eventdata = event.data.slice(lastMSGid.length+1,event.data.length)
+//			    console.log(eventdata)
+			    lastMSGid = Number(lastMSGid)
+				if (eventdata[0] == 'E'){
 				    GameStatus= "Error"
 					document.getElementById('TitleScreen').classList = ['titlescrh']
 					document.getElementById("chkInterfaceHide").checked = false
-					alert( event.data.split(',')[1])
-				}else if(event.data[0] == 'M'){
+					alert( eventdata.split(',')[1])
+				}else if(eventdata[0] == 'M'){
                     document.getElementById('TitleScreen').classList = ['titlescrh']
                     var xmlHttp = new XMLHttpRequest();
-                    xmlHttp.open( "GET", event.data.substring(1), false ); // false for synchronous request
+                    xmlHttp.open( "GET", eventdata.substring(1), false ); // false for synchronous request
                     xmlHttp.send( null );
                     MAPstatic = JSON.parse(xmlHttp.responseText);
                     for (let _ in MAPstatic['#']){
@@ -477,7 +481,7 @@ function startgame() {
                     setTimeout(function(){UpdateObjs = true}, 300);
                     socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString());
 				}
-				else if (event.data[0] == 'D'){
+				else if (eventdata[0] == 'D'){
 						GameStatus = "MainMenu"
 						PlayersData = new Map()
 						PIXI.sound.play('MainMenuMusic');
@@ -491,13 +495,13 @@ function startgame() {
                         StartMainMusicPlay = Date.now()
                         Players = []
                         socket.close();
-				}else if (event.data[0] == 'R'){
+				}else if (eventdata[0] == 'R'){
 						socket.close();
 						SaveMusicPos()
 						location.replace(event.data.slice(1));
 				}else {
  					MSGTKNDT = new Date();
-					INFO = event.data;
+					INFO = eventdata;
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
 					let infarr = INFO.split('\n');
@@ -819,14 +823,14 @@ function startgame() {
 
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
+					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
 					    }else{
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
+					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
 					    }
 						messageinput.value = ''
 						Send=false
 					}else{
-						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
+						socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
 					}
 					SENDB = ''
 					SENDS = ''
@@ -947,6 +951,7 @@ let start = null;
 let timenow = Date.now()
 let VisibleObjs = new Object()
 let UpdateObjs = true
+let QupdtSequence = 0
 function DRAW(timestamp)  {
 
 try{
@@ -987,15 +992,12 @@ try{
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
     if (GameStatus == "InGame"){
-        if (Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY) || UpdateObjs){
-            if (UpdateObjs){
-            console.log(UpdateObjs)
-            }
+        if (((Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY))&& QupdtSequence != X*nX+Y*nY) || UpdateObjs){
             VisibleObjs = new Object()
             UpdateObjs = false
             for (let x=Math.round(X)-VIEW_X-2; x < Math.round(X)+VIEW_X+2; x++){
                 for (let y=Math.round(Y)-VIEW_Y-2; y < Math.round(Y)+VIEW_Y+2; y++){
-                    try{
+                    if (x < 0 || y <0 || x >= WH || y >= WH) continue
         //                console.log(MAPstatic
         //                console.log(MAPstatic['Q'][x])
                         let q = MAPstatic['Q'][x][y]
@@ -1009,10 +1011,13 @@ try{
                                 VisibleObjs[q_keys[_]].add(i)
                             }
                         }
-                    }catch{}
+
                 }
 
-            }}
+            }
+            QupdtSequence = X*nX+Y*nY
+
+            }
 
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
@@ -1698,8 +1703,8 @@ if (ParticlesProcessing){
 //                        for (let i = 0; i < 5; i++) {
 //                            BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
 //                        }
-                        ShakeXbnds += 5
-                        ShakeYbnds += 5
+                        ShakeXbnds += 10
+                        ShakeYbnds += 1
                     }else{
 
                     }
@@ -1951,7 +1956,17 @@ if (ParticlesProcessing){
     }
 
     for (let _ of BombsData.keys()){
+
         let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
+        let dst = 0
+        if (!(BombsData.get(_)[4] < 5)){
+            relt = Math.sin((relt-0.5)*Math.PI)/2+0.5
+            dst = Math.sqrt((BombsData.get(_)[2]-BombsData.get(_)[0])**2+(BombsData.get(_)[3]-BombsData.get(_)[1])**2)
+
+        }
+        console.log(dst)
+        console.log(relt)
+
         let x = BombsData.get(_)[0]+(BombsData.get(_)[2]-BombsData.get(_)[0])*relt
         let y = BombsData.get(_)[1]+(BombsData.get(_)[3]-BombsData.get(_)[1])*relt
         if(BombsData.get(_)[4] == 1){
@@ -1980,12 +1995,30 @@ if (ParticlesProcessing){
             ctx.lineWidth= 3/320*Zoom;
             ctx.beginPath()
              ctx.lineCap='round';
-             bmbLen = 0.015
+             let bmbLen = 0.015
+            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.stroke();
+            ctx.closePath()
+        }else if(relt*dst > 0.05){
+
+            let bmbLen = dst/3* (1-Math.abs(relt-0.5)*2)+0.025
+            grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - x +Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+            grad.addColorStop(1,"rgba(255,255,64,0)");
+            grad.addColorStop(0,"rgba(255,255,64,"+(Math.abs(relt-0.5)*2*0.4+0.1).toString()+")");
+
+            ctx.strokeStyle = grad
+            ctx.lineWidth= (10-Math.abs(relt-0.5)*10)/320*Zoom;
+            ctx.beginPath()
+             ctx.lineCap='round';
+
             ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
             ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
             ctx.stroke();
             ctx.closePath()
         }
+
 		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
 		console.log(x,y)
 		    BombsData.delete(_)
