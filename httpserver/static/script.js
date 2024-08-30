@@ -207,20 +207,20 @@ function GetServerInfo(){
                 let soc = new WebSocket(document.getElementById('ServerAddress').value);
 
                 soc.addEventListener('open', function (event) {
-                    console.log('!');
+//                    console.log('!');
                     soc.send('info');
                 });
 
                 function taken(event) {
-                    console.log(event.data)
+//                    console.log(event.data)
                     var data = JSON.parse(event.data);
-                    console.log(data)
+//                    console.log(data)
                     document.getElementById('impprev').src = data.map;
                     document.getElementById('Map').src = data.map;
                     document.getElementById('online').innerHTML = "Players: "+data.online;
                     document.getElementById('text').innerHTML = data.text;
-                    console.log(data.js)
-                    console.log(document.getElementById('prevmpjs').src)
+//                    console.log(data.js)
+//                    console.log(document.getElementById('prevmpjs').src)
                     document.getElementById('prevmpjs').src = data.js;
                     BGLayers = data.bg;
                     UpdateBG()
@@ -239,7 +239,7 @@ function GetServerInfo(){
                     }
 
                     if (justbool || sessionStorage.getItem('VehicleSelectVal') =='' ||sessionStorage.getItem('VehicleSelectVal') ==null ){
-                        console.log(data.vehicleAvailable[0][1])
+//                        console.log(data.vehicleAvailable[0][1])
                         document.getElementById('VehicleSelect').value = data.vehicleAvailable[0][1]
 
                     }else{
@@ -724,7 +724,7 @@ function startgame() {
 						}else 	if (larr[0] == 'b'){
                             if (larr.length > 3){
                                 if (!(BombsData.has(larr[1]))){
-                                console.log(Number(larr[6]))
+//                                console.log(Number(larr[6]))
                                 BombsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false,Number(larr[8])])
                                 }
                             }else{
@@ -847,11 +847,11 @@ function startgame() {
 			socket.onerror =  function (e) {
 				document.getElementById('TitleScreen').classList = ['titlescrh']
 				document.getElementById("chkInterfaceHide").checked = false
-				console.log('ERROR')
+//				console.log('ERROR')
 			}
 
 		} catch (err){
-		    console.log(err,err.stack)
+//		    console.log(err,err.stack)
 		}
 	}
 }
@@ -1964,8 +1964,8 @@ if (ParticlesProcessing){
             dst = Math.sqrt((BombsData.get(_)[2]-BombsData.get(_)[0])**2+(BombsData.get(_)[3]-BombsData.get(_)[1])**2)
 
         }
-        console.log(dst)
-        console.log(relt)
+//        console.log(dst)
+//        console.log(relt)
 
         let x = BombsData.get(_)[0]+(BombsData.get(_)[2]-BombsData.get(_)[0])*relt
         let y = BombsData.get(_)[1]+(BombsData.get(_)[3]-BombsData.get(_)[1])*relt
@@ -2020,7 +2020,7 @@ if (ParticlesProcessing){
         }
 
 		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
-		console.log(x,y)
+//		console.log(x,y)
 		    BombsData.delete(_)
 		}
     }
@@ -2296,7 +2296,7 @@ if (ParticlesProcessing){
         window.requestAnimationFrame(DRAW);
        }catch(e)
        {
-       console.log(e,e.stack)
+//       console.log(e,e.stack)
        window.requestAnimationFrame(DRAW);
        }
 }
