@@ -58,6 +58,13 @@ ___
 * [VK](https://vk.com/islesassault)
 ___
 ## :clipboard: Changelog:
+### 1.7v "Under siege" update
+* Destroyable buildings were added.
+* Trees were added
+* Foundations and roads were added.
+* Client optimization.
+* Artilery fire mode was added for battleship.
+* Now, health bars nicknames of ground based vehile are invisible for water and airbased vehicle.
 #### 1.6.2v Backend improvement
 * Now use *.json type maps.
 * Server has players optional limit.
