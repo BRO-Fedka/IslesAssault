@@ -17,6 +17,8 @@ import requests as req_sync
 import time
 import dotenv
 
+import operator
+
 dotenv.load_dotenv()
 logger.add(f"./logs/logs_{time.strftime('%d_%b_%Y_%H_%M_%S', time.gmtime())}.log".lower(), enqueue=True,
            retention="1 week")
@@ -78,7 +80,7 @@ vehicleinfo = {
         'MAXSPEED': 0.125,
         "PENDMGDST": 0.06,
         'TURN': 20,
-        'AMMO': {'m': 150, 'p': 0, 't': 0, 'h': 0, 'f': 0},
+        'AMMO': {'m': 200, 'p': 0, 't': 0, 'h': 0, 'f': 0},
         'CAN': [['m', 0, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0],
                 ['m', 0 - 0.1, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0]],
         },
@@ -165,7 +167,7 @@ vehicleinfo = {
         'AMMO': {'m': 0, 'p': 5000, 't': 0, 'h': 0, 'f': 0},
         'CAN': [['p', -0.2, 0, 2500, datetime.datetime.now(), None, True, 0, 0, 0],
                 ['p', 0.265, 0, 2500, datetime.datetime.now(), None, True, 0, 0, 0]],
-        },
+    },
     4: {'DEFCOL': Polygon(
         [[0.3, -0.03], [0.3, 0.03], [0.275, 0.03], [0.25, 0.055], [0.06, 0.055], [0.045, 0.08], [-0.045, 0.08],
          [-0.06, 0.055], [-0.25, 0.055], [-0.275, 0.03], [-0.3, 0.03], [-0.3, -0.03], [-0.275, -0.03], [-0.25, -0.055],
@@ -197,7 +199,7 @@ vehicleinfo = {
         'AMMO': {'m': 0, 'p': 7500, 't': 0, 'h': 750, 'f': 0},
         'CAN': [['h', 0.025, 0.055, 250, datetime.datetime.now(), None, True, 0, 0, 0],
                 ['h', -0.025, 0.055, 250, datetime.datetime.now(), None, True, 0, 0, 0]],
-        },
+    },
 
     8: {'DEFCOL': Polygon(
         [[0.02, 0.01], [0.02, -0.01], [0.01, -0.01], [0.01, -0.04], [-0.01, -0.04], [-0.01, -0.0075], [-0.03, -0.005],
@@ -227,7 +229,7 @@ vehicleinfo = {
         'TURN': 240,
         'AMMO': {'m': 0, 'p': 0, 't': 0, 'h': 0, 'f': 250},
         'CAN': [['f', 0, 0, 250, datetime.datetime.now(), None, True, 0, 0, 0]],
-        },
+    },
     5: {'DEFCOL': Polygon(
         [[0.02, 0.011], [0.02, -0.011], [0.01, -0.011], [0.01, -0.05], [-0.015, -0.05], [-0.015, -0.011],
          [-0.025, -0.011], [-0.05, -0.007], [-0.05, -0.02], [-0.065, -0.02], [-0.065, 0.02], [-0.05, 0.02],
@@ -256,7 +258,15 @@ vehicleinfo = {
         'TURN': 80,
         'AMMO': {'m': 0, 'p': 100, 't': 0, 'h': 0, 'f': 0},
         'CAN': [['p', 0 - 0.025, 0, 100, datetime.datetime.now(), None, True, 0, 0, 1]],
-        },
+    },
+}
+
+BuildingHPcof = {
+    0: 100,
+    1: 50,
+    2: 100,
+    3: 250
+
 }
 
 caninfo = {
@@ -278,10 +288,41 @@ MAP = None
 with open('MAP.json', 'r') as file:
     MAP = json.load(file)
     print(MAP)
-MAPobjSIDEdir = {'S': {}, 'B': {}}
+MAPobjSIDEdir = {'S': {}, 'B': {}, 'C': {}, "#": {}}
 # print(MAP['B'])
 i = 0
 WH = MAP['WH']
+BuildingsHP = {}
+BuildingsSTS = {}
+BuildingsRecover = {}
+BuildingsTypes = {}
+for i in range(0, len(MAP['#'])):
+    MAPobjSIDEdir['#'][i] = {}
+    BuildingsHP[i] = {}
+    BuildingsSTS[i] = {}
+    BuildingsRecover[i] = {}
+    BuildingsTypes[i] = {}
+    for _ in range(0, len(MAP['#'][i])):
+        cos = math.cos(MAP['#'][i][_][5] / 180 * math.pi)
+        sin = math.sin(MAP['#'][i][_][5] / 180 * math.pi)
+        poly = [[-MAP['#'][i][_][4] / 2, -MAP['#'][i][_][3] / 2], [-MAP['#'][i][_][4] / 2, MAP['#'][i][_][3] / 2],
+                [MAP['#'][i][_][4] / 2, MAP['#'][i][_][3] / 2], [MAP['#'][i][_][4] / 2, -MAP['#'][i][_][3] / 2]]
+        npoly = []
+        idf = MAP['#'][i][_][0]
+        for j in range(0, 4):
+            npoly.append((MAP['#'][i][_][1] + poly[j][1] * cos + poly[j][0] * sin,
+                          MAP['#'][i][_][2] + poly[j][1] * sin + poly[j][0] * -cos))
+        MAP['#'][i][_] = npoly
+        srtg = (Polygon(LinearRing(MAP['#'][i][_]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
+        MAPobjSIDEdir['#'][i][_] = True
+        if srtg.area < Polygon(MAP['#'][i][_]).area:
+            MAPobjSIDEdir['#'][i][_] = False
+
+        MAP['#'][i][_] = Polygon(MAP['#'][i][_])
+        BuildingsHP[i][_] = BuildingHPcof[idf] * MAP['#'][i][_].area * 100
+        BuildingsSTS[i][_] = 0
+        BuildingsRecover[i][_] = 0
+        BuildingsTypes[i][_] = idf
 for i in range(0, len(MAP['S'])):
     srtg = (Polygon(
         LinearRing(MAP['S'][i]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
@@ -298,12 +339,19 @@ for i in range(0, len(MAP['B'])):
         MAPobjSIDEdir['B'][i] = False
     MAP['B'][i] = Polygon(MAP['B'][i])
 
+for i in range(0, len(MAP['C'])):
+    srtg = (Polygon(
+        LinearRing(MAP['C'][i]).parallel_offset(0.01, 'right', join_style=1, resolution=1).coords))
+    MAPobjSIDEdir['C'][i] = True
+    if srtg.area < Polygon(MAP['C'][i]).area:
+        MAPobjSIDEdir['C'][i] = False
+    MAP['C'][i] = Polygon(MAP['C'][i])
+
 Q = MAP['Q']
 MAP["Q"] = {}
 for x in range(0, WH):
     for y in range(0, WH):
-        MAP["Q"][(x,y)] = Q[x][y]
-
+        MAP["Q"][(x, y)] = Q[x][y]
 
 # print(len(MAP['Z']),len(MAP['B']))
 Bridges = MAP['_']
@@ -455,6 +503,17 @@ async def game():
         for _ in delarr:
             TeamRec.pop(_)
         delarr = []
+        for _ in range(0, len(MAP['#'])):
+            for t in range(0, len(MAP['#'][_])):
+                if BuildingsSTS[_][t] % 2 == 1:
+                    BuildingsSTS[_][t] -= 1
+                if BuildingsRecover[_][t] > BuildingHPcof[BuildingsTypes[_][t]] * 10:
+                    BuildingsHP[_][t] = BuildingHPcof[BuildingsTypes[_][t]] * MAP['#'][_][t].area * 100
+                    BuildingsRecover[_][t] = 0
+                    BuildingsSTS[_][t] = 1
+                if BuildingsSTS[_][t] == 2:
+                    BuildingsRecover[_][t] += 1
+
         for bullet in Bullets.keys():
             try:
                 if math.sqrt(Bullets[bullet][2] ** 2 + Bullets[bullet][3] ** 2) > Bullets[bullet][9]:
@@ -471,10 +530,10 @@ async def game():
                 Bullets[bullet][2] = math.cos(Bullets[bullet][7] / 180 * math.pi) * Bullets[bullet][6]
                 Bullets[bullet][3] = math.sin(Bullets[bullet][7] / 180 * math.pi) * (Bullets[bullet][6])
                 Bullets[bullet][4] = math.cos(Bullets[bullet][7] / 180 * math.pi) * (
-                            Bullets[bullet][6] - Bullets[bullet][10]) * int(
+                        Bullets[bullet][6] - Bullets[bullet][10]) * int(
                     Bullets[bullet][6] - Bullets[bullet][10] > 0)
                 Bullets[bullet][5] = math.sin(Bullets[bullet][7] / 180 * math.pi) * (
-                            Bullets[bullet][6] - Bullets[bullet][10]) * int(
+                        Bullets[bullet][6] - Bullets[bullet][10]) * int(
                     Bullets[bullet][6] - Bullets[bullet][10] > 0)
 
                 Bullets[bullet][12] = LineString(
@@ -504,24 +563,21 @@ async def game():
                                             a, a_ = tl.coords[:], tl.length
                                             b, b_ = Bullets[bullet][12].coords[:], Bullets[bullet][12].length
                                             c = ((a[1][0] - a[0][0]) * (b[1][0] - b[0][0]) + (a[1][1] - a[0][1]) * (
-                                                        b[1][1] - b[0][1])) / a_ / b_
+                                                    b[1][1] - b[0][1])) / a_ / b_
                                             ilist.append((p.distance(Point(Bullets[bullet][12].coords[:][0])), c))
 
-                                    def getFirst(val):
-                                        return val[0]
-
-                                    ilist.sort(key=getFirst)
+                                    ilist.sort(key=operator.itemgetter(0))
                                     sin = math.sqrt(1 - ilist[0][1] ** 2)
 
                                     ln = LineString([(Bullets[bullet][12].coords[:][0][0] - (
-                                                Bullets[bullet][12].coords[:][1][0] - Bullets[bullet][12].coords[:][0][
-                                            0]) * 20, Bullets[bullet][12].coords[:][0][1] - (
-                                                                  Bullets[bullet][12].coords[:][1][1] -
-                                                                  Bullets[bullet][12].coords[:][0][1]) * 20), (
-                                                     Bullets[bullet][12].coords[:][0][0] + (
+                                            Bullets[bullet][12].coords[:][1][0] - Bullets[bullet][12].coords[:][0][
+                                        0]) * 20, Bullets[bullet][12].coords[:][0][1] - (
+                                                              Bullets[bullet][12].coords[:][1][1] -
+                                                              Bullets[bullet][12].coords[:][0][1]) * 20), (
+                                                         Bullets[bullet][12].coords[:][0][0] + (
                                                                  Bullets[bullet][12].coords[:][1][0] -
                                                                  Bullets[bullet][12].coords[:][0][0]) * 20,
-                                                     Bullets[bullet][12].coords[:][0][1] + (
+                                                         Bullets[bullet][12].coords[:][0][1] + (
                                                                  Bullets[bullet][12].coords[:][1][1] -
                                                                  Bullets[bullet][12].coords[:][0][1]) * 20)])
                                     cof = PlayersData[_]['COL'].intersection(ln).length / \
@@ -531,8 +587,8 @@ async def game():
                                     # print(Bullets[bullet][13]*cof*sin**(vehicleinfo[PlayersCosmetics[_]['VEHICLE']]['DEGDMGCOF']*caninfo[Bullets[bullet][18]][10]))
                                     # print(round(Bullets[bullet][13]*cof*sin**(vehicleinfo[PlayersCosmetics[_]['VEHICLE']]['DEGDMGCOF']*caninfo[Bullets[bullet][18]][10])))
                                     PlayersData[_]['HP'] -= round(Bullets[bullet][13] * cof * sin ** (
-                                                vehicleinfo[PlayersCosmetics[_]['VEHICLE']]['DEGDMGCOF'] *
-                                                caninfo[Bullets[bullet][18]][10]))
+                                            vehicleinfo[PlayersCosmetics[_]['VEHICLE']]['DEGDMGCOF'] *
+                                            caninfo[Bullets[bullet][18]][10]))
                                     PlayersData[_]['LASTDMG'] = datetime.datetime.now()
                                     PlayersData[_]['KILLER'] = Bullets[bullet][11]
                                     PlayersData[Bullets[bullet][11]]['SCORES'] += Bullets[bullet][13]
@@ -563,6 +619,26 @@ async def game():
                                 Bullets[bullet][3] = MAP['S'][_].intersection(Bullets[bullet][12]).coords[1][
                                                          1] - Bullets[bullet][1]
                                 Bullets[bullet][14] = 2
+                except Exception:
+                    BulletsHandler[bullet] = Bullets[bullet].copy()
+                    delarr.append(bullet)
+                try:
+                    for _ in MAP['Q'][(int((Bullets[bullet][2] + Bullets[bullet][0]) // 1),
+                                       int((Bullets[bullet][3] + Bullets[bullet][1]) // 1))]['#']:
+                        for t in range(0, len(MAP['#'][_])):
+                            if Bullets[bullet][17] == 0 and BuildingsSTS[_][t] == 0:
+                                if MAP['#'][_][t].intersects(Bullets[bullet][12]):
+                                    Bullets[bullet][14] = 1
+                                    Bullets[bullet][2] = MAP['#'][_][t].intersection(Bullets[bullet][12]).coords[1][
+                                                             0] - Bullets[bullet][0]
+                                    Bullets[bullet][3] = MAP['#'][_][t].intersection(Bullets[bullet][12]).coords[1][
+                                                             1] - Bullets[bullet][1]
+                                    Bullets[bullet][14] = 2
+                                    BuildingsHP[_][t] -= Bullets[bullet][13]
+                                    if BuildingsHP[_][t] < 0:
+                                        BuildingsHP[_][t] = 0
+                                        BuildingsRecover[_][t] = 0
+                                        BuildingsSTS[_][t] = 3
                 except Exception:
                     BulletsHandler[bullet] = Bullets[bullet].copy()
                     delarr.append(bullet)
@@ -605,7 +681,7 @@ async def game():
                 # print("!!!!!!")
 
                 point = Point((Bombs[bomb][2], Bombs[bomb][3]))
-                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(0.05)
+                col = Point((Bombs[bomb][2], Bombs[bomb][3])).buffer(Bombs[bomb][9] / 2)
                 # print(Bombs[bomb][2], Bombs[bomb][3])
                 status = 4
                 try:
@@ -615,6 +691,20 @@ async def game():
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['S']:
                         if MAP['S'][_].intersects(point):
                             status = 1
+                    for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['C']:
+                        if MAP['C'][_].intersects(point):
+                            status = 1
+                    for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['#']:
+                        for t in range(0, len(MAP['#'][_])):
+                            if BuildingsSTS[_][t] == 0:
+                                if MAP['#'][_][t].intersects(col):
+                                    dmg = int(Bombs[bomb][7] * MAP['#'][_][t].intersection(col).area * 100)
+                                    BuildingsHP[_][t] -= dmg
+                                    if BuildingsHP[_][t] < 0:
+                                        BuildingsHP[_][t] = 0
+                                        BuildingsRecover[_][t] = 0
+                                        BuildingsSTS[_][t] = 3
+
                     for _ in MAP['Q'][(int(Bombs[bomb][2]), int(Bombs[bomb][3]))]['PLAYERS']:
                         if _ in PlayersData.keys() and _ != Bombs[bomb][5] and PlayersData[_]['Z'] == 0:
                             if PlayersData[_]['COL'].intersects(point):
@@ -658,6 +748,10 @@ async def game():
                 Bombs[bomb][8] = 0
             elif Bombs[bomb][8] == 3:
                 Bombs[bomb][8] = 2
+            elif Bombs[bomb][8] == 6:
+                Bombs[bomb][8] = 5
+            elif Bombs[bomb][8] == 7:
+                Bombs[bomb][8] = 6
 
             if Bombs[bomb][8] == 1 or Bombs[bomb][8] == 4:
                 BombsHandler[bomb] = Bombs[bomb].copy()
@@ -844,6 +938,13 @@ async def game():
                     # logging.exception("message")
                 try:
                     for _ in MAP['Q'][(int((Torpedos[torpedo][2] + Torpedos[torpedo][0]) // 1),
+                                       int((Torpedos[torpedo][3] + Torpedos[torpedo][1]) // 1))]['C']:
+                        if MAP['C'][_].intersects(Torpedos[torpedo][8]):
+                            Torpedos[torpedo][10] = 1
+                except Exception:
+                    delarr.append(torpedo)
+                try:
+                    for _ in MAP['Q'][(int((Torpedos[torpedo][2] + Torpedos[torpedo][0]) // 1),
                                        int((Torpedos[torpedo][3] + Torpedos[torpedo][1]) // 1))]['B']:
                         if MAP['B'][_].intersects(Torpedos[torpedo][8]):
                             Torpedos[torpedo][10] = 1
@@ -909,9 +1010,9 @@ async def game():
 
                 for phf in MAP['Q'][(int(Zones[zone][0] // 1), int(Zones[zone][1] // 1))]['PLAYERS']:
                     if (PlayersData[phf]['X'] - Zones[zone][0]) ** 2 + (PlayersData[phf]['Y'] - Zones[zone][1]) ** 2 < (
-                            Zones[zone][5] ) ** 2 and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
-                        'MAXSPEED'] * 0.3 > PlayersData[phf]['SPEED'] and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
-                        'MAXSPEED'] * -0.3 < PlayersData[phf]['SPEED']:
+                            Zones[zone][5] / 2) ** 2 and vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
+                        'MAXSPEED'] * 0.3 > PlayersData[phf]['SPEED'] > vehicleinfo[PlayersCosmetics[phf]['VEHICLE']][
+                        'MAXSPEED'] * -0.3:
                         players.add(phf)
 
                 players = list(players)
@@ -919,7 +1020,7 @@ async def game():
                     gvgt = True
                     for player in range(1, len(players)):
                         if PlayersData[players[player]]['TEAM'] != PlayersData[players[player - 1]]['TEAM'] and not \
-                        PlayersData[players[player]]['TEAM'] is None:
+                                PlayersData[players[player]]['TEAM'] is None:
                             gvgt = False
                             break
                     if gvgt:
@@ -1008,7 +1109,7 @@ async def game():
                 if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GASTYPE'] == 1:
                     if type(PlayersData[player]['GAS']) == type(0): PlayersData[player]['GAS'] = 'FLYING'
                     PlayersData[player]["SPEED"] += ((vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['MAXSPEED'] * (
-                                0.25 + 0.75 * int(PlayersData[player]['GAS'] != 'LANDING'))) - PlayersData[player][
+                            0.25 + 0.75 * int(PlayersData[player]['GAS'] != 'LANDING'))) - PlayersData[player][
                                                          "SPEED"]) * vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
                                                         'BOOST']
                 else:
@@ -1076,57 +1177,163 @@ async def game():
                                         if MAPobjSIDEdir['B'][_]:
                                             if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
                                                     PlayersData[player]['SPEED'] / abs(
-                                                    PlayersData[player]['SPEED'])) * math.sin(
-                                                    PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                PlayersData[player]['SPEED'])) * math.sin(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) + (
                                                     cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
                                                     PlayersData[player]['SPEED'] / abs(
-                                                    PlayersData[player]['SPEED'])) * math.cos(
-                                                    PlayersData[player]['DIR'] / 180 * math.pi) > 0 or True:
+                                                PlayersData[player]['SPEED'])) * math.cos(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) > 0 or True:
                                                 # print()
                                                 mx -= ((cords[l][1] - cords[(l + 1) % len(cords)][1]) / math.sqrt(
                                                     (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
-                                                                cords[(l + 1) % len(cords)][1] - cords[l][
-                                                            1]) ** 2)) * abs(
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
                                                     PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (
-                                                            abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
-                                                                        PlayersData[player]['SPEED'] / abs(
-                                                                    PlayersData[player]['SPEED'])) * math.sin(
-                                                                PlayersData[player]['DIR'] / 180 * math.pi) + (
-                                                                            cords[(l + 1) % len(cords)][0] - cords[l][
-                                                                        0]) * (PlayersData[player]['SPEED'] / abs(
-                                                                PlayersData[player]['SPEED'])) * math.cos(
-                                                                PlayersData[player][
-                                                                    'DIR'] / 180 * math.pi)) / math.sqrt(
-                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
-                                                                    cords[(l + 1) % len(cords)][1] - cords[l][
-                                                                1]) ** 2)) ** 2)
+                                                        abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                    cords[(l + 1) % len(cords)][0] - cords[l][
+                                                                0]) * (PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player][
+                                                                'DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
                                                 my -= ((cords[(l + 1) % len(cords)][0] - cords[l][0]) / math.sqrt(
                                                     (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
-                                                                cords[(l + 1) % len(cords)][1] - cords[l][
-                                                            1]) ** 2)) * abs(
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
                                                     PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (
-                                                            abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
-                                                                        PlayersData[player]['SPEED'] / abs(
-                                                                    PlayersData[player]['SPEED'])) * math.sin(
-                                                                PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                        abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
                                                                     cords[(l + 1) % len(cords)][0] - cords[l][
-                                                                        0]) * (PlayersData[player]['SPEED'] / abs(
-                                                                PlayersData[player]['SPEED'])) * math.cos(
-                                                                PlayersData[player][
-                                                                    'DIR'] / 180 * math.pi)) / math.sqrt(
-                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
-                                                                    cords[(l + 1) % len(cords)][1] - cords[l][
-                                                                1]) ** 2)) ** 2)
+                                                                0]) * (PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player][
+                                                                'DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
                                                 ms += 1
                                         else:
                                             if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
                                                     PlayersData[player]['SPEED'] / abs(
-                                                    PlayersData[player]['SPEED'])) * math.sin(
+                                                PlayersData[player]['SPEED'])) * math.sin(
                                                 PlayersData[player]['DIR'] / 180 * math.pi) + (
                                                     cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
                                                     PlayersData[player]['SPEED'] / abs(
-                                                    PlayersData[player]['SPEED'])) * math.cos(
-                                                    PlayersData[player]['DIR'] / 180 * math.pi) < 0 or True:
+                                                PlayersData[player]['SPEED'])) * math.cos(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) < 0 or True:
+                                                mx += ((cords[l][1] -
+                                                        cords[(l + 1) % len(cords)][
+                                                            1]) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
+                                                    PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                    (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                            PlayersData[player]['SPEED'] / abs(
+                                                        PlayersData[player]['SPEED'])) * math.sin(
+                                                        PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                            cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                            PlayersData[player]['SPEED'] / abs(
+                                                        PlayersData[player]['SPEED'])) * math.cos(
+                                                        PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
+                                                my += ((cords[(l + 1) % len(cords)][0] -
+                                                        cords[l][0]) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
+                                                    PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                    (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                            PlayersData[player]['SPEED'] / abs(
+                                                        PlayersData[player]['SPEED'])) * math.sin(
+                                                        PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                            cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                            PlayersData[player]['SPEED'] / abs(
+                                                        PlayersData[player]['SPEED'])) * math.cos(
+                                                        PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
+                                                ms += 1
+                                # PlayersData[player]["X"] -= math.cos(PlayersData[player]['DIR'] / 180 * math.pi) * (vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS * (PlayersData[player]['GAS'] / 100)*1
+                                # PlayersData[player]["Y"] -= math.sin(PlayersData[player]['DIR'] / 180 * math.pi) * (vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS * (PlayersData[player]['GAS'] / 100)*1
+                                # mx -= math.cos(PlayersData[player]['DIR'] / 180 * math.pi) * PlayersData[player]['SPEED'] / TPS /10
+                                # my -= math.sin(PlayersData[player]['DIR'] / 180 * math.pi) * PlayersData[player]['SPEED'] / TPS/10
+                                # PlayersData[player]['DIR'] = PlayersData[player]['PrevDIR']
+                                # PlayersData[player]['SPEED'] = 0
+                                wasCol = True
+                                ColT = 'B'
+
+                                break
+                        for _ in list(PlayersData[player]['VISC']):
+                            if PlayersData[player]['COL'].intersects(MAP['C'][_]):
+                                cords = MAP['C'][_].exterior.coords
+                                for l in range(0, len(cords)):
+                                    ln = LineString([cords[l], cords[(l + 1) % len(cords)]])
+                                    if ln.intersects(PlayersData[player]['COL']):
+                                        if MAPobjSIDEdir['C'][_]:
+                                            if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                    PlayersData[player]['SPEED'] / abs(
+                                                PlayersData[player]['SPEED'])) * math.sin(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                    cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
+                                                    PlayersData[player]['SPEED'] / abs(
+                                                PlayersData[player]['SPEED'])) * math.cos(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) > 0 or True:
+                                                # print()
+                                                mx -= ((cords[l][1] - cords[(l + 1) % len(cords)][1]) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
+                                                    PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (
+                                                        abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                    cords[(l + 1) % len(cords)][0] - cords[l][
+                                                                0]) * (PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player][
+                                                                'DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
+                                                my -= ((cords[(l + 1) % len(cords)][0] - cords[l][0]) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) * abs(
+                                                    PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (
+                                                        abs((cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                    cords[(l + 1) % len(cords)][0] - cords[l][
+                                                                0]) * (PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player][
+                                                                'DIR'] / 180 * math.pi)) / math.sqrt(
+                                                    (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                            cords[(l + 1) % len(cords)][1] - cords[l][
+                                                        1]) ** 2)) ** 2)
+                                                ms += 1
+                                        else:
+                                            if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                    PlayersData[player]['SPEED'] / abs(
+                                                PlayersData[player]['SPEED'])) * math.sin(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                    cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
+                                                    PlayersData[player]['SPEED'] / abs(
+                                                PlayersData[player]['SPEED'])) * math.cos(
+                                                PlayersData[player]['DIR'] / 180 * math.pi) < 0 or True:
                                                 mx += ((cords[l][1] -
                                                         cords[(l + 1) % len(cords)][
                                                             1]) / math.sqrt(
@@ -1189,6 +1396,15 @@ async def game():
                             # else:
                             if PlayersData[player]['COL'].intersects(MAP['B'][_]):
                                 b_col = True
+                                break
+                        for _ in list(PlayersData[player]['VISC']):
+                            # if PlayersData[player]['ONGROUND']:
+                            #     if Point(PlayersData[player]['X'],PlayersData[player]['Y']).intersects(MAP['B'][_]):
+                            #         b_col= True
+                            #         break
+                            # else:
+                            if PlayersData[player]['COL'].intersects(MAP['C'][_]):
+                                brg_col = True
                                 break
                             # Point(PlayersData[player]['X'],PlayersData[player]['Y'])
                         for _ in list(PlayersData[player]['VISBRIDGES']):
@@ -1265,7 +1481,7 @@ async def game():
                                 ColT = 'P'
                                 break
                     except:
-                        pass
+                        logging.exception('')
                 if vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['COLS'] and not PlayersData[player]['TAKEN']:
                     try:
 
@@ -1375,9 +1591,120 @@ async def game():
                                 wasCol = True
                                 ColT = 'S'
                                 break
+                        for _ in list(PlayersData[player]['VIS#']):
+                            # print(_)
+                            for t in range(0, len(MAP['#'][_])):
+                                # print(MAP['#'][_][t].exterior.coords[:])
 
+                                if BuildingsSTS[_][t] == 0 and PlayersData[player]['COL'].intersects(MAP['#'][_][t]):
+                                    # print(t)
+                                    cords = MAP['#'][_][t].exterior.coords
+                                    for l in range(0, len(cords)):
+                                        ln = LineString([cords[l], cords[(l + 1) % len(cords)]])
+                                        if ln.intersects(PlayersData[player]['COL']):
+                                            if MAPobjSIDEdir['#'][_][t]:
+                                                if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                        PlayersData[player]['SPEED'] / abs(
+                                                    PlayersData[player]['SPEED'])) * math.sin(
+                                                    PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                        cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
+                                                        PlayersData[player]['SPEED'] / abs(
+                                                    PlayersData[player]['SPEED'])) * math.cos(
+                                                    PlayersData[player]['DIR'] / 180 * math.pi) > 0 or True:
+                                                    # print()
+                                                    mx -= ((cords[l][1] -
+                                                            cords[(l + 1) % len(cords)][
+                                                                1]) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) * abs(
+                                                        PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                        (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) ** 2)
+                                                    my -= ((cords[(l + 1) % len(cords)][0] -
+                                                            cords[l][0]) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) * abs(
+                                                        PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                        (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) ** 2)
+                                                    ms += 1
+                                            else:
+                                                if (cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                        PlayersData[player]['SPEED'] / abs(
+                                                    PlayersData[player]['SPEED'])) * math.sin(
+                                                    PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                        cords[l][1] - cords[(l + 1) % len(cords)][1]) * (
+                                                        PlayersData[player]['SPEED'] / abs(
+                                                    PlayersData[player]['SPEED'])) * math.cos(
+                                                    PlayersData[player]['DIR'] / 180 * math.pi) < 0 or True:
+                                                    mx += ((cords[l][1] -
+                                                            cords[(l + 1) % len(cords)][
+                                                                1]) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) * abs(
+                                                        PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                        (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) ** 2)
+                                                    my += ((cords[(l + 1) % len(cords)][0] -
+                                                            cords[l][0]) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) * abs(
+                                                        PlayersData[player]['SPEED']) / TPS * math.sqrt(1 - (abs(
+                                                        (cords[(l + 1) % len(cords)][1] - cords[l][1]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.sin(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi) + (
+                                                                cords[(l + 1) % len(cords)][0] - cords[l][0]) * (
+                                                                PlayersData[player]['SPEED'] / abs(
+                                                            PlayersData[player]['SPEED'])) * math.cos(
+                                                            PlayersData[player]['DIR'] / 180 * math.pi)) / math.sqrt(
+                                                        (cords[(l + 1) % len(cords)][0] - cords[l][0]) ** 2 + (
+                                                                cords[(l + 1) % len(cords)][1] - cords[l][
+                                                            1]) ** 2)) ** 2)
+                                                    ms += 1
+                                    # PlayersData[player]["X"] -= math.cos(PlayersData[player]['DIR'] / 180 * math.pi) * (vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS * (PlayersData[player]['GAS'] / 100)*1
+                                    # PlayersData[player]["Y"] -= math.sin(PlayersData[player]['DIR'] / 180 * math.pi) * (vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPEED']*int(not PlayersData[player]['ONGROUND'])+vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['GROUNDSPEED']*int( PlayersData[player]['ONGROUND']))/TPS * (PlayersData[player]['GAS'] / 100)*1
+                                    # PlayersData[player]["X"] -= math.cos(PlayersData[player]['DIR'] / 180 * math.pi) * PlayersData[player]['SPEED'] / TPS
+                                    # PlayersData[player]["Y"] -= math.sin(PlayersData[player]['DIR'] / 180 * math.pi) * PlayersData[player]['SPEED'] / TPS
+                                    # PlayersData[player]['DIR'] = PlayersData[player]['PrevDIR']
+                                    # PlayersData[player]['SPEED'] = 0
+                                    wasCol = True
+                                    ColT = 'S'
+                                    break
                     except:
                         pass
+                        # logging.exception('')
 
                 if wasCol:
                     # print(ms)
@@ -1474,7 +1801,7 @@ async def game():
                         else:
                             dir1 = dir - PlayersData[player]['DIR']
                             dir2 = PlayersData[player]['DIR'] - dir + 360 * (
-                                        1 - 2 * int(PlayersData[player]['DIR'] > dir))
+                                    1 - 2 * int(PlayersData[player]['DIR'] > dir))
                             if abs(dir2) < abs(dir1):
                                 PlayersData[player]['DIR'] -= dir2 / abs(dir2) * \
                                                               vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
@@ -1496,9 +1823,14 @@ async def game():
                 # if PlayersCosmetics[player]['VEHICLE'] ==  8 : PlayersData[player]["TRACER"] = PlayersInputs[player]['Cmod']
                 for _ in PlayersData[player]['CAN']:
 
-                    if _[9] != PlayersInputs[player]['view']:
+                    # print(PlayersInputs[player]['view'])
+                    # print(PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0)
+
+                    if _[9] != PlayersInputs[player]['view'] or (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0):
                         _[7] = PlayersData[player]['DIR']
-                    if _[9] != PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']: continue
+                    if _[9] != (PlayersInputs[player]['view'] or PlayersData[player]['TAKEN']) and not (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0): continue
                     d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                     deg = lookat(_[1], _[2])
                     a = (math.cos((deg + PlayersData[player]['DIR']) / 180 * math.pi) * d,
@@ -1519,7 +1851,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player][
                             'COLOR']) + f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5 + 1 / TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5 + 1 / TPS)}"
@@ -1529,7 +1861,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR'])
                 elif PlayersCosmetics[player]['VEHICLE'] == 2:
@@ -1538,7 +1870,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player][
                             'COLOR']) + f",{int((datetime.datetime.now() - PlayersData[player]['LASTTORPEDO']).seconds < 5 + 1 / TPS)},{int((datetime.datetime.now() - PlayersData[player]['LASTSMOKE']).seconds < 5 + 1 / TPS)}"
@@ -1549,7 +1881,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," + str(
                         len(PlayersData[player]['CARRY']))
@@ -1559,7 +1891,7 @@ async def game():
                         PlayersData[player][
                             'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]},{PlayersData[player]["CAN"][1][8]}{PlayersData[player]["CAN"][1][7]},' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])}{int(PlayersData[player]["CAN"][0][7])},{int(PlayersData[player]["CAN"][1][8])}{int(PlayersData[player]["CAN"][1][7])},' + str(
                         int(not (PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
                             'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + "," + str(
                         len(PlayersData[player]['CARRY']))
@@ -1579,9 +1911,9 @@ async def game():
                         PlayersData[player][
                             'GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 1000) / 10) + f',{PlayersData[player]["CAN"][0][8]},' + str(int(not (
-                                PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
-                            'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
+                            'GROUNDSPEED'] * 1000) / 10) + f',{int(PlayersData[player]["CAN"][0][8])},' + str(int(not (
+                            PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
+                        'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
                         PlayersCosmetics[player]['TRACER']) + ',' + str(PlayersData[player][
                                                                             'BOMBS']) + f',{PlayersData[player]["CAN"][0][8]}{PlayersData[player]["CAN"][0][7]}'
                 elif PlayersCosmetics[player]['VEHICLE'] == 8:
@@ -1590,21 +1922,24 @@ async def game():
                         PlayersData[player][
                             'GAS']) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
                         int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-                            'GROUNDSPEED'] * 100)) + f',{PlayersData[player]["CAN"][0][8]},' + str(int(not (
-                                PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
-                            'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
+                            'GROUNDSPEED'] * 100)) + f',{int(PlayersData[player]["CAN"][0][8])},' + str(int(not (
+                            PlayersData[player]['STATUS'] == 'BURNING' or PlayersData[player][
+                        'STATUS'] == 'DEAD')) * PlayersCosmetics[player]['COLOR']) + ',' + str(
                         PlayersCosmetics[player]['TRACER']) + ',' + str(PlayersData[player]['AAROCKETS'])
                 PlayersData[player]['STR'] += ','
                 for _ in Zones:
                     PlayersData[player]['STR'] += str(int((Zones[_][2] == 'player' and Zones[_][3] == player) or (
-                                Zones[_][2] == 'team' and Zones[_][3] == PlayersData[player]['TEAM'])))
+                            Zones[_][2] == 'team' and Zones[_][3] == PlayersData[player]['TEAM'])))
                 PlayersData[player]['VISB'] = set()
+                PlayersData[player]['VISC'] = set()
                 OldVisTor = PlayersData[player]['VISTOR'].copy()
                 OldVisBul = PlayersData[player]['VISBUL'].copy()
                 OldVisSmk = PlayersData[player]['VISSMK'].copy()
                 OldVisAar = PlayersData[player]['VISAAR'].copy()
                 OldVisBmb = PlayersData[player]['VISBMB'].copy()
+                OldVisBuildings = PlayersData[player]['VIS#'].copy()
                 PlayersData[player]['VISS'] = set()
+                PlayersData[player]['VIS#'] = set()
                 PlayersData[player]['VISBUL'] = set()
                 PlayersData[player]['VISTOR'] = set()
                 PlayersData[player]['VISSMK'] = set()
@@ -1648,6 +1983,10 @@ async def game():
                         try:
                             for _ in MAP['Q'][(x, y)]['B']:
                                 PlayersData[player]['VISB'].add(_)
+                            for _ in MAP['Q'][(x, y)]['C']:
+                                PlayersData[player]['VISC'].add(_)
+                            for _ in MAP['Q'][(x, y)]['#']:
+                                PlayersData[player]['VIS#'].add(_)
                             # for _ in OFICIAL-MAP0['Q'][(x, y)]['G']:
                             #     PlayersData[player]['VISG'].add(_)
                             # for _ in OFICIAL-MAP0['Q'][(x, y)]['Z']:
@@ -1675,6 +2014,7 @@ async def game():
                 BulletsAppeared = PlayersData[player]['VISBUL'] - OldVisBul
                 AARocketsAppeared = PlayersData[player]['VISAAR'] - OldVisAar
                 BombsAppeared = PlayersData[player]['VISBMB'] - OldVisBmb
+                BuildingsAppeared = PlayersData[player]['VIS#'] - OldVisBuildings
                 # print(PlayersData[player]['VISTOR'])
                 while len(PlayersData[player]['MSGTURN']) > 0:
                     PlayersData[player]['STR'] += PlayersData[player]['MSGTURN'][0]
@@ -1700,7 +2040,7 @@ async def game():
                         #     print(PlayersData[player]['COL'].intersection(Point(Smokes[_][0], Smokes[_][1]).buffer(Smokes[_][2])).area,PlayersData[player]['COL'].area)
                         if int(PlayersData[player]['COL'].intersection(
                                 Point(Smokes[_][0], Smokes[_][1]).buffer(Smokes[_][2])).area * 1000) / 1000 == int(
-                                PlayersData[player]['COL'].area * 1000) / 1000 and PlayersData[player][
+                            PlayersData[player]['COL'].area * 1000) / 1000 and PlayersData[player][
                             'INSMK'] == False and PlayersData[player]['Z'] == 0:
                             PlayersData[player]['INSMK'] = True
 
@@ -1734,7 +2074,7 @@ async def game():
                         PlayersData[player]["DIR"] / 180 * math.pi) + math.sin(randDir) * randDst
                     # print("!!!")
                     Bombs[LastBombI] = [PlayersData[player]["X"], PlayersData[player]["Y"], x, y, time.time(), player,
-                                        PlayersData[player]["DIR"], 750, 3, 0.5, 4]
+                                        PlayersData[player]["DIR"], 750, 3, 0.25, 3]
                     LastBombI += 1
                     PlayersData[player]["LASTBOMB"] = datetime.datetime.now()
                 if PlayersData[player]["STATUS"] == 'ALIVE' and vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
@@ -1765,7 +2105,8 @@ async def game():
                 # print('ooo')
                 wasShot = False
                 for _ in PlayersData[player]['CAN']:
-                    if PlayersData[player]['TAKEN'] or _[9] != PlayersInputs[player]['view']: continue
+                    if PlayersData[player]['TAKEN'] or (_[9] != PlayersInputs[player]['view'] and not (
+                            PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0)): continue
                     # _[5] = False
                     d = math.sqrt(_[1] ** 2 + _[2] ** 2)
                     deg = lookat(_[1], _[2])
@@ -1792,8 +2133,7 @@ async def game():
                     h = False
                     if g and PlayersData[player]["STATUS"] == 'ALIVE' and PlayersInputs[player]['m0'] and \
                             PlayersData[player]['AMMO'][_[0]] > 0 and (datetime.datetime.now() - _[4]).microseconds + (
-                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4] and _[9] == \
-                            PlayersInputs[player]['view']:
+                            datetime.datetime.now() - _[4]).seconds * 1000000 >= caninfo[_[0]][4]:
                         # print(vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['CAN'])
                         # if (PlayersInputs[player]['Xmod']==1 and (_[0] == 'p' or _[0] == 'h'or _[0] == 'f')) or PlayersInputs[player]['Xmod']==0:    ############### BETA
                         PlayersData[player]['AMMO'][_[0]] -= 1
@@ -1801,14 +2141,30 @@ async def game():
                         _[8] = 1
                         _[4] = datetime.datetime.now()
                         wasShot = True
-                        Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0, 0,
-                                                0, 0, 0,
-                                                _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2,
-                                                caninfo[_[0]][5], caninfo[_[0]][6], 0.3, player, None, caninfo[_[0]][3],
-                                                0, caninfo[_[0]][8] * (-1 + int(_[6]) * 2), '',
-                                                PlayersInputs[player]['Xmod'], _[0],
-                                                int(PlayersData[player]["ONGROUND"])]
-                        LastBulletI += 1
+
+                        if PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0:
+                            dst = math.sqrt((PlayersInputs[player]['x']) ** 2 + (PlayersInputs[player]['y']) ** 2)
+                            if dst > 3: dst = 3
+                            dst = dst + 0.05*dst - random.random()*dst*0.1
+                            shtdir = _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2
+                            Bombs[LastBombI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1],
+                                                PlayersData[player]["X"] + a[0] + math.cos(shtdir/180*math.pi)*dst,
+                                                PlayersData[player]["Y"] + a[1] + math.sin(shtdir/180*math.pi)*dst, time.time(),
+                                                player,
+                                                _[7], 40, 7,
+                                                0.125, 4]
+                            LastBombI += 1
+                        else:
+                            Bullets[LastBulletI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1], 0,
+                                                    0,
+                                                    0, 0, 0,
+                                                    _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2,
+                                                    caninfo[_[0]][5], caninfo[_[0]][6], 0.3, player, None,
+                                                    caninfo[_[0]][3],
+                                                    0, caninfo[_[0]][8] * (-1 + int(_[6]) * 2), '',
+                                                    PlayersInputs[player]['Xmod'], _[0],
+                                                    int(PlayersData[player]["ONGROUND"])]
+                            LastBulletI += 1
                     if not wasShot and PlayersData[player]["STATUS"] == "ALIVE":
                         _[8] = 0
                     if (PlayersData[player]["STATUS"] == "BURNING" or PlayersData[player][
@@ -1837,41 +2193,41 @@ async def game():
                             #
                             if PlayersCosmetics[enemy]['VEHICLE'] == 0:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 1:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 2:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR'])
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 4:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," + str(
                                     len(PlayersData[enemy]['CARRY']))
                             elif PlayersCosmetics[enemy]["VEHICLE"] == 8:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{PlayersData[enemy]["CAN"][0][8]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{int(PlayersData[enemy]["CAN"][0][8])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ',' + str(
                                     int(PlayersInputs[enemy]['Cmod']) * PlayersCosmetics[enemy]['TRACER'])
                             elif PlayersCosmetics[enemy]["VEHICLE"] == 5:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{PlayersData[enemy]["CAN"][0][8]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])}' + f',{int(PlayersData[enemy]["CAN"][0][8])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + ',' + str(
                                     int(PlayersInputs[enemy]['Cmod']) * PlayersCosmetics[enemy][
                                         'TRACER']) + f',{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]}'
                             elif PlayersCosmetics[enemy]['VEHICLE'] == 3:
                                 PlayersData[player][
-                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{PlayersData[enemy]["CAN"][0][8]}{PlayersData[enemy]["CAN"][0][7]},{PlayersData[enemy]["CAN"][1][8]}{PlayersData[enemy]["CAN"][1][7]},' + str(
+                                    'STR'] += f'\n+,{("[" + str(PlayersData[enemy]["TEAM"]) + "]") * int(not PlayersData[enemy]["TEAM"] is None) + enemy},{PlayersCosmetics[enemy]["VEHICLE"]},{str(int(PlayersData[enemy]["DIR"]))},{PlayersData[enemy]["HP"]},{int(PlayersData[enemy]["X"] * 1000) / 1000},{int(PlayersData[enemy]["Y"] * 1000) / 1000},{PlayersData[enemy]["Z"] * 2 + int(PlayersData[enemy]["ONGROUND"])},' + f'{int(PlayersData[enemy]["CAN"][0][8])}{int(PlayersData[enemy]["CAN"][0][7])},{int(PlayersData[enemy]["CAN"][1][8])}{int(PlayersData[enemy]["CAN"][1][7])},' + str(
                                     int(not (PlayersData[enemy]['STATUS'] == 'BURNING' or PlayersData[enemy][
                                         'STATUS'] == 'DEAD')) * PlayersCosmetics[enemy]['COLOR']) + "," + str(
                                     len(PlayersData[enemy]['CARRY']))
@@ -1981,6 +2337,19 @@ async def game():
                         # print(f'\nb,{_},{BombsHandler[_][8]}')
 
                         PlayersData[player]['STR'] += f'\nb,{_},{BombsHandler[_][8]}'
+
+                for _ in list(PlayersData[player]['VIS#']):
+                    substr = "\n#," + str(_)
+                    # print(BuildingsAppeared)
+                    abs_was = ((_ in BuildingsAppeared) or (
+                            datetime.datetime.now() - PlayersData[player]['STARTTIME']).seconds < 1)
+                    was = False
+                    for t in range(0, len(MAP['#'][_])):
+                        if BuildingsSTS[_][t] % 2 == 1 or abs_was:
+                            substr += f",{t},{BuildingsSTS[_][t]}"
+                            was = True
+                    if was:
+                        PlayersData[player]['STR'] += substr
 
         BombsHandlerKeys = list(BombsHandler.keys())
         for bomb in BombsHandlerKeys:
@@ -2150,8 +2519,18 @@ async def handler(websocket):
     # print('enter')
     # print('!')
     while not Exit:
+        msg = ""
+        msgid = 0
+        message = ""
         try:
-            message = await websocket.recv()
+            msg = await websocket.recv()
+            try:
+                msgid = msg.split(',')[0]
+                message = msg[len(msgid) + 1:]
+                msgid = int(msgid)
+            except:
+                message = msg
+                msgid = 0
         except:
             for player in PlayersSockets.keys():
                 if PlayersSockets[player] == websocket:
@@ -2159,8 +2538,8 @@ async def handler(websocket):
             logger.info("Set AFK status")
             Exit = True
             continue
-        # print(message)
-        if message == os.environ['KILL_CODE']: exit()
+
+        if msg == os.environ['KILL_CODE']: exit()
         if message == '':
             # TODO can be leak :/
             logger.info("Empty message from client")
@@ -2203,14 +2582,15 @@ async def handler(websocket):
                                                         # print(_[1:].lower())
                                                         if _[1:].lower().split(' ')[1] == 'create' and len(
                                                                 _[1:].lower().split(' ')) > 2 and not \
-                                                        _[1:].lower().split(' ')[2].replace(' ', '').replace(',',
-                                                                                                             '').replace(
-                                                                ']', '').replace('[', '') == "":
+                                                                _[1:].lower().split(' ')[2].replace(' ', '').replace(
+                                                                    ',',
+                                                                    '').replace(
+                                                                    ']', '').replace('[', '') == "":
 
                                                             try:
                                                                 if not _[1:].split(' ')[2].replace(' ', '').replace(',',
                                                                                                                     '').replace(
-                                                                        ']', '').replace('[', '') in Teams.keys():
+                                                                    ']', '').replace('[', '') in Teams.keys():
                                                                     if PlayersData[player]['TEAM'] is None:
                                                                         Teams[_[1:].split(' ')[2].replace(' ',
                                                                                                           '').replace(
@@ -2270,7 +2650,7 @@ async def handler(websocket):
                                                                     else:
                                                                         Teams[PlayersData[player]['TEAM']].pop(0)
                                                                         TeamsOwners[PlayersData[player]['TEAM']] = \
-                                                                        Teams[PlayersData[player]['TEAM']][0]
+                                                                            Teams[PlayersData[player]['TEAM']][0]
                                                                         PlayersData[player]['TEAM'] = None
                                                                         TeamRec.pop(player)
                                                                 else:
@@ -2309,7 +2689,7 @@ async def handler(websocket):
                                                                     if PlayersData[player]['TEAM'] in \
                                                                             PlayersData[_[1:].split(' ')[2]]['TEAMREQ']:
                                                                         PlayersData[_[1:].split(' ')[2]]['TEAM'] = \
-                                                                        PlayersData[player]['TEAM']
+                                                                            PlayersData[player]['TEAM']
                                                                         TeamRec[_[1:].split(' ')[2]] = [
                                                                             PlayersData[player]['TEAM'],
                                                                             datetime.datetime.now()]
@@ -2445,13 +2825,17 @@ async def handler(websocket):
                                 'Y': 14.5,
                                 'Z': vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['Z'],
                                 'STR': '',
+                                'STRID': 0,
+                                'STRARR': [],
                                 'COL': None,
                                 'PrevDIR': 0,
                                 'AMMOUPDATE': False,
                                 # "ZOOM":320,
                                 'VISB': set(),
+                                'VIS#': set(),
                                 'VISZ': set(),
                                 'VISG': set(),
+                                'VISC': set(),
                                 'VISS': set(),
                                 'VISBUL': set(),
                                 'VISBMB': set(),
@@ -2525,6 +2909,15 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['C']:
+                                                    if MAP['C'][_].intersects(Point(x, y).buffer(0.25)):
+                                                        inter = True
+                                                        break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
                                                 for _ in MAP['Q'][(int(x) + i, int(y) + j)]['PLAYERS']:
                                                     if PlayersData[_]["COL"].intersects(Point(x, y).buffer(0.25)):
                                                         inter1 = True
@@ -2557,6 +2950,25 @@ async def handler(websocket):
                                     for i in range(-1, 2):
                                         for j in range(-1, 2):
                                             try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['C']:
+                                                    if MAP['C'][_].intersects(Point(x, y).buffer(0.15)):
+                                                        inter = True
+                                                        break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
+                                                for _ in MAP['Q'][(int(x) + i, int(y) + j)]['#']:
+                                                    for t in MAP['#'][_]:
+                                                        if t.intersects(Point(x, y).buffer(0.15)):
+                                                            inter = True
+                                                            break
+                                            except:
+                                                pass
+                                    for i in range(-1, 2):
+                                        for j in range(-1, 2):
+                                            try:
                                                 for _ in MAP['Q'][(int(x) + i, int(y) + j)]['B']:
                                                     if MAP['B'][_].intersects(Point(x, y)):
                                                         inter0 = True
@@ -2574,6 +2986,7 @@ async def handler(websocket):
                                                 pass
                                 PlayersData[player]['X'] = x
                                 PlayersData[player]['Y'] = y
+                                PlayersData[player]['ONGROUND'] = True
                             elif vehicleinfo[PlayersCosmetics[player]['VEHICLE']]['SPAWN'] == 2:
                                 inter1 = True
                                 x = 0
@@ -2605,14 +3018,35 @@ async def handler(websocket):
                         Exit = True
                         pass
                     try:
+                        additionalstr = ""
                         if PlayersData[player]['STATUS'] == 'DEAD':
                             PlayersData[player]['STR'] = 'D'
                             PlayersData[player]['STATUS'] = 'AFK'
                             logger.info(f"Player {player} informed about death")
-                        await websocket.send(PlayersData[player]['STR'])
+
+                        if msgid != PlayersData[player]['STRID'] - 1:
+                            # logger.info(f"Player {player} missed msg")
+                            for _ in range(0, len(PlayersData[player]['STRARR'])):
+                                if PlayersData[player]['STRARR'][len(PlayersData[player]['STRARR']) - 1 - _][
+                                    0] == msgid:
+                                    msgid = len(PlayersData[player]['STRARR']) - _ - 1
+                                    break
+                            for _ in range(msgid, len(PlayersData[player]['STRARR'])):
+                                lns = PlayersData[player]['STRARR'][_][1].split('\n')
+                                for i in range(1, len(lns)):
+                                    try:
+                                        additionalstr += '\n' + lns[i]
+                                    except:
+                                        pass
+                        PlayersData[player]['STRARR'].append((PlayersData[player]['STRID'], PlayersData[player]['STR']))
+                        await websocket.send(
+                            str(PlayersData[player]['STRID']) + ',' + PlayersData[player]['STR'] + additionalstr)
+                        PlayersData[player]['STRID'] += 1
+                        if PlayersData[player]['STRID'] > 100:
+                            PlayersData[player]['STRID'] = 1
+                        if len(PlayersData[player]['STRARR']) > TPS * 3:
+                            PlayersData[player]['STRARR'].pop(0)
                     except Exception:
-                        pass
-                        # logging.exception("message")
                         for player in PlayersSockets.keys():
                             if PlayersSockets[player] == websocket:
                                 PlayersData[player]['STATUS'] = 'AFK'
@@ -2621,7 +3055,7 @@ async def handler(websocket):
                         continue
         elif message != 'info' and PLAYERS_LIMIT <= len(PlayersSockets):
             Exit = True
-            await websocket.send('E,Server is full')
+            await websocket.send('0,E,Server is full')
         elif message[0] == 'n' and len(message) > 1:
 
             name = message[1:].split('\n')[0]
@@ -2648,7 +3082,7 @@ async def handler(websocket):
                     logger.info(f"'{name}' is better")
             if name in PlayersSockets.keys():
                 logger.info(f"Name '{name}' captured")
-                await websocket.send('E,Somebody already have this name !')
+                await websocket.send('0,E,Somebody already have this name !')
                 continue
             else:
                 PlayersSockets[name] = websocket
@@ -2678,7 +3112,7 @@ async def handler(websocket):
                             PlayersAccs.pop(name)
                             PlayersCosmetics.pop(name)
 
-                            await websocket.send('E,Twin - ban')
+                            await websocket.send('0,E,Twin - ban')
                             logger.info(f"Twin '{name}'")
                             break
                     else:
@@ -2690,7 +3124,7 @@ async def handler(websocket):
                         logger.info(f"Map to '{name}' sent")
                         PlayersAccs[name]['NICK'] = message[1:].split('\n')[3]
                         PlayersAccs[name]['PSW'] = message[1:].split('\n')[4]
-                        await websocket.send('M' + MAPJSON)
+                        await websocket.send('0,M' + MAPJSON)
                 except:
                     print(API_SERV_ADDRESS + "item_check")
                     resp = (await requests.post(API_SERV_ADDRESS + "item_check",
@@ -2703,12 +3137,13 @@ async def handler(websocket):
                     if respJSON['vehicle'] < 0:
                         PlayersCosmetics[name]["VEHICLE"] = 0
                     logger.info(f"Map to '{name}' sent")
-                    await websocket.send('M' + MAPJSON)
+                    await websocket.send('0,M' + MAPJSON)
                 if PlayersCosmetics[name]['VEHICLE'] == 3: PlayersCosmetics[name]['COLOR'] = 228
                 PlayersAccs[name]['contime'] = datetime.datetime.now()
         elif message == 'info':
             await websocket.send(
-                ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',str(len(PlayersSockets))+'/'+str(PLAYERS_LIMIT)))
+                ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%', str(
+                    len(PlayersSockets)) + '/' + str(PLAYERS_LIMIT)))
             Exit = True
         await asyncio.sleep(1 / TPS)
     websocket.close()

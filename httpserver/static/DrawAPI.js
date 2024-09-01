@@ -228,15 +228,15 @@ function PdrawF(playername,poly=[[0,0],[0,0]],cos=0,sin=0, cls ={}){
         ctx.fill();
 	    ctx.stroke();
 }
-function DrawNickname(name, hp, hpmax,x,y){
+function DrawNickname(name, hp, hpmax,x,y,z=0){
+
     if (cameraMode) return
     var p = NoTeamTag(PlayerName)
-//      console.log(PlayerTags)
-//    console.log(p,PlayerTags.get(p),PlayerTags.get(name))
     if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
-    ctx.fillStyle = 'rgba(0,0,255,0.75)';
+        ctx.fillStyle = 'rgba(0,0,255,0.75)';
     }else{
-    ctx.fillStyle = 'rgba(255,0,0,0.75)';
+        if (z == 1 && Z != 1) return
+        ctx.fillStyle = 'rgba(255,0,0,0.75)';
     }
 
     ctx.strokeStyle = 'rgba(0,0,0,0.5)'

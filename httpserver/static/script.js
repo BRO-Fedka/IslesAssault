@@ -3,7 +3,24 @@ PIXI.sound.add("MainMenuMusic",{
     autoPlay:true
    })
 
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [
+     parseInt(result[1], 16),
+     parseInt(result[2], 16),
+     parseInt(result[3], 16)
+   ]: null;
+}
 
+function rgbToHex(r, g, b) {
+  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+let tree_size = new Map()
+tree_size.set(0,0.1)
+tree_size.set(1,0.15)
+tree_size.set(2,0.2)
+tree_size.set(3,0.25)
 
 document.onkeydown=function(event) {
     if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
@@ -110,7 +127,7 @@ function UpdtVolumes(){
     //MusicRange
 }
 var PlayerTags = new Map()
-function NoTeamTag(name, updTags=true){
+function NoTeamTag(name, updTags=false){
     if (name == undefined){
     return undefined
     }
@@ -190,20 +207,20 @@ function GetServerInfo(){
                 let soc = new WebSocket(document.getElementById('ServerAddress').value);
 
                 soc.addEventListener('open', function (event) {
-                    console.log('!');
+//                    console.log('!');
                     soc.send('info');
                 });
 
                 function taken(event) {
-                    console.log(event.data)
+//                    console.log(event.data)
                     var data = JSON.parse(event.data);
-                    console.log(data)
+//                    console.log(data)
                     document.getElementById('impprev').src = data.map;
                     document.getElementById('Map').src = data.map;
                     document.getElementById('online').innerHTML = "Players: "+data.online;
                     document.getElementById('text').innerHTML = data.text;
-                    console.log(data.js)
-                    console.log(document.getElementById('prevmpjs').src)
+//                    console.log(data.js)
+//                    console.log(document.getElementById('prevmpjs').src)
                     document.getElementById('prevmpjs').src = data.js;
                     BGLayers = data.bg;
                     UpdateBG()
@@ -222,7 +239,7 @@ function GetServerInfo(){
                     }
 
                     if (justbool || sessionStorage.getItem('VehicleSelectVal') =='' ||sessionStorage.getItem('VehicleSelectVal') ==null ){
-                        console.log(data.vehicleAvailable[0][1])
+//                        console.log(data.vehicleAvailable[0][1])
                         document.getElementById('VehicleSelect').value = data.vehicleAvailable[0][1]
 
                     }else{
@@ -411,7 +428,7 @@ MAP.set('b',new Map())
 MAP.set('s',new Map())
 MAP.set('z',new Map())
 MAP.set('g',new Map())
-
+let lastMSGid = 0
 function startgame() {
     document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
@@ -435,17 +452,26 @@ function startgame() {
 				vehicle = Number(document.getElementById('VehicleSelect').value)
 			});
 			function taken(event) {
-				if (event.data[0] == 'E'){
+			    lastMSGid = event.data.split(',')[0]
+			    let eventdata = event.data.slice(lastMSGid.length+1,event.data.length)
+//			    console.log(eventdata)
+			    lastMSGid = Number(lastMSGid)
+				if (eventdata[0] == 'E'){
 				    GameStatus= "Error"
 					document.getElementById('TitleScreen').classList = ['titlescrh']
 					document.getElementById("chkInterfaceHide").checked = false
-					alert( event.data.split(',')[1])
-				}else if(event.data[0] == 'M'){
+					alert( eventdata.split(',')[1])
+				}else if(eventdata[0] == 'M'){
                     document.getElementById('TitleScreen').classList = ['titlescrh']
                     var xmlHttp = new XMLHttpRequest();
-                    xmlHttp.open( "GET", event.data.substring(1), false ); // false for synchronous request
+                    xmlHttp.open( "GET", eventdata.substring(1), false ); // false for synchronous request
                     xmlHttp.send( null );
                     MAPstatic = JSON.parse(xmlHttp.responseText);
+                    for (let _ in MAPstatic['#']){
+                        for(let t in MAPstatic['#'][_]){
+                            MAPstatic['#'][_][t].push(0)
+                        }
+                    }
                     WH = MAPstatic['WH']
                     ZonesNum.innerHTML = ''
                     for(let _ = 0; _ < MAPstatic['*'].length; _++){
@@ -455,7 +481,7 @@ function startgame() {
                     setTimeout(function(){UpdateObjs = true}, 300);
                     socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString());
 				}
-				else if (event.data[0] == 'D'){
+				else if (eventdata[0] == 'D'){
 						GameStatus = "MainMenu"
 						PlayersData = new Map()
 						PIXI.sound.play('MainMenuMusic');
@@ -469,13 +495,13 @@ function startgame() {
                         StartMainMusicPlay = Date.now()
                         Players = []
                         socket.close();
-				}else if (event.data[0] == 'R'){
+				}else if (eventdata[0] == 'R'){
 						socket.close();
 						SaveMusicPos()
 						location.replace(event.data.slice(1));
 				}else {
  					MSGTKNDT = new Date();
-					INFO = event.data;
+					INFO = eventdata;
 					PING = Date.now() - LastPING;
 					LastPING = Date.now();
 					let infarr = INFO.split('\n');
@@ -500,9 +526,11 @@ function startgame() {
                                 argarr.push(splstr[_])
 					}
                     if (!(PlayerName=="" || PlayerName == undefined)){
-                    PlayerName = splstr[1].split(']')[splstr[1].split(']').Count - 1]
+//                        console.log(PlayerName)
+                        PlayerName = NoTeamTag(PlayerName,true)
+//                        console.log(PlayerName)
                         Players.push([PlayerName,CurVehicle]);
-                        Vehicles[CurVehicle].updatep(NoTeamTag(PlayerName),argarr)
+                        Vehicles[CurVehicle].updatep(PlayerName,argarr)
                     }else{
                     UpdateObjs= true
                     }
@@ -544,7 +572,7 @@ function startgame() {
                             }
                             if (!(PN=="" || PN == undefined)){
                                 Players.push([PN,CV]);
-                                Vehicles[CV].update(NoTeamTag(PN),argarr)
+                                Vehicles[CV].update(NoTeamTag(PN,true),argarr)
                             }
 						}else 	if (larr[0] == 'a' ){
 							ammo.set('120mm',Number(larr[1]));
@@ -677,6 +705,11 @@ function startgame() {
 								div.scrollIntoView();
 								MSGs.push(Number(larr[3]))
 							}
+						}else 	if (larr[0] == '#'){
+
+							for (let _ = 2; _ < larr.length; _ += 2) {
+                                MAPstatic['#'][larr[1]][larr[_]][6] = larr[_+1]
+							}
 						}else 	if (larr[0] == 'p'){
 
                             if (larr.length > 3){
@@ -691,6 +724,7 @@ function startgame() {
 						}else 	if (larr[0] == 'b'){
                             if (larr.length > 3){
                                 if (!(BombsData.has(larr[1]))){
+//                                console.log(Number(larr[6]))
                                 BombsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false,Number(larr[8])])
                                 }
                             }else{
@@ -789,14 +823,14 @@ function startgame() {
 
 					if (Send == true){
 					    if(messagebtn.innerText == "Team"){
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
+					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
 					    }else{
-					    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
+					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
 					    }
 						messageinput.value = ''
 						Send=false
 					}else{
-						socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
+						socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
 					}
 					SENDB = ''
 					SENDS = ''
@@ -813,11 +847,11 @@ function startgame() {
 			socket.onerror =  function (e) {
 				document.getElementById('TitleScreen').classList = ['titlescrh']
 				document.getElementById("chkInterfaceHide").checked = false
-				console.log('ERROR')
+//				console.log('ERROR')
 			}
 
 		} catch (err){
-		    console.log(err,err.stack)
+//		    console.log(err,err.stack)
 		}
 	}
 }
@@ -917,6 +951,7 @@ let start = null;
 let timenow = Date.now()
 let VisibleObjs = new Object()
 let UpdateObjs = true
+let QupdtSequence = 0
 function DRAW(timestamp)  {
 
 try{
@@ -957,15 +992,12 @@ try{
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
     if (GameStatus == "InGame"){
-        if (Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY) || UpdateObjs){
-            if (UpdateObjs){
-            console.log(UpdateObjs)
-            }
+        if (((Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY))&& QupdtSequence != X*nX+Y*nY) || UpdateObjs){
             VisibleObjs = new Object()
             UpdateObjs = false
             for (let x=Math.round(X)-VIEW_X-2; x < Math.round(X)+VIEW_X+2; x++){
                 for (let y=Math.round(Y)-VIEW_Y-2; y < Math.round(Y)+VIEW_Y+2; y++){
-                    try{
+                    if (x < 0 || y <0 || x >= WH || y >= WH) continue
         //                console.log(MAPstatic
         //                console.log(MAPstatic['Q'][x])
                         let q = MAPstatic['Q'][x][y]
@@ -979,10 +1011,13 @@ try{
                                 VisibleObjs[q_keys[_]].add(i)
                             }
                         }
-                    }catch{}
+
                 }
 
-            }}
+            }
+            QupdtSequence = X*nX+Y*nY
+
+            }
 
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
@@ -1016,7 +1051,22 @@ try{
 			ctx.closePath();
 			ctx.stroke();
     }
-
+	for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+		    ctx.strokeStyle = MAPstatic.CT.zs;
+			ctx.lineJoin = 'bevel';
+			ctx.beginPath();
+            ctx.lineWidth = 60/320*Zoom;
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.stroke();
+    }
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
 		    ctx.strokeStyle = MAPstatic.CT.zf;
@@ -1039,6 +1089,22 @@ try{
 			ctx.lineJoin = 'bevel';
 			ctx.beginPath();
             ctx.lineWidth = 40/320*Zoom;
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.stroke();
+    }
+    	for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+		    ctx.strokeStyle = MAPstatic.CT.zf;
+			ctx.lineJoin = 'bevel';
+			ctx.beginPath();
+            ctx.lineWidth = 30/320*Zoom;
 			for (let l = 0; l < _.length; l += 1) {
 					if (l == 0) {
 						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1137,17 +1203,18 @@ if (ParticlesProcessing){
 		    TorpedosData.delete(_)
 		}
 	}
-	for (let __ of VisibleObjs['_']){
-	        let _ = MAPstatic['_'][__]
-                    ctx.beginPath()
-                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.closePath()
-                    ctx.strokeStyle = MAPstatic.CT.b2
-                    ctx.lineCap = 'square';
-                    ctx.lineWidth = 70/320*Zoom;
-                    ctx.stroke();
-    }
+    if(Z!=0){
+    for (let __ of VisibleObjs['_']){
+        let _ = MAPstatic['_'][__]
+                ctx.beginPath()
+                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.closePath()
+                ctx.strokeStyle = MAPstatic.CT.b2
+                ctx.lineCap = 'square';
+                ctx.lineWidth = 70/320*Zoom;
+                ctx.stroke();
+    }}
 
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
@@ -1185,6 +1252,76 @@ if (ParticlesProcessing){
 			ctx.fill();
 			ctx.stroke();
     }
+    if(Z==0){
+    for (let __ of VisibleObjs['_']){
+        let _ = MAPstatic['_'][__]
+                ctx.beginPath()
+                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                ctx.closePath()
+                ctx.strokeStyle = MAPstatic.CT.b2
+                ctx.lineCap = 'square';
+                ctx.lineWidth = (60)/320*Zoom;
+                ctx.stroke();
+    }}
+    for (let __ of VisibleObjs['C']){
+	        let _ = MAPstatic['C'][__]
+            ctx.fillStyle = MAPstatic.CT.cf;
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 2.5/320*Zoom;
+            ctx.lineJoin = 'bevel';
+            ctx.beginPath();
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+			ctx.closePath();
+			ctx.fill();
+			ctx.stroke();
+    }
+    for (let __ of VisibleObjs['R']){
+	        let _ = MAPstatic['R'][__]
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 40/320*Zoom;
+
+            ctx.beginPath();
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+
+			ctx.stroke();
+			ctx.closePath();
+			ctx.lineCap = 'square';
+			ctx.lineJoin = 'bevel';
+    }
+        for (let __ of VisibleObjs['R']){
+	        let _ = MAPstatic['R'][__]
+            ctx.lineWidth = 2/320*Zoom;
+			ctx.strokeStyle = MAPstatic.CT.rd;
+            ctx.setLineDash([10/320*Zoom,10/320*Zoom])
+            ctx.beginPath();
+			for (let l = 0; l < _.length; l += 1) {
+					if (l == 0) {
+						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+					} else {
+						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+					}
+			}
+
+			ctx.stroke();
+			ctx.setLineDash([])
+			ctx.closePath();
+
+    }
 
     for (let _ = 0; _ < MAPstatic['*'].length; _++) {
                 ctx.lineWidth= 10/320*Zoom;
@@ -1196,13 +1333,14 @@ if (ParticlesProcessing){
                     ctx.fillStyle = 'rgba(0,0,255,0.25)';
                 }
                 ctx.textAlign = 'center'
-                ctx.font = (300/320*Zoom).toString()+"px ZCOOL QingKe HuangYou";
+                ctx.font = (MAPstatic['*'][_][3]*300/320*Zoom).toString()+"px ZCOOL QingKe HuangYou";
                 ctx.beginPath()
-                ctx.arc(GameW/2 + OffsetX - (X - MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2+ OffsetY - (Y - MAPstatic['*'][_][2]+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, 160/320*Zoom, 0, Math.PI * 2);
-                ctx.fillText(MAPstatic['*'][_][0],GameW/2+ OffsetX - (X- MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2+ OffsetY- (Y- MAPstatic['*'][_][2] + (nY - Y) * (Date.now() - LastPING) / PING )*Zoom+100/320*Zoom);
+                ctx.arc(GameW/2 + OffsetX - (X - MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2+ OffsetY - (Y - MAPstatic['*'][_][2]+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, MAPstatic['*'][_][3]*Zoom/2, 0, Math.PI * 2);
+                ctx.fillText(MAPstatic['*'][_][0],GameW/2+ OffsetX - (X- MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2+ OffsetY- (Y- MAPstatic['*'][_][2] + (nY - Y) * (Date.now() - LastPING) / PING )*Zoom+MAPstatic['*'][_][3]*100/320*Zoom);
                 ctx.closePath()
                 ctx.stroke();
     }
+
     ctx.lineWidth=5;
     ctx.beginPath();
     ctx.rect(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, WH*Zoom, WH*Zoom);
@@ -1284,8 +1422,25 @@ if (ParticlesProcessing){
 	}else{
 	FireParticles0 = []
 	}
+    for (let __ of VisibleObjs['_']){
+	        ctx.lineCap = 'butt';
+	        let _ = MAPstatic['_'][__]
+            len = 0.1/Math.sqrt( (_[0]- _[2])*(_[0]- _[2])+(_[1]- _[3])*(_[1]- _[3]))
+            ctx.beginPath()
+            ctx.lineCap = 'butt';
+            ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+            ctx.moveTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.closePath()
+            ctx.strokeStyle = MAPstatic.CT.cs;
+            ctx.lineWidth = 60/320*Zoom;
+            ctx.stroke();
+    }
 	if (Z >0){
 	for (let __ of VisibleObjs['_']){
+	        ctx.lineCap = 'square';
 	        let _ = MAPstatic['_'][__]
                     ctx.beginPath()
                     ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1299,6 +1454,37 @@ if (ParticlesProcessing){
                         ctx.lineWidth = 50/320*Zoom;
                         ctx.stroke();
     }}
+        for (let __ of VisibleObjs['#']){
+
+	        let _ = MAPstatic['#'][__]
+
+
+
+			for (let l = 0; l < _.length; l += 1) {
+                if (_[l][6] == 2) {
+
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.cs
+                    ctx.lineWidth = 2/320*Zoom
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.closePath();
+                }
+
+
+			}
+
+
+
+    }
     for (let _ = 0; _ < Players.length; _++) {
         if (Players[_][0]  == PlayerName){
             Vehicles[Players[_][1]].drawp("OnGround-2",NoTeamTag(Players[_][0]))
@@ -1504,6 +1690,158 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
+    for (let __ of VisibleObjs['#']){
+
+	        let _ = MAPstatic['#'][__]
+
+
+
+			for (let l = 0; l < _.length; l += 1) {
+			    if (_[l][6]%2==1) {
+                    if (_[l][6] == 3){
+//                        PIXI.sound.play('bang');
+//                        for (let i = 0; i < 5; i++) {
+//                            BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
+//                        }
+                        ShakeXbnds += 10
+                        ShakeYbnds += 1
+                    }else{
+
+                    }
+                    _[l][6]-=1
+			    }
+                if (_[l][6] == 2) {
+
+                    continue
+                }
+
+                if (_[l][0] == 0){
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    if (_[l][3] > _[l][4]){
+                        poly = [[0, -_[l][3]/2], [0, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
+                    }else{
+                        poly = [[ -_[l][4]/2,0], [ _[l][4]/2,0], [ _[l][4]/2,_[l][3]/2], [ -_[l][4]/2, _[l][3]/2]]
+                    }
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.rr
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.closePath();
+                    if (_[l][3] > _[l][4]){
+                        poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [0, _[l][3]/2], [0, -_[l][3]/2]]
+                    }else{
+                        poly = [[-_[l][4]/2,-_[l][3]/2 ], [_[l][4]/2,-_[l][3]/2 ], [ _[l][4]/2,0], [ -_[l][4]/2,0]]
+                    }
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.rl
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.closePath();
+                }else if(_[l][0] == 1){
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    poly = [[ -_[l][3],0], [_[l][3],0 ]]
+                    ctx.beginPath();
+
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineCap = 'butt'
+                    ctx.lineWidth = _[l][4]*Zoom/2
+                    ctx.strokeStyle = MAPstatic.CT['w'+l%3]
+                    ctx.stroke();
+                    ctx.strokeStyle = MAPstatic.CT['e'+l%3]
+                    ctx.setLineDash([2/320*Zoom,2/320*Zoom])
+                    ctx.stroke();
+                    ctx.setLineDash([])
+                    ctx.closePath();
+
+                }else if(_[l][0] == 2){
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    poly = [[-_[l][3]/2, -_[l][3]/2], [-_[l][3]/2, _[l][3]/2], [_[l][3]/2, _[l][3]/2], [_[l][3]/2, -_[l][3]/2]]
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.if
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.is
+                    ctx.arc(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom +GameH/2 + OffsetY,_[l][3]/2*Zoom,0 , Math.PI*2 )
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.io
+                    ctx.arc(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom +GameH/2 + OffsetY,_[l][3]*Zoom/3,0 , Math.PI*2 )
+                    ctx.fill();
+                    ctx.closePath();
+
+                }else if(_[l][0] == 3){
+                    let poly = []
+                    let cos = Math.cos(_[l][5]/180*Math.PI)
+                    let sin = Math.sin(_[l][5]/180*Math.PI)
+                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
+                    ctx.beginPath();
+                    ctx.fillStyle = MAPstatic.CT.hf
+                    ctx.strokeStyle = MAPstatic.CT.hs
+                    ctx.lineWidth = 2/320*Zoom
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+                    cos = Math.cos(_[l][5]/180*Math.PI)
+                    sin = Math.sin(_[l][5]/180*Math.PI)
+
+                    if (_[l][3] > _[l][4]){
+                        poly = [[ 0,-_[l][3]/2], [0,_[l][3]/2 ]]
+                    }else{
+                        poly = [[ -_[l][4]/2,0], [_[l][4]/2,0]]
+                    }
+                    ctx.beginPath();
+
+                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+                    for (let p = 1; p < poly.length; p+=1) {
+                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+                    }
+                    ctx.lineCap = 'butt'
+                    if (_[l][3] > _[l][4]){
+                        ctx.lineWidth = _[l][4]*Zoom
+                    }else{
+                        ctx.lineWidth = _[l][3]*Zoom
+                    }
+                    ctx.strokeStyle = MAPstatic.CT.hs
+                    ctx.setLineDash([2/320*Zoom,6/320*Zoom])
+                    ctx.stroke();
+                    ctx.setLineDash([])
+                    ctx.closePath();
+                }
+
+			}
+
+
+
+    }
 	if (ParticlesProcessing){
 	for (i=FireParticles1.length-1; i>=0; i--) {
             ctx.fillStyle = "rgba(255," + 255*FireParticles1[i].life/60+","+255*((FireParticles1[i].life/60)**3)+"," +( Math.sin(FireParticles1[i].life/60*Math.PI)*0.75)+")";
@@ -1545,9 +1883,90 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
+	let alpha = 'ff'
+    if (Z == 1){
+        alpha = "88"
+    }
+    for (let __ of VisibleObjs['T']){
+
+	        let _ = MAPstatic['T'][__]
+
+
+			for (let l = 0; l < _.length; l += 1) {
+
+
+			    if (_[l][0] == 0){
+			        ctx.beginPath();
+
+			        ctx.fillStyle = MAPstatic.CT.tf+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.tm+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*24)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*15)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.tt+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*541)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.beginPath();
+			    }
+			    else if (_[l][0] == 1){
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.ff+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.fm+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*463)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
+			        ctx.fill();
+			        ctx.closePath();
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.ft+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING  - tree_size.get(_[l][3])*Math.cos(l*765)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*245)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*1/3,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.beginPath();
+			    }
+			    else if (_[l][0] == 2){
+			        ctx.lineWidth = Zoom * tree_size.get(_[l][3])/12
+			        ctx.beginPath();
+			        ctx.fillStyle = MAPstatic.CT.pf+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
+			        ctx.fill();
+                    ctx.closePath();
+                    ctx.beginPath();
+			        ctx.strokeStyle = MAPstatic.CT.pm+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/3,0,2*Math.PI)
+			        ctx.stroke();
+                    ctx.closePath();
+                    ctx.beginPath();
+			        ctx.strokeStyle = MAPstatic.CT.pt+alpha;
+			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2/3,0,2*Math.PI)
+			        ctx.stroke();
+                    ctx.closePath();
+			    }
+
+			}
+
+
+
+    }
 
     for (let _ of BombsData.keys()){
+
         let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
+        let dst = 0
+        if (!(BombsData.get(_)[4] < 5)){
+            relt = Math.sin((relt-0.5)*Math.PI)/2+0.5
+            dst = Math.sqrt((BombsData.get(_)[2]-BombsData.get(_)[0])**2+(BombsData.get(_)[3]-BombsData.get(_)[1])**2)
+
+        }
+//        console.log(dst)
+//        console.log(relt)
+
         let x = BombsData.get(_)[0]+(BombsData.get(_)[2]-BombsData.get(_)[0])*relt
         let y = BombsData.get(_)[1]+(BombsData.get(_)[3]-BombsData.get(_)[1])*relt
         if(BombsData.get(_)[4] == 1){
@@ -1561,6 +1980,8 @@ if (ParticlesProcessing){
 		}else if(BombsData.get(_)[4] == 2){
                     PIXI.sound.play('bombFall');
                      BombsData.get(_)[4] = 0
+		}else if(BombsData.get(_)[4] == 6){
+                     BombsData.get(_)[4] = 5
 		}else if(BombsData.get(_)[4] == 4){
             PIXI.sound.play('wtrBang');
 			for (let i = 0; i < 5; i++) {
@@ -1569,17 +1990,37 @@ if (ParticlesProcessing){
             ShakeXbnds += 5
 			ShakeYbnds += 5
 		}
-		ctx.strokeStyle = '#111';
-		ctx.lineWidth= 3/320*Zoom;
-		ctx.beginPath()
-		 ctx.lineCap='round';
-		 bmbLen = 0.015
-        ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-        ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		ctx.stroke();
-        ctx.closePath()
+        if (BombsData.get(_)[4] < 5) {
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth= 3/320*Zoom;
+            ctx.beginPath()
+             ctx.lineCap='round';
+             let bmbLen = 0.015
+            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.stroke();
+            ctx.closePath()
+        }else if(relt*dst > 0.05){
+
+            let bmbLen = dst/3* (1-Math.abs(relt-0.5)*2)+0.025
+            grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - x +Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+            grad.addColorStop(1,"rgba(255,255,64,0)");
+            grad.addColorStop(0,"rgba(255,255,64,"+(Math.abs(relt-0.5)*2*0.4+0.1).toString()+")");
+
+            ctx.strokeStyle = grad
+            ctx.lineWidth= (10-Math.abs(relt-0.5)*10)/320*Zoom;
+            ctx.beginPath()
+             ctx.lineCap='round';
+
+            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+            ctx.stroke();
+            ctx.closePath()
+        }
+
 		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
-		console.log(x,y)
+//		console.log(x,y)
 		    BombsData.delete(_)
 		}
     }
@@ -1855,7 +2296,7 @@ if (ParticlesProcessing){
         window.requestAnimationFrame(DRAW);
        }catch(e)
        {
-       console.log(e,e.stack)
+//       console.log(e,e.stack)
        window.requestAnimationFrame(DRAW);
        }
 }
