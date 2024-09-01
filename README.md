@@ -125,7 +125,9 @@ I wanted the game to be open-source, for random users would make custom servers,
 > Now it's possible, but I don't recommend you to do it yet, because there is so much code to refactor, many things can be changed.
 #### So all information about mods, custom map and servers will be added later.
 ___
-## :man: Contacts
+## :loud_sound: Music
+* Main theme: "Sea wolfs" Author: Shivery (Discord - ___en1y___ )
+## :man: Author
 * [VK - Фёдор Самохин (Feodor Samokhin)](https://vk.com/bro_fedka)
 * Discord - ___BRO_Fedka#5077___ or ___bro_fedka___ 
 * Telegram - ___@BRO_Fedka___
