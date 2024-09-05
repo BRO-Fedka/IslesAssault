@@ -2145,11 +2145,13 @@ async def game():
                         if PlayersInputs[player]['view'] == 1 and PlayersCosmetics[player]['VEHICLE'] == 0:
                             dst = math.sqrt((PlayersInputs[player]['x']) ** 2 + (PlayersInputs[player]['y']) ** 2)
                             if dst > 3: dst = 3
-                            dst = dst + 0.05*dst - random.random()*dst*0.1
+                            dst = dst + 0.05 * dst - random.random() * dst * 0.1
                             shtdir = _[7] - caninfo[_[0]][7] + random.random() * caninfo[_[0]][7] * 2
                             Bombs[LastBombI] = [PlayersData[player]["X"] + a[0], PlayersData[player]["Y"] + a[1],
-                                                PlayersData[player]["X"] + a[0] + math.cos(shtdir/180*math.pi)*dst,
-                                                PlayersData[player]["Y"] + a[1] + math.sin(shtdir/180*math.pi)*dst, time.time(),
+                                                PlayersData[player]["X"] + a[0] + math.cos(
+                                                    shtdir / 180 * math.pi) * dst,
+                                                PlayersData[player]["Y"] + a[1] + math.sin(
+                                                    shtdir / 180 * math.pi) * dst, time.time(),
                                                 player,
                                                 _[7], 40, 7,
                                                 0.125, 4]
@@ -2522,6 +2524,7 @@ async def handler(websocket):
         msg = ""
         msgid = 0
         message = ""
+        recieved_msg = set()
         try:
             msg = await websocket.recv()
             try:
@@ -3018,32 +3021,33 @@ async def handler(websocket):
                         Exit = True
                         pass
                     try:
+                        recieved_msg.add(msgid)
                         additionalstr = ""
                         if PlayersData[player]['STATUS'] == 'DEAD':
                             PlayersData[player]['STR'] = 'D'
                             PlayersData[player]['STATUS'] = 'AFK'
                             logger.info(f"Player {player} informed about death")
-
-                        if msgid != PlayersData[player]['STRID'] - 1:
-                            # logger.info(f"Player {player} missed msg")
-                            for _ in range(0, len(PlayersData[player]['STRARR'])):
-                                if PlayersData[player]['STRARR'][len(PlayersData[player]['STRARR']) - 1 - _][
-                                    0] == msgid:
-                                    msgid = len(PlayersData[player]['STRARR']) - _ - 1
-                                    break
-                            for _ in range(msgid, len(PlayersData[player]['STRARR'])):
-                                lns = PlayersData[player]['STRARR'][_][1].split('\n')
-                                for i in range(1, len(lns)):
-                                    try:
-                                        additionalstr += '\n' + lns[i]
-                                    except:
-                                        pass
+                        missed = set(range(min(recieved_msg),max(recieved_msg))) - recieved_msg
+                        if 0 < len(missed):
+                            logger.info(f"Player {player} missed msg")
+                            # for _ in range(0, len(PlayersData[player]['STRARR'])):
+                            #     if PlayersData[player]['STRARR'][len(PlayersData[player]['STRARR']) - 1 - _][0] == msgid:
+                            #         msgid = len(PlayersData[player]['STRARR']) - _ - 1
+                            #         break
+                            # for _ in range(msgid, len(PlayersData[player]['STRARR'])):
+                            #     lns = PlayersData[player]['STRARR'][_][1].split('\n')
+                            #     for i in range(1, len(lns)):
+                            #         try:
+                            #             additionalstr += '\n' + lns[i]
+                            #         except:
+                            #             pass
                         PlayersData[player]['STRARR'].append((PlayersData[player]['STRID'], PlayersData[player]['STR']))
                         await websocket.send(
                             str(PlayersData[player]['STRID']) + ',' + PlayersData[player]['STR'] + additionalstr)
                         PlayersData[player]['STRID'] += 1
-                        if PlayersData[player]['STRID'] > 100:
+                        if PlayersData[player]['STRID'] > 10000:
                             PlayersData[player]['STRID'] = 1
+                            recieved_msg = set()
                         if len(PlayersData[player]['STRARR']) > TPS * 3:
                             PlayersData[player]['STRARR'].pop(0)
                     except Exception:

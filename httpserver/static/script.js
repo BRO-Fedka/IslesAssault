@@ -1958,6 +1958,7 @@ if (ParticlesProcessing){
     for (let _ of BombsData.keys()){
 
         let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
+        if (relt > 1) relt = 1
         let dst = 0
         if (!(BombsData.get(_)[4] < 5)){
             relt = Math.sin((relt-0.5)*Math.PI)/2+0.5
