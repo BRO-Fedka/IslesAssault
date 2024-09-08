@@ -174,7 +174,14 @@
 			<br>
 			<br>
 			<br>
-			<input onclick="play_click_sound();startgamebtn()" id="PlayBTN" value="Play" type="button"> </div>
+			<input onclick="play_click_sound();startgamebtn()" id="PlayBTN" value="Play" type="button">
+		</div>
+		<div id="yandex_rtb_R-A-11896339-1" class="central-banner">
+
+
+
+
+		</div>
 		<div class="scrollbar unselectable RightForm">
 			<h2>Color</h2>
 			<div id="ColorMenu" class="scrollbar">
@@ -243,7 +250,16 @@
 	<script type="text/javascript" src="static/index.js"></script>
 	<script type="text/javascript" src="static/DrawAPI.js"></script>
 	<script type="text/javascript" id="prevmpjs"></script>
-
+	<script>window.yaContextCb=window.yaContextCb||[]</script>
+	<script src="https://yandex.ru/ads/system/context.js" async></script>
+	<script>
+	window.yaContextCb.push(() => {
+		Ya.Context.AdvManager.render({
+			"blockId": "R-A-11896339-1",
+			"renderTo": "yandex_rtb_R-A-11896339-1"
+		})
+	})
+	</script>
 </body>
 
 </html>
