@@ -2,10 +2,10 @@
 .central-banner{
     border-radius: 4px;
     position: fixed;
-    height: 150px;
+
     z-index: 10;
     top: calc(50% + 160px);
-    width: 300px;
+
     left: 50%;
     transform: translateX(-50%);
 }
