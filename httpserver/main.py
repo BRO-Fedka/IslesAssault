@@ -201,6 +201,9 @@ def shop():
     if not 'logged' in session or session['logged'] == False:
         return "LOGIN"
     acc = Account.query.filter_by(nickname=session['name']).first()
+    if acc is None:
+        session['logged'] = True
+        return "LOGIN"
     itemsArr = []
     allItems = Item.query.all()
     print(allItems)
@@ -208,7 +211,7 @@ def shop():
     for item in allItems:
         if acc.lvl >= item.lvl:
             itemsArr.append(
-                (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() != None))
+                (item.data_as_tuple(), Account_Item.query.filter_by(accID=acc.id, itemID=item.id).first() is not None))
 
     return render_template('shop.html', money=str(acc.money), vehicles=itemsArr, lenvehicles=len(itemsArr))
 
@@ -314,7 +317,7 @@ def index():
                 servers.append([server.name, server.address])
         return render_template('index.html', servers=servers, money=str(m), logged=logged, name=session['name'],
                                passw=session['pswh'], colors=colors, colorslen=len(colors), vehicles=[], lenvehicles=0,
-                               version=VERSION, updateName=UPDATE_NAME)  # ,logged = logged, name = session['name']
+                               version=VERSION, updateName='LOL')  # ,logged = logged, name = session['name']
 
     servers = []
     if isDEV:
