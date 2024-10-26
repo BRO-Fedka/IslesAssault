@@ -10,6 +10,7 @@ import datetime
 from server.Vehicle.VehiclesDict import *
 from World import World
 from server.Camera import Camera
+from server.Types import PlayerInputData
 
 TPS = int(os.environ['TPS'])
 MAPJSON = os.environ['JSON_MAP']
@@ -33,30 +34,9 @@ class MessageParsingException(Exception):
     pass
 
 
-@dataclasses.dataclass
-class PlayerInputData:
-    mouse_0: bool = False
-    up: bool = False
-    down: bool = False
-    right: bool = False
-    left: bool = False
-    first_weapon: bool = False
-    second_weapon: bool = False
-    tab: bool = False
-    z_aiming_mode: int = 0
-    shooting_mode: bool = False
-    view: int = 0
-    cursor_x: float = 0
-    cursor_y: float = 0
-    date: datetime.datetime = datetime.datetime.now()
-
-
 class Player:
     _instances: List = []
-    inputs: PlayerInputData = PlayerInputData()
-    name: str = None
-    vehicle: Vehicle = None
-    camera: Camera = None
+
     @classmethod
     def get_amount(cls) -> int:
         return len(cls._instances)
@@ -107,6 +87,10 @@ class Player:
         self.money: int = 0
         self.logged: bool = False
         self.websocket = None
+        self.inputs: PlayerInputData = PlayerInputData()
+        self.name: str = None
+        self.vehicle: Vehicle = None
+        self.camera: Camera = None
 
     @staticmethod
     async def init(websocket, message: str, world: World):
@@ -133,6 +117,8 @@ class Player:
         await websocket.send('M' + MAPJSON)
         self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id)
         self.camera = Camera(self.vehicle)
+        self.vehicle.name = self.name
+        world.space.step(0.1)
         await self.loop()
 
     def parse_message(self, message: str):
@@ -166,7 +152,8 @@ class Player:
             try:
                 message = await self.websocket.recv()
                 self.parse_message(message)
-                await self.websocket.send(self.name+","+self.camera.get_picture())
+                self.vehicle.update(self.inputs)
+                await self.websocket.send("0," + self.camera.get_picture())
             except MessageParsingException:
                 self.disconnect()
                 logger.info("MessageParsingException")

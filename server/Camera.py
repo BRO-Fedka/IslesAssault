@@ -7,8 +7,9 @@ class Camera:
 
     def __init__(self, observable: I_ProcessedByCamera):
         self.observable = observable
+        self.z = 0
 
     def get_picture(self) -> str:
-        string = self.observable.get_private_info_string()
-        #TODO [ I stopped here don't remember anything]
+        string = f'{self.z},'+self.observable.get_private_info_string()
+        self.observable.get_world()
         return string

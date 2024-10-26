@@ -43,7 +43,7 @@ class Connection:
                 return
         except:
             logger.exception("")
-            websocket.close()
+            await websocket.close()
             return
 
     async def init(self):

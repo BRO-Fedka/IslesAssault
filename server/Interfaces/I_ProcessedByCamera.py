@@ -1,8 +1,12 @@
 from typing import Protocol
 from server.Types import coords
+from World import World
 
 
 class I_ProcessedByCamera(Protocol):
+
+    def get_world(self) -> World:
+        pass
 
     def get_coords(self) -> coords:
         pass

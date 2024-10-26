@@ -4,6 +4,7 @@ Vehicles = {
 hp:1000,
 views:1,
 viewsIcons:[''],
+
 f:{
         '0': '#131313',
         '1': '#2a200c',
@@ -108,40 +109,39 @@ updatep:function(playername,argarr){
         }
         PlayersData.get(playername).prevX = PlayersData.get(playername).actX
         PlayersData.get(playername).prevY = PlayersData.get(playername).actY
-        PlayersData.get(playername).actX = Number(argarr[5])
-        PlayersData.get(playername).actY = Number(argarr[6])
+        PlayersData.get(playername).actX = Number(argarr[4])
+        PlayersData.get(playername).actY = Number(argarr[5])
         PlayersData.get(playername).prevDIR = PlayersData.get(playername).actDIR
         PlayersData.get(playername).actDIR = Number(argarr[3])
-        PlayersData.get(playername).COLOR =Number( argarr[11])
+        PlayersData.get(playername).COLOR =Number( argarr[1])
         PlayersData.get(playername).CNs[0].pDIR = PlayersData.get(playername).CNs[0].DIR;
-        PlayersData.get(playername).CNs[0].DIR = Number((argarr[9]).substring(1));
-        PlayersData.get(playername).CNs[0].STS = Number((argarr[9]).substring(0,1));
+        PlayersData.get(playername).CNs[0].DIR = Number((argarr[6]).substring(1));
+        PlayersData.get(playername).CNs[0].STS = Number((argarr[6]).substring(0,1));
         PlayersData.get(playername).CNs[1].pDIR = PlayersData.get(playername).CNs[1].DIR;
-        PlayersData.get(playername).CNs[1].DIR = Number((argarr[10]).substring(1));
-        PlayersData.get(playername).CNs[1].STS = Number((argarr[10]).substring(0,1));
-        Z = Number(argarr[7])
+        PlayersData.get(playername).CNs[1].DIR = Number((argarr[8]).substring(1));
+        PlayersData.get(playername).CNs[1].STS = Number((argarr[8]).substring(0,1));
         nX=PlayersData.get(playername).actX
         nY=PlayersData.get(playername).actY
         X=PlayersData.get(playername).prevX
         Y=PlayersData.get(playername).prevY
-        hp.innerHTML = argarr[4] + '/1000'
-        tornum.innerText= argarr[0]
-        smknum.innerText = argarr[1]
+        hp.innerHTML = argarr[2] + '/1000'
+        tornum.innerText= argarr[10]
+        smknum.innerText = argarr[11]
         gasnum.innerHTML = 'GAS: '+Number(argarr[2]*25)
         dirnum.innerHTML = 'DIR: '+argarr[3]
-        spdnum.innerHTML = 'SPD: '+argarr[8];
-        xnum.innerHTML = 'X: ' + Math.round(argarr[5]*100)/100;
-        ynum.innerHTML = 'Y: ' + Math.round(argarr[6]*100)/100;
-        if (Number( argarr[12]) == 1){
-            document.getElementById('TorLoading').style.display = "block"
-        }else{
-        document.getElementById('TorLoading').style.display = "none"
-        }
-        if (Number( argarr[13]) == 1){
-            document.getElementById('SmkLoading').style.display = "block"
-        }else{
-        document.getElementById('SmkLoading').style.display = "none"
-        }
+        spdnum.innerHTML = 'SPD: ?';
+        xnum.innerHTML = 'X: ' + Math.round(argarr[4]*100)/100;
+        ynum.innerHTML = 'Y: ' + Math.round(argarr[5]*100)/100;
+//        if (Number( argarr[12]) == 1){
+//            document.getElementById('TorLoading').style.display = "block"
+//        }else{
+//        document.getElementById('TorLoading').style.display = "none"
+//        }
+//        if (Number( argarr[13]) == 1){
+//            document.getElementById('SmkLoading').style.display = "block"
+//        }else{
+//        document.getElementById('SmkLoading').style.display = "none"
+//        }
      }
 },
 update:function(playername,argarr){
