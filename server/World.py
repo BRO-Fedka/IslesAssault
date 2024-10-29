@@ -1,18 +1,41 @@
 import pymunk
+from typing import List
+import asyncio
+import os
+import dotenv
 import json
-from server.StaticObject import StaticObject
-from server.StaticObjects.Beach import Beach
-from server.functions import get_finite_inherits
+from server.constants import COL_B, COL_S, COL_C
+
+dotenv.load_dotenv()
+WORLD_TPS = int(os.environ['TPS'])
 
 
 class World:
-    def __init__(self, map_path: str):
-        with open(map_path) as file:
-            data = json.load(file)
-        self.__available_map_components = get_finite_inherits(StaticObject)
-        self.__wh = data['WH']
-        for mc in self.__available_map_components:
-            mc.init_all(data, self)
+    collision_layers: List[pymunk.Space]
 
-        self.space0:pymunk.Space = pymunk.Space()
-        self.space0.gravity = 0, 0
+    def __init__(self):
+        self.space = pymunk.space.Space()
+        self.space.gravity = 0, 0
+        self.data = json.load(open("MAP.json"))
+        self.wh = self.data['WH']
+        self.Bs = []
+        for poly in self.data['B']:
+            pol = pymunk.Poly(self.space.static_body, poly)
+            self.Bs.append(pol)
+            pol.filter = COL_B
+            self.space.add(pol)
+        for poly in self.data['S']:
+            pol = pymunk.Poly(self.space.static_body, poly)
+            self.Bs.append(pol)
+            pol.filter = COL_S
+            self.space.add(pol)
+        for poly in self.data['C']:
+            pol = pymunk.Poly(self.space.static_body, poly)
+            self.Bs.append(pol)
+            pol.filter = COL_C
+            self.space.add(pol)
+
+    async def init(self):
+        while True:
+            await asyncio.sleep(1 / WORLD_TPS)
+            self.space.step(1 / WORLD_TPS)

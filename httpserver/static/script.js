@@ -462,6 +462,7 @@ function startgame() {
 					document.getElementById("chkInterfaceHide").checked = false
 					alert( eventdata.split(',')[1])
 				}else if(eventdata[0] == 'M'){
+
                     document.getElementById('TitleScreen').classList = ['titlescrh']
                     var xmlHttp = new XMLHttpRequest();
                     xmlHttp.open( "GET", eventdata.substring(1), false ); // false for synchronous request
@@ -509,28 +510,31 @@ function startgame() {
 					Players = []
 					splstr = infarr[0].split(',')
 					PlayerTags = new Map()
-					PlayerName = splstr[1]
-					CurVehicle = splstr[0]
-					Money = splstr[2]
-					Zones = splstr[splstr.length -1].toString()
-					for(let _ = 0; _ < Zones.length; _++){
-                        let tmp = document.getElementById("zone"+_.toString());
-                        if (Zones[_] == '1'){
-                            tmp.style.background = '#44f'
-                        }else{
-                            tmp.style.background = '#f00'
-                        }
-					}
+					PlayerName = splstr[4]
+					CurVehicleID = splstr[2]
+					CurVehicleType = splstr[3]
+//					console.log(INFO)
+					Z = Number(splstr[1])
+					Money = splstr[0]
+//					Zones = splstr[splstr.length -1].toString()
+//					for(let _ = 0; _ < Zones.length; _++){
+//                        let tmp = document.getElementById("zone"+_.toString());
+//                        if (Zones[_] == '1'){
+//                            tmp.style.background = '#44f'
+//                        }else{
+//                            tmp.style.background = '#f00'
+//                        }
+//					}
 					argarr = []
-					for (let _ = 3; _ < splstr.length; _++){
+					for (let _ = 4; _ < splstr.length; _++){
                                 argarr.push(splstr[_])
 					}
                     if (!(PlayerName=="" || PlayerName == undefined)){
 //                        console.log(PlayerName)
                         PlayerName = NoTeamTag(PlayerName,true)
 //                        console.log(PlayerName)
-                        Players.push([PlayerName,CurVehicle]);
-                        Vehicles[CurVehicle].updatep(PlayerName,argarr)
+                        Players.push([PlayerName,CurVehicleType]);
+                        Vehicles[CurVehicleType].updatep(PlayerName,argarr)
                     }else{
                     UpdateObjs= true
                     }
@@ -991,7 +995,7 @@ try{
 	ctx.fillStyle = MAPstatic.CT.bg;
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
-    if (GameStatus == "InGame"){
+    if (GameStatus == "InGame" || true){
         if (((Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY))&& QupdtSequence != X*nX+Y*nY) || UpdateObjs){
             VisibleObjs = new Object()
             UpdateObjs = false

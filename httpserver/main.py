@@ -317,7 +317,7 @@ def index():
                 servers.append([server.name, server.address])
         return render_template('index.html', servers=servers, money=str(m), logged=logged, name=session['name'],
                                passw=session['pswh'], colors=colors, colorslen=len(colors), vehicles=[], lenvehicles=0,
-                               version=VERSION, updateName='LOL')  # ,logged = logged, name = session['name']
+                               version=VERSION, updateName=UPDATE_NAME)  # ,logged = logged, name = session['name']
 
     servers = []
     if isDEV:
@@ -333,7 +333,7 @@ def index():
         colors.append([color.info, color.imgLink])
 
     return render_template('index.html', servers=servers, logged=False, name='', colors=colors, colorslen=len(colors),
-                           vehicles=[], lenvehicles=0, money=0, passw='', version=VERSION)
+                           vehicles=[], lenvehicles=0, money=0, passw='', version=VERSION, updateName=UPDATE_NAME)
 
 
 @app.route('/play')
