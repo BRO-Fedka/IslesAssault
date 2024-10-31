@@ -7,7 +7,7 @@ import requests as req_sync
 from server.World import World
 import sys
 from server.Player import Player
-
+import logging
 isDEV = os.environ['DEV']
 
 if not isDEV:
@@ -34,8 +34,11 @@ class Connection:
                 sys.exit()
 
             elif message[0] == 'n' and len(message) > 1:
-                await Player.init(websocket, message, self.world)
-
+                try:
+                    await Player.init(websocket, message, self.world)
+                except:
+                    logging.exception('')
+                    await websocket.close()
             elif message == 'info':
                 await websocket.send(
                     ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',str(Player.get_amount())))
@@ -48,6 +51,7 @@ class Connection:
 
     async def init(self):
         logger.info(req_sync.post(API_SERV_ADDRESS + "connect", {'key': API_KEY}).text)
+        print(self.world.chunks_with_objects)
         if isDEV:
             async with websockets.serve(self.handler, os.environ["HOST"], os.environ["PORT"]):
                 await asyncio.Future()
@@ -55,3 +59,4 @@ class Connection:
             async with websockets.serve(self.handler, os.environ["HOST"], os.environ["PORT"],
                                         ssl=ssl_context):
                 await asyncio.Future()
+

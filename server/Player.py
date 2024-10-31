@@ -8,7 +8,7 @@ from typing import Dict, Any, List
 import dataclasses
 import datetime
 from server.Vehicle.VehiclesDict import *
-from World import World
+from server.World import World
 from server.Camera import Camera
 from server.Types import PlayerInputData
 
@@ -91,10 +91,12 @@ class Player:
         self.name: str = None
         self.vehicle: Vehicle = None
         self.camera: Camera = None
+        self.world: World = None
 
     @staticmethod
     async def init(websocket, message: str, world: World):
         self = Player()
+        self.world = world
         self.websocket = websocket
         self.name = self.validate_name(message[1:].split('\n')[0], message[1:].split('\n')[3])
         color_id = int(message[1:].split('\n')[1])
@@ -116,9 +118,9 @@ class Player:
             return
         await websocket.send('0,M' + MAPJSON)
         self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id)
-        self.camera = Camera(self.vehicle)
+        self.camera = Camera(self.vehicle,world)
         self.vehicle.name = self.name
-        world.space.step(0.1)
+        # world.space.step(0.1)
         await self.loop()
 
     def parse_message(self, message: str):
@@ -160,7 +162,7 @@ class Player:
             try:
                 message = await self.websocket.recv()
                 self.parse_message(message)
-                self.vehicle.update(self.inputs)
+                self.vehicle.update_input(self.inputs)
                 await self.websocket.send("0,0," + self.camera.get_picture())
             except MessageParsingException:
                 self.disconnect()

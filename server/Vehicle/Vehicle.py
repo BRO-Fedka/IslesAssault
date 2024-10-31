@@ -17,16 +17,20 @@ class Vehicle(I_ProcessedByCamera):
         self.body = pymunk.Body()
         self.shape = None
         self.vehicle_type_id = '?'
-        self.last_vehicle_id += 1
-        self.id = self.last_vehicle_id
+        self.__class__.last_vehicle_id += 1
+        self.id = self.__class__.last_vehicle_id
         self.body.position = 1,1
         self.hp = 1
         self.x = 0
         self.y = 0
         self.modules: List[Module] = []
         self.name = ""
+        self.world.add_object(self)
 
-    def update(self, input: PlayerInputData):
+    def update(self) -> coords:
+        return coords(self.body.position.x,self.body.position.y)
+
+    def update_input(self, input: PlayerInputData):
         self.update_modules(input)
 
     def update_modules(self, input: PlayerInputData):
@@ -37,7 +41,24 @@ class Vehicle(I_ProcessedByCamera):
         return self.world
 
     def get_coords(self) -> coords:
-        return coords(self.body.x, self.body.y)
+        return coords(self.body.position.x, self.body.position.y)
+
+    def get_public_info_string_on_appearance(self) -> str:
+        return ''
+
+    def get_public_info_string_on_disappearance(self) -> str:
+        return ''
+
+    def get_public_info_string(self) -> str:
+        # If HP = -1, no health bar display
+
+        # ID,veh_type_id,name,color,HP,dir,x,y
+
+        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.hp},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
+        for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
+            string += string_of_module
+
+        return string
 
     def get_private_info_string(self) -> str:
         # TODO {("[" + str(PlayersData[player]["TEAM"]) + "]") * int(not PlayersData[player]["TEAM"] is None) + player},{PlayersAccs[player]["money"]}
@@ -45,16 +66,10 @@ class Vehicle(I_ProcessedByCamera):
 
         # If HP = -1, no health bar display
 
-        # ID,veh_type_id,color,HP,dir,x,y
-        # print(self.body.position)
+        # ID,veh_type_id,name,color,HP,dir,x,y
 
         string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.hp},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
 
         return string
-        # f'{PlayersCosmetics[player]["VEHICLE"]},,{PlayersData[player]["TORPEDOS"]},{PlayersData[player]["SMOKES"]},' + str(
-        #                     PlayersData[player][
-        #                         'GAS'] / 25) + f',{str(int(PlayersData[player]["DIR"]))},{PlayersData[player]["HP"]},{int(PlayersData[player]["X"] * 1000) / 1000},{int(PlayersData[player]["Y"] * 1000) / 1000},{PlayersData[player]["Z"] * 2 + int(PlayersData[player]["ONGROUND"])},' + str(
-        #                     int(PlayersData[player]['SPEED'] / vehicleinfo[PlayersCosmetics[player]['VEHICLE']][
-        #                         'GROUNDSPEED'] * 100))

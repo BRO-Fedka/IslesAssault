@@ -2,9 +2,11 @@ from typing import NamedTuple
 import dataclasses
 import datetime
 
+
 class coords(NamedTuple):
     x: float
     y: float
+
 
 @dataclasses.dataclass
 class PlayerInputData:

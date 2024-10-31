@@ -567,16 +567,19 @@ function startgame() {
 								MSGs.push(Number(larr[2]))
 							}
 						}else 	if (larr[0] == '+' ){
-                            PN = larr[1]
-                            CV = larr[2]
+//						    console.log(larr)
+                            PN = larr[3]
+                            CVID = larr[1]
+                            CVT = larr[2]
                             argarr = []
-                            for (let _ = 3; _ < larr.length; _++){
+                            for (let _ = 4; _ < larr.length; _++){
 
                                         argarr.push(larr[_])
                             }
                             if (!(PN=="" || PN == undefined)){
-                                Players.push([PN,CV]);
-                                Vehicles[CV].update(NoTeamTag(PN,true),argarr)
+                                PN = NoTeamTag(PN,true)
+                                Players.push([PN,CVT]);
+                                Vehicles[CVT].update(PN,argarr)
                             }
 						}else 	if (larr[0] == 'a' ){
 							ammo.set('120mm',Number(larr[1]));

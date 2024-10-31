@@ -163,19 +163,18 @@ update:function(playername,argarr){
         }
         PlayersData.get(playername).prevX = PlayersData.get(playername).actX
         PlayersData.get(playername).prevY = PlayersData.get(playername).actY
-        PlayersData.get(playername).actX = Number(argarr[2])
-        PlayersData.get(playername).actY = Number(argarr[3])
+        PlayersData.get(playername).actX = Number(argarr[3])
+        PlayersData.get(playername).actY = Number(argarr[4])
         PlayersData.get(playername).prevDIR = PlayersData.get(playername).actDIR
-        PlayersData.get(playername).actDIR = Number(argarr[0])
+        PlayersData.get(playername).actDIR = Number(argarr[2])
         PlayersData.get(playername).CNs[0].pDIR = PlayersData.get(playername).CNs[0].DIR;
         PlayersData.get(playername).CNs[0].DIR = Number((argarr[5]).substring(1));
         PlayersData.get(playername).CNs[0].STS = Number((argarr[5]).substring(0,1));
         PlayersData.get(playername).CNs[1].pDIR = PlayersData.get(playername).CNs[1].DIR;
-        PlayersData.get(playername).CNs[1].DIR = Number((argarr[5]).substring(1));
-        PlayersData.get(playername).CNs[1].STS = Number((argarr[5]).substring(0,1));
-        PlayersData.get(playername).Z = Number(argarr[4])
+        PlayersData.get(playername).CNs[1].DIR = Number((argarr[6]).substring(1));
+        PlayersData.get(playername).CNs[1].STS = Number((argarr[6]).substring(0,1));
         PlayersData.get(playername).HP = Number(argarr[1])
-        PlayersData.get(playername).COLOR =Number( argarr[7])
+        PlayersData.get(playername).COLOR =Number( argarr[0])
      }
 }
 },

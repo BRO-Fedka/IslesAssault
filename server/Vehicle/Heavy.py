@@ -37,18 +37,18 @@ class Heavy(Vehicle):
         self.body.angle = -math.pi/2
 
     def get_public_info_string(self) -> str:
-        pass
+        return super().get_public_info_string()
 
     def get_public_info_string_on_appearance(self) -> str:
-        pass
+        return ''
 
     def get_public_info_string_on_disappearance(self) -> str:
-        pass
+        return ''
 
     def get_private_info_string(self) -> str:
         return super().get_private_info_string()
 
-    def update(self, input: PlayerInputData):
-        super().update(input)
+    def update_input(self, input: PlayerInputData):
+        super().update_input(input)
 
 
