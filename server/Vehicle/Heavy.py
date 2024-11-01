@@ -1,7 +1,7 @@
 from server.Vehicle.Vehicle import Vehicle, World
 import pymunk
 import math
-from server.constants import COL_ON_WATER
+from server.constants import COL_ON_WATER, COLTYPE_VEHICLE
 from server.Modules.MortarCannon import MortarCannon
 from server.Modules.TorpedoFrontalTube import TorpedoFrontalTube
 from server.Modules.SmokeGenerator import SmokeGenerator
@@ -23,14 +23,16 @@ class Heavy(Vehicle):
         self.vehicle_type_id = VEHICLE_ID
         self.body.mass = 1
         self.shape.mass = 1
+        self.shape.master = self
+        self.shape.collision_type = COLTYPE_VEHICLE
         self.modules = [
-            MortarCannon(),
-            MortarCannon(),
-            TorpedoFrontalTube(12),
-            SmokeGenerator(5),
-            ShipSteering(-0.15,0),
-            WaterResistance(POLY_SHAPE, POLY_SHAPE_N, max_speed=0.1),
-            ShipEngine(force=0.05)
+            MortarCannon(self.body),
+            MortarCannon(self.body),
+            TorpedoFrontalTube(self.world, self.body,12),
+            SmokeGenerator(self.world,5),
+            ShipSteering(self.body,-0.15,0),
+            WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.1),
+            ShipEngine(self.body,-0.15,0,force=0.05)
 
 
         ]

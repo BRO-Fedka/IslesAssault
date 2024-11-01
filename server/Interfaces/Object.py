@@ -2,8 +2,13 @@ from typing import Protocol
 from server.Types import coords
 
 
-class I_ProcessedByCamera(Protocol):
-    def update(self) -> coords:
+class Object:
+    is_active = True
+
+    def remove_from_space(self):
+        pass
+
+    def update(self):
         pass
 
     def get_coords(self) -> coords:
@@ -19,4 +24,7 @@ class I_ProcessedByCamera(Protocol):
         pass
 
     def get_private_info_string(self) -> str:
+        pass
+
+    def does_exists(self) -> bool:
         pass

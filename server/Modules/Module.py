@@ -8,11 +8,14 @@ class Module:
     def __init__(self):
         pass
 
-    def update_module_return_hp(self,body: Body,input: PlayerInputData) -> int:
+    def update_module(self):
+        pass
+
+    def update_module_input(self, input: PlayerInputData) :
         pass
 
     def get_public_info_string(self) -> str:
-        pass
+        return ""
 
     def get_private_info_string(self) -> str:
-        pass
+        return ""

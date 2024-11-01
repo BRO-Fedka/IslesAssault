@@ -16,8 +16,9 @@ caninfo = {
 }
 
 s = ''
-cans = [['p',0-0.025, 0,100,datetime.datetime.now(),None,True,0,0]]
-arr = [[0.02, 0.011],[0.02, -0.011],[0.01, -0.011],[0.01, -0.05],[-0.015, -0.05],[-0.015, -0.011],[-0.025, -0.011],[-0.05, -0.007],[-0.05, -0.02],[-0.065, -0.02],[-0.065, 0.02],[-0.05, 0.02],[-0.05, 0.006],[-0.025, 0.011],[-0.015, 0.011],[-0.015, 0.05],[0.01, 0.05],[0.01, 0.011]]
+cans = [['m', 0, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0],
+                ['m', 0 - 0.095, 0, 50, datetime.datetime.now(), None, True, 0, 0, 0]]
+arr = [(0.15, 0), (0, 0.06), (-0.15, 0.045), (-0.15, -0.045), (0, -0.06)]
 for _ in arr:
     s += str(_[0]) + ' ' + str(_[1]) +','
 print(s)
@@ -28,5 +29,5 @@ for _ in cans:
     s = s.replace('{A}',str(_[1])).replace('{B}',str(_[2])).replace('{C}',str(caninfo[_[0]][0]))
     s = s.replace('{D}', str(_[1])).replace('{E}', str(_[2])).replace('{F}', str(_[1])).replace('{G}', str(_[2]-caninfo[_[0]][1])).replace('{H}', str(caninfo[_[0]][2]))
     svg+=s
-a = open('../httpserver/static/veh5.svg', 'w')
+a = open('./test.svg', 'w')
 a.write(svg+'\n</svg>')

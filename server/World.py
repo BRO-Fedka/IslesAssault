@@ -6,12 +6,13 @@ import dotenv
 import json
 from server.constants import COL_B, COL_S, COL_C
 from server.Types import coords
-from server.Interfaces.I_ProcessedByCamera import I_ProcessedByCamera
+from server.Interfaces.Object import Object
 import math
+import logging
 
 dotenv.load_dotenv()
 WORLD_TPS = int(os.environ['TPS'])
-Chunks = Dict[Sequence[int], Set[I_ProcessedByCamera]]
+Chunks = Dict[Sequence[int], Set[Object]]
 
 
 class World:
@@ -23,7 +24,7 @@ class World:
         self.data = json.load(open("MAP.json"))
         self.wh = self.data['WH']
         self.Bs = []
-        self._objects: Set[I_ProcessedByCamera] = set()
+        self._objects: Set[Object] = set()
         self.chunks_with_objects: Chunks = {}
         for x in range(0, self.wh):
             for y in range(0, self.wh):
@@ -51,10 +52,21 @@ class World:
             for x in range(0, self.wh):
                 for y in range(0, self.wh):
                     self.chunks_with_objects[(x, y)].clear()
+            delarr = []
             for obj in self._objects:
-                coord: coords = obj.update()
+                obj.update()
+                coord: coords = obj.get_coords()
                 # print(self.chunks_with_objects)
-                self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))].add(obj)
+                try:
+                    if obj.is_active:
+                        self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))].add(obj)
+                    else:
+                        obj.remove_from_space()
+                        delarr.append(obj)
+                except:
+                    logging.exception('')
+            for obj in delarr:
+                self._objects.remove(obj)
 
     def get_objects_in_chunk(self, coord: coords):
         # print(math.floor(coord.x),math.floor(coord.y))
@@ -63,5 +75,5 @@ class World:
         except KeyError:
             return set()
 
-    def add_object(self, obj: I_ProcessedByCamera):
+    def add_object(self, obj: Object):
         self._objects.add(obj)

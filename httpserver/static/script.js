@@ -513,7 +513,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = splstr[2]
 					CurVehicleType = splstr[3]
-//					console.log(INFO)
+					console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -1222,13 +1222,14 @@ if (ParticlesProcessing){
                 ctx.lineWidth = 70/320*Zoom;
                 ctx.stroke();
     }}
-
+    ctx.fillStyle = MAPstatic.CT.bf;
+    ctx.strokeStyle = MAPstatic.CT.bs;
+    ctx.lineWidth = ((Math.sin(timenow/50/180*Math.PI)+1)*7+3)/320*Zoom;
 	for (let __ of VisibleObjs['B']){
 	        let _ = MAPstatic['B'][__]
-			ctx.fillStyle = MAPstatic.CT.bf;
-			ctx.strokeStyle = MAPstatic.CT.bs;
+
 			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
+                    ctx.beginPath();
 			for (let l = 0; l < _.length; l += 1) {
 					if (l == 0) {
 						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
@@ -1237,15 +1238,26 @@ if (ParticlesProcessing){
 					}
 			}
 			ctx.closePath();
-			ctx.lineWidth = ((Math.sin(timenow/50/180*Math.PI)+1)*5+2)/320*Zoom;
-			ctx.fill();
 			ctx.stroke();
     }
+    for (let __ of VisibleObjs['B']){
+        let _ = MAPstatic['B'][__]
+        ctx.beginPath();
+        for (let l = 0; l < _.length; l += 1) {
+                if (l == 0) {
+                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                } else {
+                    ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+                }
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.fillStyle = MAPstatic.CT.gf;
+    ctx.strokeStyle = MAPstatic.CT.gs;
 	for (let __ of VisibleObjs['G']){
 	        let _ = MAPstatic['G'][__]
-            ctx.fillStyle = MAPstatic.CT.gf;
-            ctx.strokeStyle = MAPstatic.CT.gs;
-            ctx.lineWidth = 10/320*Zoom;
+            ctx.lineWidth = 20/320*Zoom;
             ctx.lineJoin = 'bevel';
             ctx.beginPath();
 			for (let l = 0; l < _.length; l += 1) {
@@ -1256,8 +1268,21 @@ if (ParticlesProcessing){
 					}
 			}
 			ctx.closePath();
-			ctx.fill();
 			ctx.stroke();
+    }
+
+    for (let __ of VisibleObjs['G']){
+        let _ = MAPstatic['G'][__]
+        ctx.beginPath();
+        for (let l = 0; l < _.length; l += 1) {
+                if (l == 0) {
+                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+                } else {
+                    ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+                }
+        }
+        ctx.closePath();
+        ctx.fill();
     }
     if(Z==0){
     for (let __ of VisibleObjs['_']){

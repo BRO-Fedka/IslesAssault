@@ -1,5 +1,5 @@
 from server.World import World
-from server.Interfaces.I_ProcessedByCamera import I_ProcessedByCamera
+from server.Interfaces.Object import Object
 from server.Types import coords, PlayerInputData
 import pymunk
 import math
@@ -7,7 +7,7 @@ from server.Modules.Module import Module
 from typing import List
 
 
-class Vehicle(I_ProcessedByCamera):
+class Vehicle(Object):
     last_vehicle_id: int = 0
 
     def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1):
@@ -15,27 +15,33 @@ class Vehicle(I_ProcessedByCamera):
         self.color_id = color_id
         self.tracer_id = tracer_id
         self.body = pymunk.Body()
+        self.body.master = self
         self.shape = None
         self.vehicle_type_id = '?'
         self.__class__.last_vehicle_id += 1
         self.id = self.__class__.last_vehicle_id
-        self.body.position = 1,1
+        self.body.position = 7,7
         self.hp = 1
-        self.x = 0
-        self.y = 0
         self.modules: List[Module] = []
         self.name = ""
         self.world.add_object(self)
 
-    def update(self) -> coords:
-        return coords(self.body.position.x,self.body.position.y)
+    def remove_from_space(self):
+        self.world.space.remove(self.body)
+
+    def update(self):
+        self.update_modules()
 
     def update_input(self, input: PlayerInputData):
-        self.update_modules(input)
+        self.update_modules_input(input)
 
-    def update_modules(self, input: PlayerInputData):
+    def update_modules(self):
         for module in self.modules:
-            self.hp += module.update_module_return_hp(self.body, input)
+            module.update_module()
+
+    def update_modules_input(self, input: PlayerInputData):
+        for module in self.modules:
+            module.update_module_input(input)
 
     def get_world(self) -> World:
         return self.world

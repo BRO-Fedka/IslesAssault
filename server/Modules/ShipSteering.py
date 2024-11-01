@@ -5,50 +5,61 @@ from server.constants import COF_WATER_RESISTANCE
 import math
 
 
+RIGHT = 2
+LEFT = 1
+STRAIGHT = 0
+
+
 class ShipSteering(Module):
     physical = False
 
-    def __init__(self, x, y, l=0.1, deg=5, passive_friction_cof=0.001):
+    def __init__(self,body:Body, x, y, l=0.1, deg=5, passive_friction_cof=0.001):
+        super().__init__()
         self.x = x
         self.y = y
         self.l = l
+        self.body = body
         self.deg = deg / 180 * math.pi
         self.passive_friction_cof = passive_friction_cof
-        super().__init__()
+        self.direction = STRAIGHT
 
-    def update_module_return_hp(self, body: Body, input: PlayerInputData) -> int:
-        deg = body.velocity.angle + math.pi - body.angle
-        r_vec = (math.cos(deg) * COF_WATER_RESISTANCE * body.velocity.length ** 2,
-                 math.sin(deg) * COF_WATER_RESISTANCE * body.velocity.length ** 2)
-        friction = body.velocity.length ** 2 * COF_WATER_RESISTANCE * self.passive_friction_cof
-        body.apply_force_at_local_point(
+    def update_module(self):
+        # print('4')
+        deg = self.body.velocity.angle + math.pi - self.body.angle
+        r_vec = (math.cos(deg) * COF_WATER_RESISTANCE * self.body.velocity.length ** 2,
+                 math.sin(deg) * COF_WATER_RESISTANCE * self.body.velocity.length ** 2)
+        friction = self.body.velocity.length ** 2 * COF_WATER_RESISTANCE * self.passive_friction_cof
+        self.body.apply_force_at_local_point(
             (math.cos(deg) * friction, math.sin(deg) * friction),
-            body.center_of_gravity)
-        l_r_vec = COF_WATER_RESISTANCE * body.velocity.length ** 2
+            self.body.center_of_gravity)
+        l_r_vec = COF_WATER_RESISTANCE * self.body.velocity.length ** 2
         n1 = (0, 1)
         n2 = (0, -1)
-        if input.right:
+        if self.direction == RIGHT:
             n1 = (math.sin(self.deg), math.cos(self.deg))
             n2 = (-math.sin(self.deg), -math.cos(self.deg))
 
-        elif input.left:
+        elif self.direction == LEFT:
             n1 = (math.sin(self.deg), -math.cos(self.deg))
             n2 = (-math.sin(self.deg), math.cos(self.deg))
-        if body.velocity.length == 0:
+        if self.body.velocity.length == 0:
             return 0
         cos1 = r_vec[0] * n1[0] + r_vec[1] * n1[1] / math.sqrt(
             r_vec[0] ** 2 + r_vec[1] ** 2) / math.sqrt(n1[0] ** 2 + n1[1] ** 2)
         if cos1 < 0:
-            body.apply_force_at_local_point((n1[0] * cos1 * self.l*l_r_vec, n1[1] * cos1 * self.l*l_r_vec), (self.x, self.y))
+            self.body.apply_force_at_local_point((n1[0] * cos1 * self.l*l_r_vec, n1[1] * cos1 * self.l*l_r_vec), (self.x, self.y))
         cos2 = r_vec[0] * n2[0] + r_vec[1] * n2[1] / math.sqrt(
             r_vec[0] ** 2 + r_vec[1] ** 2) / math.sqrt(n2[0] ** 2 + n2[1] ** 2)
         if cos2 < 0:
-            body.apply_force_at_local_point((n2[0] * cos2 * self.l*l_r_vec, n2[1] * cos2 * self.l*l_r_vec), (self.x, self.y))
+            self.body.apply_force_at_local_point((n2[0] * cos2 * self.l*l_r_vec, n2[1] * cos2 * self.l*l_r_vec), (self.x, self.y))
+        # print('!')
 
-        return 0
+    def update_module_input(self, input: PlayerInputData):
 
-    def get_public_info_string(self) -> str:
-        return ''
+        if input.right:
+            self.direction = RIGHT
 
-    def get_private_info_string(self) -> str:
-        return ''
+        elif input.left:
+            self.direction = LEFT
+        else:
+            self.direction = STRAIGHT
