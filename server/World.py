@@ -8,6 +8,7 @@ from server.constants import COL_B, COL_S, COL_C
 from server.Types import coords
 from server.Interfaces.Object import Object
 import math
+import datetime
 import logging
 
 dotenv.load_dotenv()
@@ -47,7 +48,7 @@ class World:
 
     async def init(self):
         while True:
-            await asyncio.sleep(1 / WORLD_TPS)
+            start = datetime.datetime.now()
             self.space.step(1 / WORLD_TPS)
             for x in range(0, self.wh):
                 for y in range(0, self.wh):
@@ -55,6 +56,7 @@ class World:
             delarr = []
             for obj in self._objects:
                 obj.update()
+                # print('!')
                 coord: coords = obj.get_coords()
                 # print(self.chunks_with_objects)
                 try:
@@ -67,6 +69,8 @@ class World:
                     logging.exception('')
             for obj in delarr:
                 self._objects.remove(obj)
+
+            await asyncio.sleep(1 / WORLD_TPS - (datetime.datetime.now() - start).total_seconds())
 
     def get_objects_in_chunk(self, coord: coords):
         # print(math.floor(coord.x),math.floor(coord.y))

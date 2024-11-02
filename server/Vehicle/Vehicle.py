@@ -5,6 +5,7 @@ import pymunk
 import math
 from server.Modules.Module import Module
 from typing import List
+from server.Vehicle.Contollers.HealthController import HealthController
 
 
 class Vehicle(Object):
@@ -20,10 +21,10 @@ class Vehicle(Object):
         self.vehicle_type_id = '?'
         self.__class__.last_vehicle_id += 1
         self.id = self.__class__.last_vehicle_id
-        self.body.position = 7,7
-        self.hp = 1
+        self.body.position = 7, 7
         self.modules: List[Module] = []
         self.name = ""
+        self.health_controller: HealthController = HealthController(self.body)
         self.world.add_object(self)
 
     def remove_from_space(self):
@@ -60,7 +61,7 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.hp},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
+        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
             string += string_of_module
 
@@ -74,7 +75,7 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.hp},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
+        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
 

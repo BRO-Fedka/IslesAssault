@@ -10,12 +10,12 @@ class WaterResistance(Module):
     physical = False
 
     def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.1):
-        self.poly_shape = poly_shape
-        self.poly_shape_n = poly_shape_n
+        super().__init__()
+        self.poly = poly_shape
+        self.poly_n = poly_shape_n
         self.resistance_cof = resistance_cof
         self.max_speed = max_speed
         self.body = body
-        super().__init__()
 
     def update_module(self):
         deg = self.body.velocity.angle + math.pi - self.body.angle
@@ -28,34 +28,34 @@ class WaterResistance(Module):
                                              self.body.center_of_gravity)
         if self.body.velocity.length == 0:
             return
-        for coord in range(0, len(self.poly_shape)):
+        for coord in range(0, len(self.poly)):
             l = math.sqrt(
-                (self.poly_shape[coord][0] - self.poly_shape[(coord + 1) % len(self.poly_shape)][0]) ** 2 + (
-                        self.poly_shape[coord][1] - self.poly_shape[(coord + 1) % len(self.poly_shape)][1]) ** 2)
-            point = ((self.poly_shape[coord][0] + self.poly_shape[(coord + 1) % len(self.poly_shape)][0]) / 2,
-                     (self.poly_shape[coord][1] + self.poly_shape[(coord + 1) % len(self.poly_shape)][1]) / 2)
-            cos = r_vec[0] * self.poly_shape_n[coord][0] + r_vec[1] * self.poly_shape_n[coord][1] / math.sqrt(
+                (self.poly[coord][0] - self.poly[(coord + 1) % len(self.poly)][0]) ** 2 + (
+                        self.poly[coord][1] - self.poly[(coord + 1) % len(self.poly)][1]) ** 2)
+            point = ((self.poly[coord][0] + self.poly[(coord + 1) % len(self.poly)][0]) / 2,
+                     (self.poly[coord][1] + self.poly[(coord + 1) % len(self.poly)][1]) / 2)
+            cos = r_vec[0] * self.poly_n[coord][0] + r_vec[1] * self.poly_n[coord][1] / math.sqrt(
                 r_vec[0] ** 2 + r_vec[1] ** 2) / math.sqrt(
-                self.poly_shape_n[coord][0] ** 2 + self.poly_shape_n[coord][1] ** 2)
-            n_len = math.sqrt(self.poly_shape_n[coord][0] ** 2 + self.poly_shape_n[coord][1] ** 2)
+                self.poly_n[coord][0] ** 2 + self.poly_n[coord][1] ** 2)
+            n_len = math.sqrt(self.poly_n[coord][0] ** 2 + self.poly_n[coord][1] ** 2)
             if cos < 0:
-                self.body.apply_force_at_local_point((self.poly_shape_n[coord][
+                self.body.apply_force_at_local_point((self.poly_n[coord][
                                                           0] / n_len * cos * l_r_vec * l * self.resistance_cof,
-                                                      self.poly_shape_n[coord][
+                                                      self.poly_n[coord][
                                                           1] / n_len * cos * l_r_vec * l * self.resistance_cof), point)
             vec_from_cntr_grav = (point[0] - self.body.center_of_gravity.x, point[1] - self.body.center_of_gravity.y)
             vec_from_cntr_grav_l = math.sqrt(vec_from_cntr_grav[0] ** 2 + vec_from_cntr_grav[1] ** 2)
             rotated_vec_from_cntr_grav = (vec_from_cntr_grav[1], -vec_from_cntr_grav[0])
-            cos = rotated_vec_from_cntr_grav[0] * self.poly_shape_n[coord][0] + rotated_vec_from_cntr_grav[1] * \
-                  self.poly_shape_n[coord][1] / math.sqrt(
+            cos = rotated_vec_from_cntr_grav[0] * self.poly_n[coord][0] + rotated_vec_from_cntr_grav[1] * \
+                  self.poly_n[coord][1] / math.sqrt(
                 rotated_vec_from_cntr_grav[0] ** 2 + rotated_vec_from_cntr_grav[1] ** 2) / math.sqrt(
-                self.poly_shape_n[coord][0] ** 2 + self.poly_shape_n[coord][1] ** 2)
+                self.poly_n[coord][0] ** 2 + self.poly_n[coord][1] ** 2)
             m = COF_WATER_RESISTANCE * vec_from_cntr_grav_l ** 2 * self.body.angular_velocity * abs(
                 self.body.angular_velocity)
             if cos < 0:
                 self.body.apply_force_at_local_point((
-                    self.poly_shape_n[coord][0] / n_len * m * cos * l * self.resistance_cof,
-                    self.poly_shape_n[coord][
+                    self.poly_n[coord][0] / n_len * m * cos * l * self.resistance_cof,
+                    self.poly_n[coord][
                         1] / n_len * m * cos * l * self.resistance_cof), point)
         if self.body.velocity.length > self.max_speed:
             self.body.velocity = (self.body.velocity.x / self.body.velocity.length * self.max_speed,

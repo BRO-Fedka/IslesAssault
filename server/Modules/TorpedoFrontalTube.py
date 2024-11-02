@@ -4,12 +4,19 @@ from server.Modules.Module import Module
 from server.Entities.Projectiles.Torpedo import Torpedo
 from server.World import World
 import datetime
+from server.Modules.Module import BOTTOM
+from typing import Sequence
+from shapely.geometry import Polygon
 import math
 
 
 class TorpedoFrontalTube(Module):
-    def __init__(self, world:World, body:Body, amount=0):
+    level: int = BOTTOM
+
+    def __init__(self, world:World, body:Body, poly:Sequence[Sequence[float]], amount=10):
         super().__init__()
+        self.cof_ex_dmg_per_area *= 20
+        self.poly_shape = Polygon(poly)
         self.max_amount = amount
         self.amount = amount
         self.world = world
