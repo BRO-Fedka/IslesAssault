@@ -26,3 +26,16 @@ def lookat_rad_raw(x, y):
         return (math.pi / 2 - math.atan((x / y))) * sign(y) + math.pi * int(x < 0)
     else:
         return 0
+
+
+def prevent_recursion(func):
+    def wrapper(*args, **kwargs):
+        if getattr(func, '_is_running', False):
+            return
+        else:
+            func._is_running = True
+            result = func(*args, **kwargs)
+            func._is_running = False
+            return result
+
+    return wrapper

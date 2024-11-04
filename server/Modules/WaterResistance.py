@@ -7,8 +7,6 @@ from server.functions import sign
 
 
 class WaterResistance(Module):
-    physical = False
-
     def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.1):
         super().__init__()
         self.poly = poly_shape

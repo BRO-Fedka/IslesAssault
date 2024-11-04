@@ -9,8 +9,8 @@ import datetime
 
 
 class MortarCannon(Cannon):
-    def __init__(self, body: Body, shellstorages: List[ShipShellStorage] = None, rotation_speed=2 / 180 * math.pi):
-        super().__init__()
+    def __init__(self, x:float,y:float, body: Body, shellstorages: List[ShipShellStorage] = None, rotation_speed=2 / 180 * math.pi):
+        super().__init__(x,y,0.0375)
         self.shellstorages = shellstorages
         self.ship_direction = 0
         self.status = 0
@@ -33,6 +33,7 @@ class MortarCannon(Cannon):
 
     def update_module(self):
         # print('1')
+        rotation_speed = self.rotation_speed*self.hp/self.max_hp
         self.ship_direction = self.body.angle
         cos = math.cos((self.relative_direction + self.ship_direction))
         sin = math.sin((self.relative_direction + self.ship_direction))
@@ -43,16 +44,16 @@ class MortarCannon(Cannon):
             sin, cos = -cos, sin
             sin1 = (cos * self.cursor_x + sin * self.cursor_y) / xy_dst
             if sin1 < 0:
-                self.relative_direction += self.rotation_speed
+                self.relative_direction += rotation_speed
             else:
-                self.relative_direction -= self.rotation_speed
-            if math.asin(abs(sin1)) < self.rotation_speed and cos1 > 0:
+                self.relative_direction -= rotation_speed
+            if math.asin(abs(sin1)) < rotation_speed and cos1 > 0:
                 self.relative_direction = vec.angle - self.ship_direction
 
     def update_module_input(self, input: PlayerInputData):
         self.cursor_x = input.cursor_x
         self.cursor_y = input.cursor_y
-        if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > 4:
+        if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > 8-4*(self.hp/self.max_hp):
             self.reload_start = datetime.datetime.now()
             self.fire()
 

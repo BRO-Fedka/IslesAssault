@@ -6,6 +6,7 @@ import math
 from server.Modules.Module import Module
 from typing import List
 from server.Vehicle.Contollers.HealthController import HealthController
+from server.Vehicle.Contollers.MassController import MassController
 
 
 class Vehicle(Object):
@@ -25,6 +26,7 @@ class Vehicle(Object):
         self.modules: List[Module] = []
         self.name = ""
         self.health_controller: HealthController = HealthController(self.body)
+        self.mass_controller: MassController = None
         self.world.add_object(self)
 
     def remove_from_space(self):
@@ -37,6 +39,7 @@ class Vehicle(Object):
         self.update_modules_input(input)
 
     def update_modules(self):
+        self.mass_controller.update()
         for module in self.modules:
             module.update_module()
 
@@ -78,5 +81,6 @@ class Vehicle(Object):
         string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
+
 
         return string

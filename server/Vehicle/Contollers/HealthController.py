@@ -12,11 +12,15 @@ class HealthController:
         self.max_hp: int = None
         self.modules: List[Module] = None
         self.vehicle_shape: Polygon = None
+        self.max_modules_hp = 0
 
     def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]]):
         self.max_hp = max_hp
         self.modules = modules
         self.vehicle_shape = Polygon(poly)
+        for module in self.modules:
+            self.max_modules_hp += module.get_hp()
+        print(self.max_modules_hp)
 
     def get_local_coords_of_penetration(self, projectile: Body) -> coords:
         pen_angle = self.body.angle - projectile.velocity.angle
@@ -52,15 +56,24 @@ class HealthController:
                 bottom_modules.append(module)
         if len(bottom_modules) == 0:
             return self.explosion_damage_from_local_coords(coord, radius=radius)
-        print('==========================')
+        print('========BOTTOM===========')
         for module in bottom_modules:
             module.explosion_damage(coord, radius=radius)
 
     def explosion_damage_from_local_coords(self, coord: coords, radius: float):
-        pass
+        modules = []
+        for module in self.modules:
+            if module.level == DEFAULT:
+                modules.append(module)
+        print('========DEFAULT============')
+        for module in modules:
+            module.explosion_damage(coord, radius=radius)
 
     def explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):
-        pass
+        self.explosion_damage_from_local_coords(self.get_local_coords_of_penetration(projectile), radius=radius)
 
     def get_total_hp(self):
-        return self.max_hp
+        cur_hp = 0
+        for module in self.modules:
+            cur_hp += module.get_hp()
+        return cur_hp/self.max_modules_hp*self.max_hp

@@ -1,6 +1,6 @@
 from pymunk import Body
 from server.Types import PlayerInputData
-from server.Modules.Module import Module
+from server.Modules.PolygonModule import PolygonModule
 import math
 from typing import List, Sequence
 from server.Modules.Module import BOTTOM
@@ -12,18 +12,16 @@ STOP = 0
 BACK = 2
 
 
-class WaterPump(Module):
-    level: int = BOTTOM
+class WaterPump(PolygonModule):
 
     def __init__(self, poly: Sequence[Sequence[float]], segments: List[ShipSegment] = None,
                  water_per_tick: float = 0.1):
-        super().__init__()
+        super().__init__(poly)
         self.water_per_tick = water_per_tick
-        self.poly_shape = Polygon(poly)
         self.segments = segments
 
     def update_module(self):
         if not self.segments is None:
-            amount = self.water_per_tick
+            amount = self.water_per_tick*((self.hp/self.max_hp-1)**13+1)
             for segment in self.segments:
                 amount -= segment.get_water(amount)

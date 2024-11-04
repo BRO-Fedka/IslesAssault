@@ -11,7 +11,6 @@ STRAIGHT = 0
 
 
 class ShipSteering(Module):
-    physical = False
 
     def __init__(self,body:Body, x, y, l=0.1, deg=5, passive_friction_cof=0.001):
         super().__init__()

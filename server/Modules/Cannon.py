@@ -1,6 +1,6 @@
-from server.Modules.Module import Module
+from server.Modules.CircularModule import CircularModule
 
 
-class Cannon(Module):
-    def __init__(self):
-        super().__init__()
+class Cannon(CircularModule):
+    def __init__(self,x,y,radius):
+        super().__init__(x,y,radius)
