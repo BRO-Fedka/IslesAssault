@@ -43,7 +43,7 @@ class HealthController:
                 mn = dst
                 pen_coord = coord
 
-        return coords(pen_coord[0], pen_coord[1])
+        return coords(pen_coord[0], -pen_coord[1])
 
     def bottom_explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):
         # self.max_hp -= 100

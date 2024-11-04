@@ -33,7 +33,7 @@ class TorpedoFrontalTube(PolygonModule):
         return ''
 
     def get_private_info_string(self) -> str:
-        return f',{self.amount}'
+        return super().get_private_info_string() + f'{self.amount},'
 
     @prevent_recursion
     def on_destroy(self):
@@ -42,4 +42,4 @@ class TorpedoFrontalTube(PolygonModule):
 
     def get_mass(self) -> float:
         if self.is_destroyed: return 0
-        return super().get_mass()*((self.amount/self.max_amount)*0.5+0.5)
+        return super().get_mass() * ((self.amount / self.max_amount) * 0.5 + 0.5)

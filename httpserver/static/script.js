@@ -164,6 +164,7 @@ PIXI.sound.add("tcanon","static\\mcanon.mp3")
 PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
+let TVehicles = new Map()
 
 var cameraMode = false;
 var Players=[];
@@ -179,6 +180,7 @@ var VehList;
 var VIEW_X = 0
 var VIEW_Y = 0
 var PlayerName;
+let PlayerVehicleID = 0
 var CurVehicle;
 var Zones = '';
 var SelectedVehicleShopId = null
@@ -511,9 +513,9 @@ function startgame() {
 					splstr = infarr[0].split(',')
 					PlayerTags = new Map()
 					PlayerName = splstr[4]
-					CurVehicleID = splstr[2]
-					CurVehicleType = splstr[3]
-					console.log(INFO)
+					CurVehicleID = Number(splstr[2])
+					CurVehicleType = Number(splstr[3])
+					// console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -525,16 +527,24 @@ function startgame() {
 //                            tmp.style.background = '#f00'
 //                        }
 //					}
-					argarr = []
-					for (let _ = 4; _ < splstr.length; _++){
-                                argarr.push(splstr[_])
-					}
+					// argarr = []
+					// for (let _ = 4; _ < splstr.length; _++){
+                    //             argarr.push(splstr[_])
+					// }
                     if (!(PlayerName=="" || PlayerName == undefined)){
 //                        console.log(PlayerName)
-                        PlayerName = NoTeamTag(PlayerName,true)
+                        // PlayerName = NoTeamTag(PlayerName,true)
 //                        console.log(PlayerName)
-                        Players.push([PlayerName,CurVehicleType]);
-                        Vehicles[CurVehicleType].updatep(PlayerName,argarr)
+                        // Players.push([PlayerName,CurVehicleType]);
+                        if (!(TVehicles.has(CurVehicleID))){
+                            TVehicles.set(CurVehicleID,new Heavy(CurVehicleID,PlayerName))
+                        }
+                        let pad = splstr[0].length + 1 + splstr[1].length + 1 + splstr[2].length + 1 + splstr[3].length + 1
+                        console.log(infarr[0],pad)
+                         
+                        let str = infarr[0].slice(pad)
+                        console.log(str)
+                        TVehicles.get(CurVehicleID).updatep(str)
                     }else{
                     UpdateObjs= true
                     }
@@ -1379,46 +1389,83 @@ if (ParticlesProcessing){
     ctx.closePath();
     ctx.strokeStyle = '#ff0000ff';
     ctx.stroke();
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnWater-2",NoTeamTag(Players[_][0]))
+    // for (let _ = 0; _ < Players.length; _++) {
+    //     if (Players[_][0]  == PlayerName){
+    //         Vehicles[Players[_][1]].drawp("OnWater-2",NoTeamTag(Players[_][0]))
+    //     }
+    //     else{
+    //         Vehicles[Players[_][1]].draw("OnWater-2",NoTeamTag(Players[_][0]));
+    //     }
+	// }
+    // for (let _ = 0; _ < Players.length; _++) {
+    //     if (Players[_][0]  == PlayerName){
+    //         Vehicles[Players[_][1]].drawp("OnWater-1",NoTeamTag(Players[_][0]))
+    //     }
+    //     else{
+    //         Vehicles[Players[_][1]].draw("OnWater-1",NoTeamTag(Players[_][0]));
+    //     }
+	// }
+    ////TODO !!!!!!!!!!!!!!
+    // console.log('-')
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp("OnWater-2")
+        }else{
+            vehicle.drawe("OnWater-2")
         }
-        else{
-            Vehicles[Players[_][1]].draw("OnWater-2",NoTeamTag(Players[_][0]));
+    });
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp("OnWater-1")
+        }else{
+            vehicle.drawe("OnWater-1")
         }
-	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnWater-1",NoTeamTag(Players[_][0]))
+    });
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp("OnWater")
+        }else{
+            vehicle.drawe("OnWater")
         }
-        else{
-            Vehicles[Players[_][1]].draw("OnWater-1",NoTeamTag(Players[_][0]));
+    });
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp("OnWater+1")
+        }else{
+            vehicle.drawe("OnWater+1")
         }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnWater",NoTeamTag(Players[_][0]))
+    });
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp("OnWater+2")
+        }else{
+            vehicle.drawe("OnWater")
         }
-        else{
-            Vehicles[Players[_][1]].draw("OnWater",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnWater+1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnWater+1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnWater+2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnWater+2",NoTeamTag(Players[_][0]));
-        }
-	}
+    });
+	// for (let _ = 0; _ < Players.length; _++) {
+    //     if (Players[_][0]  == PlayerName){
+    //         Vehicles[Players[_][1]].drawp("OnWater",NoTeamTag(Players[_][0]))
+    //     }
+    //     else{
+    //         Vehicles[Players[_][1]].draw("OnWater",NoTeamTag(Players[_][0]));
+    //     }
+	// }
+	// for (let _ = 0; _ < Players.length; _++) {
+    //     if (Players[_][0]  == PlayerName){
+    //         Vehicles[Players[_][1]].drawp("OnWater+1",NoTeamTag(Players[_][0]))
+    //     }
+    //     else{
+    //         Vehicles[Players[_][1]].draw("OnWater+1",NoTeamTag(Players[_][0]));
+    //     }
+	// }
+	// for (let _ = 0; _ < Players.length; _++) {
+    //     if (Players[_][0]  == PlayerName){
+    //         Vehicles[Players[_][1]].drawp("OnWater+2",NoTeamTag(Players[_][0]))
+    //     }
+    //     else{
+    //         Vehicles[Players[_][1]].draw("OnWater+2",NoTeamTag(Players[_][0]));
+    //     }
+	// }
 	for (i=0; i<CanBangParticles0.length; i++) {
 	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles0[i].life**1.5)*1+")";
 		ctx.beginPath();
@@ -2329,7 +2376,7 @@ if (ParticlesProcessing){
         window.requestAnimationFrame(DRAW);
        }catch(e)
        {
-//       console.log(e,e.stack)
+      console.log(e,e.stack)
        window.requestAnimationFrame(DRAW);
        }
 }

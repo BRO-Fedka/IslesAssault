@@ -54,10 +54,12 @@ class Projectile(Object):
         self.is_active = True
         self.status = 0
         self.world.add_object(self)
+        self.shape = None
 
     def remove_from_space(self):
         # pass
         self.world.space.remove(self.body)
+        self.world.space.remove(self.shape)
 
     def update(self) -> coords:
         return coords(self.body.position.x, self.body.position.y)

@@ -1,7 +1,6 @@
 from pymunk import Body
 from server.Types import PlayerInputData
 from server.Modules.PolygonModule import PolygonModule
-import math
 from typing import List, Sequence
 from server.Modules.Module import BOTTOM
 from server.Modules.ShipFuelTank import ShipFuelTank

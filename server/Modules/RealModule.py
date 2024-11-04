@@ -1,7 +1,7 @@
 from server.Types import coords
 from shapely.geometry import Point
 from shapely.geometry.base import BaseGeometry
-from server.constants import COF_EX_DMG_PER_AREA, COF_HP_PER_AREA,COF_MASS_PER_AREA
+from server.constants import COF_EX_DMG_PER_AREA, COF_HP_PER_AREA, COF_MASS_PER_AREA
 from server.Modules.Module import Module
 from server.Vehicle.Contollers import HealthController
 import math
@@ -40,7 +40,7 @@ class RealModule(Module):
                 self.hp = 0
             print(self.hp, self.max_hp)
 
-    def explode_bottom_randomly(self, hc:HealthController, minrad=0.02, maxrad=0.05, max_bangs=5):
+    def explode_bottom_randomly(self, hc: HealthController, minrad=0.02, maxrad=0.05, max_bangs=5):
         points = []
         bangs = math.ceil(self.hp / self.max_hp * max_bangs)
         minx, miny, maxx, maxy = self.shape.bounds
@@ -51,10 +51,27 @@ class RealModule(Module):
         for pnt in points:
             r = minrad + (maxrad - minrad) * random.random()
             hc.bottom_explosion_damage_from_local_coords(coords(pnt.x, pnt.y), r)
-            hc.explosion_damage_from_local_coords(coords(pnt.x, pnt.y), r/(1+random.random()))
+            hc.explosion_damage_from_local_coords(coords(pnt.x, pnt.y), r / (1 + random.random()))
 
     def get_hp(self) -> float:
         return self.hp
 
+    def get_rel_hp(self) -> float:
+        return self.hp / self.max_hp
+
     def get_mass(self) -> float:
         return self.shape.area * self.cof_mass_per_area
+
+    def get_indication_char(self) -> str:
+        hp = self.get_rel_hp()
+        if hp > 0.9:
+            return '0'
+        elif hp > 0.5:
+            return '1'
+        elif hp > 0:
+            return '2'
+        else:
+            return '3'
+
+    def get_private_info_string(self) -> str:
+        return self.get_indication_char()

@@ -19,7 +19,6 @@ class Torpedo(Projectile):
         self.is_active = False
         target.health_controller.bottom_explosion_damage_from_body(self.body, radius=0.02)
 
-
     def hit_static(self):
         self.status = 1
         self.is_active = False

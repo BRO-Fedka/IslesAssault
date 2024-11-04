@@ -20,7 +20,7 @@ class SmokeGenerator(PolygonModule):
         return ''
 
     def get_private_info_string(self) -> str:
-        return f',{self.amount}'
+        return super().get_private_info_string()+f'{self.amount},'
 
     def on_destroy(self):
         self.amount = 0

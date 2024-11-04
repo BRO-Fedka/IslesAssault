@@ -44,6 +44,7 @@ class Vehicle(Object):
             module.update_module()
 
     def update_modules_input(self, input: PlayerInputData):
+        # print(input)
         for module in self.modules:
             module.update_module_input(input)
 
@@ -64,7 +65,7 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
+        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
             string += string_of_module
 
@@ -78,7 +79,7 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000}'
+        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{(self.body.angle / math.pi * 180):.0f},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
 
