@@ -29,9 +29,6 @@ class TorpedoFrontalTube(PolygonModule):
             self.reload_timer = datetime.datetime.now()
             self.amount -= 1
 
-    def get_public_info_string(self) -> str:
-        return ''
-
     def get_private_info_string(self) -> str:
         return super().get_private_info_string() + f'{self.amount},'
 

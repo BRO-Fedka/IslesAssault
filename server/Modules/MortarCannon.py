@@ -9,20 +9,21 @@ import datetime
 
 
 class MortarCannon(Cannon):
+    r = 0.0375
+
     def __init__(self, x: float, y: float, body: Body, shellstorages: List[ShipShellStorage] = None,
                  rotation_speed=2 / 180 * math.pi):
-        super().__init__(x, y, 0.0375)
+        super().__init__(x, y)
         self.shellstorages = shellstorages
         self.ship_direction = 0
-        self.status = 0
         self.rotation_speed = rotation_speed
         self.relative_direction = 0
         self.body = body
-        self.cursor_x = 0
-        self.cursor_y = 0
-        self.reload_start = datetime.datetime.now()
 
     def fire(self):
+        if self.hp == 0:
+            return
+        super().fire()
         if not self.shellstorages is None:
             for shellstorage in self.shellstorages:
                 if shellstorage.get_shell() > 0:
@@ -60,7 +61,7 @@ class MortarCannon(Cannon):
             self.fire()
 
     def get_public_info_string(self) -> str:
-        return f',{self.status}{math.floor((self.relative_direction + self.ship_direction) / math.pi * 180)}'
+        return super().get_public_info_string() + f'{self.status}{(((self.relative_direction + self.ship_direction) / math.pi * 180) + 720) % 360:.0f},'
 
     def get_private_info_string(self) -> str:
         shells = 0

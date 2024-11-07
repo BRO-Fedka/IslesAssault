@@ -16,8 +16,6 @@ class SmokeGenerator(PolygonModule):
         if input.second_weapon:
             print('SMOKE')
 
-    def get_public_info_string(self) -> str:
-        return ''
 
     def get_private_info_string(self) -> str:
         return super().get_private_info_string()+f'{self.amount},'

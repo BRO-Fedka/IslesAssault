@@ -62,7 +62,18 @@ class RealModule(Module):
     def get_mass(self) -> float:
         return self.shape.area * self.cof_mass_per_area
 
-    def get_indication_char(self) -> str:
+    def get_indication_char_private(self) -> str:
+        hp = self.get_rel_hp()
+        if hp > 0.9:
+            return '0'
+        elif hp > 0.5:
+            return '1'
+        elif hp > 0:
+            return '2'
+        else:
+            return '3'
+
+    def get_indication_char_public(self) -> str:
         hp = self.get_rel_hp()
         if hp > 0.9:
             return '0'
@@ -74,4 +85,7 @@ class RealModule(Module):
             return '3'
 
     def get_private_info_string(self) -> str:
-        return self.get_indication_char()
+        return self.get_indication_char_private()
+
+    def get_public_info_string(self) -> str:
+        return self.get_indication_char_public()

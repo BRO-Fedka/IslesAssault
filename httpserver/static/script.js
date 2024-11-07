@@ -412,10 +412,12 @@ input.set(83,false);
 input.set(68,false);
 input.set(32,false);
 input.set(71,false);
+input.set(79,false);
 input.set('Tab',false);
 input.set('m0',false);
 let dobleinput = new Map();
 dobleinput.set(87,false);
+dobleinput.set(79,false);
 dobleinput.set(65,false);
 dobleinput.set(83,false);
 dobleinput.set(68,false);
@@ -515,7 +517,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
-					// console.log(INFO)
+                    console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -540,10 +542,10 @@ function startgame() {
                             TVehicles.set(CurVehicleID,new Heavy(CurVehicleID,PlayerName))
                         }
                         let pad = splstr[0].length + 1 + splstr[1].length + 1 + splstr[2].length + 1 + splstr[3].length + 1
-                        console.log(infarr[0],pad)
+//                        console.log(infarr[0],pad)
                          
                         let str = infarr[0].slice(pad)
-                        console.log(str)
+//                        console.log(str)
                         TVehicles.get(CurVehicleID).updatep(str)
                     }else{
                     UpdateObjs= true
@@ -581,16 +583,15 @@ function startgame() {
                             PN = larr[3]
                             CVID = larr[1]
                             CVT = larr[2]
-                            argarr = []
-                            for (let _ = 4; _ < larr.length; _++){
+                            if (!(TVehicles.has(CVID))){
+                                TVehicles.set(CVID,new Heavy(CVID,PN))
+                            }
+                            let pad = larr[0].length + 1 + larr[1].length + 1 + larr[2].length + 1 //+ larr[3].length + 1
 
-                                        argarr.push(larr[_])
-                            }
-                            if (!(PN=="" || PN == undefined)){
-                                PN = NoTeamTag(PN,true)
-                                Players.push([PN,CVT]);
-                                Vehicles[CVT].update(PN,argarr)
-                            }
+
+                            let str = infarr[h].slice(pad)
+                            console.log(str)
+                            TVehicles.get(CVID).updatee(str)
 						}else 	if (larr[0] == 'a' ){
 							ammo.set('120mm',Number(larr[1]));
 							ammo.set('45mm',Number(larr[2]));
@@ -821,18 +822,19 @@ function startgame() {
 						}
 					}
 					dellarr = []
-					for (var [key, value] of PlayersData) {
-					    b = true
-					    for (_ of Players){
-					        if (NoTeamTag(_[0]) == key){
-					        b = false
-					        }
-					    }
-
-                       if (b){
-                            dellarr.push(key)
-                       }
-                    }
+//					for (var [key, value] of PlayersData) {
+//					    b = true
+//					    for (_ of Players){
+//					        if (NoTeamTag(_[0]) == key){
+//					        b = false
+//					        }
+//					    }
+//
+//                       if (b){
+//                            dellarr.push(key)
+//                       }
+//                    }
+// TODO ##########################################
                     while (dellarr.length > 0){
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
@@ -852,6 +854,7 @@ function startgame() {
 					SENDB = ''
 					SENDS = ''
 					dobleinput.set(87,false);
+					dobleinput.set(79,false);
 					dobleinput.set(65,false);
 					dobleinput.set(83,false);
 					dobleinput.set(68,false);
@@ -917,7 +920,7 @@ function mifo() {
 	messagefield.style.display = 'none'
 }
 function keydown(event) {
-	if (messagefield.style.display == 'none' && (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32|| event.keyCode == 71)){
+	if (messagefield.style.display == 'none' && (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32|| event.keyCode == 71 || event.keyCode == 79)){
 		input.set(event.keyCode,true);
 		dobleinput.set(event.keyCode,true)
 	}
@@ -956,7 +959,7 @@ function keydown(event) {
 	}
 }
 function keyup(event) {
-	if (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32 || event.keyCode == 71){
+	if (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32 || event.keyCode == 71|| event.keyCode == 79){
 		input.set(event.keyCode,false);
 	} else if (event.keyCode == 77 ) {
 		map.style.display = 'none';
@@ -1132,52 +1135,54 @@ try{
 			ctx.closePath();
 			ctx.stroke();
     }
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("UnderWater-2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("UnderWater-2",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("UnderWater-1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("UnderWater-1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("UnderWater",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("UnderWater",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("UnderWater+1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("UnderWater+1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("UnderWater+2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("UnderWater+2",NoTeamTag(Players[_][0]));
-        }
-	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("UnderWater-2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("UnderWater-2",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("UnderWater-1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("UnderWater-1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("UnderWater",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("UnderWater",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("UnderWater+1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("UnderWater+1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("UnderWater+2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("UnderWater+2",NoTeamTag(Players[_][0]));
+//        }
+//	}
 if (ParticlesProcessing){
 	for (i=0; i<WtrParticles0.length; i++) {
 		ctx.fillStyle = "rgba(255,255,255,"+(WtrParticles0[i].life**1.5)*0.25+")";
 		ctx.beginPath();
 		ctx.arc(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,((WtrParticles0[i].rad-(WtrParticles0[i].life*WtrParticles0[i].rad))/320*Zoom*7.5+2.5)/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
 		ctx.fill();
+//		console.log(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
 		WtrParticles0[i].life *= 0.99
 		if (WtrParticles0[i].life < 0.15) {
 			WtrParticles0.splice(i, 1);
@@ -1564,46 +1569,46 @@ if (ParticlesProcessing){
 
 
     }
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnGround-2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnGround-2",NoTeamTag(Players[_][0]));
-        }
-	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnGround-1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnGround-1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnGround",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnGround",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnGround+1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnGround+1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("OnGround+2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("OnGround+2",NoTeamTag(Players[_][0]));
-        }
-	}
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("OnGround-2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("OnGround-2",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("OnGround-1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("OnGround-1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("OnGround",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("OnGround",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("OnGround+1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("OnGround+1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("OnGround+2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("OnGround+2",NoTeamTag(Players[_][0]));
+//        }
+//	}
 	for (let _ of BulletsData.keys()) {
                 if (BulletsData.get(_)[4] == 0 ){
                         if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
@@ -2223,46 +2228,46 @@ if (ParticlesProcessing){
             }
             }
 	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Air-2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Air-2",NoTeamTag(Players[_][0]));
-        }
-	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Air-1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Air-1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Air",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Air",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Air+1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Air+1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Air+2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Air+2",NoTeamTag(Players[_][0]));
-        }
-	}
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Air-2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Air-2",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Air-1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Air-1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Air",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Air",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Air+1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Air+1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Air+2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Air+2",NoTeamTag(Players[_][0]));
+//        }
+//	}
 	if (ParticlesProcessing){
 	for (i=FireParticles2.length-1; i>=0; i--) {
             ctx.fillStyle = "rgba(255," + 255*FireParticles2[i].life/60+","+255*((FireParticles2[i].life/60)**3)+"," +( Math.sin(FireParticles2[i].life/60*Math.PI)*0.75)+")";
@@ -2304,6 +2309,12 @@ if (ParticlesProcessing){
 			i--;
 		}
 	}
+    TVehicles.forEach(vehicle => {
+        if ( input.get(79)){ //(vehicle.id == CurVehicleID) &&
+            vehicle.draw_indicators("BOTTOM")
+            vehicle.draw_indicators("DEFAULT")
+        }
+    });
 	for(i=0; i<SnowParticles0.length; i++)
 	{
 		if (!(Math.abs(nX-X) >1 || Math.abs(nY-Y) > 1)){
@@ -2331,47 +2342,47 @@ if (ParticlesProcessing){
 		ctx.closePath();
 		ctx.fill();
 	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Info-2",NoTeamTag(Players[_][0]))
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Info-2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Info-2",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//    for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Info-1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Info-1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Info",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Info",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Info+1",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Info+1",NoTeamTag(Players[_][0]));
+//        }
+//	}
+//	for (let _ = 0; _ < Players.length; _++) {
+//        if (Players[_][0]  == PlayerName){
+//            Vehicles[Players[_][1]].drawp("Info+2",NoTeamTag(Players[_][0]))
+//        }
+//        else{
+//            Vehicles[Players[_][1]].draw("Info+2",NoTeamTag(Players[_][0]));
+//        }
+//	}
         }
-        else{
-            Vehicles[Players[_][1]].draw("Info-2",NoTeamTag(Players[_][0]));
-        }
-	}
-    for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Info-1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Info-1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Info",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Info",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Info+1",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Info+1",NoTeamTag(Players[_][0]));
-        }
-	}
-	for (let _ = 0; _ < Players.length; _++) {
-        if (Players[_][0]  == PlayerName){
-            Vehicles[Players[_][1]].drawp("Info+2",NoTeamTag(Players[_][0]))
-        }
-        else{
-            Vehicles[Players[_][1]].draw("Info+2",NoTeamTag(Players[_][0]));
-        }
-	}
-	}
 
         window.requestAnimationFrame(DRAW);
        }catch(e)

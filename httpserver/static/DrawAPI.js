@@ -1,32 +1,32 @@
-function drawCannon(vehicle,cannon, r = 10,firesize = 1,l = 20,shtSND = "mcannon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,
-bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5 , lw = [5,3], fire = true, underbody = false,fill = true, strokeW = 2){
+function drawCannon(vehicle,cannon, fire=false){
     let turcrd = [cannon.x, cannon.y]
-    // console.log(turcrd)
-    let cos = 0
-    let sin = 0
-    if ((vehicle.prev_dir < 360 && vehicle.prev_dir  >270) && (vehicle.dir  < 90 && vehicle.dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else if((vehicle.dir < 360 && vehicle.dir >270) && (vehicle.prev_dir < 90 && vehicle.prev_dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else{
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-    }
-    if(cannon.status  <2){
-        ctx.fillStyle = MAPstatic.CT.o0;
-        ctx.strokeStyle = MAPstatic.CT.o0;
-    }else{
-        ctx.fillStyle = MAPstatic.CT.o1
-        ctx.strokeStyle = MAPstatic.CT.o1
-        if(fire){
-            let a = Math.random()*Math.PI * 2;
+    let cos = vehicle.cos
+    let sin = vehicle.sin
+    let l = cannon.l
+    let r = cannon.cannon_r
+    let lw = cannon.len_width
+    let fill = cannon.fill
+    let strokeW = cannon.stroke_width
+    let canbangCnt = cannon.canbang_prt_amount
+    let canbangPrt = vehicle.canbang_particle
+    let canbangPrts = vehicle.canbang_particles_list
+    let underbody = cannon.underbody
+    let shtSND = cannon.snd_shoot
 
-            firePrts.push(new firePrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING+(turcrd[1]*cos)+(turcrd[0]*sin),vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING+(turcrd[1]*sin)+(turcrd[0]*-cos),firesize));
+    switch (cannon.indication_char) {
+        case '3':
+            ctx.fillStyle = MAPstatic.CT.o1
+            ctx.strokeStyle = MAPstatic.CT.o1
+            break;
 
-        }
+        default:
+            ctx.fillStyle = MAPstatic.CT.o0;
+            ctx.strokeStyle = MAPstatic.CT.o0;
+            break;
     }
+
+
+
     // console.log(vehicle.dir)
     // console.log(vehicle.prev_dir)
 
@@ -35,6 +35,7 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     //             ctx.strokeStyle = 'rgba(0,0,0,0.2)'
     // }
     //TODO ?????????????????
+
     ctx.lineWidth= strokeW/320*Zoom;
     ctx.lineJoin = 'miter';
     ctx.beginPath()
@@ -44,11 +45,9 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     if(fill) ctx.fill();
     ctx.stroke();
     // if(!(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody)){
-    //     ctx.strokeStyle = MAPstatic.CT.os;
-    //     ctx.stroke();
+    ctx.strokeStyle = MAPstatic.CT.os;
+    ctx.stroke();
     // }
-
-    
 
     sinc = 0
     cosc = 0
@@ -66,37 +65,41 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
     ctx.moveTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX +(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin),(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + OffsetY);
     ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l/320*Zoom,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l/320*Zoom);
     ctx.closePath()
-    if(cannon.status <2){
-        ctx.strokeStyle = MAPstatic.CT.l0
-        if (cannon.status == 1){
-            for (let _ = 0; _ < canbangCnt; _++) {
-                canbangPrts.push(new canbangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/320,vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/320))
-            }
-           PIXI.sound.play(shtSND);
-           cannon.status = 0
+
+    if(fire){
+
+        for (let _ = 0; _ < canbangCnt; _++) {
+            canbangPrts.push(new canbangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/320,vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/320))
         }
-    }else{
-        if (cannon.status == 3){
-            PIXI.sound.play(bngSND);
-            for (let _ = 0; _ < bangCnt; _++) {
-                bangPrts.push(new bangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin),vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos)))
-            }
-            cannon.status = 2
-        }
+        PIXI.sound.play(shtSND);
+    }
+
+    switch (cannon.indication_char) {
+    case '3':
         ctx.strokeStyle = MAPstatic.CT.l1
+        break;
+
+    default:
+        ctx.strokeStyle = MAPstatic.CT.l0;
+        break;
     }
     // if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
 	// 		ctx.fillStyle = 'rgba(0,0,0,0.2)'
 	// 		ctx.strokeStyle = 'rgba(0,0,0,0.2)'
 	// 	}
+
     ctx.lineCap = 'square';
     ctx.lineWidth = lw[0]/320*Zoom;
     ctx.stroke();
 
-    if(cannon.status <2){
-                    ctx.strokeStyle = MAPstatic.CT.o0;
-    }else{
-                    ctx.strokeStyle = MAPstatic.CT.o1
+    switch (cannon.indication_char) {
+    case '3':
+        ctx.strokeStyle = MAPstatic.CT.o1
+        break;
+
+    default:
+        ctx.strokeStyle = MAPstatic.CT.o0;
+        break;
     }
     // if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
     // 	ctx.fillStyle = 'rgba(0,0,0,0.2)'
@@ -107,18 +110,9 @@ bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = 
 }
 function drawCircularModuleIndicator(vehicle,x=0,y=0, r = 10,char='0',level=0){
     let turcrd = [x, y]
-    let cos = 0
-    let sin = 0
-    if ((vehicle.prev_dir < 360 && vehicle.prev_dir  >270) && (vehicle.dir  < 90 && vehicle.dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else if((vehicle.dir < 360 && vehicle.dir >270) && (vehicle.prev_dir < 90 && vehicle.prev_dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else{
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-    }
+    let cos = vehicle.cos
+    let sin = vehicle.sin
+
     setIndicatorStyles(char,level)
     ctx.lineWidth= 1/320*Zoom;
     ctx.lineJoin = 'miter';
@@ -151,19 +145,9 @@ function setIndicatorStyles(char='0',level=0){
             break;
     }
 }
-function drawF(vehicle,poly=[[0,0],[0,0]], cls ={}){
-        let cos = 0
-        let sin = 0
-        if ((vehicle.prev_dir < 360 && vehicle.prev_dir  >270) && (vehicle.dir  < 90 && vehicle.dir > -1)){
-            sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-            cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-        }else if((vehicle.dir < 360 && vehicle.dir >270) && (vehicle.prev_dir < 90 && vehicle.prev_dir > -1)){
-            sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-            cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-        }else{
-            sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-            cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-        }
+function drawF(vehicle,poly=[[0,0],[0,0]], cls ={},water_stroke=false){
+        let cos = vehicle.cos
+        let sin = vehicle.sin
 		
 		if (cls[vehicle.color_id] != undefined){
 		    ctx.fillStyle =  cls[vehicle.color_id]
@@ -171,7 +155,7 @@ function drawF(vehicle,poly=[[0,0],[0,0]], cls ={}){
 		    ctx.fillStyle =  "#fff"
 		}
         // console.log(poly)
-        ctx.strokeStyle = MAPstatic.CT.fs
+
         ctx.beginPath();
 		
 		// if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
@@ -186,10 +170,16 @@ function drawF(vehicle,poly=[[0,0],[0,0]], cls ={}){
         }
         ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom +GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
 		ctx.closePath();
+		ctx.lineJoin = 'round'
+//		ctx.lineWidth= (6+Math.sin(Date.now()*0.001)*2)/320*Zoom;
+//		ctx.strokeStyle = 'rgba(255,255,255,'+ (0.3-Math.sin(Date.now()*0.001)*0.1).toString()+')'
+//		ctx.stroke();
 		ctx.lineWidth= 2/320*Zoom;
+		ctx.strokeStyle = MAPstatic.CT.fs
         ctx.fill();
 	    ctx.stroke();
 }
+
 
 function drawPolygonModuleIndicator(vehicle,poly=[[0,0],[0,0]], char='0',level=0){
     let cos = 0
@@ -334,11 +324,37 @@ function Particle4() {
 	this.life = 0.01
 }
 
+function create_waterparticles_for_poly(vehicle,poly,rate = null){
+    if (rate == null){
+        rate = (Math.sqrt((vehicle.new_x-vehicle.x)**2+(vehicle.new_y-vehicle.y)**2)*FPS)**3
+    }
+
+    if (Math.random() < rate) {
+        let maxdst =  1.5;
+        let polydsttoprt = Math.random()*maxdst
+        let _ = 0
+        while (Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)< polydsttoprt){
+            polydsttoprt-=Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2);
+            _+=1;
+        }
+        let wtrptrcof = polydsttoprt/Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)
+        let wtrprtx = poly[_%poly.length][0] +(poly[(_+1)%poly.length][0]-poly[_%poly.length][0])*wtrptrcof
+        let wtrprty = poly[_%poly.length][1] +(poly[(_+1)%poly.length][1]-poly[_%poly.length][1])*wtrptrcof
+        WtrParticles0.push(new WtrPrt0(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING+(wtrprty*vehicle.cos)+(wtrprtx*vehicle.sin), vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING+(wtrprty*vehicle.sin)+(wtrprtx*-vehicle.cos)));
+    }
+}
+
+
+
 //  BASE    =======================================
 
 class Vehicle{
     type_id = 0
     f = {}
+    canbang_particle = CanPrt0
+    canbang_particles_list = CanBangParticles0
+    bang_particle = BangPrt0
+    bang_particles_list = BangParticles0
 
     constructor(id,name){
         this.id = id
@@ -352,9 +368,33 @@ class Vehicle{
         this.new_y = 0
         this.x = 0
         this.y = 0
+        this.sin = 0
+        this.cos = 0
+    }
+
+    calculate_sin_cos(){
+    if ((this.prev_dir < 360 && this.prev_dir  >270) && (this.dir  < 90 && this.dir > -1)){
+        this.sin = Math.sin((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir+360)+this.prev_dir+90)/180*Math.PI)
+        this.cos = Math.cos((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir+360)+this.prev_dir+90)/180*Math.PI)
+    }else if((this.dir < 360 && this.dir >270) && (this.prev_dir < 90 && this.prev_dir > -1)){
+        this.sin = Math.sin((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir-360)+this.prev_dir+90)/180*Math.PI)
+        this.cos = Math.cos((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir-360)+this.prev_dir+90)/180*Math.PI)
+    }else{
+        this.sin = Math.sin((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir)+this.prev_dir+90)/180*Math.PI)
+        this.cos = Math.cos((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir)+this.prev_dir+90)/180*Math.PI)
+    }
+    }
+
+    draw_indicators(layer){
+        this.calculate_sin_cos()
+        this.modules.forEach(module => {
+
+            module.draw_indicator(layer,this)
+        });
     }
 
     drawp(layer){
+        this.calculate_sin_cos()
         this.modules.forEach(module => {
             // console.log(module)
             module.drawp(layer,this)
@@ -362,13 +402,14 @@ class Vehicle{
     }
 
     drawe(layer){
+        this.calculate_sin_cos()
         this.modules.forEach(module => {
             module.drawe(layer,this)
         });
     }
 
     parse_common_string(string){
-        console.log(string)
+//        console.log(string)
         let lst = []
         for (let arg = 0; arg < 6; arg++) {
             let substr = string.split(',')[0]
@@ -387,7 +428,7 @@ class Vehicle{
         this.new_x = Number(lst[4])
         this.new_y = Number(lst[5])
 
-        console.log(string)
+//        console.log(string)
         return string
         
     }
@@ -432,14 +473,70 @@ class Module{
 }
 
 class RealModule extends Module{
-
+    bang_prt_amount = 5
+    snd_bang = 'bang'
     constructor(){
         super()
         this.indication_char = '0'
+        this.prev_indication_char = '0'
+    }
+
+    get_random_point(){
+        return [0,0]
+    }
+
+    draw_indicator(){}
+
+    explode(vehicle){
+
+        let cos = vehicle.cos
+        let sin = vehicle.sin
+        let bangPrts = vehicle.bang_particles_list
+        let bangPrt = vehicle.bang_particle
+        PIXI.sound.play(this.snd_bang);
+        for (let _ = 0; _ < this.bang_prt_amount; _++) {
+            let turcrd = this.get_random_point()
+            bangPrts.push(new bangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin),vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos)))
+        }
+    }
+
+    emit_fire(){}
+
+    drawp(layer,vehicle){
+        switch (this.indication_char) {
+            case '3':
+                if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
+                    this.explode(vehicle)
+                    this.prev_indication_char = '3'
+                }
+                break;
+
+        }
+    }
+
+    drawe(layer,vehicle){
+        switch (this.indication_char) {
+            case '3':
+                if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
+                    this.explode(vehicle)
+                    this.prev_indication_char = '3'
+                }
+            break;
+
+        }
     }
 
     updatep(string){
+        this.prev_new_indication_char = this.indication_char
         this.indication_char = string[0]
+
+        return string.slice(1)
+    }
+
+    updatee(string){
+        this.prev_new_indication_char = this.indication_char
+        this.indication_char = string[0]
+
         return string.slice(1)
     }
 }
@@ -449,10 +546,21 @@ class PolygonModule extends RealModule{
     constructor(poly){
         super()
         this.poly = poly
+        this.x = 0
+        this.y = 0
+        this.poly.forEach(point => {
+            this.x=this.x + point[0]
+            this.y=this.y + point[1]
+        });
+        this.x = this.x/this.poly.length
+        this.y = this.y/this.poly.length
     }
-    
-    drawp(layer,vehicle){
-        // console.log(this.indication_char)
+
+    get_random_point(){
+        return [this.x,this.y]
+    }
+
+    draw_indicator(layer, vehicle){
         drawPolygonModuleIndicator(vehicle,this.poly,this.indication_char)
     }
 
@@ -468,129 +576,42 @@ class CircularModule extends RealModule{
         this.r = r
     }
 
-    drawp(layer,vehicle){
-        // console.log(this.indication_char)
+    get_random_point(){
+        let a = Math.random()*2*Math.PI
+        let r = Math.random()* this.r
+        return [Math.cos(a)*r,Math.sin(a)*r]
+    }
+
+    draw_indicator(layer,vehicle){
         drawCircularModuleIndicator(vehicle,this.x,this.y,12,this.indication_char)
     }
 }
 
-class MortarCannon extends CircularModule{
-    constructor(x,y,r = 0.0375){
-        
-        super(x,y,r)
+class Cannon extends CircularModule{
+    cannon_r = 10
+    l = 20
+    len_width = [5,3]
+    fill = true
+    stroke_width = 2
+    canbang_prt_amount = 5
+    underbody = false
+    snd_shoot = 'mcanon'
+    constructor(x,y,r){
+        super(x,y)
         this.dir = 0
         this.prev_dir = 0
         this.status = 0
-    }
-    
-    updatep(string){
-        string = super.updatep(string)
-        let sublist = string.split(',',2)
-        string = string.slice(sublist[0].length + sublist[1].length + 2)
-        this.status = Number(sublist[0][0])
-        this.prev_dir = this.dir
-        this.dir = Number(sublist[0].slice(1))
-        let shells = Number(sublist[1])
-        return string
+        this.prev_status = 0
     }
 
     drawp(layer,vehicle){
-        if (layer=='OnWater+2'){
-            drawCannon(vehicle,this) // r = 12,firesize = 0.75,l = 18,shtSND = "mcanon",bngSND = "bang",firePrt = FirePrt0,firePrts = FireParticles0,bangPrt = BangPrt0,bangPrts = BangParticles0,canbangPrt = CanPrt0,canbangPrts = CanBangParticles0, canbangCnt = 5, bangCnt = 5,lw=[8,5]
-            super.drawp(layer,vehicle)
-        }
+        drawCannon(vehicle,this,this.prev_status!=this.status)
+        this.prev_status = this.status
+    }
+
+    drawe(layer,vehicle){
+        drawCannon(vehicle,this,this.prev_status!=this.status)
+        this.prev_status = this.status
     }
 }
 
-class ShipEngine extends PolygonModule{}
-class WaterPump extends PolygonModule{}
-class ShipFuelTank extends PolygonModule{}
-class ShipShellStorage extends PolygonModule{}
-class ShipSegment extends PolygonModule{}
-
-class TorpedoFrontalTube extends PolygonModule{
-    constructor(poly){
-        super(poly)
-        this.amount = 0
-    }
-    
-    updatep(string){
-        string = super.updatep(string)
-        let substring = string.split(',',1)[0]
-        string = string.slice(substring.length + 1)
-        this.amount = Number(substring)
-        return string
-    }
-}
-
-class SmokeGenerator extends PolygonModule{
-    constructor(poly){
-        super(poly)
-        this.amount = 0
-    }
-    
-    updatep(string){
-        string = super.updatep(string)
-        let substring = string.split(',',1)[0]
-        string = string.slice(substring.length + 1)
-        this.amount = Number(substring)
-        return string
-    }
-}
-
-POLY_SHAPE = [[0.15, 0], [0, 0.06], [-0.15, 0.045], [-0.15, -0.045], [0, -0.06]]
-POLY_SHAPE_N = [[0.06, 0.15], [-0.015, 0.15], [-1, 0], [-0.015, -0.15], [0.06, -0.15]]
-SEG1 = [[0.15,0],[0.05,-0.04],[0.05,0.04]]
-SEG2 = [[0.05,-0.04],[0.05,0.04],[0, 0.06],[-0.05,0.055],[-0.05,-0.055],[0, -0.06]]
-SEG3 = [[-0.05,-0.055],[-0.05,0.055],[-0.15,0.045],[-0.15,-0.045]]
-ENG = [[-0.15,0.025],[-0.15,-0.025],[-0.05,-0.025],[-0.05,0.025]]
-AMM = [[-0.05,0.05],[-0.02,0.05],[-0.02,-0.05],[-0.05,-0.05]]
-TUBE = [[0.085,0.01],[0.085,-0.01],[0.135,-0.01],[0.135,0.01]]
-FUEL1 = [[0.085,0.02],[0.085,-0.02],[0.06,-0.03],[0.06,0.03]]
-FUEL2 = [[0,0.005],[0,0.055],[0.05,0.035],[0.05,0.005]]
-FUEL3 = [[0,-0.005],[0,-0.055],[0.05,-0.035],[0.05,-0.005]]
-PMP = [[0.075,0.015],[0.12,0.015],[0.12,-0.015],[0.075,-0.015]]
-SMK = [[0.045,0.025],[0.075,0.025],[0.075,-0.025],[0.045,-0.025]]
-
-class Heavy extends Vehicle{
-    f = {
-        '0': '#131313',
-        '1': '#2a200c',
-        '2': '#122b0b',
-        '3': '#10222b',
-        '4': '#323232',
-        '5': '#713567',
-        '6':'#723636'}
-
-    constructor(id,name){
-        super(id,name)
-        this.modules = [
-            new MortarCannon(0,0),
-            new MortarCannon(-0.1,0),
-            new TorpedoFrontalTube(TUBE),
-            new SmokeGenerator(SMK),
-            new ShipEngine(ENG),
-            new WaterPump(PMP),
-            new ShipFuelTank(FUEL1),
-            new ShipFuelTank(FUEL2),
-            new ShipFuelTank(FUEL3),
-            new ShipShellStorage(AMM),
-            new ShipSegment(SEG1),
-            new ShipSegment(SEG2),
-            new ShipSegment(SEG3),
-        ]
-        
-    }
-
-    drawp(layer){
-        // console.log("DRAW!")
-        if (layer.includes('OnWater')){
-            // console.log("DRAW")
-            if (layer=='OnWater'){
-                drawF(this,POLY_SHAPE, this.f)
-            }
-            // console.log("DR")
-            super.drawp(layer)
-        }
-    }
-}
