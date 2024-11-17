@@ -61,8 +61,9 @@ class Projectile(Object):
         self.world.space.remove(self.body)
         self.world.space.remove(self.shape)
 
-    def update(self) -> coords:
-        return coords(self.body.position.x, self.body.position.y)
+    def update(self):
+        if self.body.position.x > self.world.wh + 3 or self.body.position.x < -3 or self.body.position.y > self.world.wh + 3 or self.body.position.y < -3:
+            self.is_active = False
 
     def get_world(self) -> World:
         return self.world

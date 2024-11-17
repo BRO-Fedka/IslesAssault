@@ -30,6 +30,9 @@ class ShipShellStorage(PolygonModule):
     def get_shells_amount(self) -> int:
         return self.shells
 
+    def get_private_info_string(self) -> str:
+        return super().get_private_info_string() + f'{self.get_shells_amount()},'
+
     def get_mass(self) -> float:
         if self.is_destroyed: return 0
         return super().get_mass()*((self.shells/self.max_shells)*0.9+0.1)

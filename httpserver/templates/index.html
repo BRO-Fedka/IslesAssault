@@ -202,17 +202,17 @@
 			</ul>
 		</div>
 	</div>
-	<div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>
-	<div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>
-	<div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>
-	<div id="Num8" class="unselectable ammonum NumAmmo"><span>8mm</span>1000</div>
-	<div id="Sensors" class="interface">
-		<div id="GasNum" class="unselectable Sensor">GAS+100</div>
-		<div id="DirNum" class="unselectable Sensor">DIR+100</div>
-		<div id="XNum" class="unselectable Sensor">X-16</div>
-		<div id="YNum" class="unselectable Sensor">Y-16</div>
-		<div id="SpdNum" class="unselectable Sensor">SPD+100</div>
-	</div>
+<!--	<div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>-->
+<!--	<div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>-->
+<!--	<div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>-->
+<!--	<div id="Num8" class="unselectable ammonum NumAmmo"><span>8mm</span>1000</div>-->
+<!--	<div id="Sensors" class="interface">-->
+<!--		<div id="GasNum" class="unselectable Sensor">GAS+100</div>-->
+<!--		<div id="DirNum" class="unselectable Sensor">DIR+100</div>-->
+<!--		<div id="XNum" class="unselectable Sensor">X-16</div>-->
+<!--		<div id="YNum" class="unselectable Sensor">Y-16</div>-->
+<!--		<div id="SpdNum" class="unselectable Sensor">SPD+100</div>-->
+<!--	</div>-->
 	<div id="MapForm" class="unselectable">
 		<div class="mapmark" id="PlayerMark"></div><img id="Map" src="static/emptyMap.svg" alt="map"></div>
 	<div id="TabForm" class="scrollbar"></div>
@@ -221,21 +221,27 @@
 	</div> <span id="MessageField" style="display: none">
     <span id="MessageFieldBtn">Global</span>
 	<input id="MessageFieldTxt"> </span>
-	<div id="Inventory" class="unselectable interface">
-		<div class="InvCeil" id="TorInv" style="display:none;">
-			<div class="invLoader" style="display:none;" id="TorLoading"></div> <img src="static/TORPEDOinv.svg" alt="Torpedos"> <b id="TorNum"></b> </div>
-		<div class="InvCeil" id="SmkInv" style="display:none;">
-			<div class="invLoader" style="display:none;" id="SmkLoading"></div> <img src="static/SMOKEinv.svg" alt="Smokes"> <b id="SmkNum"></b> </div>
-		<div class="InvCeil" id="XmodInv"> <img id="XmodNum" src="static/Xmodinv0.svg" alt="X mod"> <b>X</b> </div>
-		<div class="InvCeil" id="CmodInv" style="display:none;"> <img id="CmodNum" src="static/Cmodinv0.svg" alt="C mod"> <b>C</b> </div>
-		<div class="InvCeil" id="TracerInv" style="display:none;"> <img id="TracerNum" src="static/Tracerinv0.svg" alt="Tracer"> <b>C</b> </div>
-		<div class="InvCeil" id="CarryInv" style="display:none;"> <img src="static/Carryinv.svg" alt="vehicles onboard"> <b id="CarryNum">0</b> </div>
-		<div class="InvCeil" id="AARocketInv" style="display:none;"> <img src="static/AAROCKETinv.svg" alt="AA Rockets"> <b id="AARocketNum">0</b> </div>
-		<div class="InvCeil" id="ViewInv" style="display:none;"> <img id="ViewImg" src="static/HELMinv.svg" alt="Helm"> <b>V</b> </div>
-		<div class="InvCeil" id="BombInv" style="display:none;"> <img src="static/BOMBinv.svg" alt="Bombs"> <b id="BombNum">0</b> </div>
+	<div id="player-modules-div">
+		<canvas class="unselectable interface" id="player-modules-canvas"> </canvas >
 	</div>
-	<div id="HPNum" class="unselectable interface"></div>
-	<div id="Zones" class="unselectable interface"> </div> <span id="GameVersion" class="interface unselectable">{{version}}v BETA</span>
+	<div id="indicators" class="unselectable interface"> <!--interface-->
+<!--		<div class="indicator"><img src="static/indication/shell_icon.svg" alt="shell"><div class="ceil">200</div></div>-->
+<!--		<div class="indicator"><img src="static/indication/shell_icon.svg" alt="shell"><div class="ceil"><div style="font-size:18px">200</div><div style="font-size:12px">200</div></div></div>-->
+<!--		<div class="InvCeil" id="TorInv" style="display:none;">-->
+<!--			<div class="invLoader" style="display:none;" id="TorLoading"></div> <img src="static/TORPEDOinv.svg" alt="Torpedos"> <b id="TorNum"></b> </div>-->
+<!--		<div class="InvCeil" id="SmkInv" style="display:none;">-->
+<!--			<div class="invLoader" style="display:none;" id="SmkLoading"></div> <img src="static/SMOKEinv.svg" alt="Smokes"> <b id="SmkNum"></b> </div>-->
+<!--		<div class="InvCeil" id="XmodInv"> <img id="XmodNum" src="static/Xmodinv0.svg" alt="X mod"> <b>X</b> </div>-->
+<!--		<div class="InvCeil" id="CmodInv" style="display:none;"> <img id="CmodNum" src="static/Cmodinv0.svg" alt="C mod"> <b>C</b> </div>-->
+<!--		<div class="InvCeil" id="TracerInv" style="display:none;"> <img id="TracerNum" src="static/Tracerinv0.svg" alt="Tracer"> <b>C</b> </div>-->
+<!--		<div class="InvCeil" id="CarryInv" style="display:none;"> <img src="static/Carryinv.svg" alt="vehicles onboard"> <b id="CarryNum">0</b> </div>-->
+<!--		<div class="InvCeil" id="AARocketInv" style="display:none;"> <img src="static/AAROCKETinv.svg" alt="AA Rockets"> <b id="AARocketNum">0</b> </div>-->
+<!--		<div class="InvCeil" id="ViewInv" style="display:none;"> <img id="ViewImg" src="static/HELMinv.svg" alt="Helm"> <b>V</b> </div>-->
+<!--		<div class="InvCeil" id="BombInv" style="display:none;"> <img src="static/BOMBinv.svg" alt="Bombs"> <b id="BombNum">0</b> </div>-->
+	</div>
+<!--	<div id="HPNum" class="unselectable interface"></div>-->
+	<div id="Zones" class="unselectable interface"> </div>
+	<span id="GameVersion" class="interface unselectable">{{version}}v BETA</span>
 	<canvas id="MainCanvas"></canvas>
 	<script src="static/pixi.min.js"></script>
 	<script src="static/pixi.js"></script>

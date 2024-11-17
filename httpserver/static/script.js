@@ -77,10 +77,7 @@ function ExitGame(){
 						GameStatus = "MainMenu"
 						PlayersData = new Map()
                         PIXI.sound.play('MainMenuMusic');
-                        let children = document.getElementById('Inventory').children;
-                        for (let i = 0; i < children.length; i++) {
-                          children[i].style.display = ""
-                        }
+                        document.getElementById('Inventory').innerHTML = ""
                         document.getElementById('chk-game').checked = false
                         document.getElementById("chkInterfaceHide").checked = false
                         chatview.innerHTML = ""
@@ -314,6 +311,7 @@ let vehicle = 0
 let WH =32
 let OffsetX = 0
 let OffsetY=0
+let indicators = document.getElementById('indicators')
 
 document.getElementById('VolumeRange').value = localStorage.getItem('SettingsVolumeRangeVal')
 document.getElementById('MusicRange').value = localStorage.getItem('SettingsMusicRangeVal')
@@ -345,6 +343,11 @@ let PlayerMark = document.getElementById('PlayerMark');
 let xnum = document.getElementById('XNum');
 let ynum = document.getElementById('YNum');
 let canvas = document.getElementById('MainCanvas');
+let playerModulesCanvas = document.getElementById('player-modules-canvas')
+let pmcctx = playerModulesCanvas.getContext('2d');
+pmcctx.globalCompositeOperation='xor';
+playerModulesCanvas.width = 160
+playerModulesCanvas.height = 160
 let chatview = document.getElementById('ChatView');
 let map = document.getElementById('MapForm');
 let mapimg = document.getElementById('Map');
@@ -517,7 +520,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
-                    console.log(INFO)
+//                    console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -590,7 +593,7 @@ function startgame() {
 
 
                             let str = infarr[h].slice(pad)
-                            console.log(str)
+//                            console.log(str)
                             TVehicles.get(CVID).updatee(str)
 						}else 	if (larr[0] == 'a' ){
 							ammo.set('120mm',Number(larr[1]));
@@ -780,6 +783,7 @@ function startgame() {
                                 if (!(BulletsData.has(larr[1]))){
                                 BulletsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Number(larr[8]),false,Number(larr[2]),Number(larr[3]),Date.now(),0])
                                 }
+
                             }else{
                             try{
                                 BulletsData.get(larr[1])[3] = larr[2]
@@ -1008,6 +1012,7 @@ try{
     if (!start) start = timestamp;
     let progress = timestamp - start; //'#2879ADFF'
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
+	pmcctx.clearRect(0, 0, canvas.width, canvas.height)
 	ctx.fillStyle = MAPstatic.CT.bg;
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
@@ -1444,7 +1449,7 @@ if (ParticlesProcessing){
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater+2")
         }else{
-            vehicle.drawe("OnWater")
+            vehicle.drawe("OnWater+2")
         }
     });
 	// for (let _ = 0; _ < Players.length; _++) {
@@ -2310,9 +2315,14 @@ if (ParticlesProcessing){
 		}
 	}
     TVehicles.forEach(vehicle => {
-        if ( input.get(79)){ //(vehicle.id == CurVehicleID) &&
+        if ( input.get(79)){
+
             vehicle.draw_indicators("BOTTOM")
             vehicle.draw_indicators("DEFAULT")
+        }
+        if (vehicle.id == CurVehicleID) {
+            vehicle.draw_player_indicators("BOTTOM")
+            vehicle.draw_player_indicators("DEFAULT")
         }
     });
 	for(i=0; i<SnowParticles0.length; i++)

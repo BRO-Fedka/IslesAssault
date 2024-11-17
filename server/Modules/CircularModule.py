@@ -11,3 +11,5 @@ class CircularModule(RealModule):
         circ = Point((x,y)).buffer(radius)
         super().__init__(self.cof_hp_per_area*circ.area)
         self.shape = circ
+        self.x = x
+        self.y = y

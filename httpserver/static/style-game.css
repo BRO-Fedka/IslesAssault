@@ -4,35 +4,52 @@
 #chkInterfaceHide:checked ~ .ammonum{
     display: none !important;
 }
-div.InvCeil > b{
-	font-size: 20px;
+
+#player-modules-canvas{
+
+}
+
+#player-modules-div{
+position:fixed;
+bottom:15px;
+right:15px;
+background: rgba(0,0,0,0.2);
+border-radius: 50%;
+}
+
+div.indicator div.ceil{
+	font-size: 30px;
 	display: block;
 	font-family: 'ZCOOL QingKe HuangYou', cursive;
-	color: #00ff00;
-	text-align: center;
+	color: #fff;
+
+	padding-left:5px;
+	text-align: right;
 }
-#Inventory{
-	display: inline-block;
+#indicators{
+    display: flex;
+	flex-direction: row;
 	position: fixed;
 	left: 50%;
 	transform: translateX(-50%);
 	bottom: 10px;
 }
 
-div.InvCeil > img{
-	width: 50px;
-	height: 50px;
-	display: block;
-}
-div.InvCeil{
-
-	/*border-radius: 5px;*/
-	padding: 5px;
-	color: #00ff00;
-	background-color: #181818;
-	border: 5px solid #888888;
+div.indicator img{
+	width: 32px;
+	height: 32px;
 	display: inline-block;
-	flex-direction: column;
+}
+div.indicator{
+
+	border-radius: 5px;
+	padding: 5px;
+	margin:5px;
+	color: #fff;
+	background-color: rgba(0,0,0,0.2);
+	display: flex;
+	flex-direction: row;
+
 
 }
 #Zones{
@@ -40,7 +57,7 @@ div.InvCeil{
 	font-size: 20px;
 	padding: 5px;
 	width: 120px;
-	top:70px;
+	top:20px;
 	text-align:center;
 	left: 50%;
 	transform: translateX(-50%);

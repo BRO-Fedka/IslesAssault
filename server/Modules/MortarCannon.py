@@ -6,12 +6,15 @@ import pymunk
 from server.Modules.ShipShellStorage import ShipShellStorage
 from typing import List
 import datetime
+from server.World import World
+from server.Types import coords
+from server.Entities.Projectiles.ArmorPiercing import ArmorPiercing
 
 
 class MortarCannon(Cannon):
     r = 0.0375
 
-    def __init__(self, x: float, y: float, body: Body, shellstorages: List[ShipShellStorage] = None,
+    def __init__(self, x: float, y: float,world:World, body: Body, shellstorages: List[ShipShellStorage] = None,
                  rotation_speed=2 / 180 * math.pi):
         super().__init__(x, y)
         self.shellstorages = shellstorages
@@ -19,19 +22,21 @@ class MortarCannon(Cannon):
         self.rotation_speed = rotation_speed
         self.relative_direction = 0
         self.body = body
+        self.world = world
 
     def fire(self):
         if self.hp == 0:
             return
-        super().fire()
         if not self.shellstorages is None:
             for shellstorage in self.shellstorages:
                 if shellstorage.get_shell() > 0:
                     break
             else:
                 return
-        # TODO create Projectile
-        # (fire)
+
+        super().fire()
+        ArmorPiercing(self.world, self.body.master, coords(self.body.position.x+math.cos(self.body.angle)*self.x-math.sin(self.body.angle)*self.y, self.body.position.y+math.sin(self.body.angle)*self.x+math.cos(self.body.angle)*self.y), self.body.angle+self.relative_direction)
+        self.reload_start = datetime.datetime.now()
 
     def update_module(self):
         # print('1')
@@ -55,8 +60,8 @@ class MortarCannon(Cannon):
     def update_module_input(self, input: PlayerInputData):
         self.cursor_x = input.cursor_x
         self.cursor_y = input.cursor_y
-        if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > 8 - 4 * (
-                self.hp / self.max_hp):
+        if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > (2 - 1 * (
+                self.hp / self.max_hp))*4:
             self.reload_start = datetime.datetime.now()
             self.fire()
 
@@ -64,10 +69,10 @@ class MortarCannon(Cannon):
         return super().get_public_info_string() + f'{self.status}{(((self.relative_direction + self.ship_direction) / math.pi * 180) + 720) % 360:.0f},'
 
     def get_private_info_string(self) -> str:
-        shells = 0
-        if not self.shellstorages is None:
-            for shellstorage in self.shellstorages:
-                shells += shellstorage.get_shells_amount()
-        else:
-            shells = -1
-        return super().get_private_info_string() + f'{self.status}{(((self.relative_direction + self.ship_direction) / math.pi * 180) + 720) % 360:.0f},{shells},'
+        # shells = 0
+        # if not self.shellstorages is None:
+        #     for shellstorage in self.shellstorages:
+        #         shells += shellstorage.get_shells_amount()
+        # else:
+        #     shells = -1
+        return super().get_private_info_string() + f'{self.status}{(((self.relative_direction + self.ship_direction) / math.pi * 180) + 720) % 360:.0f},'

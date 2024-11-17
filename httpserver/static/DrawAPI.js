@@ -39,7 +39,8 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.lineWidth= strokeW/320*Zoom;
     ctx.lineJoin = 'miter';
     ctx.beginPath()
-    ctx.arc((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r/320*Zoom,0, Math.PI * 2);
+    let xy = global_xy_to_screen(vehicle.local_xy_to_global(turcrd))
+    ctx.arc(xy[0],xy[1],r/320*Zoom,0, Math.PI * 2);
     
     ctx.closePath();
     if(fill) ctx.fill();
@@ -62,14 +63,14 @@ function drawCannon(vehicle,cannon, fire=false){
         cosc = Math.cos((((Date.now() - LastPING)/ PING)*(cannon.dir-cannon.prev_dir)+cannon.prev_dir)/180*Math.PI)
     }
     ctx.beginPath()
-    ctx.moveTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX +(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin),(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + OffsetY);
-    ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) + cosc*l/320*Zoom,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom) + sinc*l/320*Zoom);
+    ctx.moveTo(xy[0],xy[1]);
+    ctx.lineTo(xy[0] + cosc*l/320*Zoom,xy[1] + sinc*l/320*Zoom);
     ctx.closePath()
 
     if(fire){
-
+        xy = vehicle.local_xy_to_global(turcrd)
         for (let _ = 0; _ < canbangCnt; _++) {
-            canbangPrts.push(new canbangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin) + cosc*l/320,vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos) + sinc*l/320))
+            canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
         }
         PIXI.sound.play(shtSND);
     }
@@ -108,43 +109,83 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.lineWidth = lw[1]/320*Zoom;
     ctx.stroke();
 }
-function drawCircularModuleIndicator(vehicle,x=0,y=0, r = 10,char='0',level=0){
+function drawCircularModuleIndicator(layer,vehicle,x=0,y=0, r = 0.05,char='0',level=0){
     let turcrd = [x, y]
     let cos = vehicle.cos
     let sin = vehicle.sin
 
-    setIndicatorStyles(char,level)
+    setIndicatorStyles(char,layer,ctx)
     ctx.lineWidth= 1/320*Zoom;
     ctx.lineJoin = 'miter';
     ctx.beginPath()
-    ctx.arc((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX+(turcrd[1]*cos*Zoom)+(turcrd[0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(turcrd[1]*sin*Zoom)+(turcrd[0]*-cos*Zoom),r/320*Zoom,0, Math.PI * 2);
+    let xy = global_xy_to_screen(vehicle.local_xy_to_global(turcrd))
+    ctx.arc(xy[0], xy[1],r*Zoom,0, Math.PI * 2);
 
     ctx.closePath();
     ctx.fill()
     ctx.stroke();
   
 }
-function setIndicatorStyles(char='0',level=0){
+
+function drawPlayerCircularModuleIndicator(layer,vehicle,x=0,y=0, r = 10,char='0',level=0){
+    let turcrd = [x, y]
+    let cos = vehicle.cos
+    let sin = vehicle.sin
+    let zoom = 480
+    setIndicatorStyles(char,layer,pmcctx)
+    pmcctx.lineWidth= 1;
+    pmcctx.lineJoin = 'miter';
+    pmcctx.beginPath()
+    pmcctx.arc(((y*vehicle.cos) +(x*vehicle.sin))*zoom+zoom*0.17,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+zoom*0.17,r*zoom,0, Math.PI * 2);
+
+    pmcctx.closePath();
+    pmcctx.fill()
+    pmcctx.stroke();
+
+}
+
+function setIndicatorStyles(char='0',layer, context){
+    let l = 1
+    if (layer == "DEFAULT"){
+        l = 2
+    }
     switch (char) {
         case '1':
-            ctx.strokeStyle = 'rgba(255,255,0,0.25)'
-            ctx.fillStyle = 'rgba(255,255,0,0.25)'
+            context.strokeStyle = 'rgba(255,255,128,1)'
+            context.fillStyle = 'rgba(255,255,0,'+0.25*l+')'
             break;
         case '2':
-            ctx.strokeStyle = 'rgba(255,0,0,0.25)'
-            ctx.fillStyle = 'rgba(255,0,0,0.25)'
+            context.strokeStyle = 'rgba(255,128,0)'
+            context.fillStyle = 'rgba(255,0,0,'+0.3*l+')'
             break;
         case '3':
-            ctx.strokeStyle = '#f00'
-            ctx.fillStyle = 'rgba(0,0,0,0.2)'
+            context.strokeStyle = '#f00'
+            context.fillStyle = 'rgba(0,0,0,'+0.3*l+')'
             break;
     
         default:
-            ctx.strokeStyle = 'rgba(200,200,200,0.2)'
-            ctx.fillStyle = 'rgba(200,200,200,0.2)'
+            context.strokeStyle = 'rgba(255,255,255,1)'
+            context.fillStyle = 'rgba(255,255,255,'+0.1*l+')'
             break;
     }
 }
+
+
+function getIndicatorBGForIndicationChar(char='0'){
+    switch (char) {
+        case '1':
+            return 'rgba(255,255,0,0.5)'
+        case '2':
+            return 'rgba(255,0,0,0.5)'
+        case '3':
+            return 'rgba(0,0,0,0.8)'
+
+
+        default:
+            return 'rgba(0,0,0,0.2)'
+    }
+}
+
 function drawF(vehicle,poly=[[0,0],[0,0]], cls ={},water_stroke=false){
         let cos = vehicle.cos
         let sin = vehicle.sin
@@ -162,13 +203,16 @@ function drawF(vehicle,poly=[[0,0],[0,0]], cls ={},water_stroke=false){
 		// 	ctx.fillStyle = 'rgba(0,0,0,0.2)'
 		// 	ctx.strokeStyle = 'rgba(0,0,0,0.2)'
 		// }
-		ctx.moveTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*Zoom*cos) +(poly[0][0]*Zoom*sin),(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom + GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+		let xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
+		ctx.moveTo(xy[0],xy[1]);
         for (let _ = 1; _ < poly.length; _+=1) {
-            ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[_][1]*cos*Zoom)+(poly[_][0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(poly[_][1]*sin*Zoom)+(poly[_][0]*-cos*Zoom));
+            xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[_]))
+            ctx.lineTo(xy[0],xy[1]);
 
 
         }
-        ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom +GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
+        ctx.lineTo(xy[0],xy[1]);
 		ctx.closePath();
 		ctx.lineJoin = 'round'
 //		ctx.lineWidth= (6+Math.sin(Date.now()*0.001)*2)/320*Zoom;
@@ -181,58 +225,71 @@ function drawF(vehicle,poly=[[0,0],[0,0]], cls ={},water_stroke=false){
 }
 
 
-function drawPolygonModuleIndicator(vehicle,poly=[[0,0],[0,0]], char='0',level=0){
-    let cos = 0
-    let sin = 0
-    if ((vehicle.prev_dir < 360 && vehicle.prev_dir  >270) && (vehicle.dir  < 90 && vehicle.dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir+360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else if((vehicle.dir < 360 && vehicle.dir >270) && (vehicle.prev_dir < 90 && vehicle.prev_dir > -1)){
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir-360)+vehicle.prev_dir+90)/180*Math.PI)
-    }else{
-        sin = Math.sin((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-        cos = Math.cos((((Date.now() - LastPING)/ PING)*(vehicle.dir-vehicle.prev_dir)+vehicle.prev_dir+90)/180*Math.PI)
-    }
-    setIndicatorStyles(char,level)
+function drawPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char='0',level=0){
+    setIndicatorStyles(char,layer,ctx)
     ctx.beginPath();
-    ctx.moveTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*Zoom*cos) +(poly[0][0]*Zoom*sin),(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom + GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+    let xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
+    ctx.moveTo(xy[0],xy[1]);
     for (let _ = 1; _ < poly.length; _+=1) {
-        ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[_][1]*cos*Zoom)+(poly[_][0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY+(poly[_][1]*sin*Zoom)+(poly[_][0]*-cos*Zoom));
+            xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[_]))
+            ctx.lineTo(xy[0],xy[1]);
 
 
     }
-    ctx.lineTo((vehicle.new_x+(vehicle.new_x-vehicle.x-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,(vehicle.new_y+(vehicle.new_y-vehicle.y-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom +GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+    xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
+    ctx.lineTo(xy[0],xy[1]);
     ctx.closePath();
     ctx.lineWidth= 1/320*Zoom;
     ctx.fill();
     ctx.stroke();
 }
-function DrawNickname(name, hp, hpmax,x,y,z=0){
 
-    if (cameraMode) return
-    var p = NoTeamTag(PlayerName)
-    if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
-        ctx.fillStyle = 'rgba(0,0,255,0.75)';
-    }else{
-        if (z == 1 && Z != 1) return
-        ctx.fillStyle = 'rgba(255,0,0,0.75)';
+function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char='0',level=0){
+//    console.log('!')
+    setIndicatorStyles(char,layer,pmcctx)
+    pmcctx.beginPath();
+    let zoom = 480
+    pmcctx.moveTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+zoom*0.17,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+zoom*0.17);
+
+    for (let _ = 1; _ < poly.length; _+=1) {
+
+            pmcctx.lineTo(((poly[_][1]*vehicle.cos) +(poly[_][0]*vehicle.sin))*zoom+zoom*0.17,((poly[_][1]*vehicle.sin)+(poly[_][0]*-vehicle.cos))*zoom+zoom*0.17);
+
+
     }
-
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-    ctx.lineWidth = 1
-    ctx.textAlign = 'center'
-    ctx.font = Math.round(20/320*Zoom)+"px Arial";
-    if (PlayerTags.get(name) != null){
-        ctx.fillText("["+PlayerTags.get(name)+"]"+name, x, y-50/320*Zoom);
-    }else{
-        ctx.fillText(name, x, y-50/320*Zoom);
-    }
-
-    ctx.fillStyle = 'rgba('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0,0.75)'
-    ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
-    ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
+    pmcctx.lineTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+zoom*0.17,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+zoom*0.17);
+    pmcctx.closePath();
+    pmcctx.lineWidth= 1;
+    pmcctx.fill();
+    pmcctx.stroke();
 }
+
+
+//function DrawNickname(name, hp, hpmax,x,y,z=0){
+//
+//    if (cameraMode) return
+//    var p = NoTeamTag(PlayerName)
+//    if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
+//        ctx.fillStyle = 'rgba(0,0,255,0.75)';
+//    }else{
+//        if (z == 1 && Z != 1) return
+//        ctx.fillStyle = 'rgba(255,0,0,0.75)';
+//    }
+//
+//    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
+//    ctx.lineWidth = 1
+//    ctx.textAlign = 'center'
+//    ctx.font = Math.round(20/320*Zoom)+"px Arial";
+//    if (PlayerTags.get(name) != null){
+//        ctx.fillText("["+PlayerTags.get(name)+"]"+name, x, y-50/320*Zoom);
+//    }else{
+//        ctx.fillText(name, x, y-50/320*Zoom);
+//    }
+//
+//    ctx.fillStyle = 'rgba('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0,0.75)'
+//    ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
+//    ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
+//}
 
 function BangPrt0(x, y,dir = Math.random()*2*Math.PI) {
 	this.x=x;
@@ -340,10 +397,15 @@ function create_waterparticles_for_poly(vehicle,poly,rate = null){
         let wtrptrcof = polydsttoprt/Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)
         let wtrprtx = poly[_%poly.length][0] +(poly[(_+1)%poly.length][0]-poly[_%poly.length][0])*wtrptrcof
         let wtrprty = poly[_%poly.length][1] +(poly[(_+1)%poly.length][1]-poly[_%poly.length][1])*wtrptrcof
-        WtrParticles0.push(new WtrPrt0(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING+(wtrprty*vehicle.cos)+(wtrprtx*vehicle.sin), vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING+(wtrprty*vehicle.sin)+(wtrprtx*-vehicle.cos)));
+        let xy = vehicle.local_xy_to_global([wtrprtx,wtrprty])
+        WtrParticles0.push(new WtrPrt0(xy[0],xy[1]));
     }
 }
 
+
+    function global_xy_to_screen(xy){
+        return [(xy[0]+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX,(xy[1]+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY]
+    }
 
 
 //  BASE    =======================================
@@ -372,6 +434,10 @@ class Vehicle{
         this.cos = 0
     }
 
+    local_xy_to_global(xy){
+        return [(this.new_x+(this.new_x-this.x)*(Date.now() - LastPING) / PING) + (xy[1]*this.cos)+(xy[0]*this.sin) ,(this.new_y+(this.new_y-this.y)*(Date.now() - LastPING) / PING) +(xy[1]*this.sin)+(xy[0]*-this.cos)]
+    }
+
     calculate_sin_cos(){
     if ((this.prev_dir < 360 && this.prev_dir  >270) && (this.dir  < 90 && this.dir > -1)){
         this.sin = Math.sin((((Date.now() - LastPING)/ PING)*(this.dir-this.prev_dir+360)+this.prev_dir+90)/180*Math.PI)
@@ -390,6 +456,14 @@ class Vehicle{
         this.modules.forEach(module => {
 
             module.draw_indicator(layer,this)
+        });
+    }
+
+    draw_player_indicators(layer){
+        this.calculate_sin_cos()
+        this.modules.forEach(module => {
+
+            module.draw_player_indicator(layer,this)
         });
     }
 
@@ -453,9 +527,72 @@ class Vehicle{
     }
 }
 
+
+let last_indicator_id = 0
+
+class Indicator{
+    constructor(image){
+        this.image = image
+        this.id = last_indicator_id
+        last_indicator_id += 1
+    }
+}
+
+class SimpleIndicator extends Indicator{
+
+    update(module){
+        let indicator = document.getElementById('indicator'+this.id)
+        if (indicator == undefined){
+            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"></div>'
+            indicator = document.getElementById('indicator'+this.id)
+        }
+        indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
+    }
+
+}
+
+class ValueIndicator extends Indicator{
+
+    update(module,value){
+        let indicator = document.getElementById('indicator'+this.id)
+        if (indicator == undefined){
+            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil" id="value'+this.id+'"></div></div>'
+            indicator = document.getElementById('indicator'+this.id)
+        }
+        indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
+        if (module.indication_char == '4' || module.indication_char == '3'){
+            document.getElementById('value'+this.id).style.color = '#000'
+        }else{
+            document.getElementById('value'+this.id).style.color = ''
+        }
+        document.getElementById('value'+this.id).innerHTML = value
+    }
+
+}
+
+class AmountIndicator extends Indicator{
+
+    update(module,amount,max_amount){
+        let indicator = document.getElementById('indicator'+this.id)
+        if (indicator == undefined){
+            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil"><div style="font-size:18px" id="amount'+this.id+'"></div><div style="font-size:12px; color:rgba(255,255,255,0.5)" id="max'+this.id+'"></div></div></div>'
+            indicator = document.getElementById('indicator'+this.id)
+        }
+        indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
+        if (module.indication_char == '4' || module.indication_char == '3'){
+            document.getElementById('amount'+this.id).style.color = '#000'
+            document.getElementById('max'+this.id).style.color = '#000'
+        }else{
+            document.getElementById('amount'+this.id).style.color = ''
+            document.getElementById('max'+this.id).style.color = ''
+        }
+        document.getElementById('amount'+this.id).innerHTML = amount
+        document.getElementById('max'+this.id).innerHTML = max_amount
+    }
+}
+
 class Module{
     constructor(){
-
     }
 
     updatep(string){
@@ -466,15 +603,117 @@ class Module{
         return string
     }
 
-    drawp(layer, vehicle){}
+    drawp(layer, vehicle){
+
+    }
 
     drawe(layer, vehicle){}
 
+    draw_player_indicator(layer, vehicle){}
+
+    draw_indicator(layer,vehicle){}
+}
+
+class ArmorIndication extends Module{
+    constructor(poly){
+        super()
+        this.poly = poly
+        this.armor_modules = []
+        for (let _=0; _ < poly.length; _++){
+            let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
+            let cnt = Math.floor(ln / 0.01)
+            console.log(ln, cnt)
+            for (let i=0; i < cnt; i++){
+                this.armor_modules.push(0)
+            }
+        }
+    }
+
+    updatep(string){
+        let sublist = string.split(',',1)
+        let str = BigInt(sublist[0]).toString(2)
+//        console.log(str)
+        while (str.length < this.armor_modules.length){
+            str = '0'+str
+        }
+        for (let i = 0; i < str.length; i++) {
+          this.armor_modules[i] = Number(str.charAt(i));
+        }
+        console.log(this.armor_modules)
+        string = string.slice(sublist[0].length + 1)
+        return string
+    }
+
+    updatee(string){
+        return this.updatep(string)
+    }
+    draw_player_indicator(layer,vehicle){
+        pmcctx.strokeStyle = "#f00"
+        ctx.lineCap = 'butt';
+        pmcctx.beginPath();
+        let poly = this.poly
+        let zoom = 480
+        let ind = 0
+        for (let _=0; _ < poly.length; _++){
+            let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
+            let cnt = Math.floor(ln / 0.01)
+//            console.log(ln, cnt)
+            for (let i=0; i < cnt; i++){
+                if (this.armor_modules[ind]!=0){
+                    let x = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * i/cnt
+                    let y = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * i/cnt
+                    let x1 = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * (i+1)/cnt
+                    let y1 = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * (i+1)/cnt
+                    pmcctx.moveTo(((y*vehicle.cos) +(x*vehicle.sin))*zoom+zoom*0.17,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+zoom*0.17);
+                    pmcctx.lineTo(((y1*vehicle.cos) +(x1*vehicle.sin))*zoom+zoom*0.17,((y1*vehicle.sin)+(x1*-vehicle.cos))*zoom+zoom*0.17);
+                }
+                ind ++
+            }
+        }
+
+        pmcctx.closePath();
+        pmcctx.lineWidth= 4;
+        pmcctx.stroke();
+    }
+    drawp(layer,vehicle){
+        if (layer != "OnWater+1") return
+        ctx.strokeStyle = "#000"
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        let poly = this.poly
+        let ind = 0
+        for (let _=0; _ < poly.length; _++){
+            let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
+            let cnt = Math.floor(ln / 0.01)
+//            console.log(ln, cnt)
+            for (let i=0; i < cnt; i++){
+                if (this.armor_modules[ind]!=0){
+                    let x = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * i/cnt
+                    let y = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * i/cnt
+                    let x1 = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * (i+1)/cnt
+                    let y1 = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * (i+1)/cnt
+                    let p = global_xy_to_screen(vehicle.local_xy_to_global([x,y]))
+                    let p1 = global_xy_to_screen(vehicle.local_xy_to_global([x1,y1]))
+                    ctx.moveTo(p[0],p[1]);
+                    ctx.lineTo(p1[0],p1[1]);
+                }
+                ind ++
+            }
+        }
+
+        ctx.closePath();
+        ctx.lineWidth= 2/320*Zoom;
+        ctx.stroke();
+    }
+    drawe(layer,vehicle){
+        this.drawp(layer,vehicle)
+    }
 }
 
 class RealModule extends Module{
     bang_prt_amount = 5
     snd_bang = 'bang'
+    indication_layer = 'DEFAULT'
     constructor(){
         super()
         this.indication_char = '0'
@@ -487,6 +726,8 @@ class RealModule extends Module{
 
     draw_indicator(){}
 
+    draw_player_indicator(){}
+
     explode(vehicle){
 
         let cos = vehicle.cos
@@ -495,8 +736,8 @@ class RealModule extends Module{
         let bangPrt = vehicle.bang_particle
         PIXI.sound.play(this.snd_bang);
         for (let _ = 0; _ < this.bang_prt_amount; _++) {
-            let turcrd = this.get_random_point()
-            bangPrts.push(new bangPrt(vehicle.new_x+(vehicle.new_x-vehicle.x)*(Date.now() - LastPING) / PING +(turcrd[1]*cos)+(turcrd[0]*sin),vehicle.new_y+(vehicle.new_y-vehicle.y)*(Date.now() - LastPING) / PING +(turcrd[1]*sin)+(turcrd[0]*-cos)))
+            let xy = vehicle.local_xy_to_global(this.get_random_point())
+            bangPrts.push(new bangPrt(xy[0],xy[1]))
         }
     }
 
@@ -524,6 +765,7 @@ class RealModule extends Module{
             break;
 
         }
+
     }
 
     updatep(string){
@@ -561,7 +803,14 @@ class PolygonModule extends RealModule{
     }
 
     draw_indicator(layer, vehicle){
-        drawPolygonModuleIndicator(vehicle,this.poly,this.indication_char)
+        if (layer != this.indication_layer) return
+        drawPolygonModuleIndicator(layer,vehicle,this.poly,this.indication_char)
+    }
+
+    draw_player_indicator(layer, vehicle){
+        if (layer != this.indication_layer) return
+        drawPlayerPolygonModuleIndicator(layer,vehicle,this.poly,this.indication_char)
+
     }
 
 
@@ -583,7 +832,13 @@ class CircularModule extends RealModule{
     }
 
     draw_indicator(layer,vehicle){
-        drawCircularModuleIndicator(vehicle,this.x,this.y,12,this.indication_char)
+    if (layer != this.indication_layer) return
+        drawCircularModuleIndicator(layer,vehicle,this.x,this.y,this.r,this.indication_char)
+    }
+    draw_player_indicator(layer, vehicle){
+    if (layer != this.indication_layer) return
+        drawPlayerCircularModuleIndicator(layer,vehicle,this.x,this.y,this.r,this.indication_char)
+
     }
 }
 
@@ -597,7 +852,7 @@ class Cannon extends CircularModule{
     underbody = false
     snd_shoot = 'mcanon'
     constructor(x,y,r){
-        super(x,y)
+        super(x,y,r)
         this.dir = 0
         this.prev_dir = 0
         this.status = 0

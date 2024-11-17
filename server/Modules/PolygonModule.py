@@ -2,9 +2,6 @@ from shapely.geometry import Polygon
 from server.Modules.RealModule import RealModule
 from typing import Sequence
 
-DEFAULT = 0
-BOTTOM = -1
-
 
 class PolygonModule(RealModule):
 

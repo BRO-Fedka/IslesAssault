@@ -13,6 +13,7 @@ from server.Modules.ShipShellStorage import ShipShellStorage
 from server.Modules.ShipSegment import ShipSegment
 from server.Types import PlayerInputData
 from server.Modules.WaterPump import WaterPump
+from server.Modules.Armor.ArmorIndication import ArmorIndication
 from server.Vehicle.Contollers.MassController import MassController
 
 POLY_SHAPE = [(0.15, 0), (0, 0.06), (-0.15, 0.045), (-0.15, -0.045), (0, -0.06)]
@@ -49,8 +50,8 @@ class Heavy(Vehicle):
         segment2 = ShipSegment(SEG2)
         segment3 = ShipSegment(SEG3)
         self.modules = [
-            MortarCannon(0,0,self.body,shellstorages=[shellstorage]),
-            MortarCannon(-0.1,0,self.body,shellstorages=[shellstorage]),
+            MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
+            MortarCannon(-0.1,0,self.world,self.body,shellstorages=[shellstorage]),
             TorpedoFrontalTube(self.health_controller,self.world, self.body,TUBE,12),
             SmokeGenerator(self.world,SMK,5),
             ShipSteering(self.body,-0.15,0),
@@ -64,7 +65,9 @@ class Heavy(Vehicle):
             shellstorage,
             segment1,
             segment2,
-            segment3
+            segment3,
+            ArmorIndication(self.health_controller.armor_modules)
+
         ]
         self.health_controller.update_params(1000,self.modules,POLY_SHAPE)
         self.mass_controller = MassController(self.shape, self.modules)

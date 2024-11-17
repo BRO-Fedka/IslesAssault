@@ -6,6 +6,7 @@ class MortarCannon extends Cannon{
     constructor(x,y,r = 0.0375){
 
         super(x,y,r)
+        this.indicator = new SimpleIndicator('static/indication/mortar_turret_direct_icon.svg')
 
     }
 
@@ -13,12 +14,13 @@ class MortarCannon extends Cannon{
 //    console.log(string)
         string = super.updatep(string)
         let sublist = string.split(',',2)
-        string = string.slice(sublist[0].length + sublist[1].length + 2)
+        string = string.slice(sublist[0].length + 1)
         this.prev_status = this.status
         this.status = Number(sublist[0][0])
         this.prev_dir = this.dir
         this.dir = Number(sublist[0].slice(1))
-        let shells = Number(sublist[1])
+        this.indicator.update(this)
+//        let shells = Number(sublist[1])
         return string
     }
     updatee(string){
@@ -37,11 +39,27 @@ class MortarCannon extends Cannon{
             super.drawp(layer,vehicle)
         }
     }
+    drawe(layer,vehicle){
+        if (layer=='OnWater+2'){
+            super.drawe(layer,vehicle)
+        }
+    }
 
 
 }
 
 class ShipEngine extends PolygonModule{
+    indication_layer = 'BOTTOM'
+    constructor(poly){
+        super(poly)
+        this.indicator = new SimpleIndicator('static/indication/engine_icon.svg')
+    }
+
+    updatep(string){
+        string = super.updatep(string)
+        this.indicator.update(this)
+        return string
+    }
     drawp(layer,vehicle){
         super.drawp(layer,vehicle)
     }
@@ -49,10 +67,42 @@ class ShipEngine extends PolygonModule{
         super.drawe(layer,vehicle)
     }
 }
-class WaterPump extends PolygonModule{}
-class ShipFuelTank extends PolygonModule{}
-class ShipShellStorage extends PolygonModule{}
+class WaterPump extends PolygonModule{
+    constructor(poly){
+        super(poly)
+        this.indicator = new SimpleIndicator('static/indication/water_pump_icon.svg')
+    }
+
+    updatep(string){
+        string = super.updatep(string)
+        this.indicator.update(this)
+        return string
+    }
+}
+class ShipFuelTank extends PolygonModule{
+    indication_layer = 'BOTTOM'
+}
+class ShipShellStorage extends PolygonModule{
+    indication_layer = 'BOTTOM'
+    constructor(poly, max){
+        super(poly)
+        this.amount = max
+        this.max_amount = max
+        this.indicator = new AmountIndicator('static/indication/shell_icon.svg')
+
+    }
+    updatep(string){
+
+        string = super.updatep(string)
+        let substring = string.split(',',1)[0]
+        string = string.slice(substring.length + 1)
+        this.amount = Number(substring)
+        this.indicator.update(this,this.amount,this.max_amount)
+        return string
+    }
+}
 class ShipSegment extends PolygonModule{
+    indication_layer = 'BOTTOM'
     drawp(layer,vehicle){
         create_waterparticles_for_poly(vehicle,this.poly,Number(this.indication_char)/45)
         super.drawp(layer,vehicle)
@@ -64,24 +114,32 @@ class ShipSegment extends PolygonModule{
 }
 
 class TorpedoFrontalTube extends PolygonModule{
-    constructor(poly){
+    indication_layer = 'BOTTOM'
+    constructor(poly, max){
         super(poly)
-        this.amount = 0
+        this.amount = max
+        this.max_amount = max
+        this.indicator = new AmountIndicator('static/indication/torpedo_icon.svg')
+
     }
     
     updatep(string){
+
         string = super.updatep(string)
         let substring = string.split(',',1)[0]
         string = string.slice(substring.length + 1)
         this.amount = Number(substring)
+        this.indicator.update(this,this.amount,this.max_amount)
         return string
     }
 }
 
 class SmokeGenerator extends PolygonModule{
-    constructor(poly){
+    constructor(poly,max){
         super(poly)
-        this.amount = 0
+        this.amount = max
+        this.max_amount = max
+        this.indicator = new AmountIndicator('static/indication/smoke_generator_icon.svg')
     }
     
     updatep(string){
@@ -89,6 +147,7 @@ class SmokeGenerator extends PolygonModule{
         let substring = string.split(',',1)[0]
         string = string.slice(substring.length + 1)
         this.amount = Number(substring)
+        this.indicator.update(this,this.amount,this.max_amount)
         return string
     }
 }
@@ -122,17 +181,18 @@ class Heavy extends Vehicle{
         this.modules = [
             new MortarCannon(0,0),
             new MortarCannon(-0.1,0),
-            new TorpedoFrontalTube(TUBE),
-            new SmokeGenerator(SMK),
+            new TorpedoFrontalTube(TUBE,12),
+            new SmokeGenerator(SMK,5),
             new ShipEngine(ENG),
             new WaterPump(PMP),
             new ShipFuelTank(FUEL1),
             new ShipFuelTank(FUEL2),
             new ShipFuelTank(FUEL3),
-            new ShipShellStorage(AMM),
+            new ShipShellStorage(AMM,200),
             new ShipSegment(SEG1),
             new ShipSegment(SEG2),
             new ShipSegment(SEG3),
+            new ArmorIndication(POLY_SHAPE)
         ]
         
     }
@@ -143,6 +203,7 @@ class Heavy extends Vehicle{
             if (layer=='OnWater'){
                 create_waterparticles_for_poly(this,POLY_SHAPE)
                 drawF(this,POLY_SHAPE, this.f)
+                console.log(this.id)
             }
             // console.log("DR")
             super.drawp(layer)
@@ -152,8 +213,9 @@ class Heavy extends Vehicle{
         // console.log("DRAW!")
         if (layer.includes('OnWater')){
             if (layer=='OnWater'){
-            create_waterparticles_for_poly(this,POLY_SHAPE)
+                create_waterparticles_for_poly(this,POLY_SHAPE)
                 drawF(this,POLY_SHAPE, this.f)
+                console.log(this.id)
             }
             // console.log("DR")
             super.drawe(layer)
