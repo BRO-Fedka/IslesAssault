@@ -6,6 +6,7 @@ from shapely.geometry import Polygon
 
 class ShipSegment(PolygonModule):
     level = BOTTOM
+    repair_priority = 1
 
     def __init__(self, poly: Sequence[Sequence[float]], capacity_per_area: float = 50):
         self.cof_mass_per_area /= 2
@@ -13,9 +14,10 @@ class ShipSegment(PolygonModule):
         self.capacity_per_area = capacity_per_area
         self.capacity = capacity_per_area * self.shape.area
         self.water_fullness_cof = 0
+        print(self.is_repairable)
 
     def update_module(self):
-        self.water_fullness_cof += (1 - (self.hp / self.max_hp) ** 0.005)
+        self.water_fullness_cof += (1 - min(((self.hp / self.max_hp) ** 0.005),1))*0.02
         if self.water_fullness_cof > 1:
             self.water_fullness_cof = 1
 

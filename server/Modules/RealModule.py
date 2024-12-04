@@ -8,6 +8,7 @@ from server.Vehicle.Contollers import HealthController
 import math
 import random
 from typing import Sequence
+import asyncio
 
 
 class RealModule(Module):
@@ -16,6 +17,16 @@ class RealModule(Module):
     cof_mass_per_area: float = COF_MASS_PER_AREA
     cof_pr_dmg_per_area: float = COF_PR_DMG_PER_AREA
     cof_piercing_durability: float = COF_PIERCING_DURABILITY
+    is_repairable = True
+    max_field_repairment_rel_hp: float = 1
+    repairment_time_per_hp: float = 1
+    repairment_time_cof: float = 1
+
+    def get_full_repairing_time(self) -> float:
+        return self.repairment_time_per_hp * self.max_hp * self.repairment_time_cof
+
+    def get_left_repairing_time(self) -> float:
+        return self.get_full_repairing_time() * (self.max_field_repairment_rel_hp - self.get_rel_hp())
 
     def __init__(self, hp):
         super().__init__()
@@ -24,6 +35,7 @@ class RealModule(Module):
         self.max_hp: int = hp
         self.shape: BaseGeometry = None
         self.is_destroyed = False
+        self.is_repairing = False
 
     def on_destroy(self):
         pass
@@ -48,7 +60,7 @@ class RealModule(Module):
             self.hp = 0
         # print(self.hp, self.max_hp)
         # print(speed * piercing_depth / max_piercing_depth)
-        return size, speed * (1-piercing_depth / max_piercing_depth), mass
+        return size, speed * (1 - piercing_depth / max_piercing_depth), mass
 
     def explosion_damage(self, coord: coords, radius: float):
         if self.is_destroyed:
@@ -96,7 +108,9 @@ class RealModule(Module):
 
     def get_indication_char_private(self) -> str:
         hp = self.get_rel_hp()
-        if hp > 0.9:
+        if self.is_repairing:
+            return '6'
+        if hp >= 0.9:
             return '0'
         elif hp > 0.5:
             return '1'
@@ -121,3 +135,18 @@ class RealModule(Module):
 
     def get_public_info_string(self) -> str:
         return self.get_indication_char_public()
+
+    async def repair(self):
+        print(self.__class__.__name__)
+        self.is_repairing = True
+        # print(self.get_rel_hp(), self.max_field_repairment_rel_hp)
+        while self.get_rel_hp() < self.max_field_repairment_rel_hp - 0.001:
+            # print(self.get_rel_hp(), self.max_field_repairment_rel_hp)
+            delta = min(self.max_field_repairment_rel_hp - self.get_rel_hp(), 0.1)
+            # print(delta)
+            # print(self.hp, self.max_hp, self.max_field_repairment_rel_hp)
+            # print((self.hp + self.max_hp * delta, self.max_field_repairment_rel_hp))
+            self.hp = min(self.hp + self.max_hp * delta, self.max_hp * self.max_field_repairment_rel_hp)
+            await asyncio.sleep(self.get_full_repairing_time() * delta)
+        self.hp = self.max_field_repairment_rel_hp * self.max_hp
+        self.is_repairing = False

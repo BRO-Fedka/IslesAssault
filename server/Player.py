@@ -140,12 +140,13 @@ class Player:
             right=bool(int(message[4])),
             first_weapon=bool(int(message[5])),
             second_weapon=bool(int(message[6])),
-            tab=bool(int(message[7])),
-            shooting_mode=bool(int(message[8])),
-            z_aiming_mode=int(message[9]),
-            view=int(message[10]),
-            cursor_x=float(message[11:].split(',')[0]),
-            cursor_y=float(message[11:].split(',')[1]),
+            repair=bool(int(message[7])),
+            tab=bool(int(message[8])),
+            shooting_mode=bool(int(message[9])),
+            z_aiming_mode=int(message[10]),
+            view=int(message[11]),
+            cursor_x=float(message[12:].split(',')[0]),
+            cursor_y=float(message[12:].split(',')[1]),
             date=datetime.datetime.now()
         )
         try:

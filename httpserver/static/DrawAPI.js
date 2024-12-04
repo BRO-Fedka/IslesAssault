@@ -162,7 +162,10 @@ function setIndicatorStyles(char='0',layer, context){
             context.strokeStyle = '#f00'
             context.fillStyle = 'rgba(0,0,0,'+0.3*l+')'
             break;
-    
+        case '6':
+            context.strokeStyle = '#0f0'
+            context.fillStyle = 'rgba(128,255,128,'+0.5*l*(0.5+Math.sin(Date.now()/600)*0.5)+')'
+            break;
         default:
             context.strokeStyle = 'rgba(255,255,255,1)'
             context.fillStyle = 'rgba(255,255,255,'+0.1*l+')'
@@ -179,6 +182,10 @@ function getIndicatorBGForIndicationChar(char='0'){
             return 'rgba(255,0,0,0.5)'
         case '3':
             return 'rgba(0,0,0,0.8)'
+        case '4':
+            return 'rgba(0,0,0,0.8)'
+        case '6':
+            return 'rgba(0,255,0,1)'
 
 
         default:
@@ -531,11 +538,35 @@ class Vehicle{
 let last_indicator_id = 0
 
 class Indicator{
-    constructor(image){
+    constructor(image,indicators_container=indicators){
         this.image = image
         this.id = last_indicator_id
+        this.indicators = indicators_container
         last_indicator_id += 1
     }
+}
+
+class TwoImagesIndicator extends Indicator{
+
+    update(module,icon_src,classes_image="",is_visible=true){
+    //animation-repair
+        let indicator = document.getElementById('indicator'+this.id)
+        if (indicator == undefined){
+            this.indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico" class="'+classes_image+'"><img id="icon'+this.id+'" src="'+icon_src+'" alt="ico"></div>'
+            //indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"></div>'
+            indicator = document.getElementById('indicator'+this.id)
+        }
+        indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
+        let icon = document.getElementById('icon'+this.id)
+        icon.src = icon_src
+        if (is_visible){
+            indicator.style.display = ''
+        }else{
+            indicator.style.display = 'none'
+        }
+
+    }
+
 }
 
 class SimpleIndicator extends Indicator{
@@ -543,7 +574,7 @@ class SimpleIndicator extends Indicator{
     update(module){
         let indicator = document.getElementById('indicator'+this.id)
         if (indicator == undefined){
-            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"></div>'
+            this.indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"></div>'
             indicator = document.getElementById('indicator'+this.id)
         }
         indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
@@ -556,7 +587,7 @@ class ValueIndicator extends Indicator{
     update(module,value){
         let indicator = document.getElementById('indicator'+this.id)
         if (indicator == undefined){
-            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil" id="value'+this.id+'"></div></div>'
+            this.indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil" id="value'+this.id+'"></div></div>'
             indicator = document.getElementById('indicator'+this.id)
         }
         indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
@@ -575,7 +606,7 @@ class AmountIndicator extends Indicator{
     update(module,amount,max_amount){
         let indicator = document.getElementById('indicator'+this.id)
         if (indicator == undefined){
-            indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil"><div style="font-size:18px" id="amount'+this.id+'"></div><div style="font-size:12px; color:rgba(255,255,255,0.5)" id="max'+this.id+'"></div></div></div>'
+            this.indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"><div class="ceil"><div style="font-size:18px" id="amount'+this.id+'"></div><div style="font-size:12px; color:rgba(255,255,255,0.5)" id="max'+this.id+'"></div></div></div>'
             indicator = document.getElementById('indicator'+this.id)
         }
         indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
@@ -592,6 +623,7 @@ class AmountIndicator extends Indicator{
 }
 
 class Module{
+    image = ''
     constructor(){
     }
 
@@ -614,6 +646,60 @@ class Module{
     draw_indicator(layer,vehicle){}
 }
 
+class MockModule extends Module{
+    constructor(){
+        super()
+    }
+}
+
+class RepairKit extends Module{
+    image = 'static/indication/repair_animation.svg'
+    constructor(vehicle){
+        super()
+        this.indicator = new TwoImagesIndicator(this.image,upperIndicators)
+        this.indication_char = '0'
+        this.vehicle = vehicle
+    }
+    updatep(string){
+        let sublist = string.split(',',1)
+//        console.log(sublist[0])
+//        console.log(this.vehicle.modules)
+//        console.log(this.vehicle.modules[Number(sublist[0])])
+
+        if (sublist[0]==''){
+            this.indicator.update(this,'','animation-repair',false)
+
+        }else if (sublist[0]=='-'){
+            this.indicator.update(this,'static/indication/armor_icon.svg','animation-repair',true)
+        }
+        else{
+            this.indicator.update(this,this.vehicle.modules[Number(sublist[0])].image,'animation-repair',true)
+        }
+
+        string = string.slice(sublist[0].length + 1)
+        return string
+    }
+}
+
+class OverloadIndication extends Module{
+image='static/indication/mass_icon.svg'
+    constructor(poly){
+        super()
+        this.indicator = new ValueIndicator(this.image)
+        this.indication_char = '0'
+    }
+
+    updatep(string){
+        let sublist = string.split(',',1)
+        this.indication_char = sublist[0].charAt(0)
+        this.indicator.update(this,Number(sublist[0].slice(1)))
+
+        string = string.slice(sublist[0].length + 1)
+        return string
+    }
+
+}
+
 class ArmorIndication extends Module{
     constructor(poly){
         super()
@@ -622,7 +708,7 @@ class ArmorIndication extends Module{
         for (let _=0; _ < poly.length; _++){
             let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
             let cnt = Math.floor(ln / 0.01)
-            console.log(ln, cnt)
+//            console.log(ln, cnt)
             for (let i=0; i < cnt; i++){
                 this.armor_modules.push(0)
             }
@@ -639,7 +725,7 @@ class ArmorIndication extends Module{
         for (let i = 0; i < str.length; i++) {
           this.armor_modules[i] = Number(str.charAt(i));
         }
-        console.log(this.armor_modules)
+//        console.log(this.armor_modules)
         string = string.slice(sublist[0].length + 1)
         return string
     }

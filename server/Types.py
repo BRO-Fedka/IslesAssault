@@ -17,6 +17,7 @@ class PlayerInputData:
     left: bool = False
     first_weapon: bool = False
     second_weapon: bool = False
+    repair: bool = False
     tab: bool = False
     z_aiming_mode: int = 0
     shooting_mode: bool = False

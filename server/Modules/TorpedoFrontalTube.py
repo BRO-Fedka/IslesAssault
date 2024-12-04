@@ -24,6 +24,8 @@ class TorpedoFrontalTube(PolygonModule):
         self.health_controller = hc
 
     def update_module_input(self, input: PlayerInputData):
+        if self.is_repairing:
+            return
         if input.first_weapon and (datetime.datetime.now() - self.reload_timer).total_seconds() > 5 and self.amount > 0:
             Torpedo(self.world, self.body.master, coords(self.body.position.x, self.body.position.y), self.body.angle)
             self.reload_timer = datetime.datetime.now()

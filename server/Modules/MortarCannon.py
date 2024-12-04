@@ -13,6 +13,7 @@ from server.Entities.Projectiles.ArmorPiercing import ArmorPiercing
 
 class MortarCannon(Cannon):
     r = 0.0375
+    repair_priority = 4
 
     def __init__(self, x: float, y: float,world:World, body: Body, shellstorages: List[ShipShellStorage] = None,
                  rotation_speed=2 / 180 * math.pi):
@@ -39,6 +40,8 @@ class MortarCannon(Cannon):
         self.reload_start = datetime.datetime.now()
 
     def update_module(self):
+        if self.is_repairing:
+            return
         # print('1')
         rotation_speed = self.rotation_speed * self.hp / self.max_hp
         self.ship_direction = self.body.angle
@@ -58,6 +61,8 @@ class MortarCannon(Cannon):
                 self.relative_direction = vec.angle - self.ship_direction
 
     def update_module_input(self, input: PlayerInputData):
+        if self.is_repairing:
+            return
         self.cursor_x = input.cursor_x
         self.cursor_y = input.cursor_y
         if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > (2 - 1 * (

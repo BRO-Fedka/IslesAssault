@@ -14,6 +14,7 @@ BACK = 2
 
 class ShipEngine(PolygonModule):
     level: int = BOTTOM
+    repair_priority = 3
 
     def __init__(self, body: Body, x_force:float, y_force:float, poly:Sequence[Sequence[float]], force:float=0.05, fueltanks: List[ShipFuelTank] = None, segment:ShipSegment= None, fueluse:float = 0):
         super().__init__(poly)
@@ -28,6 +29,8 @@ class ShipEngine(PolygonModule):
         self.y = y_force
 
     def update_module(self):
+        if self.is_repairing:
+            return
         force = self.force * (min(self.hp/self.max_hp,1-self.segment.get_water_fullness_cof()))**0.25
         if not self.fueltanks is None:
             for fueltank in self.fueltanks:

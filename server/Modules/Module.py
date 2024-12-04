@@ -1,5 +1,6 @@
 from server.Types import PlayerInputData, coords
 from typing import Sequence
+import asyncio
 
 DEFAULT = 0
 BOTTOM = -1
@@ -7,6 +8,8 @@ BOTTOM = -1
 
 class Module:
     level: int = DEFAULT
+    repair_priority: int = None
+    is_repairable: bool = False
 
     def __init__(self):
         pass
@@ -37,6 +40,12 @@ class Module:
 
     def get_hp(self) -> float:
         return 0
+
+    def get_rel_hp(self) -> float:
+        return 0
+
+    async def repair(self):
+        pass
 
     def get_mass(self) -> float:
         return 0

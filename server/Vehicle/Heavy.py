@@ -15,6 +15,8 @@ from server.Types import PlayerInputData
 from server.Modules.WaterPump import WaterPump
 from server.Modules.Armor.ArmorIndication import ArmorIndication
 from server.Vehicle.Contollers.MassController import MassController
+from server.Modules.OverloadIndication import OverloadIndication
+from server.Modules.RepairKit import RepairKit
 
 POLY_SHAPE = [(0.15, 0), (0, 0.06), (-0.15, 0.045), (-0.15, -0.045), (0, -0.06)]
 POLY_SHAPE_N = [(0.06, 0.15), (-0.015, 0.15), (-1, 0), (-0.015, -0.15), (0.06, -0.15)]
@@ -49,6 +51,7 @@ class Heavy(Vehicle):
         segment1 = ShipSegment(SEG1)
         segment2 = ShipSegment(SEG2)
         segment3 = ShipSegment(SEG3)
+        self.mass_controller = MassController(self.shape)
         self.modules = [
             MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
             MortarCannon(-0.1,0,self.world,self.body,shellstorages=[shellstorage]),
@@ -66,15 +69,18 @@ class Heavy(Vehicle):
             segment1,
             segment2,
             segment3,
-            ArmorIndication(self.health_controller.armor_modules)
+            ArmorIndication(self.health_controller.armor_modules),
+            OverloadIndication(self.mass_controller),
+            RepairKit(self.health_controller)
+
 
         ]
         self.health_controller.update_params(1000,self.modules,POLY_SHAPE)
-        self.mass_controller = MassController(self.shape, self.modules)
+        self.mass_controller.update_params(self.modules)
 
     def update_modules(self):
         super().update_modules()
-        if self.mass_controller.get_overload() > 1.8:
+        if self.mass_controller.get_overload() > 2:
             print('SUNK')
 
     def get_public_info_string(self) -> str:

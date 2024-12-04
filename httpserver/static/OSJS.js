@@ -2,11 +2,12 @@ class MortarCannon extends Cannon{
     cannon_r = 12
     l = 18
     len_width = [8,5]
+    image='static/indication/mortar_turret_direct_icon.svg'
 
     constructor(x,y,r = 0.0375){
 
         super(x,y,r)
-        this.indicator = new SimpleIndicator('static/indication/mortar_turret_direct_icon.svg')
+        this.indicator = new SimpleIndicator(this.image)
 
     }
 
@@ -50,9 +51,10 @@ class MortarCannon extends Cannon{
 
 class ShipEngine extends PolygonModule{
     indication_layer = 'BOTTOM'
+    image = 'static/indication/engine_icon.svg'
     constructor(poly){
         super(poly)
-        this.indicator = new SimpleIndicator('static/indication/engine_icon.svg')
+        this.indicator = new SimpleIndicator(this.image)
     }
 
     updatep(string){
@@ -68,9 +70,10 @@ class ShipEngine extends PolygonModule{
     }
 }
 class WaterPump extends PolygonModule{
+image='static/indication/water_pump_icon.svg'
     constructor(poly){
         super(poly)
-        this.indicator = new SimpleIndicator('static/indication/water_pump_icon.svg')
+        this.indicator = new SimpleIndicator(this.image)
     }
 
     updatep(string){
@@ -80,15 +83,17 @@ class WaterPump extends PolygonModule{
     }
 }
 class ShipFuelTank extends PolygonModule{
+    image='static/indication/fuel_tank_icon.svg'
     indication_layer = 'BOTTOM'
 }
 class ShipShellStorage extends PolygonModule{
     indication_layer = 'BOTTOM'
+    image='static/indication/shell_icon.svg'
     constructor(poly, max){
         super(poly)
         this.amount = max
         this.max_amount = max
-        this.indicator = new AmountIndicator('static/indication/shell_icon.svg')
+        this.indicator = new AmountIndicator(this.image)
 
     }
     updatep(string){
@@ -102,6 +107,7 @@ class ShipShellStorage extends PolygonModule{
     }
 }
 class ShipSegment extends PolygonModule{
+    image='static/indication/segment_icon.svg'
     indication_layer = 'BOTTOM'
     drawp(layer,vehicle){
         create_waterparticles_for_poly(vehicle,this.poly,Number(this.indication_char)/45)
@@ -115,11 +121,12 @@ class ShipSegment extends PolygonModule{
 
 class TorpedoFrontalTube extends PolygonModule{
     indication_layer = 'BOTTOM'
+    image='static/indication/torpedo_icon.svg'
     constructor(poly, max){
         super(poly)
         this.amount = max
         this.max_amount = max
-        this.indicator = new AmountIndicator('static/indication/torpedo_icon.svg')
+        this.indicator = new AmountIndicator(this.image)
 
     }
     
@@ -135,11 +142,12 @@ class TorpedoFrontalTube extends PolygonModule{
 }
 
 class SmokeGenerator extends PolygonModule{
+image='static/indication/smoke_generator_icon.svg'
     constructor(poly,max){
         super(poly)
         this.amount = max
         this.max_amount = max
-        this.indicator = new AmountIndicator('static/indication/smoke_generator_icon.svg')
+        this.indicator = new AmountIndicator(this.image)
     }
     
     updatep(string){
@@ -183,6 +191,8 @@ class Heavy extends Vehicle{
             new MortarCannon(-0.1,0),
             new TorpedoFrontalTube(TUBE,12),
             new SmokeGenerator(SMK,5),
+            new MockModule(),
+            new MockModule(),
             new ShipEngine(ENG),
             new WaterPump(PMP),
             new ShipFuelTank(FUEL1),
@@ -192,7 +202,9 @@ class Heavy extends Vehicle{
             new ShipSegment(SEG1),
             new ShipSegment(SEG2),
             new ShipSegment(SEG3),
-            new ArmorIndication(POLY_SHAPE)
+            new ArmorIndication(POLY_SHAPE),
+            new OverloadIndication(),
+            new RepairKit(this)
         ]
         
     }
@@ -203,7 +215,7 @@ class Heavy extends Vehicle{
             if (layer=='OnWater'){
                 create_waterparticles_for_poly(this,POLY_SHAPE)
                 drawF(this,POLY_SHAPE, this.f)
-                console.log(this.id)
+//                console.log(this.id)
             }
             // console.log("DR")
             super.drawp(layer)
@@ -215,7 +227,7 @@ class Heavy extends Vehicle{
             if (layer=='OnWater'){
                 create_waterparticles_for_poly(this,POLY_SHAPE)
                 drawF(this,POLY_SHAPE, this.f)
-                console.log(this.id)
+//                console.log(this.id)
             }
             // console.log("DR")
             super.drawe(layer)

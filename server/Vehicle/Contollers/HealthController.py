@@ -1,10 +1,11 @@
-from typing import List, Sequence
+from typing import List, Sequence, Union
 from server.Modules.Module import Module, BOTTOM, DEFAULT
 from pymunk import Body
 from server.Types import coords
 from shapely.geometry import Polygon, LineString, Point
 from server.Modules.Armor.ArmorPlate import ArmorPlate
 import math
+import asyncio
 
 
 class HealthController:
@@ -14,7 +15,60 @@ class HealthController:
         self.modules: List[Module] = None
         self.vehicle_shape: Polygon = None
         self.max_modules_hp = 0
-        self.armor_modules = []
+        self.armor_modules: List[Module] = []
+        self.is_repairing = False
+        self.module_under_repairing = None
+        self.modules_for_repairing: List[List[Module,Union[str,int]]] = []
+
+    def on_damage(self):
+        pass
+
+    def filter_modules_for_repairing(self):
+        modules = []
+        i = -1
+        for module in self.modules + self.armor_modules:
+            i += 1
+            if module.is_repairable:
+                if (module.get_hp() == 0 and self.body.velocity.length > 0.05) or module.get_rel_hp() == 1:
+                    continue
+                if i >= len(self.modules):
+                    modules.append([module,'-'])
+                else:
+                    modules.append([module,i])
+
+        modules.sort(key=lambda e: 100000 * (e[0].get_rel_hp() + 0.001) if e[0].repair_priority is None else (
+                                                                                                               e[0].get_rel_hp() + 0.001) * e[0].repair_priority)
+
+        self.modules_for_repairing = modules
+        # print(self.modules_for_repairing)
+
+    def get_module_id(self):
+        return self.module_under_repairing
+
+    def repair(self):
+        self.filter_modules_for_repairing()
+        if not self.is_repairing:
+            asyncio.create_task(self.repair_async())
+            # print('^')
+
+        # ioloop.close()
+
+    async def repair_async(self):
+        self.is_repairing = True
+        # print('?')
+        while len(self.modules_for_repairing) > 0:
+            self.module_under_repairing = self.modules_for_repairing[0][1]
+            print(self.modules_for_repairing[0][1])
+            await self.modules_for_repairing[0][0].repair()
+            # self.modules_for_repairing.pop(0)
+            self.filter_modules_for_repairing()
+        self.module_under_repairing = None
+        # print(self.modules_for_repairing)
+        # for module in self.modules_for_repairing:
+        #     print(self.modules_for_repairing)
+
+        self.is_repairing = False
+        # print('!')
 
     def fill_armor_modules(self):
         crds = self.vehicle_shape.exterior.coords[:]
@@ -28,7 +82,7 @@ class HealthController:
                                     coords(crds[_ - 1][0] + (crds[_][0] - crds[_ - 1][0]) * (i + 1) / cnt,
                                            crds[_ - 1][1] + (crds[_][1] - crds[_ - 1][1]) * (i + 1) / cnt), 0.01)
                 self.armor_modules.append(module)
-        print(crds)
+        # print(crds)
 
     def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]]):
         self.max_hp = max_hp
@@ -70,6 +124,7 @@ class HealthController:
                                                size=size, speed=projectile.velocity.length, mass=projectile.mass)
 
     def piercing_damage_from_local_coords(self, coord: coords, angle: float, size: float, speed: float, mass: float):
+        self.on_damage()
         cos = math.cos(angle)
         sin = math.sin(angle)
         print(angle)
@@ -95,6 +150,7 @@ class HealthController:
         self.bottom_explosion_damage_from_local_coords(self.get_local_coords_of_penetration(projectile), radius=radius)
 
     def bottom_explosion_damage_from_local_coords(self, coord: coords, radius: float):
+        self.on_damage()
         bottom_modules = []
         for module in self.modules:
             if module.level == BOTTOM:
@@ -106,6 +162,7 @@ class HealthController:
             module.explosion_damage(coord, radius=radius)
 
     def explosion_damage_from_local_coords(self, coord: coords, radius: float):
+        self.on_damage()
         modules = []
         for module in self.modules:
             if module.level == DEFAULT:
