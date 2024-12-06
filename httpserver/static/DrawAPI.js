@@ -162,6 +162,10 @@ function setIndicatorStyles(char='0',layer, context){
             context.strokeStyle = '#f00'
             context.fillStyle = 'rgba(0,0,0,'+0.3*l+')'
             break;
+        case '4':
+            context.strokeStyle = '#f00'
+            context.fillStyle = 'rgba(0,0,0,0)'
+            break;
         case '6':
             context.strokeStyle = '#0f0'
             context.fillStyle = 'rgba(128,255,128,'+0.5*l*(0.5+Math.sin(Date.now()/600)*0.5)+')'

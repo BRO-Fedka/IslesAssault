@@ -34,7 +34,6 @@ class RealModule(Module):
         self.hp: float = hp
         self.max_hp: int = hp
         self.shape: BaseGeometry = None
-        self.is_destroyed = False
         self.is_repairing = False
 
     def on_destroy(self):
@@ -43,6 +42,8 @@ class RealModule(Module):
     def piercing_damage(self, intersection, coord: coords, size: float, speed: float, mass: float) -> Sequence[float]:
         # print(self.__class__.__name__)
         # print(speed*mass/size/self.cof_piercing_durability)
+        if self.is_destroyed or self.hp == 0:
+            return size, speed, mass
         if speed == 0 or mass == 0 or size == 0:
             return 0, 0, 0
         max_piercing_depth = speed * mass / size / self.cof_piercing_durability
@@ -56,14 +57,13 @@ class RealModule(Module):
         if self.hp <= 0:
             self.hp += piercing_depth * self.cof_pr_dmg_per_area * size
             self.on_destroy()
-            self.is_destroyed = True
             self.hp = 0
         # print(self.hp, self.max_hp)
         # print(speed * piercing_depth / max_piercing_depth)
         return size, speed * (1 - piercing_depth / max_piercing_depth), mass
 
     def explosion_damage(self, coord: coords, radius: float):
-        if self.is_destroyed:
+        if self.is_destroyed or self.hp == 0:
             return
         dmgcircle = Point(coord).buffer(radius)
         intersection = self.shape.intersection(dmgcircle)
@@ -74,7 +74,6 @@ class RealModule(Module):
             if self.hp <= 0:
                 self.hp += intersection.area * self.cof_ex_dmg_per_area
                 self.on_destroy()
-                self.is_destroyed = True
                 self.hp = 0
             # print(self.hp, self.max_hp)
 
@@ -90,6 +89,7 @@ class RealModule(Module):
             r = minrad + (maxrad - minrad) * random.random()
             hc.bottom_explosion_damage_from_local_coords(coords(pnt.x, pnt.y), r)
             hc.explosion_damage_from_local_coords(coords(pnt.x, pnt.y), r / (1 + random.random()))
+        self.is_destroyed = True
 
     def get_hp(self) -> float:
         return self.hp
@@ -121,7 +121,9 @@ class RealModule(Module):
 
     def get_indication_char_public(self) -> str:
         hp = self.get_rel_hp()
-        if hp > 0.9:
+        if self.is_destroyed:
+            return '4'
+        elif hp > 0.9:
             return '0'
         elif hp > 0.5:
             return '1'

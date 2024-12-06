@@ -18,6 +18,7 @@ class MortarCannon(Cannon):
     def __init__(self, x: float, y: float,world:World, body: Body, shellstorages: List[ShipShellStorage] = None,
                  rotation_speed=2 / 180 * math.pi):
         super().__init__(x, y)
+
         self.shellstorages = shellstorages
         self.ship_direction = 0
         self.rotation_speed = rotation_speed
@@ -63,8 +64,11 @@ class MortarCannon(Cannon):
     def update_module_input(self, input: PlayerInputData):
         if self.is_repairing:
             return
-        self.cursor_x = input.cursor_x
-        self.cursor_y = input.cursor_y
+        dir_vec = self.body.rotation_vector.normalized()
+        absx = -(self.y*dir_vec.y) + self.x*dir_vec.x
+        absy = dir_vec.x*self.y + self.x*dir_vec.y
+        self.cursor_x = input.cursor_x - absx
+        self.cursor_y = input.cursor_y - absy
         if input.mouse_0 and (datetime.datetime.now() - self.reload_start).total_seconds() > (2 - 1 * (
                 self.hp / self.max_hp))*4:
             self.reload_start = datetime.datetime.now()

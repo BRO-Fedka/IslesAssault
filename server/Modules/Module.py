@@ -12,7 +12,7 @@ class Module:
     is_repairable: bool = False
 
     def __init__(self):
-        pass
+        self.is_destroyed = False
 
     def update_module(self):
         pass

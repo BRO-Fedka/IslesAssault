@@ -29,7 +29,7 @@ class HealthController:
         for module in self.modules + self.armor_modules:
             i += 1
             if module.is_repairable:
-                if (module.get_hp() == 0 and self.body.velocity.length > 0.05) or module.get_rel_hp() == 1:
+                if (module.get_hp() == 0 and self.body.velocity.length > 0.05) or module.get_rel_hp() == 1 or module.is_destroyed:
                     continue
                 if i >= len(self.modules):
                     modules.append([module,'-'])
