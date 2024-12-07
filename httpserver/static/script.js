@@ -438,6 +438,8 @@ MAP.set('s',new Map())
 MAP.set('z',new Map())
 MAP.set('g',new Map())
 let lastMSGid = 0
+let Entities = new Map()
+
 function startgame() {
     document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
@@ -567,22 +569,23 @@ function startgame() {
 					for (let h = 1; h < infarr.length; h++) {
 						let larr =infarr[h].split(',');
 						// console.log(larr[0])
-						if (larr[0] == 'k'){
-							if (MSGs.indexOf(Number(larr[3]))==-1){
-								let div = document.createElement('div');
-								div.className = "MSGk";
-								div.innerHTML = "<b>"+larr[1]+"</b> destroyed <b>"+larr[2]+"</b>";
-								chatview.append(div);
-								MSGs.push(Number(larr[3]))
-							}
-						}else if (larr[0] == 'l'){
-							if (MSGs.indexOf(Number(larr[2]))==-1){
-								let div = document.createElement('div');
-								div.className = "MSGl";
-								div.innerHTML = larr[1]
-								chatview.append(div);
-								MSGs.push(Number(larr[2]))
-							}
+						if (larr[0] == '#'){
+                            switch (larr[1]) {
+                                case 'c':
+                                    Entities.set(larr[3],new EntitiesTable[larr[2]](larr))
+                                    break;
+                                case 'u':
+                                    if (Entities.has(larr[3])){
+                                        Entities.get(larr[3]).update(larr)
+                                    }
+                                case 'd':
+                                    if (Entities.has(larr[3])){
+                                        Entities.get(larr[3]).delete(larr)
+                                    }
+                                    break;
+                            }
+                            
+
 						}else 	if (larr[0] == '+' ){
 //						    console.log(larr)
                             PN = larr[3]
@@ -597,177 +600,6 @@ function startgame() {
                             let str = infarr[h].slice(pad)
 //                            console.log(str)
                             TVehicles.get(CVID).updatee(str)
-						}else 	if (larr[0] == 'a' ){
-							ammo.set('120mm',Number(larr[1]));
-							ammo.set('45mm',Number(larr[2]));
-							ammo.set('20mm',Number(larr[3]));
-							ammo.set('8mm',Number(larr[4]));
-							num120.innerHTML = '<span>120mm</span>' + larr[1];
-							num45.innerHTML = '<span>45mm</span>' + larr[2];
-							num20.innerHTML = '<span>20mm</span>' + larr[3];
-							num8.innerHTML = '<span>8mm</span>' + larr[4];
-							if(larr[1] =='0'){
-							num120.className = 'unselectable ammonum NumAmmo0';
-							}else{
-							num120.className = 'unselectable ammonum NumAmmo';
-							}
-							if(larr[2] =='0'){
-							num45.className = 'unselectable ammonum NumAmmo0';
-							}else{
-							num45.className = 'unselectable ammonum NumAmmo';
-							}
-							if(larr[3] =='0'){
-							num20.className = 'unselectable ammonum NumAmmo0';
-							}else{
-							num20.className = 'unselectable ammonum NumAmmo';
-							}
-							if(larr[4] =='0'){
-							num8.className = 'unselectable ammonum NumAmmo0';
-							}else{
-							num8.className = 'unselectable ammonum NumAmmo';
-							}
-						}else 	if (larr[0] == 'g' && larr.length > 3){
-								if (MSGs.indexOf(Number(larr[3]))==-1){
-								let div = document.createElement('div');
-								div.className = "crewMSG";
-                                div.innerHTML = "<b>"+larr[1]+"</b> "+larr[2];
-								chatview.append(div);
-								div.scrollIntoView();
-								MSGs.push(Number(larr[3]))
-							}
-						}else 	if (larr[0] == 'c'){
-                            if (MSGs.indexOf(Number(larr[1]))==-1){
-                                if (Number(larr[2]) == 0){
-                                    let div = document.createElement('div');
-                                    div.className = "TeamMSG";
-                                    div.innerHTML = "Requested to join <b>"+larr[3]+"</b>";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == '1'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "No such team !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == '2'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "You are already in team, if you want to leave type <b>/team leave</b> !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if ((larr[2]) == '3'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "Team <b>"+larr[3]+"</b> already exists !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if ((larr[2]) == '4'){
-                                    let div = document.createElement('div');
-                                    div.className = "TeamMSG";
-                                    div.innerHTML = "Team <b>"+larr[3]+"</b> was successfully created !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == '5'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "You are alone, you can't leave team !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == '6'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "No permission to use this command !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == '7'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "You can't kick yourself, use <b>/team leave</b> !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if ((larr[2]) == '8'){
-                                    let div = document.createElement('div');
-                                    div.className = "KickMSG";
-                                    div.innerHTML = "Player <b>"+larr[3]+"</b> was kicked from team";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if ((larr[2]) == '9'){
-                                    let div = document.createElement('div');
-                                    div.className = "KickMSG";
-                                    div.innerHTML = "Welcome the new team member <b>"+larr[3]+"</b>";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == 'a'){
-                                    let div = document.createElement('div');
-                                    div.className = "ErrMSG";
-                                    div.innerHTML = "You are alone, you have no teammates !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }else if((larr[2]) == 'b'){
-                                    let div = document.createElement('div');
-                                    div.className = "TeamMSG";
-                                    div.innerHTML = "You succesfully left team !";
-                                    chatview.append(div);
-                                    MSGs.push(Number(larr[1]))
-                                }
-                            }
-                        }else 	if (larr[0] == 'm'){
-							if (MSGs.indexOf(Number(larr[3]))==-1){
-								let div = document.createElement('div');
-								if (larr[1] == "[SERVER]"){
-								    div.className = "ServerMSG";
-								}else{
-								    div.className = "MSG";
-								}
-                                if (larr[1].split(']').length >1 && larr[1] != "[SERVER]"){
-                                    div.innerHTML = '<b><a onclick="Send = true;messagebtn.innerText = \'Global\'; messageinput.value = \'/team join '+larr[1].split(']')[0].slice(1)+'\';">['+larr[1].split(']')[0].slice(1) +"]</a>" +larr[1].split(']')[1]+'</b> ' +larr[2];
-                                }else{
-                                    div.innerHTML = "<b>"+larr[1]+"</b> "+larr[2];
-                                }
-								chatview.append(div);
-								div.scrollIntoView();
-								MSGs.push(Number(larr[3]))
-							}
-						}else 	if (larr[0] == '#'){
-
-							for (let _ = 2; _ < larr.length; _ += 2) {
-                                MAPstatic['#'][larr[1]][larr[_]][6] = larr[_+1]
-							}
-						}else 	if (larr[0] == 'p'){
-
-                            if (larr.length > 3){
-                                if (!(SmokesData.has(larr[1]))){
-                                SmokesData.set(larr[1],[Number(larr[2]),Number(larr[3]),Date.now(),false,[]])
-                                }
-                            }else{
-                            try{
-                                SmokesData.get(larr[1])[3] = true
-                            }catch{}
-                            }
-						}else 	if (larr[0] == 'b'){
-                            if (larr.length > 3){
-                                if (!(BombsData.has(larr[1]))){
-//                                console.log(Number(larr[6]))
-                                BombsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Date.now(),false,Number(larr[8])])
-                                }
-                            }else{
-                            try{
-                                BombsData.get(larr[1])[4] = larr[2]
-                                BombsData.get(larr[1])[7] = true
-                            }catch{}
-                            }
-						}else 	if (larr[0] == 'r'){
-
-                            if (larr.length > 3){
-                                if (!(AARocketsData.has(larr[1]))){
-                                AARocketsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()-1.5*PING,Number(larr[7])])
-                                }
-                            }else{
-                            try{
-                                AARocketsData.get(larr[1])[3] = larr[2]
-                                AARocketsData.get(larr[1])[5] = true
-                            }catch{}
-                            }
 						}else 	if (larr[0] == '<'){
                             if (larr.length > 3){
                                 if (!(TorpedosData.has(larr[1]))){
@@ -792,39 +624,7 @@ function startgame() {
                                 BulletsData.get(larr[1])[7] = true
                             }catch{}
                             }
-						}else 	if (larr[0] == 'j'){
-							if (MSGs.indexOf(Number(larr[2]))==-1){
-								let div = document.createElement('div');
-								div.className = "MSGj";
-								div.innerHTML = '<img src="static/checkmark.svg" onclick="Send = true; messageinput.value = \''+ '/team accept '+larr[1]+'\'; this.parentNode.remove()">' + '   '+larr[1];
-								chatview.append(div);
-								div.scrollIntoView();
-								MSGs.push(Number(larr[2]))
-							}
-						}else 	if (larr[0] == 't') {
-							tab.innerHTML = '';
-							let tbl = document.createElement('table');
-							for (let _ = 1; _ < larr.length; _ += 2) {
-							    if (larr[_].split(']').length > 1){
-								tbl.innerHTML += '    <tr class=\"bg' + ((_ - 1) / 2 % 2) + '\">\n' +
-									'        <td><b><a onclick="Send = true;messagebtn.innerText = \'Global\'; messageinput.value = \''+ '/team join '+larr[_].split(']')[0].slice(1)+'\';">[' + larr[_].split(']')[0].slice(1)+ "]</a>"+larr[_].split(']')[1] + '</b></td>\n' +
-									'        <td class=\"td2\"><b>' + larr[_ + 1] + '</b></td>\n' +
-									'    </tr>'
-
-							    }else{
-								tbl.innerHTML += '    <tr class=\"bg' + ((_ - 1) / 2 % 2) + '\">\n' +
-									'        <td><b>' + larr[_] + '</b></td>\n' +
-									'        <td class=\"td2\"><b>' + larr[_ + 1] + '</b></td>\n' +
-									'    </tr>'
-
-							    }
-
-							}
-							tab.appendChild(tbl);
-							input.set('Tab', false);
 						}else{
-						    try{
-						    }catch{}
 						}
 					}
 					dellarr = []
@@ -840,7 +640,7 @@ function startgame() {
 //                            dellarr.push(key)
 //                       }
 //                    }
-// TODO ##########################################
+//TODO
                     while (dellarr.length > 0){
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
@@ -1420,6 +1220,10 @@ if (ParticlesProcessing){
 	// }
     ////TODO !!!!!!!!!!!!!!
     // console.log('-')
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater-2")
+
+    }
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater-2")
@@ -1427,6 +1231,9 @@ if (ParticlesProcessing){
             vehicle.drawe("OnWater-2")
         }
     });
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater-1") 
+    }
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater-1")
@@ -1434,6 +1241,9 @@ if (ParticlesProcessing){
             vehicle.drawe("OnWater-1")
         }
     });
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater") 
+    }
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater")
@@ -1441,6 +1251,9 @@ if (ParticlesProcessing){
             vehicle.drawe("OnWater")
         }
     });
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater+1")
+    }
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater+1")
@@ -1448,6 +1261,9 @@ if (ParticlesProcessing){
             vehicle.drawe("OnWater+1")
         }
     });
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater+2")
+    }
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp("OnWater+2")
@@ -1455,6 +1271,9 @@ if (ParticlesProcessing){
             vehicle.drawe("OnWater+2")
         }
     });
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw("OnWater+3")
+    }
 	// for (let _ = 0; _ < Players.length; _++) {
     //     if (Players[_][0]  == PlayerName){
     //         Vehicles[Players[_][1]].drawp("OnWater",NoTeamTag(Players[_][0]))
@@ -1617,52 +1436,53 @@ if (ParticlesProcessing){
 //            Vehicles[Players[_][1]].draw("OnGround+2",NoTeamTag(Players[_][0]));
 //        }
 //	}
-	for (let _ of BulletsData.keys()) {
-                if (BulletsData.get(_)[4] == 0 ){
-                        if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
-                if (Math.random() < 1){
-                    PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
-                }
-                if(BulletsData.get(_)[3] == 3){
-                    ShakeXbnds += 5
-                    ShakeYbnds += 5
-                }
-                BulletsData.get(_)[3]=0
-            }else if(BulletsData.get(_)[3] == 2){
-                if (Math.random() < 1){
-                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
-                }
-                BulletsData.get(_)[3]=0
-            }
-                grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            if (Z < 2){
-                grad.addColorStop(1,"#FFFF4400");
-                grad.addColorStop(0,"#FFFF4488");
-            }else{
-                grad.addColorStop(1,"#ffff8800");
-                grad.addColorStop(0,"#ffff8877");
-            }
-            ctx.strokeStyle = grad;
-            ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
-            ctx.beginPath()
-             ctx.lineCap='round';
-            ctx.moveTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.stroke();
-            ctx.closePath()
-            BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-            BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-            if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
-            BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
-            if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
-            }else{
-            BulletsData.get(_)[11] = 0
-            }
-            if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
-                BulletsData.delete(_)
-            }
-            }
-	}
+
+	// for (let _ of BulletsData.keys()) {
+    //             if (BulletsData.get(_)[4] == 0 ){
+    //                     if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
+    //             if (Math.random() < 1){
+    //                 PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+    //             }
+    //             if(BulletsData.get(_)[3] == 3){
+    //                 ShakeXbnds += 5
+    //                 ShakeYbnds += 5
+    //             }
+    //             BulletsData.get(_)[3]=0
+    //         }else if(BulletsData.get(_)[3] == 2){
+    //             if (Math.random() < 1){
+    //                     PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
+    //             }
+    //             BulletsData.get(_)[3]=0
+    //         }
+    //             grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+    //         if (Z < 2){
+    //             grad.addColorStop(1,"#FFFF4400");
+    //             grad.addColorStop(0,"#FFFF4488");
+    //         }else{
+    //             grad.addColorStop(1,"#ffff8800");
+    //             grad.addColorStop(0,"#ffff8877");
+    //         }
+    //         ctx.strokeStyle = grad;
+    //         ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
+    //         ctx.beginPath()
+    //          ctx.lineCap='round';
+    //         ctx.moveTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+    //         ctx.lineTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+    //         ctx.stroke();
+    //         ctx.closePath()
+    //         BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+    //         BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
+    //         if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
+    //         BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
+    //         if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
+    //         }else{
+    //         BulletsData.get(_)[11] = 0
+    //         }
+    //         if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
+    //             BulletsData.delete(_)
+    //         }
+    //         }
+	// }
 		    for (let _ of SmokesData.keys()) {
           try{
               ctx.fillStyle = 'rgba(255,255,255,0.25)';
@@ -2395,6 +2215,12 @@ if (ParticlesProcessing){
 //            Vehicles[Players[_][1]].draw("Info+2",NoTeamTag(Players[_][0]));
 //        }
 //	}
+    for (let _ of Entities.keys()) {
+        if (!(Entities.get(_).is_active)){
+            Entities.delete(_)    
+        }
+
+    }
         }
 
         window.requestAnimationFrame(DRAW);

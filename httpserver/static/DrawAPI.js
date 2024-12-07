@@ -960,3 +960,182 @@ class Cannon extends CircularModule{
     }
 }
 
+class Entity{
+
+    constructor(larr){
+        this.id = larr[2]
+        this.is_active = true
+    }
+
+    update(larr){
+
+    }
+
+    delete(larr){
+
+    }
+
+    draw(layer){
+
+    }
+}
+
+class Projectile extends Entity{
+    grad_color_0 ="#FFFF4488"
+    grad_color_1 ="#FFFF4400"
+    tail_length = 0.3
+    constructor(larr){
+        super(larr)
+        this.x = Number(larr[4])
+        this.y = Number(larr[5])
+        this.start_x = Number(larr[4])
+        this.start_y = Number(larr[5])
+        this.dir = Number(larr[6])
+        this.status = Number(larr[7])
+        this.speed = Number(larr[8])
+        this.width = Number(larr[9])
+        this.start_time = Date.now()
+        this.distance = 0
+
+    }
+
+    delete(larr){
+        this.status = Number(larr[4])
+        this.is_active = false
+    }
+
+    draw(layer=false){
+        if (layer != false && layer != 'OnWater+3') return 
+        let grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+        grad.addColorStop(1,this.grad_color_1);
+        grad.addColorStop(0,this.grad_color_0);
+        
+        ctx.strokeStyle = grad
+        ctx.lineWidth= this.width/320*Zoom;
+        ctx.beginPath()
+        ctx.lineCap='round';
+        ctx.moveTo(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.lineTo(GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.stroke();
+        ctx.closePath()
+        this.x = this.start_x+Math.cos(this.dir/180*Math.PI)*this.speed*((Date.now()-this.start_time)/1000)
+        this.y = this.start_y+Math.sin(this.dir/180*Math.PI)*this.speed*((Date.now()-this.start_time)/1000)
+        if (((Date.now()-this.start_time)/1000-1/15) > 0){
+            this.distance = this.speed*((Date.now()-this.start_time)/1000-2/15)
+            if (this.distance > this.tail_length){this.distance = this.tail_length}
+        }else{
+            this.distance = 0
+        }
+        if (this.x > 20 || this.x < -4 || this.y > 20 || this.y < -4){
+            this.is_active = false
+        }
+    }
+}
+
+class Shell extends Projectile{
+
+    draw(layer){
+    if (layer != 'OnWater+3') return 
+    if(this.status == 1 || this.status == 3){
+        if (Math.random() < 1){
+            PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+        }
+        if(this.status == 3){
+            ShakeXbnds += 5
+            ShakeYbnds += 5
+        }
+        this.status=0
+    }else if(this.status == 2){
+        if (Math.random() < 1){
+                PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
+        }
+        this.status=0
+    }
+
+
+    super.draw()
+    }
+
+}
+class Torpedo extends Projectile{
+    grad_color_0 ="#FFFFFF88"
+    grad_color_1 ="#FFFFFF00"
+    tail_length = 0.15
+    draw(layer){
+        if (layer != 'OnWater-2') return 
+        if(this.status == 1){
+			this.status=0
+            PIXI.sound.play('wtrBang');
+			for (let i = 0; i < 5; i++) {
+                WtrBangParticles0.push(new BangPrt0(this.x, this.y))
+            }
+			ShakeXbnds += 10
+			ShakeYbnds += 10
+		}else if(this.status == 2){
+            PIXI.sound.play('lnchTrpd');
+            this.status = 0
+		}
+		if (Math.random() < 0.15){
+		        WtrParticles0.push(new WtrPrt0(this.x, this.y));
+		}
+
+
+    super.draw()
+    }
+
+}
+
+class Smoke extends Entity{
+
+    constructor(larr){
+        super(larr)
+        this.x = Number(larr[4])
+        this.y = Number(larr[5])
+        this.start_time = Date.now()
+        this.particles = []
+
+
+    }
+
+    delete(larr){
+        this.status = Number(larr[4])
+        this.is_active = false
+    }
+
+    draw(layer=false){
+        if (layer != false && layer != 'OnWater+3') return 
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        let kl = 0;
+        ctx.beginPath()
+        let x = (Date.now() - this.start_time) / 100
+        let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.015
+        if (y <= 0 || (Date.now() - this.start_time)/1000>33) {
+            this.is_active = false
+            return  
+        }
+        ctx.arc(OffsetX+(this.x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(this.y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom, 0, Math.PI * 2);
+        ctx.closePath()
+        ctx.fill();
+        for (let i=0; i<this.particles.length; i++) {
+            this.particles[i].hp-=1;
+            this.particles[i].dir+=this.particles[i].spd*0.025;
+            if (this.particles[i].hp < 0 ) {
+                this.particles.splice(i, 1);
+                i--;
+            }
+        }
+        for (let i=0; i<this.particles.length; i++) {
+                    ctx.fillStyle = "rgba("+this.particles[i].cl +','+this.particles[i].cl+',' +this.particles[i].cl +',' +this.particles[i].hp/1500+ ")";
+                    ctx.beginPath();
+                    kl+=1
+                    ctx.arc(Math.cos(this.particles[i].dir)*this.particles[i].h*y*0.2*Zoom+(this.x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+OffsetX ,Math.sin(this.particles[i].dir)*Zoom*this.particles[i].h*y*0.2+OffsetY+GameH/2+(this.y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom,0,2*Math.PI);
+                    ctx.closePath()
+                    ctx.fill()
+        }
+        if(Math.random() < 0.1 && kl < 10){
+            this.particles.push(new Particle3(this.id))
+        }
+
+    }
+}

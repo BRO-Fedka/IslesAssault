@@ -174,6 +174,8 @@ FUEL3 = [[0,-0.005],[0,-0.055],[0.05,-0.035],[0.05,-0.005]]
 PMP = [[0.075,0.015],[0.12,0.015],[0.12,-0.015],[0.075,-0.015]]
 SMK = [[0.045,0.025],[0.075,0.025],[0.075,-0.025],[0.045,-0.025]]
 
+
+
 class Heavy extends Vehicle{
     f = {
         '0': '#131313',
@@ -233,4 +235,15 @@ class Heavy extends Vehicle{
             super.drawe(layer)
         }
     }
+}
+
+let VehiclesTable = {
+
+    0:Vehicle
+}
+let EntitiesTable = {
+
+    0:Shell,
+    1:Torpedo,
+    2:Smoke
 }

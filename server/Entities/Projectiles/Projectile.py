@@ -1,15 +1,12 @@
 from server.World import World
-from server.Interfaces.Object import Object
-from server.Types import coords, PlayerInputData
+from server.Entities.Entity import Entity
+from server.Types import coords
 import pymunk
-import math
-from server.constants import COL_ON_WATER, COLTYPE_VEHICLE,COLTYPE_PROJECTILE
-from server.Modules.Module import Module
-from typing import List
+from server.constants import COLTYPE_VEHICLE,COLTYPE_PROJECTILE
 from server.Vehicle.Vehicle import Vehicle
 
 
-class Projectile(Object):
+class Projectile(Entity):
     is_handled: bool = False
     handler_vehicles: pymunk.collision_handler.CollisionHandler = None
     handler_static: pymunk.collision_handler.CollisionHandler = None
@@ -38,6 +35,7 @@ class Projectile(Object):
         pass
 
     def __init__(self, world: World, sender:Vehicle, start_pos: coords, angle: float):
+        super().__init__()
         self.world = world
         if not self.__class__.is_handled:
             self.__class__.handler_vehicles = self.world.space.add_collision_handler(COLTYPE_PROJECTILE, COLTYPE_VEHICLE)
@@ -46,7 +44,6 @@ class Projectile(Object):
             self.__class__.handler_static.begin = self.on_static_hit_begin
             self.__class__.is_handled = True
         self.sender = sender
-        self.id = None
         self.body = pymunk.Body()
         self.start_pos = start_pos
         self.body.position = start_pos.x, start_pos.y

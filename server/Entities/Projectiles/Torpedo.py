@@ -1,18 +1,14 @@
 from server.World import World
-from server.Interfaces.Object import Object
-from server.Types import coords, PlayerInputData
+from server.Types import coords
 import pymunk
 import math
 from server.constants import COL_ON_WATER, COLTYPE_PROJECTILE
-from server.Modules.Module import Module
-from typing import List
 from server.Entities.Projectiles.Projectile import Projectile
 from server.Vehicle.Vehicle import Vehicle
 import datetime
 
 
 class Torpedo(Projectile):
-    last_torpedo_id: int = 0
 
     def hit_vehicle(self, target: Vehicle):
         self.status = 1
@@ -29,8 +25,6 @@ class Torpedo(Projectile):
         self.shape = pymunk.Circle(self.body, 0.005)
         self.shape.filter = COL_ON_WATER
         self.world.space.add(self.body, self.shape)
-        self.__class__.last_torpedo_id += 1
-        self.id = self.__class__.last_torpedo_id
         self.body.velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
         self.body.mass = 0.01
         self.shape.mass = 0.01
@@ -51,10 +45,10 @@ class Torpedo(Projectile):
         return coords(self.body.position.x, self.body.position.y)
 
     def get_public_info_string_on_appearance(self) -> str:
-        return f'\n<,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{self.speed}'
+        return f'\n#,c,1,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{self.speed},{8}'
 
     def get_public_info_string_on_disappearance(self) -> str:
-        return f'\n<,{self.id},{self.status}'
+        return f'\n#,d,1,{self.id},{self.status}'
 
     def get_public_info_string(self) -> str:
         return ''

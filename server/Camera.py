@@ -1,5 +1,5 @@
 from server.Types import coords
-from server.Interfaces.Object import Object
+from server.Object import Object
 from typing import Set
 from server.World import World
 

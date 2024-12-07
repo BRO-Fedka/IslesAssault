@@ -56,7 +56,7 @@ class Heavy(Vehicle):
             MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
             MortarCannon(-0.1,0,self.world,self.body,shellstorages=[shellstorage]),
             TorpedoFrontalTube(self.health_controller,self.world, self.body,TUBE,12),
-            SmokeGenerator(self.world,SMK,5),
+            SmokeGenerator(self.world,self.body,SMK,5),
             ShipSteering(self.body,-0.15,0),
             WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.1),
             ShipEngine(self.body,-0.15,0,ENG,force=0.05,fueltanks=[fueltank1,fueltank2,fueltank3], segment=segment3,fueluse=0.0000003),

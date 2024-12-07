@@ -1,5 +1,5 @@
 from server.World import World
-from server.Interfaces.Object import Object
+from server.Object import Object
 from server.Types import coords, PlayerInputData
 import pymunk
 import math

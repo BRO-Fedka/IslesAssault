@@ -6,7 +6,7 @@ import dotenv
 import json
 from server.constants import COL_B, COL_S, COL_C
 from server.Types import coords
-from server.Interfaces.Object import Object
+from server.Object import Object
 import math
 import datetime
 import logging

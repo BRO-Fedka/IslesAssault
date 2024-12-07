@@ -1,18 +1,15 @@
 from server.World import World
-from server.Interfaces.Object import Object
-from server.Types import coords, PlayerInputData
+from server.Types import coords
 import pymunk
 import math
 from server.constants import COL_ON_GROUND, COLTYPE_PROJECTILE
 
-from typing import List
 from server.Entities.Projectiles.Projectile import Projectile
 from server.Vehicle.Vehicle import Vehicle
 import datetime
 
 
 class Shell(Projectile):
-    last_id: int = 0
 
     def hit_vehicle(self, target: Vehicle):
         self.status = 1
@@ -28,8 +25,6 @@ class Shell(Projectile):
         self.shape = pymunk.Circle(self.body, 0.001)
         self.shape.filter = COL_ON_GROUND
         self.world.space.add(self.body, self.shape)
-        self.__class__.last_id += 1
-        self.id = self.__class__.last_id
         self.body.velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
         self.body.mass = 0.01
         self.shape.mass = 0.01
@@ -46,10 +41,10 @@ class Shell(Projectile):
 
     def get_public_info_string_on_appearance(self) -> str:
         # f'\n>,{_},{(start_x)},{start_y},{dir},{status},{Z},{ spd},{w}'
-        return f'\n>,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{0},{self.speed},{self.width}'
+        return f'\n#,c,0,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{self.speed},{self.width}'
 
     def get_public_info_string_on_disappearance(self) -> str:
-        return f'\n>,{self.id},{self.status}'
+        return f'\n#,d,0,{self.id},{self.status}'
 
     def get_public_info_string(self) -> str:
         return ''
