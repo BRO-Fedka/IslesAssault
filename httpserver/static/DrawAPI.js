@@ -70,7 +70,9 @@ function drawCannon(vehicle,cannon, fire=false){
     if(fire){
         xy = vehicle.local_xy_to_global(turcrd)
         for (let _ = 0; _ < canbangCnt; _++) {
-            canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
+            // canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
+            new ShotSmokeParticle(xy[0] + cosc*l/320,xy[1] + sinc*l/320)
+            // console.log('!')
         }
         PIXI.sound.play(shtSND);
     }
@@ -302,95 +304,7 @@ function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char
 //    ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
 //}
 
-function BangPrt0(x, y,dir = Math.random()*2*Math.PI) {
-	this.x=x;
-	this.y=y;
-	this.life=1;
-	this.dir = Math.random()*2*Math.PI;
-	this.xs = Math.cos(dir);
-	this.ys = Math.sin(dir);
-	this.rad = 1;
-}
 
-function CanPrt0(x, y,dir = Math.random()*2*Math.PI) {
-	this.x=x;
-	this.y=y;
-	this.life=1;
-	this.xs = Math.cos(dir);
-	this.ys = Math.sin(dir);
-	this.rad = 1;
-}
-function WtrPrt0(x, y) {
-	this.x=x;
-	this.y=y;
-	this.life=1;
-	this.rad = Math.random()+1;
-}
-function RcktTPrt0(x, y) {
-	this.x=x;
-	this.y=y;
-	this.life=1;
-	this.rad = Math.random()+0.25;
-}
-function Particle0(x, y, xs, ys,rad) {
-	this.x=x;
-	this.y=y;
-	this.xs=xs;
-	this.ys=ys;
-	this.life=1.5;
-	this.rad = rad
-}
-function TrcrPrt1(x, y,x1,y1,cl = 1) {
-	this.x=x;
-	this.y=y;
-	this.life=1;
-	this.cl = cl;
-	this.x1=x1;
-	this.y1=y1;
-
-}
-function FirePrt0(x, y, rad = 1) {
-        this.x=x;
-        this.y=y;
-        this.deg= Math.random()*2*Math.PI;
-        this.dir= Math.random()*2*Math.PI;
-        this.life=60;
-        this.dirspd = 0
-        this.cof = 0.5 + Math.random()
-        this.speed = 0.5/2+ 0.5/2*Math.random();
-        this.rad = (5 + Math.random()*5)*rad
-    }
-function Particle1(x, y, deg,speed,rad) {
-	this.x=x;
-	this.y=y;
-	this.deg=deg;
-	this.life=1.5;
-	this.speed = speed;
-	this.rad = rad
-}
-function Particle2(W,H) {
-	this.x= Math.random()*W;
-	this.y= Math.random()*H;
-	this.r= 8-Math.floor(Math.sqrt(Math.sqrt(Math.random()*256))*2);
-	this.d= 1+Math.random()*0.25;
-	this.ra = Math.random()*Math.PI*2;
-	this.as = -0.1 + Math.random()*0.2;
-}
-
-function Particle3(id) {
-    this.id =id;
-    this.hp = 500+Math.random()*500
-    this.cl = Math.random()*64+191;
-	this.h= Math.random();
-    this.dir = (Math.random()*2-1)*Math.PI;
-    this.spd = Math.random()*2 -1;
-}
-function Particle4() {
-	this.x= Math.random()*(GameW+500)-250;
-	this.y= Math.random()*(GameH+500)-250;
-	this.dir= Math.random()*360
-	this.life = 0.01
-}
 
 function create_waterparticles_for_poly(vehicle,poly,rate = null){
     if (rate == null){
@@ -409,7 +323,8 @@ function create_waterparticles_for_poly(vehicle,poly,rate = null){
         let wtrprtx = poly[_%poly.length][0] +(poly[(_+1)%poly.length][0]-poly[_%poly.length][0])*wtrptrcof
         let wtrprty = poly[_%poly.length][1] +(poly[(_+1)%poly.length][1]-poly[_%poly.length][1])*wtrptrcof
         let xy = vehicle.local_xy_to_global([wtrprtx,wtrprty])
-        WtrParticles0.push(new WtrPrt0(xy[0],xy[1]));
+        new WaterTraceParticle(xy[0],xy[1])
+        // WtrParticles0.push(new WtrPrt0);
     }
 }
 
@@ -822,12 +737,13 @@ class RealModule extends Module{
 
         let cos = vehicle.cos
         let sin = vehicle.sin
-        let bangPrts = vehicle.bang_particles_list
-        let bangPrt = vehicle.bang_particle
+        // let bangPrts = vehicle.bang_particles_list
+        // let bangPrt = vehicle.bang_particle
         PIXI.sound.play(this.snd_bang);
         for (let _ = 0; _ < this.bang_prt_amount; _++) {
             let xy = vehicle.local_xy_to_global(this.get_random_point())
-            bangPrts.push(new bangPrt(xy[0],xy[1]))
+            new Bang(xy[0],xy[1])
+            // bangPrts.push(new bangPrt(xy[0],xy[1]))
         }
     }
 
@@ -1037,16 +953,12 @@ class Shell extends Projectile{
 
     draw(layer){
     if (layer != 'OnWater+3') return 
-    if(this.status == 1 || this.status == 3){
+    if(this.status == 1 ){
         if (Math.random() < 1){
             PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
         }
-        if(this.status == 3){
-            ShakeXbnds += 5
-            ShakeYbnds += 5
-        }
         this.status=0
-    }else if(this.status == 2){
+    }else if(this.status == 3){
         if (Math.random() < 1){
                 PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
         }
@@ -1068,7 +980,8 @@ class Torpedo extends Projectile{
 			this.status=0
             PIXI.sound.play('wtrBang');
 			for (let i = 0; i < 5; i++) {
-                WtrBangParticles0.push(new BangPrt0(this.x, this.y))
+               new  WaterBang(this.x, this.y)
+                // WtrBangParticles0.push(new BangPrt0(this.x, this.y))
             }
 			ShakeXbnds += 10
 			ShakeYbnds += 10
@@ -1138,4 +1051,131 @@ class Smoke extends Entity{
         }
 
     }
+}
+
+class Particle{
+    layer = ""
+    calc_x(){
+        return OffsetX+(this.x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2
+    }
+    calc_y(){
+        return OffsetY+GameH/2+(this.y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom
+    }
+    constructor(layer,x,y){
+        this.is_active = true
+        this.layer = layer
+        this.x = x
+        this.y = y
+        if (Particles.has(this.layer)){
+            Particles.get(this.layer).push(this)
+        }else{
+            Particles.set(this.layer,[this])
+        }
+
+        
+
+        
+    }
+}
+
+class ShotSmokeParticle extends Particle{
+    constructor(x,y,dir = Math.random()*2*Math.PI){
+
+        super("OnWater+3",x,y)
+        this.life=1;
+        this.xs = Math.cos(dir);
+        this.ys = Math.sin(dir);
+        this.rad = 1;
+
+    }
+    draw(){
+	    ctx.fillStyle = "rgba(192,192,192,"+(this.life**1.5)*1+")";
+		ctx.beginPath();
+		ctx.arc(this.calc_x(),this.calc_y(),this.rad/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
+		this.x += this.xs/10*this.life/320
+		this.y += this.ys/10*this.life/320
+		this.rad+=0.1*this.life/320*Zoom
+		ctx.fill();
+		this.life *= 0.99
+		if (this.life < 0.001) {
+			this.is_active = false
+		}
+    }
+
+}
+
+class WaterTraceParticle extends Particle{
+    constructor(x,y){
+        if (ParticlesProcessing==false){
+            this.is_active = false
+            return
+        }
+        super("OnWater-2",x,y)
+        this.life=1
+        this.rad = 1// Math.random()+1
+
+    }
+    draw(){
+		ctx.fillStyle = "rgba(255,255,255,"+(this.life**1.5)*0.25+")";
+		ctx.beginPath();
+		ctx.arc(this.calc_x(),this.calc_y(),((this.rad-(this.life*this.rad))/320*Zoom*7.5+2.5)/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+//		console.log(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
+        this.life *= 0.99
+		if (this.life < 0.15) {
+			this.is_active = false
+		}
+    }
+
+}
+
+
+class BangProto extends Particle{
+    _color0=''
+    _color1=''
+    constructor(x,y,dir = Math.random()*2*Math.PI){
+
+        super("OnWater+3",x,y)
+        this.life=1;
+        this.xs = Math.cos(dir);
+        this.ys = Math.sin(dir);
+        this.rad = 1;
+        this.dir = dir
+
+    }
+    draw(){
+	    ctx.fillStyle = "rgba(" +this._color0+","+(this.life**0.33)*1+")";
+
+		ctx.beginPath();
+		ctx.arc(this.calc_x(),this.calc_y(),this.rad/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+		ctx.fillStyle = "rgba(" +this._color1+","+(this.life**1)*1+")";
+		ctx.beginPath();
+		ctx.arc(this.calc_x()+Math.cos(this.dir+this.life*Math.PI*5)*this.rad*0.2,this.calc_y()+Math.sin(this.dir+this.life*Math.PI*5)*this.rad*0.2,this.rad*0.8/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
+		ctx.fill();
+        this.dir += this.life*0.25
+		this.x += this.xs/Zoom/4*this.life/320*Zoom
+		this.y += this.ys/Zoom/4*this.life/320*Zoom
+		this.rad+=0.75*this.life**1.25
+
+		this.life *= 0.98
+		if (this.life < 0.0001) {
+			this.is_active = false
+		}
+    }
+
+}
+
+class WaterBang extends BangProto{
+    _color0='255,255,255'
+    _color1='0,160,255'
+}
+
+class Bang extends BangProto{
+    _color0='0,0,0'
+    _color1='255,160,0'
 }

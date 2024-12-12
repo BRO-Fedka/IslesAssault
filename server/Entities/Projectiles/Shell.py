@@ -16,7 +16,7 @@ class Shell(Projectile):
         self.is_active = False
 
     def hit_static(self):
-        self.status = 2
+        self.status = 3
         self.is_active = False
 
     def __init__(self, world: World, sender: Vehicle, start_pos: coords, angle: float, speed=1, width=4):
@@ -41,9 +41,12 @@ class Shell(Projectile):
 
     def get_public_info_string_on_appearance(self) -> str:
         # f'\n>,{_},{(start_x)},{start_y},{dir},{status},{Z},{ spd},{w}'
-        return f'\n#,c,0,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{self.speed},{self.width}'
+        return f'\n#,c,0,{self.id},{self.start_pos.x},{self.start_pos.y},{self.body.angle / math.pi * 180},{self.status},{self.body.velocity.length},{self.width}'
 
     def get_public_info_string_on_disappearance(self) -> str:
+        # print((datetime.datetime.now() - self.start_dt).total_seconds(),
+        #       math.sqrt((self.start_pos.x-self.body.position.x)**2+(self.start_pos.y-self.body.position.y)**2))
+        # print(math.sqrt((self.start_pos.x-self.body.position.x)**2+(self.start_pos.y-self.body.position.y)**2)/(datetime.datetime.now() - self.start_dt).total_seconds())
         return f'\n#,d,0,{self.id},{self.status}'
 
     def get_public_info_string(self) -> str:

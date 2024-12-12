@@ -201,6 +201,27 @@ function ShowPrevVeh(){
 	}
 }
 
+function drawLayer(layer) {
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw(layer)
+
+    }
+    TVehicles.forEach(vehicle => {
+        if (vehicle.id == CurVehicleID){
+            vehicle.drawp(layer)
+        }else{
+            vehicle.drawe(layer)
+        }
+    })
+    if (Particles.has(layer)){
+        Particles.get(layer).forEach(particle => {
+            particle.draw()
+        })
+    }
+
+
+}
+
 function GetServerInfo(){
             try{
                 let soc = new WebSocket(document.getElementById('ServerAddress').value);
@@ -403,11 +424,8 @@ document.querySelector('input[name="color"][value="'+ sessionStorage.getItem("Se
 catch{}
 
 let MSGs = [];
-let ammo = new Map();
-ammo.set('120mm',0);
-ammo.set('45mm',0);
-ammo.set('20mm',0);
-ammo.set('8mm',0);
+let Particles = new Map();
+
 let input = new Map();
 input.set(87,false);
 input.set(65,false);
@@ -943,96 +961,8 @@ try{
 			ctx.closePath();
 			ctx.stroke();
     }
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("UnderWater-2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("UnderWater-2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("UnderWater-1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("UnderWater-1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("UnderWater",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("UnderWater",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("UnderWater+1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("UnderWater+1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("UnderWater+2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("UnderWater+2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-if (ParticlesProcessing){
-	for (i=0; i<WtrParticles0.length; i++) {
-		ctx.fillStyle = "rgba(255,255,255,"+(WtrParticles0[i].life**1.5)*0.25+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,((WtrParticles0[i].rad-(WtrParticles0[i].life*WtrParticles0[i].rad))/320*Zoom*7.5+2.5)/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-//		console.log(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
-		WtrParticles0[i].life *= 0.99
-		if (WtrParticles0[i].life < 0.15) {
-			WtrParticles0.splice(i, 1);
-			i--;
-		}
-	}
-	}else{
-	WtrParticles0 = []
-	}
-	for (let _ of TorpedosData.keys()) {
-		if(TorpedosData.get(_)[3] == 1){
-			TorpedosData.get(_)[3]=0
-            PIXI.sound.play('wtrBang');
-			for (let i = 0; i < 5; i++) {
-                WtrBangParticles0.push(new BangPrt0(TorpedosData.get(_)[0], TorpedosData.get(_)[1]))
-            }
-			ShakeXbnds += 10
-			ShakeYbnds += 10
-		}else if(TorpedosData.get(_)[3] == 2){
-                    PIXI.sound.play('lnchTrpd');
-                     TorpedosData.get(_)[3] = 0
-		}
-			grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - TorpedosData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - TorpedosData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - TorpedosData.get(_)[0]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - TorpedosData.get(_)[1]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3 + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		if (Math.random() < 0.15){
-		        WtrParticles0.push(new WtrPrt0(TorpedosData.get(_)[0], TorpedosData.get(_)[1]));
-		}
-		grad.addColorStop(1,"#FFFFFF00");
-		grad.addColorStop(0,"#FFFFff88");
-		ctx.strokeStyle = grad;
-		ctx.lineWidth= 8/320*Zoom;
-		ctx.beginPath()
-		 ctx.lineCap='round';
-        ctx.moveTo(GameW/2 + OffsetX - (X - TorpedosData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - TorpedosData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-        ctx.lineTo(GameW/2 + OffsetX - (X - TorpedosData.get(_)[0]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3/320*Zoom + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - TorpedosData.get(_)[1]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]/3/320*Zoom + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		ctx.stroke();
-        ctx.closePath()
-		TorpedosData.get(_)[0]= TorpedosData.get(_)[6]+Math.cos(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
-		TorpedosData.get(_)[1]= TorpedosData.get(_)[7]+Math.sin(TorpedosData.get(_)[2]/180*Math.PI)*TorpedosData.get(_)[4]*(Date.now()-TorpedosData.get(_)[8])/1000
-		if (TorpedosData.get(_)[5] || TorpedosData.get(_)[0] > 20 || TorpedosData.get(_)[0] < -4 || TorpedosData.get(_)[1] > 19 || TorpedosData.get(_)[1] < -4){
-		    TorpedosData.delete(_)
-		}
-	}
+
+
     if(Z!=0){
     for (let __ of VisibleObjs['_']){
         let _ = MAPstatic['_'][__]
@@ -1202,137 +1132,12 @@ if (ParticlesProcessing){
     ctx.closePath();
     ctx.strokeStyle = '#ff0000ff';
     ctx.stroke();
-    // for (let _ = 0; _ < Players.length; _++) {
-    //     if (Players[_][0]  == PlayerName){
-    //         Vehicles[Players[_][1]].drawp("OnWater-2",NoTeamTag(Players[_][0]))
-    //     }
-    //     else{
-    //         Vehicles[Players[_][1]].draw("OnWater-2",NoTeamTag(Players[_][0]));
-    //     }
-	// }
-    // for (let _ = 0; _ < Players.length; _++) {
-    //     if (Players[_][0]  == PlayerName){
-    //         Vehicles[Players[_][1]].drawp("OnWater-1",NoTeamTag(Players[_][0]))
-    //     }
-    //     else{
-    //         Vehicles[Players[_][1]].draw("OnWater-1",NoTeamTag(Players[_][0]));
-    //     }
-	// }
-    ////TODO !!!!!!!!!!!!!!
-    // console.log('-')
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater-2")
 
-    }
-    TVehicles.forEach(vehicle => {
-        if (vehicle.id == CurVehicleID){
-            vehicle.drawp("OnWater-2")
-        }else{
-            vehicle.drawe("OnWater-2")
-        }
-    });
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater-1") 
-    }
-    TVehicles.forEach(vehicle => {
-        if (vehicle.id == CurVehicleID){
-            vehicle.drawp("OnWater-1")
-        }else{
-            vehicle.drawe("OnWater-1")
-        }
-    });
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater") 
-    }
-    TVehicles.forEach(vehicle => {
-        if (vehicle.id == CurVehicleID){
-            vehicle.drawp("OnWater")
-        }else{
-            vehicle.drawe("OnWater")
-        }
-    });
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater+1")
-    }
-    TVehicles.forEach(vehicle => {
-        if (vehicle.id == CurVehicleID){
-            vehicle.drawp("OnWater+1")
-        }else{
-            vehicle.drawe("OnWater+1")
-        }
-    });
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater+2")
-    }
-    TVehicles.forEach(vehicle => {
-        if (vehicle.id == CurVehicleID){
-            vehicle.drawp("OnWater+2")
-        }else{
-            vehicle.drawe("OnWater+2")
-        }
-    });
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw("OnWater+3")
-    }
-	// for (let _ = 0; _ < Players.length; _++) {
-    //     if (Players[_][0]  == PlayerName){
-    //         Vehicles[Players[_][1]].drawp("OnWater",NoTeamTag(Players[_][0]))
-    //     }
-    //     else{
-    //         Vehicles[Players[_][1]].draw("OnWater",NoTeamTag(Players[_][0]));
-    //     }
-	// }
-	// for (let _ = 0; _ < Players.length; _++) {
-    //     if (Players[_][0]  == PlayerName){
-    //         Vehicles[Players[_][1]].drawp("OnWater+1",NoTeamTag(Players[_][0]))
-    //     }
-    //     else{
-    //         Vehicles[Players[_][1]].draw("OnWater+1",NoTeamTag(Players[_][0]));
-    //     }
-	// }
-	// for (let _ = 0; _ < Players.length; _++) {
-    //     if (Players[_][0]  == PlayerName){
-    //         Vehicles[Players[_][1]].drawp("OnWater+2",NoTeamTag(Players[_][0]))
-    //     }
-    //     else{
-    //         Vehicles[Players[_][1]].draw("OnWater+2",NoTeamTag(Players[_][0]));
-    //     }
-	// }
-	for (i=0; i<CanBangParticles0.length; i++) {
-	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles0[i].life**1.5)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(CanBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(CanBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,CanBangParticles0[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		CanBangParticles0[i].x += CanBangParticles0[i].xs/10*CanBangParticles0[i].life/320
-		CanBangParticles0[i].y += CanBangParticles0[i].ys/10*CanBangParticles0[i].life/320
-		CanBangParticles0[i].rad+=0.1*CanBangParticles0[i].life/320*Zoom
-		ctx.fill();
-		CanBangParticles0[i].life *= 0.99
-		if (CanBangParticles0[i].life < 0.001) {
-			CanBangParticles0.splice(i, 1);
-			i--;
-		}
-	}
-	if (ParticlesProcessing){
-	for (i=FireParticles0.length-1; i>=0; i--) {
-            ctx.fillStyle = "rgba(255," + 255*FireParticles0[i].life/60+","+255*((FireParticles0[i].life/60)**3)+"," +( Math.sin(FireParticles0[i].life/60*Math.PI)*0.75)+")";
-            ctx.beginPath();
-            ctx.arc(OffsetX+(FireParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2-FireParticles0[i].cof*Math.cos(FireParticles0[i].dir)*FireParticles0[i].rad/320*Zoom,OffsetY+GameH/2+(FireParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom-FireParticles0[i].cof*Math.sin(FireParticles0[i].dir)*FireParticles0[i].rad/320*Zoom,FireParticles0[i].rad*Math.sin(FireParticles0[i].life/60*Math.PI)/320*Zoom,0,2*Math.PI);
-            ctx.closePath();
-            ctx.fill();
-            FireParticles0[i].dirspd += (Math.random()*2-1)*0.03
-            FireParticles0[i].dir += FireParticles0[i].dirspd
-            FireParticles0[i].x+=Math.cos(FireParticles0[i].deg) * FireParticles0[i].speed*Math.sin(FireParticles0[i].life/60*Math.PI)*(1-FireParticles0[i].life/60)/320;
-            FireParticles0[i].y+=Math.sin(FireParticles0[i].deg) * FireParticles0[i].speed *Math.sin(FireParticles0[i].life/60*Math.PI)*(1-FireParticles0[i].life/60)/320;
-            FireParticles0[i].life *= 0.95
-            if (FireParticles0[i].life < 5) {
-                FireParticles0.splice(i, 1);
-                i--;
-            }
-	}
-	}else{
-	FireParticles0 = []
-	}
+
+    ["OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3"].forEach(drawLayer);
+
+
+
     for (let __ of VisibleObjs['_']){
 	        ctx.lineCap = 'butt';
 	        let _ = MAPstatic['_'][__]
@@ -1372,7 +1177,7 @@ if (ParticlesProcessing){
 
 
 			for (let l = 0; l < _.length; l += 1) {
-                if (_[l][6] == 2) {
+                if (_[l][6] == 2) {dddddd
 
                     let poly = []
                     let cos = Math.cos(_[l][5]/180*Math.PI)
@@ -1390,135 +1195,10 @@ if (ParticlesProcessing){
                     ctx.closePath();
                 }
 
-
 			}
-
-
-
     }
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("OnGround-2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("OnGround-2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("OnGround-1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("OnGround-1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("OnGround",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("OnGround",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("OnGround+1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("OnGround+1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("OnGround+2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("OnGround+2",NoTeamTag(Players[_][0]));
-//        }
-//	}
 
-	// for (let _ of BulletsData.keys()) {
-    //             if (BulletsData.get(_)[4] == 0 ){
-    //                     if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
-    //             if (Math.random() < 1){
-    //                 PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
-    //             }
-    //             if(BulletsData.get(_)[3] == 3){
-    //                 ShakeXbnds += 5
-    //                 ShakeYbnds += 5
-    //             }
-    //             BulletsData.get(_)[3]=0
-    //         }else if(BulletsData.get(_)[3] == 2){
-    //             if (Math.random() < 1){
-    //                     PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
-    //             }
-    //             BulletsData.get(_)[3]=0
-    //         }
-    //             grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-    //         if (Z < 2){
-    //             grad.addColorStop(1,"#FFFF4400");
-    //             grad.addColorStop(0,"#FFFF4488");
-    //         }else{
-    //             grad.addColorStop(1,"#ffff8800");
-    //             grad.addColorStop(0,"#ffff8877");
-    //         }
-    //         ctx.strokeStyle = grad;
-    //         ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
-    //         ctx.beginPath()
-    //          ctx.lineCap='round';
-    //         ctx.moveTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-    //         ctx.lineTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-    //         ctx.stroke();
-    //         ctx.closePath()
-    //         BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-    //         BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-    //         if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
-    //         BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
-    //         if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
-    //         }else{
-    //         BulletsData.get(_)[11] = 0
-    //         }
-    //         if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
-    //             BulletsData.delete(_)
-    //         }
-    //         }
-	// }
-		    for (let _ of SmokesData.keys()) {
-          try{
-              ctx.fillStyle = 'rgba(255,255,255,0.25)';
-              let kl = 0;
-                ctx.beginPath()
-                let x = (Date.now() - SmokesData.get(_)[2]) / 100
-                let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.02
-                ctx.arc(OffsetX+(SmokesData.get(_)[0]-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(SmokesData.get(_)[1]-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom, 0, Math.PI * 2);
-                ctx.closePath()
-                ctx.fill();
-                for (i=0; i<SmokesData.get(_)[4].length; i++) {
-                    SmokesData.get(_)[4][i].hp-=1;
-                    SmokesData.get(_)[4][i].dir+=SmokesData.get(_)[4][i].spd*0.025;
-                    if (SmokesData.get(_)[4][i].hp < 0 ) {
-                        SmokesData.get(_)[4].splice(i, 1);
-                        i--;
-                    }
-                }
-                for (i=0; i<SmokesData.get(_)[4].length; i++) {
-                            ctx.fillStyle = "rgba("+SmokesData.get(_)[4][i].cl +','+SmokesData.get(_)[4][i].cl+',' +SmokesData.get(_)[4][i].cl +',' +SmokesData.get(_)[4][i].hp/1500+ ")";
-                            ctx.beginPath();
-                            kl+=1
-                            ctx.arc(Math.cos(SmokesData.get(_)[4][i].dir)*SmokesData.get(_)[4][i].h*y*0.5*Zoom+(SmokesData.get(_)[0]-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2 ,Math.sin(SmokesData.get(_)[4][i].dir)*Zoom*SmokesData.get(_)[4][i].h*y*0.5+OffsetY+OffsetY+GameH/2+(SmokesData.get(_)[1]-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom,0,2*Math.PI);
-                            ctx.closePath()
-                            ctx.fill()
-                }
-                if(Math.random() < 0.1 && kl < 10){
-                    SmokesData.get(_)[4].push(new Particle3(_))
-                }
-                            if (SmokesData.get(_)[3]){
-                    SmokesData.delete(_)
-                }
-            }catch{
-                SmokesData.delete(_)
-            }
-    }
+
 	for (let __ of VisibleObjs['S']){
 	        let _ = MAPstatic['S'][__]
     		ctx.fillStyle = MAPstatic.CT.sf;
@@ -1540,68 +1220,7 @@ if (ParticlesProcessing){
 			ctx.stroke();
 			ctx.lineJoin = 'miter';
     }
-    		for (i=0; i<WtrBangParticles0.length; i++) {
-	    ctx.fillStyle = "rgba(255,255,255,"+(WtrBangParticles0[i].life**0.33)*1+")";
 
-		ctx.beginPath();
-		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,WtrBangParticles0[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(0,160,255,"+(WtrBangParticles0[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(WtrBangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+Math.cos(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,OffsetY+GameH/2+(WtrBangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom+Math.sin(WtrBangParticles0[i].dir+WtrBangParticles0[i].life*Math.PI*2)*WtrBangParticles0[i].rad*0.2,WtrBangParticles0[i].rad*0.8/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        WtrBangParticles0[i].dir += WtrBangParticles0[i].life*0.25
-		WtrBangParticles0[i].x += WtrBangParticles0[i].xs/Zoom/4*WtrBangParticles0[i].life/320*Zoom
-		WtrBangParticles0[i].y += WtrBangParticles0[i].ys/Zoom/4*WtrBangParticles0[i].life/320*Zoom
-		WtrBangParticles0[i].rad+=0.75*WtrBangParticles0[i].life**1.25
-
-		WtrBangParticles0[i].life *= 0.98
-		if (WtrBangParticles0[i].life < 0.0001) {
-			WtrBangParticles0.splice(i, 1);
-			i--;
-		}
-	}
-		for (i=0; i<BangParticles0.length; i++) {
-	    ctx.fillStyle = "rgba(0,0,0,"+(BangParticles0[i].life**0.33)*1+")";
-
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,BangParticles0[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(255,160,0,"+(BangParticles0[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+Math.cos(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2/320*Zoom,OffsetY+GameH/2+(BangParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom+Math.sin(BangParticles0[i].dir+BangParticles0[i].life*Math.PI*2)*BangParticles0[i].rad*0.2/320*Zoom,BangParticles0[i].rad/320*Zoom*0.8,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        BangParticles0[i].dir += BangParticles0[i].life*0.25
-		BangParticles0[i].x += BangParticles0[i].xs/4*BangParticles0[i].life/320
-		BangParticles0[i].y += BangParticles0[i].ys/4*BangParticles0[i].life/320
-		BangParticles0[i].rad+=0.75*BangParticles0[i].life**1.25
-
-		BangParticles0[i].life *= 0.98
-		if (BangParticles0[i].life < 0.0001) {
-			BangParticles0.splice(i, 1);
-			i--;
-		}
-	}
-		for (i=0; i<CanBangParticles1.length; i++) {
-	    ctx.fillStyle = "rgba(192,192,192,"+(CanBangParticles1[i].life**1.5)*1+")";
-		ctx.beginPath();
-
-		ctx.arc(OffsetX+(CanBangParticles1[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(CanBangParticles1[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,CanBangParticles1[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		CanBangParticles1[i].x += CanBangParticles1[i].xs/10*CanBangParticles1[i].life/320
-		CanBangParticles1[i].y += CanBangParticles1[i].ys/10*CanBangParticles1[i].life/320
-		CanBangParticles1[i].rad+=0.1*CanBangParticles1[i].life/320*Zoom
-		ctx.fill();
-		CanBangParticles1[i].life *= 0.99
-		if (CanBangParticles1[i].life < 0.001) {
-			CanBangParticles1.splice(i, 1);
-			i--;
-		}
-	}
     for (let __ of VisibleObjs['#']){
 
 	        let _ = MAPstatic['#'][__]
@@ -1754,47 +1373,7 @@ if (ParticlesProcessing){
 
 
     }
-	if (ParticlesProcessing){
-	for (i=FireParticles1.length-1; i>=0; i--) {
-            ctx.fillStyle = "rgba(255," + 255*FireParticles1[i].life/60+","+255*((FireParticles1[i].life/60)**3)+"," +( Math.sin(FireParticles1[i].life/60*Math.PI)*0.75)+")";
-            ctx.beginPath();
-            ctx.arc(OffsetX+(FireParticles1[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2-FireParticles1[i].cof*Math.cos(FireParticles1[i].dir)*FireParticles1[i].rad/320*Zoom,OffsetY+GameH/2+(FireParticles1[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom-FireParticles1[i].cof*Math.sin(FireParticles1[i].dir)*FireParticles1[i].rad/320*Zoom,FireParticles1[i].rad*Math.sin(FireParticles1[i].life/60*Math.PI)/320*Zoom,0,2*Math.PI);
-            ctx.closePath();
-            ctx.fill();
-            FireParticles1[i].dirspd += (Math.random()*2-1)*0.03
-            FireParticles1[i].dir += FireParticles1[i].dirspd
-            FireParticles1[i].x+=Math.cos(FireParticles1[i].deg) * FireParticles1[i].speed*Math.sin(FireParticles1[i].life/60*Math.PI)*(1-FireParticles1[i].life/60)/320;
-            FireParticles1[i].y+=Math.sin(FireParticles1[i].deg) * FireParticles1[i].speed *Math.sin(FireParticles1[i].life/60*Math.PI)*(1-FireParticles1[i].life/60)/320;
-            FireParticles1[i].life *= 0.95
-            if (FireParticles1[i].life < 5) {
-                FireParticles1.splice(i, 1);
-                i--;
-            }
-	}
-	}else{
-	FireParticles1 = []
-	}
-		for (i=0; i<BangParticles1.length; i++) {
-	    ctx.fillStyle = "rgba(0,0,0,"+(BangParticles1[i].life**0.33)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles1[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(BangParticles1[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,BangParticles1[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(255,160,0,"+(BangParticles1[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles1[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+Math.cos(BangParticles1[i].dir+BangParticles1[i].life*Math.PI*2)*BangParticles1[i].rad*0.2/320*Zoom,OffsetY+GameH/2+(BangParticles1[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom+Math.sin(BangParticles1[i].dir+BangParticles1[i].life*Math.PI*2)*BangParticles1[i].rad*0.2/320*Zoom,BangParticles1[i].rad*0.8/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        BangParticles1[i].dir += BangParticles1[i].life*0.25
-		BangParticles1[i].x += BangParticles1[i].xs/4*BangParticles1[i].life/320
-		BangParticles1[i].y += BangParticles1[i].ys/4*BangParticles1[i].life/320
-		BangParticles1[i].rad+=0.75*BangParticles1[i].life**1.25
-		BangParticles1[i].life *= 0.98
-		if (BangParticles1[i].life < 0.0001) {
-			BangParticles1.splice(i, 1);
-			i--;
-		}
-	}
+
 	let alpha = 'ff'
     if (Z == 1){
         alpha = "88"
@@ -1867,276 +1446,7 @@ if (ParticlesProcessing){
 
     }
 
-    for (let _ of BombsData.keys()){
 
-        let relt = (Date.now()-BombsData.get(_)[6])/1000/BombsData.get(_)[5]
-        if (relt > 1) relt = 1
-        let dst = 0
-        if (!(BombsData.get(_)[4] < 5)){
-            relt = Math.sin((relt-0.5)*Math.PI)/2+0.5
-            dst = Math.sqrt((BombsData.get(_)[2]-BombsData.get(_)[0])**2+(BombsData.get(_)[3]-BombsData.get(_)[1])**2)
-
-        }
-//        console.log(dst)
-//        console.log(relt)
-
-        let x = BombsData.get(_)[0]+(BombsData.get(_)[2]-BombsData.get(_)[0])*relt
-        let y = BombsData.get(_)[1]+(BombsData.get(_)[3]-BombsData.get(_)[1])*relt
-        if(BombsData.get(_)[4] == 1){
-			BombsData.get(_)[4]=0
-            PIXI.sound.play('bang');
-            for (let i = 0; i < 5; i++) {
-                BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
-            }
-			ShakeXbnds += 10
-			ShakeYbnds += 10
-		}else if(BombsData.get(_)[4] == 2){
-                    PIXI.sound.play('bombFall');
-                     BombsData.get(_)[4] = 0
-		}else if(BombsData.get(_)[4] == 6){
-                     BombsData.get(_)[4] = 5
-		}else if(BombsData.get(_)[4] == 4){
-            PIXI.sound.play('wtrBang');
-			for (let i = 0; i < 5; i++) {
-                WtrBangParticles0.push(new BangPrt0(BombsData.get(_)[2],BombsData.get(_)[3]))
-            }
-            ShakeXbnds += 5
-			ShakeYbnds += 5
-		}
-        if (BombsData.get(_)[4] < 5) {
-            ctx.strokeStyle = '#111';
-            ctx.lineWidth= 3/320*Zoom;
-            ctx.beginPath()
-             ctx.lineCap='round';
-             let bmbLen = 0.015
-            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.stroke();
-            ctx.closePath()
-        }else if(relt*dst > 0.05){
-
-            let bmbLen = dst/3* (1-Math.abs(relt-0.5)*2)+0.025
-            grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - x +Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-
-            grad.addColorStop(1,"rgba(255,255,64,0)");
-            grad.addColorStop(0,"rgba(255,255,64,"+(Math.abs(relt-0.5)*2*0.4+0.1).toString()+")");
-
-            ctx.strokeStyle = grad
-            ctx.lineWidth= (10-Math.abs(relt-0.5)*10)/320*Zoom;
-            ctx.beginPath()
-             ctx.lineCap='round';
-
-            ctx.moveTo(GameW/2 + OffsetX - (X - x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - x + Math.cos(BombsData.get(_)[8]/180*Math.PI)*bmbLen + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - y  + Math.sin(BombsData.get(_)[8]/180*Math.PI)*bmbLen+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.stroke();
-            ctx.closePath()
-        }
-
-		if (BombsData.get(_)[7] || x > 16 || x < 0 || y > 16 || y < 0){
-//		console.log(x,y)
-		    BombsData.delete(_)
-		}
-    }
-	for (let _ of AARocketsData.keys()) {
-		if(AARocketsData.get(_)[3] == 1){
-			AARocketsData.get(_)[3]=0
-            PIXI.sound.play('rocketHit');
-			for (let i = 0; i < 15; i++) {
-			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.75))
-            }
-			ShakeXbnds += 10
-			ShakeYbnds += 10
-		}else if(AARocketsData.get(_)[3] == 2){
-                    PIXI.sound.play('lnchRckt');
-                     AARocketsData.get(_)[3] = 0
-		}else if(AARocketsData.get(_)[3] == 4){
-			for (let i = 0; i < 3; i++) {
-			FireParticles1.push(new FirePrt0(AARocketsData.get(_)[0],AARocketsData.get(_)[1],0.5))
-            }
-		}
-			grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		if (Math.random() < 1){
-
-		       RocketTraceParticles.push(new RcktTPrt0(AARocketsData.get(_)[0]-Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20, AARocketsData.get(_)[1]-Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/20));
-		}
-		grad.addColorStop(1,"#FF880088");
-		grad.addColorStop(0,"#cc0000ff");
-		ctx.strokeStyle = grad;
-		ctx.lineWidth= 2/320*Zoom;
-		ctx.beginPath()
-		 ctx.lineCap='round';
-        ctx.moveTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-        ctx.lineTo(GameW/2 + OffsetX - (X - AARocketsData.get(_)[0]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10 + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - AARocketsData.get(_)[1]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*AARocketsData.get(_)[4]/10+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-		ctx.stroke();
-        ctx.closePath()
-        let t = (Date.now()-AARocketsData.get(_)[8])/1000
-        distanceFromStart = AARocketsData.get(_)[4]*t+AARocketsData.get(_)[9]*t*t/2
-		AARocketsData.get(_)[0]= AARocketsData.get(_)[6]+Math.cos(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
-		AARocketsData.get(_)[1]= AARocketsData.get(_)[7]+Math.sin(AARocketsData.get(_)[2]/180*Math.PI)*distanceFromStart
-		if (AARocketsData.get(_)[5] || AARocketsData.get(_)[0] > 20 || AARocketsData.get(_)[0] < -4 || AARocketsData.get(_)[1] > 19 || AARocketsData.get(_)[1] < -4){
-		    AARocketsData.delete(_)
-		}
-	}
-	if (ParticlesProcessing){
-	for (i=RocketTraceParticles.length-1; i>=0; i--) {
-            ctx.fillStyle = "rgba(" + (150+105*RocketTraceParticles[i].life).toString() + "," + (150+105*RocketTraceParticles[i].life).toString()+","+(150-150*RocketTraceParticles[i].life)+"," +255*RocketTraceParticles[i].life+")";
-            ctx.beginPath();
-            ctx.arc(OffsetX+(RocketTraceParticles[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(RocketTraceParticles[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,RocketTraceParticles[i].rad*(RocketTraceParticles[i].life**0.3)*2/320*Zoom,0,2*Math.PI);
-            ctx.closePath();
-            ctx.fill();
-            RocketTraceParticles[i].life *= 0.7
-            if (RocketTraceParticles[i].life < 0.05) {
-                RocketTraceParticles.splice(i, 1);
-                i--;
-            }
-	}
-	}else{
-	RocketTraceParticles = []
-	}
-	ctx. globalCompositeOperation = "color"
-		for (i=0; i<TracerParticles1.length; i++) {
-	    ctx.strokeStyle = "rgba(200,0,0,"+(TracerParticles1[i].life**0.2)*4+")";
-	    ctx.lineWidth = 3/320*Zoom
-	    ctx.lineJoin = 'round'
-        ctx.beginPath();
-        ctx.moveTo(OffsetX+(TracerParticles1[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(TracerParticles1[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
-        ctx.lineTo(OffsetX+(TracerParticles1[i].x1-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(TracerParticles1[i].y1-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
-		ctx.closePath();
-		ctx.stroke();
-		TracerParticles1[i].life *= 0.93
-		if (TracerParticles1[i].life < 0.00000001) {
-			TracerParticles1.splice(i, 1);
-			i--;
-		}
-	}
-	ctx. globalCompositeOperation = "source-over"
-	    for (let _ of BulletsData.keys()) {
-                if (BulletsData.get(_)[4] == 1  ){
-                        if(BulletsData.get(_)[3] == 1 || BulletsData.get(_)[3] == 3){
-                if (Math.random() < 1){
-                    PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
-                }
-                if(BulletsData.get(_)[3] == 3){
-                    ShakeXbnds += 5
-                    ShakeYbnds += 5
-                }
-                BulletsData.get(_)[3]=0
-            }else if(BulletsData.get(_)[3] == 2){
-                if (Math.random() < 1){
-                        PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
-                }
-                BulletsData.get(_)[3]=0
-            }
-                grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            if (Z == 2){
-                grad.addColorStop(1,"#FFFF4400");
-                grad.addColorStop(0,"#FFFF4488");
-            }else{
-                grad.addColorStop(1,"#ffffaa00");
-                grad.addColorStop(0,"#ffffaa88");
-            }
-            ctx.strokeStyle = grad;
-            ctx.lineWidth= BulletsData.get(_)[6]/320*Zoom;
-            ctx.beginPath()
-             ctx.lineCap='round';
-            ctx.moveTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - BulletsData.get(_)[0]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - BulletsData.get(_)[1]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[11] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.stroke();
-            ctx.closePath()
-            BulletsData.get(_)[0]= BulletsData.get(_)[8]+Math.cos(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-            BulletsData.get(_)[1]= BulletsData.get(_)[9]+Math.sin(BulletsData.get(_)[2]/180*Math.PI)*BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000)
-            if (((Date.now()-BulletsData.get(_)[10])/1000-1/15) > 0){
-            BulletsData.get(_)[11] = BulletsData.get(_)[5]*((Date.now()-BulletsData.get(_)[10])/1000-2/15)
-            if (BulletsData.get(_)[11] > 0.3){BulletsData.get(_)[11] = 0.3}
-            }else{
-            BulletsData.get(_)[11] = 0
-            }
-            if (BulletsData.get(_)[7] || BulletsData.get(_)[0] > 20 || BulletsData.get(_)[0] < -4 || BulletsData.get(_)[1] > 19 || BulletsData.get(_)[1] < -4){
-                BulletsData.delete(_)
-            }
-            }
-	}
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Air-2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Air-2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Air-1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Air-1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Air",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Air",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Air+1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Air+1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Air+2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Air+2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-	if (ParticlesProcessing){
-	for (i=FireParticles2.length-1; i>=0; i--) {
-            ctx.fillStyle = "rgba(255," + 255*FireParticles2[i].life/60+","+255*((FireParticles2[i].life/60)**3)+"," +( Math.sin(FireParticles2[i].life/60*Math.PI)*0.75)+")";
-            ctx.beginPath();
-            ctx.arc(OffsetX+(FireParticles2[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2-FireParticles2[i].cof*Math.cos(FireParticles2[i].dir)*FireParticles2[i].rad/320*Zoom,OffsetY+GameH/2+(FireParticles2[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom-FireParticles2[i].cof*Math.sin(FireParticles2[i].dir)*FireParticles2[i].rad/320*Zoom,FireParticles2[i].rad*Math.sin(FireParticles2[i].life/60*Math.PI)/320*Zoom,0,2*Math.PI);
-            ctx.closePath();
-            ctx.fill();
-            FireParticles2[i].dirspd += (Math.random()*2-1)*0.03
-            FireParticles2[i].dir += FireParticles2[i].dirspd
-            FireParticles2[i].x+=Math.cos(FireParticles2[i].deg) * FireParticles2[i].speed*Math.sin(FireParticles2[i].life/60*Math.PI)*(1-FireParticles2[i].life/60)/320;
-            FireParticles2[i].y+=Math.sin(FireParticles2[i].deg) * FireParticles2[i].speed *Math.sin(FireParticles2[i].life/60*Math.PI)*(1-FireParticles2[i].life/60)/320;
-            FireParticles2[i].life *= 0.95
-            if (FireParticles2[i].life < 5) {
-                FireParticles2.splice(i, 1);
-                i--;
-            }
-	}
-	}else{
-	FireParticles1 = []
-	}
-		for (i=0; i<BangParticles2.length; i++) {
-	    ctx.fillStyle = "rgba(0,0,0,"+(BangParticles2[i].life**0.33)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles2[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(BangParticles2[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom,BangParticles2[i].rad/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-		ctx.fillStyle = "rgba(255,160,0,"+(BangParticles2[i].life**1)*1+")";
-		ctx.beginPath();
-		ctx.arc(OffsetX+(BangParticles2[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+Math.cos(BangParticles2[i].dir+BangParticles2[i].life*Math.PI*2)*BangParticles2[i].rad*0.2/320*Zoom,OffsetY+GameH/2+(BangParticles2[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom+Math.sin(BangParticles2[i].dir+BangParticles2[i].life*Math.PI*2)*BangParticles2[i].rad*0.2/320*Zoom,BangParticles2[i].rad*0.8/320*Zoom,0,2*Math.PI);
-		ctx.closePath();
-		ctx.fill();
-        BangParticles2[i].dir += BangParticles2[i].life*0.25
-		BangParticles2[i].x += BangParticles2[i].xs/Zoom/4*BangParticles2[i].life
-		BangParticles2[i].y += BangParticles2[i].ys/Zoom/4*BangParticles2[i].life
-		BangParticles2[i].rad+=0.75*BangParticles2[i].life**1.25
-		BangParticles2[i].life *= 0.98
-		if (BangParticles2[i].life < 0.0001) {
-			BangParticles2.splice(i, 1);
-			i--;
-		}
-	}
     TVehicles.forEach(vehicle => {
         if ( input.get(79)){
 
@@ -2148,76 +1458,22 @@ if (ParticlesProcessing){
             vehicle.draw_player_indicators("DEFAULT")
         }
     });
-	for(i=0; i<SnowParticles0.length; i++)
-	{
-		if (!(Math.abs(nX-X) >1 || Math.abs(nY-Y) > 1)){
-		SnowParticles0[i].ra+=SnowParticles0[i].as;
-		SnowParticles0[i].x -= SnowParticles0[i].d * Math.sqrt(SnowParticles0[i].r/2)*Math.cos(SnowParticles0[i].ra);
-		SnowParticles0[i].y -= SnowParticles0[i].d * Math.sqrt(SnowParticles0[i].r/2)*Math.sin(SnowParticles0[i].ra);
-		SnowParticles0[i].x -= SnowParticles0[i].d * Math.sqrt(SnowParticles0[i].r/2)*(nX-X)*Zoom;
-		SnowParticles0[i].y -= SnowParticles0[i].d * Math.sqrt(SnowParticles0[i].r/2)*(nY-Y)*Zoom;
-		}
-		if(SnowParticles0[i].x > canvas.width+5)
-		{
-                SnowParticles0[i].x = -5;
-		}else if (SnowParticles0[i].x < -5){
-			    SnowParticles0[i].x = canvas.width+5;
-        }
-		if(SnowParticles0[i].y > canvas.height+5)
-		{
-                SnowParticles0[i].y = -5;
-		}else if (SnowParticles0[i].y < -5){
-			    SnowParticles0[i].y = canvas.height+5;
-		}
-		ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-		ctx.beginPath();
-		ctx.arc(SnowParticles0[i].x, SnowParticles0[i].y, SnowParticles0[i].r, 0, Math.PI*2, true);
-		ctx.closePath();
-		ctx.fill();
-	}
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Info-2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Info-2",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//    for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Info-1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Info-1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Info",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Info",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Info+1",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Info+1",NoTeamTag(Players[_][0]));
-//        }
-//	}
-//	for (let _ = 0; _ < Players.length; _++) {
-//        if (Players[_][0]  == PlayerName){
-//            Vehicles[Players[_][1]].drawp("Info+2",NoTeamTag(Players[_][0]))
-//        }
-//        else{
-//            Vehicles[Players[_][1]].draw("Info+2",NoTeamTag(Players[_][0]));
-//        }
-//	}
+
+
     for (let _ of Entities.keys()) {
         if (!(Entities.get(_).is_active)){
             Entities.delete(_)    
+        }
+
+    }
+    for (let _ of Particles.keys()) {
+        let i = 0;
+        while (i < Particles.get(_).length){
+            if (Particles.get(_)[i].is_active==false){
+                Particles.get(_).splice(i, 1)
+                i--
+            }
+            i++
         }
 
     }

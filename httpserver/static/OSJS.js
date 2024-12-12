@@ -207,7 +207,7 @@ class Heavy extends Vehicle{
             new ArmorIndication(POLY_SHAPE),
             new OverloadIndication(),
             new RepairKit(this)
-        ]
+      ]
         
     }
 
