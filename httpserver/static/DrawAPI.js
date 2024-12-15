@@ -7,9 +7,6 @@ function drawCannon(vehicle,cannon, fire=false){
     let lw = cannon.len_width
     let fill = cannon.fill
     let strokeW = cannon.stroke_width
-    let canbangCnt = cannon.canbang_prt_amount
-    let canbangPrt = vehicle.canbang_particle
-    let canbangPrts = vehicle.canbang_particles_list
     let underbody = cannon.underbody
     let shtSND = cannon.snd_shoot
 
@@ -69,7 +66,7 @@ function drawCannon(vehicle,cannon, fire=false){
 
     if(fire){
         xy = vehicle.local_xy_to_global(turcrd)
-        for (let _ = 0; _ < canbangCnt; _++) {
+        for (let _ = 0; _ < 5; _++) {
             // canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
             new ShotSmokeParticle(xy[0] + cosc*l/320,xy[1] + sinc*l/320)
             // console.log('!')
@@ -306,32 +303,12 @@ function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char
 
 
 
-function create_waterparticles_for_poly(vehicle,poly,rate = null){
-    if (rate == null){
-        rate = (Math.sqrt((vehicle.new_x-vehicle.x)**2+(vehicle.new_y-vehicle.y)**2)*FPS)**3
-    }
 
-    if (Math.random() < rate) {
-        let maxdst =  1.5;
-        let polydsttoprt = Math.random()*maxdst
-        let _ = 0
-        while (Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)< polydsttoprt){
-            polydsttoprt-=Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2);
-            _+=1;
-        }
-        let wtrptrcof = polydsttoprt/Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)
-        let wtrprtx = poly[_%poly.length][0] +(poly[(_+1)%poly.length][0]-poly[_%poly.length][0])*wtrptrcof
-        let wtrprty = poly[_%poly.length][1] +(poly[(_+1)%poly.length][1]-poly[_%poly.length][1])*wtrptrcof
-        let xy = vehicle.local_xy_to_global([wtrprtx,wtrprty])
-        new WaterTraceParticle(xy[0],xy[1])
-        // WtrParticles0.push(new WtrPrt0);
-    }
+
+
+function global_xy_to_screen(xy){
+    return [(xy[0]+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX,(xy[1]+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY]
 }
-
-
-    function global_xy_to_screen(xy){
-        return [(xy[0]+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX,(xy[1]+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY]
-    }
 
 
 //  BASE    =======================================
@@ -339,10 +316,6 @@ function create_waterparticles_for_poly(vehicle,poly,rate = null){
 class Vehicle{
     type_id = 0
     f = {}
-    canbang_particle = CanPrt0
-    canbang_particles_list = CanBangParticles0
-    bang_particle = BangPrt0
-    bang_particles_list = BangParticles0
 
     constructor(id,name){
         this.id = id
@@ -717,12 +690,12 @@ class ArmorIndication extends Module{
 
 class RealModule extends Module{
     bang_prt_amount = 5
-    snd_bang = 'bang'
     indication_layer = 'DEFAULT'
     constructor(){
         super()
         this.indication_char = '0'
         this.prev_indication_char = '0'
+        this.bang_spawner = null
     }
 
     get_random_point(){
@@ -734,22 +707,13 @@ class RealModule extends Module{
     draw_player_indicator(){}
 
     explode(vehicle){
-
-        let cos = vehicle.cos
-        let sin = vehicle.sin
-        // let bangPrts = vehicle.bang_particles_list
-        // let bangPrt = vehicle.bang_particle
-        PIXI.sound.play(this.snd_bang);
-        for (let _ = 0; _ < this.bang_prt_amount; _++) {
-            let xy = vehicle.local_xy_to_global(this.get_random_point())
-            new Bang(xy[0],xy[1])
-            // bangPrts.push(new bangPrt(xy[0],xy[1]))
-        }
+        this.bang_spawner.spawn(this.bang_prt_amount)
     }
 
     emit_fire(){}
 
     drawp(layer,vehicle){
+        this.bang_spawner.update(vehicle)
         switch (this.indication_char) {
             case '3':
                 if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
@@ -762,6 +726,7 @@ class RealModule extends Module{
     }
 
     drawe(layer,vehicle){
+        this.bang_spawner.update(vehicle)
         switch (this.indication_char) {
             case '3':
                 if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
@@ -802,6 +767,7 @@ class PolygonModule extends RealModule{
         });
         this.x = this.x/this.poly.length
         this.y = this.y/this.poly.length
+        this.bang_spawner = new ModuleParticleSpawner(this,Bang,5)
     }
 
     get_random_point(){
@@ -829,6 +795,8 @@ class CircularModule extends RealModule{
         this.x = x
         this.y = y
         this.r = r
+        this.bang_spawner = new ModuleParticleSpawner(this,Bang,5)
+
     }
 
     get_random_point(){
@@ -978,11 +946,11 @@ class Torpedo extends Projectile{
         if (layer != 'OnWater-2') return 
         if(this.status == 1){
 			this.status=0
-            PIXI.sound.play('wtrBang');
-			for (let i = 0; i < 5; i++) {
-               new  WaterBang(this.x, this.y)
-                // WtrBangParticles0.push(new BangPrt0(this.x, this.y))
-            }
+            WaterBang.spawn(5,this.x, this.y)
+			// for (let i = 0; i < 5; i++) {
+            //    new  WaterBang(this.x, this.y)
+            //     // WtrBangParticles0.push(new BangPrt0(this.x, this.y))
+            // }
 			ShakeXbnds += 10
 			ShakeYbnds += 10
 		}else if(this.status == 2){
@@ -990,7 +958,8 @@ class Torpedo extends Projectile{
             this.status = 0
 		}
 		if (Math.random() < 0.15){
-		        WtrParticles0.push(new WtrPrt0(this.x, this.y));
+            new WaterTraceParticle(this.x, this.y)
+		        // WtrParticles0.push(new WtrPrt0(this.x, this.y));
 		}
 
 
@@ -998,7 +967,15 @@ class Torpedo extends Projectile{
     }
 
 }
-
+// function Particle3(id) {
+//     this.id =id;
+//     this.hp = 500+Math.random()*500
+//     this.cl = Math.random()*64+191;
+// 	this.h= Math.random();
+//     this.spd = Math.random()*2 -1;
+//     this.dir = (Math.random()*2-1)*Math.PI;
+//     this.spd = Math.random()*2 -1;
+// }
 class Smoke extends Entity{
 
     constructor(larr){
@@ -1006,7 +983,6 @@ class Smoke extends Entity{
         this.x = Number(larr[4])
         this.y = Number(larr[5])
         this.start_time = Date.now()
-        this.particles = []
 
 
     }
@@ -1019,10 +995,9 @@ class Smoke extends Entity{
     draw(layer=false){
         if (layer != false && layer != 'OnWater+3') return 
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        let kl = 0;
         ctx.beginPath()
         let x = (Date.now() - this.start_time) / 100
-        let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.015
+        let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.01
         if (y <= 0 || (Date.now() - this.start_time)/1000>33) {
             this.is_active = false
             return  
@@ -1030,24 +1005,9 @@ class Smoke extends Entity{
         ctx.arc(OffsetX+(this.x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(this.y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom, 0, Math.PI * 2);
         ctx.closePath()
         ctx.fill();
-        for (let i=0; i<this.particles.length; i++) {
-            this.particles[i].hp-=1;
-            this.particles[i].dir+=this.particles[i].spd*0.025;
-            if (this.particles[i].hp < 0 ) {
-                this.particles.splice(i, 1);
-                i--;
-            }
-        }
-        for (let i=0; i<this.particles.length; i++) {
-                    ctx.fillStyle = "rgba("+this.particles[i].cl +','+this.particles[i].cl+',' +this.particles[i].cl +',' +this.particles[i].hp/1500+ ")";
-                    ctx.beginPath();
-                    kl+=1
-                    ctx.arc(Math.cos(this.particles[i].dir)*this.particles[i].h*y*0.2*Zoom+(this.x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2+OffsetX ,Math.sin(this.particles[i].dir)*Zoom*this.particles[i].h*y*0.2+OffsetY+GameH/2+(this.y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom, y*Zoom,0,2*Math.PI);
-                    ctx.closePath()
-                    ctx.fill()
-        }
-        if(Math.random() < 0.1 && kl < 10){
-            this.particles.push(new Particle3(this.id))
+
+        if(Math.random() < 0.01 ){
+            new SmokeParticle(this.x,this.y,this.start_time)
         }
 
     }
@@ -1075,6 +1035,11 @@ class Particle{
         
 
         
+    }
+    static spawn(amount,...args){
+        for (let _ = 0; _ < amount; _++) {
+            new this(...args)
+        }
     }
 }
 
@@ -1173,9 +1138,134 @@ class BangProto extends Particle{
 class WaterBang extends BangProto{
     _color0='255,255,255'
     _color1='0,160,255'
+    constructor(x,y){
+        super(x,y)
+        PIXI.sound.play('wtrBang');
+    }
 }
 
 class Bang extends BangProto{
+    constructor(x,y){
+        super(x,y)
+        PIXI.sound.play('bang');
+    }
     _color0='0,0,0'
     _color1='255,160,0'
 }
+
+class SmokeParticle extends Particle{
+    constructor(x,y, start_time,dir = Math.random()*2*Math.PI){
+
+        super("OnWater+3",x,y)
+        this.hp = 500+Math.random()*500
+        this.cl = Math.random()*64+191;
+        this.h= Math.random();
+        this.spd = Math.random()*2 -1;
+        this.dir = dir
+        this.maxhp = this.hp
+        this.start_time = start_time
+
+    }
+
+    draw(){
+        let x = (Date.now() - this.start_time) / 100
+        let y = (Math.sqrt(x)-(Math.sqrt(x)-17.3)*Math.sqrt(x)*0.3)*0.01
+        this.hp-=1
+        if (y <= 0) {
+            this.is_active = false
+            return  
+        }
+        this.dir+=this.spd*0.025
+        if (this.hp < 0 ) {
+            this.is_active = false
+        }
+        ctx.fillStyle = "rgba("+this.cl +','+this.cl+',' +this.cl +',' +this.hp/this.maxhp+ ")";
+        ctx.beginPath();
+        ctx.arc(Math.cos(this.dir)*this.h*y*0.2*Zoom+this.calc_x() ,Math.sin(this.dir)*Zoom*this.h*y*0.2+this.calc_y(), y*Zoom,0,2*Math.PI);
+        ctx.closePath()
+        ctx.fill()
+                if (y <= 0 || (Date.now() - this.start_time)/1000>33) {
+            this.is_active = false
+            return  
+        }
+
+    }
+}
+
+class ModuleParticleSpawner{
+    constructor(module,particle,rate=10){
+        this.particles_to_draw = 0
+        this.is_active = false
+        this.rate = rate
+        this.particle = particle
+        this.last_particle_time = Date.now()
+        this.params = []
+        this.module = module
+    }
+
+    update(vehicle){
+        if (this.rate == 0) return
+        if (this.particles_to_draw > 0 || this.is_active){
+            let delta = (Date.now()- this.last_particle_time)/1000
+            if (delta > 1) delta = 1
+            let amnt = delta*this.rate
+            amnt = Math.floor(amnt)
+            if (amnt>5) amnt = 5
+            // console.log((Date.now()- this.last_particle_time)/1000)
+            if (amnt>this.particles_to_draw && this.particles_to_draw>0){
+                amnt = this.particles_to_draw 
+            }
+            this.spawn_particles(amnt,vehicle)
+
+            this.particles_to_draw -= amnt
+            if (amnt >0 ) this.last_particle_time = Date.now()
+            
+        } 
+        
+    }
+
+    set_exstra_params(...args){
+        this.params = args
+    }
+
+    spawn(amount){
+        this.particles_to_draw = amount
+        this.last_particle_time = Date.now()
+    }
+
+    set_activation_to(val){
+
+        this.is_active = val 
+        this.last_particle_time = Date.now()
+
+    }
+
+    spawn_particles(amnt,vehicle){
+        for (let _ = 0; _ < amnt; _++) {
+            new this.particle(...vehicle.local_xy_to_global([this.module.x,this.module.y]),...this.params)
+            
+        }
+        
+    }
+}
+class PolyStrokeModuleParticleSpawner extends ModuleParticleSpawner{
+    max_dst = 1.5
+    spawn_particles(amnt,vehicle){
+        for (let _ = 0; _ < amnt; _++) {
+            let maxdst =  1.5;
+            let polydsttoprt = Math.random()*maxdst
+            let _ = 0
+            let poly = this.module.poly
+            while (Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)< polydsttoprt){
+                polydsttoprt-=Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2);
+                _+=1;
+            }
+            let wtrptrcof = polydsttoprt/Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)
+            let wtrprtx = poly[_%poly.length][0] +(poly[(_+1)%poly.length][0]-poly[_%poly.length][0])*wtrptrcof
+            let wtrprty = poly[_%poly.length][1] +(poly[(_+1)%poly.length][1]-poly[_%poly.length][1])*wtrptrcof
+            let xy = vehicle.local_xy_to_global([wtrprtx,wtrprty])
+            new this.particle(xy[0],xy[1],...this.params)
+        }
+    }
+}
+

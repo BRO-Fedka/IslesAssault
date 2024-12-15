@@ -218,6 +218,10 @@ function drawLayer(layer) {
             particle.draw()
         })
     }
+    if (MAPstatic.hasOwnProperty(layer)){
+        
+        //#TODO draw map static in drawLayer
+    }
 
 
 }
@@ -618,47 +622,10 @@ function startgame() {
                             let str = infarr[h].slice(pad)
 //                            console.log(str)
                             TVehicles.get(CVID).updatee(str)
-						}else 	if (larr[0] == '<'){
-                            if (larr.length > 3){
-                                if (!(TorpedosData.has(larr[1]))){
-                                TorpedosData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),false,Number(larr[2])-Math.cos(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Number(larr[3])-Math.sin(Number(larr[4])/180*Math.PI)*Number(larr[6])*PING/1000*3,Date.now()])
-                                }
-                            }else{
-                            try{
-                                TorpedosData.get(larr[1])[3] = larr[2]
-                                TorpedosData.get(larr[1])[5] = true
-                            }catch{}
-                            }
-						}else 	if (larr[0] == '>'){
-
-                            if (larr.length > 3){
-                                if (!(BulletsData.has(larr[1]))){
-                                BulletsData.set(larr[1],[Number(larr[2]),Number(larr[3]),Number(larr[4]),Number(larr[5]),Number(larr[6]),Number(larr[7]),Number(larr[8]),false,Number(larr[2]),Number(larr[3]),Date.now(),0])
-                                }
-
-                            }else{
-                            try{
-                                BulletsData.get(larr[1])[3] = larr[2]
-                                BulletsData.get(larr[1])[7] = true
-                            }catch{}
-                            }
-						}else{
 						}
 					}
 					dellarr = []
-//					for (var [key, value] of PlayersData) {
-//					    b = true
-//					    for (_ of Players){
-//					        if (NoTeamTag(_[0]) == key){
-//					        b = false
-//					        }
-//					    }
-//
-//                       if (b){
-//                            dellarr.push(key)
-//                       }
-//                    }
-//TODO
+
                     while (dellarr.length > 0){
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
@@ -701,21 +668,7 @@ function startgame() {
 	}
 }
 
-function lookat(x,y) {
 
-    if (x == 0) {
-        x = 0.001
-    }
-    let angle = Math.atan((y / x)) / (Math.PI / 180)
-    if (y != Math.abs(y)) {
-        angle = angle + 360
-    }
-    if (x != Math.abs(x)) {
-        angle = angle + 180
-    }
-    angle = (angle - Math.floor(angle / 360) * 360)
-    return angle
-}
 function resize(){
     GameW = window.innerWidth*window.devicePixelRatio;
     GameH = window.innerHeight*window.devicePixelRatio;

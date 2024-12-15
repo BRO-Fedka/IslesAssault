@@ -107,15 +107,30 @@ class ShipShellStorage extends PolygonModule{
     }
 }
 class ShipSegment extends PolygonModule{
+    constructor(poly){
+        super(poly)
+        this.wtp_spawner = new PolyStrokeModuleParticleSpawner(this,WaterTraceParticle,20)
+        this.wtp_spawner.set_activation_to(true)
+    }
     image='static/indication/segment_icon.svg'
     indication_layer = 'BOTTOM'
     drawp(layer,vehicle){
-        create_waterparticles_for_poly(vehicle,this.poly,Number(this.indication_char)/45)
-        super.drawp(layer,vehicle)
+        if (layer=='OnWater'){
+            super.drawp(layer,vehicle)
+            this.wtp_spawner.rate = Number(this.indication_char)*2
+            // console.log('0')
+            this.wtp_spawner.update(vehicle)
+            
+        }
+        
     }
     drawe(layer,vehicle){
-        create_waterparticles_for_poly(vehicle,this.poly,Number(this.indication_char)/45)
-        super.drawe(layer,vehicle)
+        if (layer=='OnWater'){
+            super.drawp(layer,vehicle)
+            this.wtp_spawner.rate = Number(this.indication_char)*10
+            this.wtp_spawner.update(vehicle)
+            
+        }
     }
 }
 
@@ -188,6 +203,8 @@ class Heavy extends Vehicle{
 
     constructor(id,name){
         super(id,name)
+        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE},WaterTraceParticle,1)
+        this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MortarCannon(0,0),
             new MortarCannon(-0.1,0),
@@ -215,7 +232,9 @@ class Heavy extends Vehicle{
         // console.log("DRAW!")
         if (layer.includes('OnWater')){
             if (layer=='OnWater'){
-                create_waterparticles_for_poly(this,POLY_SHAPE)
+                // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
+                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
+                this.wtp_spawner.update(this)
                 drawF(this,POLY_SHAPE, this.f)
 //                console.log(this.id)
             }
@@ -227,7 +246,8 @@ class Heavy extends Vehicle{
         // console.log("DRAW!")
         if (layer.includes('OnWater')){
             if (layer=='OnWater'){
-                create_waterparticles_for_poly(this,POLY_SHAPE)
+                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
+                this.wtp_spawner.update(this)
                 drawF(this,POLY_SHAPE, this.f)
 //                console.log(this.id)
             }
