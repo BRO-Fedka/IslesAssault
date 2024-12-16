@@ -302,12 +302,16 @@ function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char
 //}
 
 
+function global_x_to_screen(x){
+    return (x+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX
+}
 
-
-
+function global_y_to_screen(y){
+    return (y+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY
+}
 
 function global_xy_to_screen(xy){
-    return [(xy[0]+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX,(xy[1]+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY]
+    return [global_x_to_screen(xy[0]),global_y_to_screen(xy[1])]
 }
 
 
@@ -1269,3 +1273,654 @@ class PolyStrokeModuleParticleSpawner extends ModuleParticleSpawner{
     }
 }
 
+class Strucure{
+constructor(layer){
+    this.layer = layer
+    if (Strucures.has(this.layer)){
+        Strucures.get(this.layer).push(this)
+    }else{
+        Strucures.set(this.layer,[this])
+    }
+
+}
+
+update(args){
+
+}
+
+draw(){
+
+}
+
+}
+
+class PolyStructure extends Strucure{
+    constructor(layer,poly){
+        super(layer)
+        this.poly = poly
+    }
+
+    draw(){
+        ctx.beginPath();
+        for (let l = 0; l < this.poly.length; l += 1) {
+            if (l == 0) {
+                ctx.moveTo(...global_xy_to_screen(this.poly[l]));
+            } else {
+                ctx.lineTo(...global_xy_to_screen(this.poly[l]));
+            }
+        }
+        ctx.closePath();
+    }
+}
+
+class ShoreLine0 extends PolyStructure{
+
+    constructor(poly,width=0.5){
+        super('SH0',poly)
+        this.width = width
+    }
+
+    draw(){
+        ctx.strokeStyle = MAPstatic.CT.zs;
+        ctx.lineJoin = 'bevel';
+        ctx.lineWidth = this.width*Zoom;
+        super.draw()
+        ctx.stroke();
+
+    }
+}
+class ShoreLine1 extends PolyStructure{
+
+    constructor(poly,width=0.25){
+        super('SH1',poly)
+        this.width = width
+    }
+
+    draw(){
+        ctx.strokeStyle = MAPstatic.CT.zf;
+        ctx.lineJoin = 'bevel';
+        ctx.lineWidth = this.width*Zoom;
+        super.draw()
+        ctx.stroke();
+
+    }
+}
+
+class Waves extends PolyStructure{
+
+    constructor(poly,widthcof=1){
+        super('W',poly)
+        this.widthcof = widthcof
+    }
+
+    draw(){
+        ctx.strokeStyle = MAPstatic.CT.bs;
+        ctx.lineWidth = ((Math.sin(timenow/50/180*Math.PI)+1)*7+3)/320*Zoom*this.widthcof;
+        ctx.lineJoin = 'bevel';
+        super.draw()
+        ctx.stroke();
+    }
+}
+
+class Beach extends PolyStructure{
+    constructor(poly){
+        super('B',poly)
+        new ShoreLine0(poly)
+        new ShoreLine1(poly)
+        new Waves(poly)
+    }
+
+    draw(){
+        ctx.fillStyle = MAPstatic.CT.bf;
+        super.draw()
+        ctx.fill();
+    }
+}
+class Concrete extends PolyStructure{
+    constructor(poly){
+        super('C',poly)
+        new ShoreLine0(poly,60/320)
+        new ShoreLine1(poly,30/320)
+    }
+
+    draw(){
+        ctx.fillStyle = MAPstatic.CT.cf;
+        ctx.strokeStyle = MAPstatic.CT.cs;
+        ctx.lineWidth = 2.5/320*Zoom;
+        ctx.lineJoin = 'bevel';
+        super.draw()
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+class Stone extends PolyStructure{
+    constructor(poly){
+        super('S',poly)
+        new ShoreLine0(poly,80/320)
+        new ShoreLine1(poly,40/320)
+    }
+
+    draw(){
+        ctx.fillStyle = MAPstatic.CT.sf;
+        ctx.strokeStyle = MAPstatic.CT.ss;
+        ctx.lineWidth = 5/320*Zoom;
+        ctx.lineJoin = 'bevel';
+        super.draw()
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+
+class Soil extends PolyStructure{
+
+    constructor(poly){
+        super('g',poly)
+    }
+
+    draw(){
+        ctx.strokeStyle = MAPstatic.CT.gs;
+        ctx.lineJoin = 'bevel';
+        ctx.lineWidth = 20/320*Zoom;
+        super.draw()
+        ctx.stroke();
+
+    }
+}
+
+class Grass extends PolyStructure{
+    constructor(poly){
+        super('G',poly)
+        new Soil(poly)
+    }
+
+    draw(){
+        ctx.fillStyle = MAPstatic.CT.gf;
+        super.draw()
+        ctx.fill();
+    }
+}
+
+class LineStructure extends Strucure{
+    constructor(layer,coords){
+        super(layer)
+        this.p0 = [coords[0],coords[1]]
+        this.p1 = [coords[2],coords[3]]
+        
+    }
+    draw(){
+        ctx.beginPath()
+        ctx.moveTo(...global_xy_to_screen(this.p0));
+        ctx.lineTo(...global_xy_to_screen(this.p1));
+        ctx.closePath()
+    }
+}
+
+class BridgeShadow0 extends LineStructure{
+    constructor(coords){
+        super('_0',coords)
+    }
+    draw(){
+        if (Z > 0) return
+        super.draw()
+        ctx.strokeStyle = MAPstatic.CT.b2
+        ctx.lineCap = 'butt';
+        ctx.lineWidth = 60/320*Zoom;
+        ctx.stroke();
+    }
+}
+class BridgeShadow1 extends LineStructure{
+    constructor(coords){
+        super('_1',coords)
+    }
+    draw(){
+        if (Z == 0) return
+        super.draw()
+        ctx.strokeStyle = MAPstatic.CT.b2
+        ctx.lineCap = 'butt';
+        ctx.lineWidth = 70/320*Zoom;
+        ctx.stroke();
+    }
+}
+class BridgeBase extends LineStructure{
+    constructor(coords){
+        super('_2',coords)
+    }
+    draw(){
+        if (Z > 0) return
+        ctx.lineCap = 'butt';
+        let len = 0.1/Math.sqrt( (this.p0[0]- this.p1[0])**2+(this.p0[1]-this.p1[1])**2)
+        ctx.beginPath()
+        ctx.lineCap = 'butt';
+        ctx.moveTo(GameW/2 + OffsetX - (X - this.p0[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p0[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+        ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+
+        ctx.moveTo(GameW/2 + OffsetX - (X - this.p1[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p1[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+        ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
+        ctx.closePath()
+        ctx.strokeStyle = MAPstatic.CT.cs;
+        ctx.lineWidth = 60/320*Zoom;
+        ctx.stroke();
+    }
+}
+class Bridge extends LineStructure{
+    constructor(coords){
+        super('_',coords)
+        new BridgeBase(coords)
+        new BridgeShadow0(coords)
+        new BridgeShadow1(coords)
+        
+    }
+    draw(){
+        if (Z == 0) return
+        super.draw()
+        ctx.lineCap = 'butt';
+        ctx.strokeStyle = MAPstatic.CT.b1;
+        ctx.lineWidth = 60/320*Zoom;
+        ctx.stroke();
+        ctx.strokeStyle = MAPstatic.CT.b0;
+        ctx.lineWidth = 50/320*Zoom;
+        ctx.stroke();
+    }
+}
+
+
+class LinesStructure extends Strucure{
+    constructor(layer,coords){
+        super(layer)
+        this.coords = coords
+        
+    }
+    draw(){
+        ctx.beginPath();
+        for (let l = 0; l < this.coords.length; l += 1) {
+                if (l == 0) {
+                    ctx.moveTo(...global_xy_to_screen(this.coords[l]));
+                } else {
+                    ctx.lineTo(...global_xy_to_screen(this.coords[l]))
+                }
+        }
+        
+    }
+}
+
+class Road extends LinesStructure{
+    constructor(coords){
+        super('R',coords)
+        new RoadDashes(coords)
+    }
+    draw(){
+        super.draw()
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = MAPstatic.CT.cs;
+        ctx.lineWidth = 40/320*Zoom;
+        ctx.stroke()
+        ctx.closePath();
+    }
+}
+
+class RoadDashes extends LinesStructure{
+    constructor(coords){
+        super('r',coords)
+    }
+    draw(){
+        super.draw()
+        ctx.lineWidth = 2/320*Zoom;
+        ctx.strokeStyle = MAPstatic.CT.rd;
+        ctx.setLineDash([10/320*Zoom,10/320*Zoom])
+        ctx.stroke()
+        ctx.closePath();
+        ctx.setLineDash([])
+    }
+}
+
+
+class Tree{
+
+    //[0, 6.67, 4.4, 2]
+    constructor(id,x,y,size){
+        this.id = id
+        this.x = x
+        this.y = y
+        this.size = size
+        console.log(id,x,y,size)
+        this.tree_size={
+            0:0.1,
+            1:0.15,
+            2:0.2,
+            3:0.25
+        }
+    }
+    draw(alpha){
+
+    }
+}
+
+class ClassicalTree extends Tree{
+    draw(alpha){
+        
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.tf+alpha;
+        ctx.arc(...global_xy_to_screen([this.x,this.y]), Zoom * this.tree_size[this.size]/2,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.tm+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*24)/5*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*15)/5*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.tt+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/5*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/5*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+class FirTree extends Tree{
+    draw(alpha){
+        
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.ff+alpha;
+        ctx.arc(...global_xy_to_screen([this.x,this.y]), Zoom * this.tree_size[this.size]/2,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.fm+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*24)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*15)/24*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.ft+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/24*Zoom, Zoom * this.tree_size[this.size]/2/3,0,2*Math.PI)
+        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+class PalmTree extends Tree{
+    draw(alpha){
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.pf+alpha;
+        ctx.arc(...global_xy_to_screen([this.x,this.y]), Zoom * this.tree_size[this.size]/2,0,2*Math.PI)
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = MAPstatic.CT.pm+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*24)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*15)/24*Zoom, Zoom * this.tree_size[this.size]/3,0,2*Math.PI)
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = MAPstatic.CT.pt+alpha;
+        ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/24*Zoom, Zoom * this.tree_size[this.size]/2/3,0,2*Math.PI)
+        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
+        ctx.stroke();
+        ctx.closePath();
+    }
+}
+
+
+class TreeGroup extends Strucure{
+    TreesTable = {
+        0: ClassicalTree,
+        1: FirTree,
+        2: PalmTree                                                                                                                                                                                                               
+    }
+    constructor(trees){
+        super('T')
+        this.trees = []
+        let i = 0
+        trees.forEach(element => {
+            i++
+            console.log(this.TreesTable[element[0]])
+            this.trees.push(new this.TreesTable[element[0]](i,element[1],element[2],element[3]))
+        });
+        console.log(this.trees)
+    }
+    draw(){
+        let alpha = 'ff'
+        if (Z == 1){
+            alpha = "88"
+        }
+        this.trees.forEach(tree => {
+            tree.draw(alpha)
+        });
+    }
+
+}
+
+class Building{
+    //[0, 4.21, 9.99, 0.2, 0.2, 161]
+    constructor(id,x,y,w,h,dir){
+        this.id = id
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this.dir = dir
+        // console.log(id,x,y,size)
+        this.tree_size={
+            0:0.1,
+            1:0.15,
+            2:0.2,
+            3:0.25
+        }
+    }
+    draw(alpha){
+
+    }
+}
+class BasedBuilding extends Building{
+    constructor(id,x,y,w,h,dir){
+        super(id,x,y,w,h,dir)
+        new Basement(x,y,w,h,dir)
+    }
+}
+
+class Basement extends Strucure{
+    constructor(x,y,w,h,dir){
+        super('c')
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this .dir = dir
+        // console.log(0)
+    }
+
+    draw(){
+        // console.log(1)
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2,this.w/2], [this.h/2, -this.w/2]]
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.cs
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+class HouseBuilding extends BasedBuilding{
+
+
+    
+    draw(){
+        // console.log(1)
+
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        if (this.w > this.h){
+            poly = [[0, -this.w/2], [0, this.w/2], [this.h/2,this.w/2], [this.h/2, -this.w/2]]
+        }else{
+            poly = [[-this.h/2, 0], [this.h/2, 0], [this.h/2,this.w/2], [-this.h/2, this.w/2]]
+        }        
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.rr
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.fill();
+        ctx.closePath();
+
+        if (this.w > this.h){
+            poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [0, this.w/2], [0, -this.w/2]]
+        }else{
+            poly = [[-this.h/2,-this.w/2 ], [this.h/2,-this.w/2 ], [ this.h/2,0], [ -this.h/2,0]]      
+        }
+            ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.rl
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.fill();
+        ctx.closePath();
+    }
+
+}
+
+
+class ContainerBuilding extends Building{
+
+
+    
+    draw(){
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[ -this.w,0], [this.w,0 ]]
+        ctx.beginPath();
+
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
+        ctx.lineCap = 'butt'
+        ctx.lineWidth = this.h*Zoom/2
+        ctx.strokeStyle = MAPstatic.CT['w'+this.id%3]
+        ctx.stroke();
+        ctx.strokeStyle = MAPstatic.CT['e'+this.id%3]
+        ctx.setLineDash([2/320*Zoom,2/320*Zoom])
+        ctx.stroke();
+        ctx.setLineDash([])
+        ctx.closePath();
+    }
+
+}
+
+class ChimneyBuilding extends BasedBuilding{
+
+
+    
+    draw(){
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[-this.w/2, -this.w/2], [-this.w/2, this.w/2], [this.w/2, this.w/2], [this.w/2, -this.w/2]]
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.if
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.is
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),this.w/2*Zoom,0 , Math.PI*2 )
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.io
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),this.w*Zoom/3,0 , Math.PI*2 )
+        ctx.fill();
+        ctx.closePath();
+    }
+
+}
+
+class HangarBuilding extends BasedBuilding{
+
+
+    
+    draw(){
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2, this.w/2], [this.h/2, -this.w/2]]
+        ctx.beginPath();
+        ctx.fillStyle = MAPstatic.CT.hf
+        ctx.strokeStyle = MAPstatic.CT.hs
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        if (this.w > this.h){
+            ctx.lineWidth = this.h*Zoom
+            poly = [[ 0,-this.w/2], [0,this.w/2 ]]
+        }else{
+            ctx.lineWidth = this.w*Zoom
+            poly = [[ -this.h/2,0], [this.h/2,0]]
+        }
+        ctx.beginPath();
+
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
+        ctx.lineCap = 'butt'
+        ctx.strokeStyle = MAPstatic.CT.hs
+        ctx.setLineDash([2/320*Zoom,6/320*Zoom])
+        ctx.stroke();
+        ctx.setLineDash([])
+        ctx.closePath();
+    }
+
+}
+
+class BuildingsGroup extends Strucure{
+    BuildingsTable = {
+        0: HouseBuilding,
+        1: ContainerBuilding,
+        2: ChimneyBuilding,
+        3: HangarBuilding                                                                                                                                                                                                              
+    }
+    constructor(buildings){
+        super('#')
+        this.buildings = []
+        let i = 0
+        buildings.forEach(element => {
+            i++
+            // console.log(this.BuildingsTable[element[0]])
+            this.buildings.push(new this.BuildingsTable[element[0]](i,element[1],element[2],element[3],element[4],element[5]))
+        });
+        // console.log(this.buildings)
+    }
+    draw(){
+        let alpha = 'ff'
+        if (Z == 1){
+            alpha = "88"
+        }
+        this.buildings.forEach(tree => {
+            tree.draw(alpha)
+        });
+    }
+
+}

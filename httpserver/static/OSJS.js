@@ -267,3 +267,15 @@ let EntitiesTable = {
     1:Torpedo,
     2:Smoke
 }
+let StructuresTable = {
+    'B':Beach,
+    'G':Grass,
+    'C':Concrete,
+    'S':Stone,
+    '_':Bridge,
+    'R':Road,
+    'T':TreeGroup,
+    '#':BuildingsGroup
+    
+    
+}

@@ -218,9 +218,10 @@ function drawLayer(layer) {
             particle.draw()
         })
     }
-    if (MAPstatic.hasOwnProperty(layer)){
-        
-        //#TODO draw map static in drawLayer
+    if (Strucures.get(layer)){
+        Strucures.get(layer).forEach(structure => {
+            structure.draw()
+        })
     }
 
 
@@ -461,7 +462,7 @@ MAP.set('z',new Map())
 MAP.set('g',new Map())
 let lastMSGid = 0
 let Entities = new Map()
-
+let Strucures = new Map()
 function startgame() {
     document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
@@ -501,6 +502,20 @@ function startgame() {
                     xmlHttp.open( "GET", eventdata.substring(1), false ); // false for synchronous request
                     xmlHttp.send( null );
                     MAPstatic = JSON.parse(xmlHttp.responseText);
+                    // console.log(MAPstatic)
+                    for (let struct_char in StructuresTable) {
+                        if (MAPstatic.hasOwnProperty(struct_char)){
+                            
+                            MAPstatic[struct_char].forEach(element => {
+                                new StructuresTable[struct_char](element)
+                                
+                            });
+
+                        }
+                    }
+                    // console.log(MAPstatic)
+                    
+                    
                     for (let _ in MAPstatic['#']){
                         for(let t in MAPstatic['#'][_]){
                             MAPstatic['#'][_][t].push(0)
@@ -791,293 +806,15 @@ try{
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
     if (GameStatus == "InGame" || true){
-        if (((Math.round(X) != Math.round(nX) || Math.round(Y) != Math.round(nY))&& QupdtSequence != X*nX+Y*nY) || UpdateObjs){
-            VisibleObjs = new Object()
-            UpdateObjs = false
-            for (let x=Math.round(X)-VIEW_X-2; x < Math.round(X)+VIEW_X+2; x++){
-                for (let y=Math.round(Y)-VIEW_Y-2; y < Math.round(Y)+VIEW_Y+2; y++){
-                    if (x < 0 || y <0 || x >= WH || y >= WH) continue
-        //                console.log(MAPstatic
-        //                console.log(MAPstatic['Q'][x])
-                        let q = MAPstatic['Q'][x][y]
-        //                console.log(q)
-                        q_keys = Object.keys(q)
-                        for (let _ in q_keys){
-                            if (!(q_keys[_] in VisibleObjs) ){
-                                VisibleObjs[q_keys[_]] = new Set()
-                            }
-                            for(let i of MAPstatic['Q'][x][y][q_keys[_]]){
-                                VisibleObjs[q_keys[_]].add(i)
-                            }
-                        }
-
-                }
-
-            }
-            QupdtSequence = X*nX+Y*nY
-
-            }
-
-	for (let __ of VisibleObjs['B']){
-	        let _ = MAPstatic['B'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zs;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 160/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-	for (let __ of VisibleObjs['S']){
-	        let _ = MAPstatic['S'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zs;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 80/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-	for (let __ of VisibleObjs['C']){
-	        let _ = MAPstatic['C'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zs;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 60/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-	for (let __ of VisibleObjs['B']){
-	        let _ = MAPstatic['B'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zf;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 80/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-	for (let __ of VisibleObjs['S']){
-	        let _ = MAPstatic['S'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zf;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 40/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-    	for (let __ of VisibleObjs['C']){
-	        let _ = MAPstatic['C'][__]
-		    ctx.strokeStyle = MAPstatic.CT.zf;
-			ctx.lineJoin = 'bevel';
-			ctx.beginPath();
-            ctx.lineWidth = 30/320*Zoom;
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
 
 
-    if(Z!=0){
-    for (let __ of VisibleObjs['_']){
-        let _ = MAPstatic['_'][__]
-                ctx.beginPath()
-                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                ctx.closePath()
-                ctx.strokeStyle = MAPstatic.CT.b2
-                ctx.lineCap = 'square';
-                ctx.lineWidth = 70/320*Zoom;
-                ctx.stroke();
-    }}
-    ctx.fillStyle = MAPstatic.CT.bf;
-    ctx.strokeStyle = MAPstatic.CT.bs;
-    ctx.lineWidth = ((Math.sin(timenow/50/180*Math.PI)+1)*7+3)/320*Zoom;
-	for (let __ of VisibleObjs['B']){
-	        let _ = MAPstatic['B'][__]
+    ["SH0","SH1"].forEach(drawLayer);
 
-			ctx.lineJoin = 'bevel';
-                    ctx.beginPath();
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
-    for (let __ of VisibleObjs['B']){
-        let _ = MAPstatic['B'][__]
-        ctx.beginPath();
-        for (let l = 0; l < _.length; l += 1) {
-                if (l == 0) {
-                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                } else {
-                    ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-                }
-        }
-        ctx.closePath();
-        ctx.fill();
-    }
-    ctx.fillStyle = MAPstatic.CT.gf;
-    ctx.strokeStyle = MAPstatic.CT.gs;
-	for (let __ of VisibleObjs['G']){
-	        let _ = MAPstatic['G'][__]
-            ctx.lineWidth = 20/320*Zoom;
-            ctx.lineJoin = 'bevel';
-            ctx.beginPath();
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.stroke();
-    }
 
-    for (let __ of VisibleObjs['G']){
-        let _ = MAPstatic['G'][__]
-        ctx.beginPath();
-        for (let l = 0; l < _.length; l += 1) {
-                if (l == 0) {
-                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                } else {
-                    ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-                }
-        }
-        ctx.closePath();
-        ctx.fill();
-    }
-    if(Z==0){
-    for (let __ of VisibleObjs['_']){
-        let _ = MAPstatic['_'][__]
-                ctx.beginPath()
-                ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                ctx.closePath()
-                ctx.strokeStyle = MAPstatic.CT.b2
-                ctx.lineCap = 'square';
-                ctx.lineWidth = (60)/320*Zoom;
-                ctx.stroke();
-    }}
-    for (let __ of VisibleObjs['C']){
-	        let _ = MAPstatic['C'][__]
-            ctx.fillStyle = MAPstatic.CT.cf;
-            ctx.strokeStyle = MAPstatic.CT.cs;
-            ctx.lineWidth = 2.5/320*Zoom;
-            ctx.lineJoin = 'bevel';
-            ctx.beginPath();
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-			ctx.closePath();
-			ctx.fill();
-			ctx.stroke();
-    }
-    for (let __ of VisibleObjs['R']){
-	        let _ = MAPstatic['R'][__]
-            ctx.strokeStyle = MAPstatic.CT.cs;
-            ctx.lineWidth = 40/320*Zoom;
+ 
+    ['W','_1',"B",'_0','g','G'].forEach(drawLayer);
 
-            ctx.beginPath();
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-
-			ctx.stroke();
-			ctx.closePath();
-			ctx.lineCap = 'square';
-			ctx.lineJoin = 'bevel';
-    }
-        for (let __ of VisibleObjs['R']){
-	        let _ = MAPstatic['R'][__]
-            ctx.lineWidth = 2/320*Zoom;
-			ctx.strokeStyle = MAPstatic.CT.rd;
-            ctx.setLineDash([10/320*Zoom,10/320*Zoom])
-            ctx.beginPath();
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-			}
-
-			ctx.stroke();
-			ctx.setLineDash([])
-			ctx.closePath();
-
-    }
-
-    for (let _ = 0; _ < MAPstatic['*'].length; _++) {
-                ctx.lineWidth= 10/320*Zoom;
-                if (Zones[_] == '0') {
-                    ctx.strokeStyle = 'rgba(255,0,0,0.25)';
-                    ctx.fillStyle = 'rgba(255,0,0,0.25)';
-                } else {
-                    ctx.strokeStyle = 'rgba(0,0,255,0.25)';
-                    ctx.fillStyle = 'rgba(0,0,255,0.25)';
-                }
-                ctx.textAlign = 'center'
-                ctx.font = (MAPstatic['*'][_][3]*300/320*Zoom).toString()+"px ZCOOL QingKe HuangYou";
-                ctx.beginPath()
-                ctx.arc(GameW/2 + OffsetX - (X - MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2+ OffsetY - (Y - MAPstatic['*'][_][2]+ (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, MAPstatic['*'][_][3]*Zoom/2, 0, Math.PI * 2);
-                ctx.fillText(MAPstatic['*'][_][0],GameW/2+ OffsetX - (X- MAPstatic['*'][_][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2+ OffsetY- (Y- MAPstatic['*'][_][2] + (nY - Y) * (Date.now() - LastPING) / PING )*Zoom+MAPstatic['*'][_][3]*100/320*Zoom);
-                ctx.closePath()
-                ctx.stroke();
-    }
+    ['C','R','r'].forEach(drawLayer);
 
     ctx.lineWidth=5;
     ctx.beginPath();
@@ -1087,318 +824,11 @@ try{
     ctx.stroke();
 
 
-    ["OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3"].forEach(drawLayer);
+    ["OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3",'_2','_'].forEach(drawLayer);
 
 
-
-    for (let __ of VisibleObjs['_']){
-	        ctx.lineCap = 'butt';
-	        let _ = MAPstatic['_'][__]
-            len = 0.1/Math.sqrt( (_[0]- _[2])*(_[0]- _[2])+(_[1]- _[3])*(_[1]- _[3]))
-            ctx.beginPath()
-            ctx.lineCap = 'butt';
-            ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-
-            ctx.moveTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.lineTo(GameW/2 + OffsetX - (X - ( _[0]+(_[2]- _[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( _[1]+(_[3]- _[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-            ctx.closePath()
-            ctx.strokeStyle = MAPstatic.CT.cs;
-            ctx.lineWidth = 60/320*Zoom;
-            ctx.stroke();
-    }
-	if (Z >0){
-	for (let __ of VisibleObjs['_']){
-	        ctx.lineCap = 'square';
-	        let _ = MAPstatic['_'][__]
-                    ctx.beginPath()
-                    ctx.moveTo(GameW/2 + OffsetX - (X - _[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.lineTo(GameW/2 + OffsetX - (X - _[2] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[3] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-                    ctx.closePath()
-                    ctx.lineCap = 'square';
-                        ctx.strokeStyle = MAPstatic.CT.b1;
-                        ctx.lineWidth = 60/320*Zoom;
-                        ctx.stroke();
-                        ctx.strokeStyle = MAPstatic.CT.b0;
-                        ctx.lineWidth = 50/320*Zoom;
-                        ctx.stroke();
-    }}
-        for (let __ of VisibleObjs['#']){
-
-	        let _ = MAPstatic['#'][__]
-
-
-
-			for (let l = 0; l < _.length; l += 1) {
-                if (_[l][6] == 2) {dddddd
-
-                    let poly = []
-                    let cos = Math.cos(_[l][5]/180*Math.PI)
-                    let sin = Math.sin(_[l][5]/180*Math.PI)
-                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.cs
-                    ctx.lineWidth = 2/320*Zoom
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    ctx.fill();
-                    ctx.closePath();
-                }
-
-			}
-    }
-
-
-	for (let __ of VisibleObjs['S']){
-	        let _ = MAPstatic['S'][__]
-    		ctx.fillStyle = MAPstatic.CT.sf;
-			ctx.lineWidth= 5/320*Zoom;
-			ctx.lineJoin = 'round';
-            ctx.strokeStyle = MAPstatic.CT.ss;
-			ctx.beginPath();
-
-			for (let l = 0; l < _.length; l += 1) {
-					if (l == 0) {
-						ctx.moveTo(GameW/2 + OffsetX - (X - _[0][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[0][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-					} else {
-						ctx.lineTo(GameW/2 + OffsetX - (X - _[l][0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-					}
-
-			}
-			ctx.closePath();
-			ctx.fill();
-			ctx.stroke();
-			ctx.lineJoin = 'miter';
-    }
-
-    for (let __ of VisibleObjs['#']){
-
-	        let _ = MAPstatic['#'][__]
-
-
-
-			for (let l = 0; l < _.length; l += 1) {
-			    if (_[l][6]%2==1) {
-                    if (_[l][6] == 3){
-//                        PIXI.sound.play('bang');
-//                        for (let i = 0; i < 5; i++) {
-//                            BangParticles1.push(new bangPrt(BombsData.get(_)[2],BombsData.get(_)[3]))
-//                        }
-                        ShakeXbnds += 10
-                        ShakeYbnds += 1
-                    }else{
-
-                    }
-                    _[l][6]-=1
-			    }
-                if (_[l][6] == 2) {
-
-                    continue
-                }
-
-                if (_[l][0] == 0){
-                    let poly = []
-                    let cos = Math.cos(_[l][5]/180*Math.PI)
-                    let sin = Math.sin(_[l][5]/180*Math.PI)
-                    if (_[l][3] > _[l][4]){
-                        poly = [[0, -_[l][3]/2], [0, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
-                    }else{
-                        poly = [[ -_[l][4]/2,0], [ _[l][4]/2,0], [ _[l][4]/2,_[l][3]/2], [ -_[l][4]/2, _[l][3]/2]]
-                    }
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.rr
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    ctx.fill();
-                    ctx.closePath();
-                    if (_[l][3] > _[l][4]){
-                        poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [0, _[l][3]/2], [0, -_[l][3]/2]]
-                    }else{
-                        poly = [[-_[l][4]/2,-_[l][3]/2 ], [_[l][4]/2,-_[l][3]/2 ], [ _[l][4]/2,0], [ -_[l][4]/2,0]]
-                    }
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.rl
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    ctx.fill();
-                    ctx.closePath();
-                }else if(_[l][0] == 1){
-                    let poly = []
-                    let cos = Math.cos(_[l][5]/180*Math.PI)
-                    let sin = Math.sin(_[l][5]/180*Math.PI)
-                    poly = [[ -_[l][3],0], [_[l][3],0 ]]
-                    ctx.beginPath();
-
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineCap = 'butt'
-                    ctx.lineWidth = _[l][4]*Zoom/2
-                    ctx.strokeStyle = MAPstatic.CT['w'+l%3]
-                    ctx.stroke();
-                    ctx.strokeStyle = MAPstatic.CT['e'+l%3]
-                    ctx.setLineDash([2/320*Zoom,2/320*Zoom])
-                    ctx.stroke();
-                    ctx.setLineDash([])
-                    ctx.closePath();
-
-                }else if(_[l][0] == 2){
-                    let poly = []
-                    let cos = Math.cos(_[l][5]/180*Math.PI)
-                    let sin = Math.sin(_[l][5]/180*Math.PI)
-                    poly = [[-_[l][3]/2, -_[l][3]/2], [-_[l][3]/2, _[l][3]/2], [_[l][3]/2, _[l][3]/2], [_[l][3]/2, -_[l][3]/2]]
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.if
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    ctx.fill();
-                    ctx.closePath();
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.is
-                    ctx.arc(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom +GameH/2 + OffsetY,_[l][3]/2*Zoom,0 , Math.PI*2 )
-                    ctx.fill();
-                    ctx.closePath();
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.io
-                    ctx.arc(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom +GameH/2 + OffsetY,_[l][3]*Zoom/3,0 , Math.PI*2 )
-                    ctx.fill();
-                    ctx.closePath();
-
-                }else if(_[l][0] == 3){
-                    let poly = []
-                    let cos = Math.cos(_[l][5]/180*Math.PI)
-                    let sin = Math.sin(_[l][5]/180*Math.PI)
-                    poly = [[-_[l][4]/2, -_[l][3]/2], [-_[l][4]/2, _[l][3]/2], [_[l][4]/2, _[l][3]/2], [_[l][4]/2, -_[l][3]/2]]
-                    ctx.beginPath();
-                    ctx.fillStyle = MAPstatic.CT.hf
-                    ctx.strokeStyle = MAPstatic.CT.hs
-                    ctx.lineWidth = 2/320*Zoom
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.closePath();
-                    cos = Math.cos(_[l][5]/180*Math.PI)
-                    sin = Math.sin(_[l][5]/180*Math.PI)
-
-                    if (_[l][3] > _[l][4]){
-                        poly = [[ 0,-_[l][3]/2], [0,_[l][3]/2 ]]
-                    }else{
-                        poly = [[ -_[l][4]/2,0], [_[l][4]/2,0]]
-                    }
-                    ctx.beginPath();
-
-                    ctx.moveTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
-                    for (let p = 1; p < poly.length; p+=1) {
-                        ctx.lineTo(((-nX+X)*(Date.now() - LastPING) / PING-X+_[l][1])*Zoom +GameW/2 + OffsetX+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,((-nY+Y)*(Date.now() - LastPING) / PING-Y+_[l][2])*Zoom+GameH/2 + OffsetY+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
-                    }
-                    ctx.lineCap = 'butt'
-                    if (_[l][3] > _[l][4]){
-                        ctx.lineWidth = _[l][4]*Zoom
-                    }else{
-                        ctx.lineWidth = _[l][3]*Zoom
-                    }
-                    ctx.strokeStyle = MAPstatic.CT.hs
-                    ctx.setLineDash([2/320*Zoom,6/320*Zoom])
-                    ctx.stroke();
-                    ctx.setLineDash([])
-                    ctx.closePath();
-                }
-
-			}
-
-
-
-    }
-
-	let alpha = 'ff'
-    if (Z == 1){
-        alpha = "88"
-    }
-    for (let __ of VisibleObjs['T']){
-
-	        let _ = MAPstatic['T'][__]
-
-
-			for (let l = 0; l < _.length; l += 1) {
-
-
-			    if (_[l][0] == 0){
-			        ctx.beginPath();
-
-			        ctx.fillStyle = MAPstatic.CT.tf+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
-			        ctx.fill();
-			        ctx.closePath();
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.tm+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*24)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*15)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
-			        ctx.fill();
-			        ctx.closePath();
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.tt+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*541)/5)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
-			        ctx.fill();
-                    ctx.beginPath();
-			    }
-			    else if (_[l][0] == 1){
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.ff+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
-			        ctx.fill();
-			        ctx.closePath();
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.fm+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.cos(l*648)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*463)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*2/3,0,2*Math.PI)
-			        ctx.fill();
-			        ctx.closePath();
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.ft+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING  - tree_size.get(_[l][3])*Math.cos(l*765)/24)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - tree_size.get(_[l][3])*Math.sin(l*245)/24)*Zoom, Zoom * tree_size.get(_[l][3])/2*1/3,0,2*Math.PI)
-			        ctx.fill();
-                    ctx.beginPath();
-			    }
-			    else if (_[l][0] == 2){
-			        ctx.lineWidth = Zoom * tree_size.get(_[l][3])/12
-			        ctx.beginPath();
-			        ctx.fillStyle = MAPstatic.CT.pf+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2,0,2*Math.PI)
-			        ctx.fill();
-                    ctx.closePath();
-                    ctx.beginPath();
-			        ctx.strokeStyle = MAPstatic.CT.pm+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/3,0,2*Math.PI)
-			        ctx.stroke();
-                    ctx.closePath();
-                    ctx.beginPath();
-			        ctx.strokeStyle = MAPstatic.CT.pt+alpha;
-			        ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, Zoom * tree_size.get(_[l][3])/2/3,0,2*Math.PI)
-			        ctx.stroke();
-                    ctx.closePath();
-			    }
-
-			}
-
-
-
-    }
-
+    ['S'].forEach(drawLayer);
+    ['c','#','T'].forEach(drawLayer);
 
     TVehicles.forEach(vehicle => {
         if ( input.get(79)){
