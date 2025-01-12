@@ -130,12 +130,12 @@ function drawPlayerCircularModuleIndicator(layer,vehicle,x=0,y=0, r = 10,char='0
     let turcrd = [x, y]
     let cos = vehicle.cos
     let sin = vehicle.sin
-    let zoom = 480
+    let zoom = vehicle.zoom
     setIndicatorStyles(char,layer,pmcctx)
     pmcctx.lineWidth= 1;
     pmcctx.lineJoin = 'miter';
     pmcctx.beginPath()
-    pmcctx.arc(((y*vehicle.cos) +(x*vehicle.sin))*zoom+zoom*0.17,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+zoom*0.17,r*zoom,0, Math.PI * 2);
+    pmcctx.arc(((y*vehicle.cos) +(x*vehicle.sin))*zoom+80,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+80,r*zoom,0, Math.PI * 2);
 
     pmcctx.closePath();
     pmcctx.fill()
@@ -258,16 +258,16 @@ function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char
 //    console.log('!')
     setIndicatorStyles(char,layer,pmcctx)
     pmcctx.beginPath();
-    let zoom = 480
-    pmcctx.moveTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+zoom*0.17,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+zoom*0.17);
+    let zoom = vehicle.zoom
+    pmcctx.moveTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+80,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+80);
 
     for (let _ = 1; _ < poly.length; _+=1) {
 
-            pmcctx.lineTo(((poly[_][1]*vehicle.cos) +(poly[_][0]*vehicle.sin))*zoom+zoom*0.17,((poly[_][1]*vehicle.sin)+(poly[_][0]*-vehicle.cos))*zoom+zoom*0.17);
+            pmcctx.lineTo(((poly[_][1]*vehicle.cos) +(poly[_][0]*vehicle.sin))*zoom+80,((poly[_][1]*vehicle.sin)+(poly[_][0]*-vehicle.cos))*zoom+80);
 
 
     }
-    pmcctx.lineTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+zoom*0.17,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+zoom*0.17);
+    pmcctx.lineTo(((poly[0][1]*vehicle.cos) +(poly[0][0]*vehicle.sin))*zoom+80,((poly[0][1]*vehicle.sin)+(poly[0][0]*-vehicle.cos))*zoom+80);
     pmcctx.closePath();
     pmcctx.lineWidth= 1;
     pmcctx.fill();
@@ -320,6 +320,7 @@ function global_xy_to_screen(xy){
 class Vehicle{
     type_id = 0
     f = {}
+    zoom = 480
 
     constructor(id,name){
         this.id = id
@@ -388,7 +389,7 @@ class Vehicle{
     parse_common_string(string){
 //        console.log(string)
         let lst = []
-        for (let arg = 0; arg < 6; arg++) {
+        for (let arg = 0; arg < 7; arg++) {
             let substr = string.split(',')[0]
             lst.push(substr)
             string = string.slice(substr.length+1)
@@ -404,6 +405,7 @@ class Vehicle{
         this.y = this.new_y
         this.new_x = Number(lst[4])
         this.new_y = Number(lst[5])
+        this.z = Number(lst[6])
 
 //        console.log(string)
         return string
@@ -634,7 +636,7 @@ class ArmorIndication extends Module{
         ctx.lineCap = 'butt';
         pmcctx.beginPath();
         let poly = this.poly
-        let zoom = 480
+        let zoom = vehicle.zoom
         let ind = 0
         for (let _=0; _ < poly.length; _++){
             let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
@@ -646,8 +648,8 @@ class ArmorIndication extends Module{
                     let y = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * i/cnt
                     let x1 = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * (i+1)/cnt
                     let y1 = poly[_][1] + (poly[(_ + 1)%poly.length][1]-poly[_][1]) * (i+1)/cnt
-                    pmcctx.moveTo(((y*vehicle.cos) +(x*vehicle.sin))*zoom+zoom*0.17,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+zoom*0.17);
-                    pmcctx.lineTo(((y1*vehicle.cos) +(x1*vehicle.sin))*zoom+zoom*0.17,((y1*vehicle.sin)+(x1*-vehicle.cos))*zoom+zoom*0.17);
+                    pmcctx.moveTo(((y*vehicle.cos) +(x*vehicle.sin))*zoom+80,((y*vehicle.sin)+(x*-vehicle.cos))*zoom+80);
+                    pmcctx.lineTo(((y1*vehicle.cos) +(x1*vehicle.sin))*zoom+80,((y1*vehicle.sin)+(x1*-vehicle.cos))*zoom+80);
                 }
                 ind ++
             }
@@ -658,7 +660,7 @@ class ArmorIndication extends Module{
         pmcctx.stroke();
     }
     drawp(layer,vehicle){
-        if (layer != "OnWater+1") return
+        if (!(layer.includes("+1"))) return
         ctx.strokeStyle = "#000"
         ctx.lineCap = 'round';
         ctx.beginPath();
@@ -695,6 +697,8 @@ class ArmorIndication extends Module{
 class RealModule extends Module{
     bang_prt_amount = 5
     indication_layer = 'DEFAULT'
+    bang_particle_class = Bang
+    bang_freq = 5
     constructor(){
         super()
         this.indication_char = '0'
@@ -771,7 +775,7 @@ class PolygonModule extends RealModule{
         });
         this.x = this.x/this.poly.length
         this.y = this.y/this.poly.length
-        this.bang_spawner = new ModuleParticleSpawner(this,Bang,5)
+        this.bang_spawner = new ModuleParticleSpawner(this,this.bang_particle_class, this.bang_freq)
     }
 
     get_random_point(){
@@ -799,7 +803,7 @@ class CircularModule extends RealModule{
         this.x = x
         this.y = y
         this.r = r
-        this.bang_spawner = new ModuleParticleSpawner(this,Bang,5)
+        this.bang_spawner = new ModuleParticleSpawner(this,this.bang_particle_class, this.bang_freq)
 
     }
 
@@ -821,16 +825,18 @@ class CircularModule extends RealModule{
 }
 
 class Cannon extends CircularModule{
-    cannon_r = 10
-    l = 20
-    len_width = [5,3]
+    cannon_r = 12
+    l = 18
+    len_width = [8,5]
     fill = true
     stroke_width = 2
     canbang_prt_amount = 5
     underbody = false
     snd_shoot = 'mcanon'
+    image='static/indication/mortar_turret_direct_icon.svg'
     constructor(x,y,r){
         super(x,y,r)
+        this.indicator = new SimpleIndicator(this.image)
         this.dir = 0
         this.prev_dir = 0
         this.status = 0
@@ -846,7 +852,29 @@ class Cannon extends CircularModule{
         drawCannon(vehicle,this,this.prev_status!=this.status)
         this.prev_status = this.status
     }
+    updatep(string){
+        string = super.updatep(string)
+        let sublist = string.split(',',2)
+        string = string.slice(sublist[0].length + 1)
+        this.prev_status = this.status
+        this.status = Number(sublist[0][0])
+        this.prev_dir = this.dir
+        this.dir = Number(sublist[0].slice(1))
+        this.indicator.update(this)
+        return string
+    }
+    updatee(string){
+        string = super.updatep(string)
+        let sublist = string.split(',',1)
+        string = string.slice(sublist[0].length + 1)
+        this.prev_status = this.status
+        this.status = Number(sublist[0][0])
+        this.prev_dir = this.dir
+        this.dir = Number(sublist[0].slice(1))
+        return string
+    }
 }
+
 
 class Entity{
 
@@ -924,7 +952,7 @@ class Projectile extends Entity{
 class Shell extends Projectile{
 
     draw(layer){
-    if (layer != 'OnWater+3') return 
+    if (layer != 'S') return 
     if(this.status == 1 ){
         if (Math.random() < 1){
             PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
@@ -1050,7 +1078,7 @@ class Particle{
 class ShotSmokeParticle extends Particle{
     constructor(x,y,dir = Math.random()*2*Math.PI){
 
-        super("OnWater+3",x,y)
+        super("S",x,y)
         this.life=1;
         this.xs = Math.cos(dir);
         this.ys = Math.sin(dir);
@@ -1106,7 +1134,7 @@ class BangProto extends Particle{
     _color1=''
     constructor(x,y,dir = Math.random()*2*Math.PI){
 
-        super("OnWater+3",x,y)
+        super("S",x,y)
         this.life=1;
         this.xs = Math.cos(dir);
         this.ys = Math.sin(dir);
@@ -1160,7 +1188,7 @@ class Bang extends BangProto{
 class SmokeParticle extends Particle{
     constructor(x,y, start_time,dir = Math.random()*2*Math.PI){
 
-        super("OnWater+3",x,y)
+        super("S",x,y)
         this.hp = 500+Math.random()*500
         this.cl = Math.random()*64+191;
         this.h= Math.random();
@@ -1461,9 +1489,11 @@ class BridgeShadow0 extends LineStructure{
     }
     draw(){
         if (Z > 0) return
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         super.draw()
         ctx.strokeStyle = MAPstatic.CT.b2
-        ctx.lineCap = 'butt';
+
         ctx.lineWidth = 60/320*Zoom;
         ctx.stroke();
     }
@@ -1474,9 +1504,11 @@ class BridgeShadow1 extends LineStructure{
     }
     draw(){
         if (Z == 0) return
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         super.draw()
         ctx.strokeStyle = MAPstatic.CT.b2
-        ctx.lineCap = 'butt';
+
         ctx.lineWidth = 70/320*Zoom;
         ctx.stroke();
     }
@@ -1487,16 +1519,20 @@ class BridgeBase extends LineStructure{
     }
     draw(){
         if (Z > 0) return
-        ctx.lineCap = 'butt';
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         let len = 0.1/Math.sqrt( (this.p0[0]- this.p1[0])**2+(this.p0[1]-this.p1[1])**2)
         ctx.beginPath()
-        ctx.lineCap = 'butt';
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         ctx.moveTo(GameW/2 + OffsetX - (X - this.p0[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p0[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
         ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
 
         ctx.moveTo(GameW/2 + OffsetX - (X - this.p1[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p1[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
         ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
         ctx.closePath()
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         ctx.strokeStyle = MAPstatic.CT.cs;
         ctx.lineWidth = 60/320*Zoom;
         ctx.stroke();
@@ -1505,6 +1541,8 @@ class BridgeBase extends LineStructure{
 class Bridge extends LineStructure{
     constructor(coords){
         super('_',coords)
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         new BridgeBase(coords)
         new BridgeShadow0(coords)
         new BridgeShadow1(coords)
@@ -1513,7 +1551,8 @@ class Bridge extends LineStructure{
     draw(){
         if (Z == 0) return
         super.draw()
-        ctx.lineCap = 'butt';
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
         ctx.strokeStyle = MAPstatic.CT.b1;
         ctx.lineWidth = 60/320*Zoom;
         ctx.stroke();
@@ -1923,4 +1962,22 @@ class BuildingsGroup extends Strucure{
         });
     }
 
+}
+
+function drawCeils(){
+    ctx.lineWidth=Zoom/320*3;
+    ctx.beginPath();
+    
+    for (let x = 0; x < WH+1; x++) {
+        ctx.moveTo(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom+Zoom*x, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+        ctx.lineTo(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom+Zoom*x, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom + WH*Zoom)
+    }
+    for (let y = 0; y < WH+1; y++) {
+        ctx.moveTo(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom+Zoom*y)
+        ctx.lineTo(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom + WH*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom+Zoom*y)
+    }
+    ctx.rect(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, WH*Zoom, WH*Zoom);
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.stroke();
 }

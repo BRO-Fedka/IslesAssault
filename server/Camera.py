@@ -15,6 +15,7 @@ class Camera:
         self.z = 0
 
     def get_picture(self) -> str:
+        self.z = self.observable.get_z()
         string = f'{self.z},'+self.observable.get_private_info_string()
         coord = self.observable.get_coords()
         new_visible_objects = set()

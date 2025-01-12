@@ -1,5 +1,5 @@
 from shapely.geometry import Point
-from server.Modules.RealModule import RealModule
+from server.Modules.RealModule import RealModule, ModuleIsBroken, ModuleIsRepairing
 
 DEFAULT = 0
 BOTTOM = -1

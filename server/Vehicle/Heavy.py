@@ -17,6 +17,7 @@ from server.Modules.Armor.ArmorIndication import ArmorIndication
 from server.Vehicle.Contollers.MassController import MassController
 from server.Modules.OverloadIndication import OverloadIndication
 from server.Modules.RepairKit import RepairKit
+from server.Vehicle.Contollers.LevelController import LevelController
 
 POLY_SHAPE = [(0.15, 0), (0, 0.06), (-0.15, 0.045), (-0.15, -0.045), (0, -0.06)]
 POLY_SHAPE_N = [(0.06, 0.15), (-0.015, 0.15), (-1, 0), (-0.015, -0.15), (0.06, -0.15)]
@@ -40,6 +41,7 @@ class Heavy(Vehicle):
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_WATER
+        self.level_controller = LevelController(self.shape, self.world, w=True)
         world.space.add(self.body, self.shape)
         self.vehicle_type_id = VEHICLE_ID
         self.shape.master = self
@@ -48,9 +50,9 @@ class Heavy(Vehicle):
         fueltank2 = ShipFuelTank(FUEL2)
         fueltank3 = ShipFuelTank(FUEL3)
         shellstorage = ShipShellStorage(AMM,self.health_controller)
-        segment1 = ShipSegment(SEG1)
-        segment2 = ShipSegment(SEG2)
-        segment3 = ShipSegment(SEG3)
+        segment1 = ShipSegment(SEG1,self.level_controller)
+        segment2 = ShipSegment(SEG2,self.level_controller)
+        segment3 = ShipSegment(SEG3,self.level_controller)
         self.mass_controller = MassController(self.shape)
         self.modules = [
             MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
@@ -58,7 +60,7 @@ class Heavy(Vehicle):
             TorpedoFrontalTube(self.health_controller,self.world, self.body,TUBE,12),
             SmokeGenerator(self.world,self.body,SMK,5),
             ShipSteering(self.body,-0.15,0),
-            WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.1),
+            WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.15),
             ShipEngine(self.body,-0.15,0,ENG,force=0.05,fueltanks=[fueltank1,fueltank2,fueltank3], segment=segment3,fueluse=0.0000003),
 
             WaterPump(PMP,segments=[segment1,segment2,segment3]),

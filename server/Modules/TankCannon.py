@@ -4,10 +4,10 @@ from server.Types import coords
 from server.Entities.Projectiles.ArmorPiercing import ArmorPiercing
 
 
-class MortarCannon(Cannon):
-    r = 0.0375
-    rotation_speed = 3 / 180 * math.pi
-    reload_time = 8
+class TankCannon(Cannon):
+    r = 0.015
+    rotation_speed = 4 / 180 * math.pi
+    reload_time = 4
 
     def fire(self):
         super().fire()

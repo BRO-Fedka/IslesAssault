@@ -223,7 +223,12 @@ function drawLayer(layer) {
             structure.draw()
         })
     }
-
+    try{
+        if (LayersFunctions.hasOwnProperty(layer)){
+            LayersFunctions[layer]()
+    
+        }
+    }catch{}
 
 }
 
@@ -463,6 +468,7 @@ MAP.set('g',new Map())
 let lastMSGid = 0
 let Entities = new Map()
 let Strucures = new Map()
+
 function startgame() {
     document.getElementById('chk-game').checked = true
     GameStatus = "InGame"
@@ -561,7 +567,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
-//                    console.log(INFO)
+                   console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -582,8 +588,9 @@ function startgame() {
                         // PlayerName = NoTeamTag(PlayerName,true)
 //                        console.log(PlayerName)
                         // Players.push([PlayerName,CurVehicleType]);
+                        // console.log(VehiclesTable.)
                         if (!(TVehicles.has(CurVehicleID))){
-                            TVehicles.set(CurVehicleID,new Heavy(CurVehicleID,PlayerName))
+                            TVehicles.set(CurVehicleID,new VehiclesTable[CurVehicleType](CurVehicleID,PlayerName))
                         }
                         let pad = splstr[0].length + 1 + splstr[1].length + 1 + splstr[2].length + 1 + splstr[3].length + 1
 //                        console.log(infarr[0],pad)
@@ -629,7 +636,7 @@ function startgame() {
                             CVID = larr[1]
                             CVT = larr[2]
                             if (!(TVehicles.has(CVID))){
-                                TVehicles.set(CVID,new Heavy(CVID,PN))
+                                TVehicles.set(CVID,new VehiclesTable[CVT](CVID,PN))
                             }
                             let pad = larr[0].length + 1 + larr[1].length + 1 + larr[2].length + 1 //+ larr[3].length + 1
 
@@ -807,28 +814,8 @@ try{
 	ctx.fill()
     if (GameStatus == "InGame" || true){
 
+    LayerList.forEach(drawLayer);
 
-    ["SH0","SH1"].forEach(drawLayer);
-
-
- 
-    ['W','_1',"B",'_0','g','G'].forEach(drawLayer);
-
-    ['C','R','r'].forEach(drawLayer);
-
-    ctx.lineWidth=5;
-    ctx.beginPath();
-    ctx.rect(GameW/2 + OffsetX - (X + (nX - X) * (Date.now() - LastPING) / PING)*Zoom, GameH/2 + OffsetY - (Y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom, WH*Zoom, WH*Zoom);
-    ctx.closePath();
-    ctx.strokeStyle = '#ff0000ff';
-    ctx.stroke();
-
-
-    ["OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3",'_2','_'].forEach(drawLayer);
-
-
-    ['S'].forEach(drawLayer);
-    ['c','#','T'].forEach(drawLayer);
 
     TVehicles.forEach(vehicle => {
         if ( input.get(79)){

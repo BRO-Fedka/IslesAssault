@@ -4,6 +4,10 @@ from typing import Sequence
 from shapely.geometry import Polygon
 
 
+class NoFuel(Exception):
+    pass
+
+
 class ShipFuelTank(PolygonModule):
     level: int = BOTTOM
 

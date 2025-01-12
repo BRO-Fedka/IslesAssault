@@ -1,4 +1,4 @@
-class EntityIdManager:
+class IdManager:
     def __init__(self):
         self.last_id = 0
 

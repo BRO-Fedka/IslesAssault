@@ -7,10 +7,12 @@ from server.Modules.Module import Module
 from typing import List
 from server.Vehicle.Contollers.HealthController import HealthController
 from server.Vehicle.Contollers.MassController import MassController
+from server.IdManager import IdManager
+from server.Vehicle.Contollers.LevelController import LevelController
 
 
 class Vehicle(Object):
-    last_vehicle_id: int = 0
+    id_manager: IdManager = IdManager()
 
     def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1):
         self.world = world
@@ -20,14 +22,17 @@ class Vehicle(Object):
         self.body.master = self
         self.shape = None
         self.vehicle_type_id = '?'
-        self.__class__.last_vehicle_id += 1
-        self.id = self.__class__.last_vehicle_id
+        self.id = self.id_manager.get_id()
         self.body.position = 7, 7
         self.modules: List[Module] = []
         self.name = ""
         self.health_controller: HealthController = HealthController(self.body)
         self.mass_controller: MassController = None
+        self.level_controller: LevelController = None
         self.world.add_object(self)
+
+    def get_z(self):
+        return self.level_controller.get_z()
 
     def remove_from_space(self):
         self.world.space.remove(self.body)
@@ -41,12 +46,18 @@ class Vehicle(Object):
     def update_modules(self):
         self.mass_controller.update()
         for module in self.modules:
-            module.update_module()
+            try:
+                module.update_module()
+            except:
+                pass
 
     def update_modules_input(self, input: PlayerInputData):
         # print(input)
         for module in self.modules:
-            module.update_module_input(input)
+            try:
+                module.update_module_input(input)
+            except:
+                pass
 
     def get_world(self) -> World:
         return self.world
@@ -65,7 +76,7 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},'
+        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
             string += string_of_module
 
@@ -79,9 +90,8 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{(self.body.angle / math.pi * 180):.0f},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},'
+        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{(self.body.angle / math.pi * 180):.0f},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
-
 
         return string

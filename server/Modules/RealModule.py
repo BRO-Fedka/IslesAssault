@@ -11,6 +11,14 @@ from typing import Sequence
 import asyncio
 
 
+class ModuleIsBroken(Exception):
+    pass
+
+
+class ModuleIsRepairing(Exception):
+    pass
+
+
 class RealModule(Module):
     cof_ex_dmg_per_area: float = COF_EX_DMG_PER_AREA
     cof_hp_per_area: float = COF_HP_PER_AREA

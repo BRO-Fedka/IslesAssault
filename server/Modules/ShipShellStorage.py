@@ -6,6 +6,10 @@ from typing import Sequence
 from server.functions import prevent_recursion
 
 
+class NoShellsLeft(Exception):
+    pass
+
+
 class ShipShellStorage(PolygonModule):
     level: int = BOTTOM
 

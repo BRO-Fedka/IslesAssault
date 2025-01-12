@@ -16,7 +16,7 @@ class WaterPump(PolygonModule):
     repair_priority = 2
 
     def __init__(self, poly: Sequence[Sequence[float]], segments: List[ShipSegment] = None,
-                 water_per_tick: float = 0.0005):
+                 water_per_tick: float = 0.001):
         super().__init__(poly)
         self.water_per_tick = water_per_tick
         self.segments = segments

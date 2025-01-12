@@ -1,5 +1,5 @@
 from shapely.geometry import Polygon
-from server.Modules.RealModule import RealModule
+from server.Modules.RealModule import RealModule, ModuleIsRepairing, ModuleIsBroken
 from typing import Sequence
 
 

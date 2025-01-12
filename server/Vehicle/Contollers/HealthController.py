@@ -121,7 +121,7 @@ class HealthController:
         # self.max_hp -= 100
         self.piercing_damage_from_local_coords(self.get_local_coords_of_penetration(projectile),
                                                self.body.angle - projectile.velocity.angle,
-                                               size=size, speed=projectile.velocity.length, mass=projectile.mass)
+                                               size=size, speed=projectile.velocity.length, mass=projectile.mass*10)
 
     def piercing_damage_from_local_coords(self, coord: coords, angle: float, size: float, speed: float, mass: float):
         self.on_damage()

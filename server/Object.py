@@ -28,3 +28,6 @@ class Object:
 
     def does_exists(self) -> bool:
         pass
+
+    def get_z(self) -> int:
+        return 0

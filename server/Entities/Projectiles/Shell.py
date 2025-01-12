@@ -26,8 +26,8 @@ class Shell(Projectile):
         self.shape.filter = COL_ON_GROUND
         self.world.space.add(self.body, self.shape)
         self.body.velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
-        self.body.mass = 0.01
-        self.shape.mass = 0.01
+        self.body.mass = 0.001
+        self.shape.mass = 0.001
         self.shape.collision_type = COLTYPE_PROJECTILE
         self.shape.master = self
         self.status = 2
