@@ -32,5 +32,6 @@ class Camera:
         for obj in appeared_objects:
             string += obj.get_public_info_string_on_appearance()
         for obj in disappeared_objects:
+            print(obj)
             string += obj.get_public_info_string_on_disappearance()
         return string

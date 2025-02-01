@@ -4,7 +4,7 @@ from pymunk import Body, Shape, Poly
 from server.Types import coords
 from shapely.geometry import Polygon, LineString, Point
 from server.Modules.Armor.ArmorPlate import ArmorPlate
-
+from server.Vehicle.Contollers.MassController import MassController
 import math
 import pymunk
 from server.constants import COL_ON_GROUND, COL_ON_WATER, COL_IN_AIR, COLTYPE_VEHICLE
@@ -15,10 +15,15 @@ class LevelController:
     is_handled: bool = False
     handler_vehicles: pymunk.collision_handler.CollisionHandler = None
 
-    def __init__(self, shape: Poly, world: World, z=0, w=True, g=False, a=False):
+    def __init__(self, vehicle, shape: Poly, world: World, mass_controller: MassController, z=0, w=True,
+                 g=False, a=False,
+                 u=False):
         self.water = w
         self.ground = g
         self.air = a
+        self.underwater = u
+        self.vehicle = vehicle
+        self.mass_controller = mass_controller
         self.z = z
         self.ignore = [w, g, a].count(True) == 1
         if self.ignore:
@@ -48,6 +53,12 @@ class LevelController:
         return self.z
 
     def update(self):
+        if self.mass_controller.get_overload() >= 2 and self.shape.filter == COL_ON_WATER:
+            self.z = -1
+            # if not self.underwater:
+            #     self.shape.body.velocity = (0,0)
+            #     self.shape.body.angular_velocity = 0
+
         if self.ignore:
             return
         x = self.shape.body.position.x
@@ -65,7 +76,7 @@ class LevelController:
         self.intersects_bridges = False
         for poly in self.world.mpolygon_bridge_ground:
             if self.shape.filter == COL_ON_GROUND:
-                if Point(x,y).intersects(poly):
+                if Point(x, y).intersects(poly):
                     self.intersects_bridges = True
                     break
             else:

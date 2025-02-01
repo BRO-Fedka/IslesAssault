@@ -8,8 +8,8 @@ class RepairKit(Module):
         super().__init__()
         self.health_controller = health_controller
 
-    def update_module(self):
-        pass
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
 
     def update_module_input(self, input: PlayerInputData):
         if input.repair:

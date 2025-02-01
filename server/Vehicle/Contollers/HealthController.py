@@ -6,6 +6,7 @@ from shapely.geometry import Polygon, LineString, Point
 from server.Modules.Armor.ArmorPlate import ArmorPlate
 import math
 import asyncio
+from server.Vehicle.Contollers.LevelController import LevelController
 
 
 class HealthController:
@@ -15,6 +16,7 @@ class HealthController:
         self.modules: List[Module] = None
         self.vehicle_shape: Polygon = None
         self.max_modules_hp = 0
+        self.level_controller: LevelController = None
         self.armor_modules: List[Module] = []
         self.is_repairing = False
         self.module_under_repairing = None
@@ -22,6 +24,18 @@ class HealthController:
 
     def on_damage(self):
         pass
+
+    def update(self,vehicle):
+        repairable_modules = 0
+        broken_modules = 0
+
+        for module in self.modules:
+            if module.is_repairable:
+                repairable_modules += 1
+                if module.get_hp() == 0 or module.is_destroyed:
+                    broken_modules += 1
+        if repairable_modules == broken_modules:
+            vehicle.kill()
 
     def filter_modules_for_repairing(self):
         modules = []
@@ -46,6 +60,8 @@ class HealthController:
         return self.module_under_repairing
 
     def repair(self):
+        if not self.level_controller.get_z() in [0,1]:
+            return
         self.filter_modules_for_repairing()
         if not self.is_repairing:
             asyncio.create_task(self.repair_async())
@@ -84,7 +100,8 @@ class HealthController:
                 self.armor_modules.append(module)
         # print(crds)
 
-    def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]]):
+    def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]],level_controller:LevelController):
+        self.level_controller = level_controller
         self.max_hp = max_hp
         self.modules = modules
         self.vehicle_shape = Polygon(poly)

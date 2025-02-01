@@ -64,7 +64,8 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.lineTo(xy[0] + cosc*l/320*Zoom,xy[1] + sinc*l/320*Zoom);
     ctx.closePath()
 
-    if(fire){
+    if(fire && (!(vehicle.first_appearance))){
+        // console.log(vehicle.first_appearance,(!(vehicle.first_appearance)))
         xy = vehicle.local_xy_to_global(turcrd)
         for (let _ = 0; _ < 5; _++) {
             // canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
@@ -336,6 +337,7 @@ class Vehicle{
         this.y = 0
         this.sin = 0
         this.cos = 0
+        this.first_appearance = true
     }
 
     local_xy_to_global(xy){
@@ -377,6 +379,7 @@ class Vehicle{
             // console.log(module)
             module.drawp(layer,this)
         });
+        
     }
 
     drawe(layer){
@@ -384,6 +387,7 @@ class Vehicle{
         this.modules.forEach(module => {
             module.drawe(layer,this)
         });
+
     }
 
     parse_common_string(string){
@@ -698,6 +702,7 @@ class RealModule extends Module{
     bang_prt_amount = 5
     indication_layer = 'DEFAULT'
     bang_particle_class = Bang
+    underwater_bang_particle_class = WaterBang
     bang_freq = 5
     constructor(){
         super()
@@ -715,7 +720,17 @@ class RealModule extends Module{
     draw_player_indicator(){}
 
     explode(vehicle){
+        //console.log(vehicle.first_appearance)
+        if ((vehicle.first_appearance)){
+            return
+        }
         this.bang_spawner.spawn(this.bang_prt_amount)
+        if (vehicle.z == -1){
+            this.bang_spawner.particle = this.underwater_bang_particle_class
+        }else{
+            this.bang_spawner.particle = this.bang_particle_class
+        }
+
     }
 
     emit_fire(){}
@@ -739,6 +754,7 @@ class RealModule extends Module{
             case '3':
                 if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
                     this.explode(vehicle)
+                
                     this.prev_indication_char = '3'
                 }
             break;
@@ -1519,22 +1535,21 @@ class BridgeBase extends LineStructure{
     }
     draw(){
         if (Z > 0) return
-        ctx.lineCap = 'square';
         ctx.lineJoin = 'miter';
         let len = 0.1/Math.sqrt( (this.p0[0]- this.p1[0])**2+(this.p0[1]-this.p1[1])**2)
-        ctx.beginPath()
+        ctx.strokeStyle = MAPstatic.CT.cs;
+        ctx.lineWidth = 60/320*Zoom;
         ctx.lineCap = 'square';
-        ctx.lineJoin = 'miter';
+        ctx.beginPath()
+        // ctx.lineJoin = 'miter';
         ctx.moveTo(GameW/2 + OffsetX - (X - this.p0[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p0[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
         ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*len) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*len) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-
+        ctx.closePath()
+        ctx.stroke();
+        ctx.beginPath()
         ctx.moveTo(GameW/2 + OffsetX - (X - this.p1[0] + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.p1[1] + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
         ctx.lineTo(GameW/2 + OffsetX - (X - ( this.p0[0]+(this.p1[0]- this.p0[0])*(1-len)) + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - ( this.p0[1]+(this.p1[1]- this.p0[1])*(1-len)) + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
         ctx.closePath()
-        ctx.lineCap = 'square';
-        ctx.lineJoin = 'miter';
-        ctx.strokeStyle = MAPstatic.CT.cs;
-        ctx.lineWidth = 60/320*Zoom;
         ctx.stroke();
     }
 }
@@ -1980,4 +1995,9 @@ function drawCeils(){
     ctx.closePath();
     ctx.strokeStyle = 'rgba(255,255,255,0.03)';
     ctx.stroke();
+}
+function drawSurface(){
+    ctx.fillStyle = MAPstatic.CT.bg+'55'
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
 }

@@ -19,8 +19,9 @@ class ShipSegment(PolygonModule):
         self.water_fullness_cof = 0
         print(self.is_repairable)
 
-    def update_module(self):
-        if self.level_controller.get_z() != 0: return
+    def update_module(self, vehicle):
+        super().update_module(vehicle)
+        if not self.level_controller.get_z() in [-1, 0]: return
         self.water_fullness_cof += (1 - min(((self.hp / self.max_hp) ** 0.05), 1)) * 0.0025
         if self.water_fullness_cof > 1:
             self.water_fullness_cof = 1

@@ -567,7 +567,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
-                   console.log(INFO)
+                   //console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -632,10 +632,21 @@ function startgame() {
 
 						}else 	if (larr[0] == '+' ){
 //						    console.log(larr)
-                            PN = larr[3]
+                            is_deleting = false
                             CVID = larr[1]
+                            veh = null
+                            if (larr[2] == '!'){
+                                if (TVehicles.has(CVID)){
+                                    veh = TVehicles.get(CVID)
+                                    TVehicles.delete(CVID)
+                                }
+                                is_deleting = true
+                                larr.shift()
+                            }
+                            
+                            PN = larr[3]
                             CVT = larr[2]
-                            if (!(TVehicles.has(CVID))){
+                            if (!(TVehicles.has(CVID)) && (!(is_deleting))){
                                 TVehicles.set(CVID,new VehiclesTable[CVT](CVID,PN))
                             }
                             let pad = larr[0].length + 1 + larr[1].length + 1 + larr[2].length + 1 //+ larr[3].length + 1
@@ -643,7 +654,18 @@ function startgame() {
 
                             let str = infarr[h].slice(pad)
 //                            console.log(str)
-                            TVehicles.get(CVID).updatee(str)
+                            if (is_deleting){
+                                try{
+                                    veh.updatee(str)
+                                }catch{
+
+                                }
+                            }else{
+                                TVehicles.get(CVID).updatee(str)
+
+                            }
+                            
+                            
 						}
 					}
 					dellarr = []
@@ -818,6 +840,7 @@ try{
 
 
     TVehicles.forEach(vehicle => {
+        vehicle.first_appearance = false
         if ( input.get(79)){
 
             vehicle.draw_indicators("BOTTOM")

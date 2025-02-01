@@ -31,23 +31,30 @@ class Vehicle(Object):
         self.level_controller: LevelController = None
         self.world.add_object(self)
 
+    def kill(self):
+        self.is_active = False
+
     def get_z(self):
         return self.level_controller.get_z()
 
     def remove_from_space(self):
         self.world.space.remove(self.body)
+        self.world.space.remove(self.shape)
 
     def update(self):
+        self.level_controller.update()
+        self.mass_controller.update()
+        self.health_controller.update(self)
         self.update_modules()
 
     def update_input(self, input: PlayerInputData):
         self.update_modules_input(input)
 
     def update_modules(self):
-        self.mass_controller.update()
+
         for module in self.modules:
             try:
-                module.update_module()
+                module.update_module(self)
             except:
                 pass
 
@@ -66,15 +73,16 @@ class Vehicle(Object):
         return coords(self.body.position.x, self.body.position.y)
 
     def get_public_info_string_on_appearance(self) -> str:
-        return ''
+        return self.get_public_info_string()
 
     def get_public_info_string_on_disappearance(self) -> str:
-        return ''
+        string = f'\n+,{self.id},!,{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
+        for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
+            string += string_of_module
+
+        return string
 
     def get_public_info_string(self) -> str:
-        # If HP = -1, no health bar display
-
-        # ID,veh_type_id,name,color,HP,dir,x,y
 
         string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):

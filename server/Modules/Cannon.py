@@ -53,7 +53,8 @@ class Cannon(CircularModule):
                 self.hp / self.max_hp)) * self.reload_time:
             self.fire()
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         if self.is_repairing:
             raise ModuleIsRepairing
         rotation_speed = self.rotation_speed * self.hp / self.max_hp

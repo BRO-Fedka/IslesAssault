@@ -30,7 +30,8 @@ class Track(PolygonModule):
         self.y = sum(map(lambda e: e[1], poly)) / len(poly)
         self.level_controller = level_controller
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         if self.is_repairing:
             raise ModuleIsRepairing
         force = self.force * (((self.hp / self.max_hp) ** 0.25) * 0.8 + 0.2)

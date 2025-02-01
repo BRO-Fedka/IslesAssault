@@ -21,7 +21,8 @@ class WaterPump(PolygonModule):
         self.water_per_tick = water_per_tick
         self.segments = segments
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         if self.is_repairing:
             return
         if not self.segments is None:

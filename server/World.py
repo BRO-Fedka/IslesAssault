@@ -22,6 +22,7 @@ INACCESSABLE_GROUND = 1
 INDESTRUCTIBLE = 3
 DESTRUCTIBLE = 4
 
+
 class World:
     collision_layers: List[pymunk.Space]
 
@@ -58,7 +59,7 @@ class World:
             self.Bs.append(pol)
             pol.filter = COL_B
             self.space.add(pol)
-            self.mpolygon_accessable_ground.append(Polygon(list(map(lambda e: (e[0],e[1]),poly))))
+            self.mpolygon_accessable_ground.append(Polygon(list(map(lambda e: (e[0], e[1]), poly))))
         # self.mpolygon_accessable_ground: MultiPolygon = MultiPolygon(self.mpolygon_accessable_ground)
         for poly in self.data['S']:
             pol = pymunk.Poly(self.space.static_body, poly)
@@ -85,7 +86,7 @@ class World:
                 h = house[4]
                 d = house[5]
                 body = pymunk.Body(body_type=pymunk.Body.STATIC, mass=1)
-                pol = pymunk.Poly(body, [(-w/2, -h/2), (w/2, -h/2), (w/2, h/2), (-w/2, h/2)])
+                pol = pymunk.Poly(body, [(-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2)])
                 pol.type = DESTRUCTIBLE
                 pol.mass = 0.1
                 # pol.m
@@ -122,6 +123,11 @@ class World:
                     logging.exception('')
             for obj in delarr:
                 self._objects.remove(obj)
+                print(self._objects)
+                print(self.space.bodies)
+                for _ in self.space.shapes:
+                    print(_.body)
+                # print(self.space.shapes)
 
             await asyncio.sleep(1 / WORLD_TPS - (datetime.datetime.now() - start).total_seconds())
 

@@ -47,7 +47,7 @@ class Tank(Vehicle):
         # segment3 = ShipSegment(SEG3)
         engine = TankEngine(ENG)
         self.mass_controller = MassController(self.shape)
-        self.level_controller = LevelController(self.shape,self.world,z=1, w=True, g=True)
+        self.level_controller = LevelController(self,self.shape,self.world,self.mass_controller,z=1, w=True, g=True)
         self.modules = [
 
             TankCannon(0.005, 0, self.world, self.body),
@@ -62,24 +62,18 @@ class Tank(Vehicle):
             RepairKit(self.health_controller)
 
         ]
-        self.health_controller.update_params(1000, self.modules, POLY_SHAPE)
+        self.health_controller.update_params(1000, self.modules, POLY_SHAPE,self.level_controller)
         self.mass_controller.update_params(self.modules)
         self.body.position = 5, 6
-
-    def update_modules(self):
-        super().update_modules()
-        self.level_controller.update()
-        if self.mass_controller.get_overload() > 2:
-            print('SUNK')
 
     def get_public_info_string(self) -> str:
         return super().get_public_info_string()
 
-    def get_public_info_string_on_appearance(self) -> str:
-        return ''
-
-    def get_public_info_string_on_disappearance(self) -> str:
-        return ''
+    # def get_public_info_string_on_appearance(self) -> str:
+    #     return ''
+    #
+    # def get_public_info_string_on_disappearance(self) -> str:
+    #     return ''
 
     def get_private_info_string(self) -> str:
         return super().get_private_info_string()

@@ -22,7 +22,8 @@ class ShipSteering(Module):
         self.passive_friction_cof = passive_friction_cof
         self.direction = STRAIGHT
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         # print('4')
         deg = self.body.velocity.angle + math.pi - self.body.angle
         r_vec = (math.cos(deg) * COF_WATER_RESISTANCE * self.body.velocity.length ** 2,

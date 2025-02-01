@@ -18,7 +18,8 @@ class GroundResistance(Module):
         self.body = body
         self.level_controller = level_controller
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         if not (self.level_controller is None or self.level_controller.get_z() == 1):
             return
         if self.body.velocity.length > self.max_speed*2:

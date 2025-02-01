@@ -248,13 +248,15 @@ class Heavy extends Vehicle{
 
     drawp(layer){
         // console.log("DRAW!")
-        if (layer.includes('OnWater')){
+        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
             if (layer=='OnWater'){
                 // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
                 this.wtp_spawner.update(this)
                 drawF(this,POLY_SHAPE0, this.f)
 //                console.log(this.id)
+            }else if (layer=='UnderWater'){
+                drawF(this,POLY_SHAPE0, this.f)
             }
             // console.log("DR")
             super.drawp(layer)
@@ -262,12 +264,14 @@ class Heavy extends Vehicle{
     }
     drawe(layer){
         // console.log("DRAW!")
-        if (layer.includes('OnWater')){
+        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
             if (layer=='OnWater'){
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
                 this.wtp_spawner.update(this)
                 drawF(this,POLY_SHAPE0, this.f)
 //                console.log(this.id)
+            }else if (layer=='UnderWater'){
+                drawF(this,POLY_SHAPE0, this.f)
             }
             // console.log("DR")
             super.drawe(layer)
@@ -311,24 +315,24 @@ class Tank extends Vehicle{
     }
 
     drawp(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))){
+        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
             if (layer=='OnWater'){
                 drawF(this,POLY_SHAPE1, this.f)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
                 this.wtp_spawner.update(this)
-            }else if(layer=='OnGround'){
+            }else if (layer=='UnderWater'||layer=='OnGround'){
                 drawF(this,POLY_SHAPE1, this.f)
             }
             super.drawp(layer)
         }
     }
     drawe(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))){
+        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
             if (layer=='OnWater'){
                 drawF(this,POLY_SHAPE1, this.f)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
                 this.wtp_spawner.update(this)
-            }else if(layer=='OnGround'){
+            }else if (layer=='UnderWater'||layer=='OnGround'){
                 drawF(this,POLY_SHAPE1, this.f)
             }
             super.drawe(layer)
@@ -360,8 +364,9 @@ let StructuresTable = {
     
 }
 
-let LayerList = ["SH0","SH1",'W','_1',"B",'_0','g','G','C','BD','R','r',"OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3",'_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
+let LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"B",'_0','g','G','C','BD','R','r',"OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3",'_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
 
 let LayersFunctions = {
-    'BD': drawCeils
+    'BD': drawCeils,
+    'w':drawSurface
 }

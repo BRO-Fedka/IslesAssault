@@ -10,11 +10,12 @@ class Module:
     level: int = DEFAULT
     repair_priority: int = None
     is_repairable: bool = False
+    active_after_death: bool = True
 
     def __init__(self):
         self.is_destroyed = False
 
-    def update_module(self):
+    def update_module(self,vehicle):
         pass
 
     def update_module_input(self, input: PlayerInputData):

@@ -29,6 +29,12 @@ class RealModule(Module):
     max_field_repairment_rel_hp: float = 1
     repairment_time_per_hp: float = 1
     repairment_time_cof: float = 1
+    active_after_death = False
+    drown_damage: bool = True
+
+    def update_module(self, vehicle):
+        if vehicle.get_z() == -1 and self.drown_damage:
+            self.slow_damage()
 
     def get_full_repairing_time(self) -> float:
         return self.repairment_time_per_hp * self.max_hp * self.repairment_time_cof
@@ -40,12 +46,19 @@ class RealModule(Module):
         super().__init__()
         print(hp, self.__class__.__name__)
         self.hp: float = hp
-        self.max_hp: int = hp
+        self.max_hp: float = hp
         self.shape: BaseGeometry = None
         self.is_repairing = False
 
     def on_destroy(self):
         pass
+
+    def slow_damage(self):
+        self.hp -= self.max_hp/75
+        if self.hp <= 0:
+            self.hp += self.max_hp/75
+            self.on_destroy()
+            self.hp = 0
 
     def piercing_damage(self, intersection, coord: coords, size: float, speed: float, mass: float) -> Sequence[float]:
         # print(self.__class__.__name__)

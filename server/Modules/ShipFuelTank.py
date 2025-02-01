@@ -19,7 +19,8 @@ class ShipFuelTank(PolygonModule):
         self.fuel_fullness_cof = 1
         print(self.capacity)
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         self.fuel_fullness_cof -= (1 - (self.hp / self.max_hp) ** 0.005)
         if self.fuel_fullness_cof < 0:
             self.fuel_fullness_cof = 0

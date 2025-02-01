@@ -28,7 +28,8 @@ class ShipEngine(PolygonModule):
         self.x = x_force
         self.y = y_force
 
-    def update_module(self):
+    def update_module(self,vehicle):
+        super().update_module(vehicle)
         if self.is_repairing:
             return
         force = self.force * (min(self.hp/self.max_hp,1-self.segment.get_water_fullness_cof()))**0.25

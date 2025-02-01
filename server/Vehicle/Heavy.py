@@ -41,7 +41,7 @@ class Heavy(Vehicle):
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_WATER
-        self.level_controller = LevelController(self.shape, self.world, w=True)
+
         world.space.add(self.body, self.shape)
         self.vehicle_type_id = VEHICLE_ID
         self.shape.master = self
@@ -50,10 +50,12 @@ class Heavy(Vehicle):
         fueltank2 = ShipFuelTank(FUEL2)
         fueltank3 = ShipFuelTank(FUEL3)
         shellstorage = ShipShellStorage(AMM,self.health_controller)
+
+        self.mass_controller = MassController(self.shape)
+        self.level_controller = LevelController(self,self.shape, self.world, self.mass_controller, w=True)
         segment1 = ShipSegment(SEG1,self.level_controller)
         segment2 = ShipSegment(SEG2,self.level_controller)
         segment3 = ShipSegment(SEG3,self.level_controller)
-        self.mass_controller = MassController(self.shape)
         self.modules = [
             MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
             MortarCannon(-0.1,0,self.world,self.body,shellstorages=[shellstorage]),
@@ -77,22 +79,17 @@ class Heavy(Vehicle):
 
 
         ]
-        self.health_controller.update_params(1000,self.modules,POLY_SHAPE)
+        self.health_controller.update_params(1000,self.modules,POLY_SHAPE,self.level_controller)
         self.mass_controller.update_params(self.modules)
-
-    def update_modules(self):
-        super().update_modules()
-        if self.mass_controller.get_overload() > 2:
-            print('SUNK')
 
     def get_public_info_string(self) -> str:
         return super().get_public_info_string()
 
     def get_public_info_string_on_appearance(self) -> str:
-        return ''
+        return super().get_public_info_string_on_appearance()
 
     def get_public_info_string_on_disappearance(self) -> str:
-        return ''
+        return super().get_public_info_string_on_disappearance()
 
     def get_private_info_string(self) -> str:
         return super().get_private_info_string()

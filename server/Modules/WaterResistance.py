@@ -18,8 +18,8 @@ class WaterResistance(Module):
         self.max_speed = max_speed
         self.body = body
 
-    def update_module(self):
-        if not (self.level_controller is None or self.level_controller.get_z() == 0):
+    def update_module(self,vehicle):
+        if not (self.level_controller is None or self.level_controller.get_z() in [0,-1]):
             return
         # print(self.body.velocity.length, self.body.velocity.angle)
         if self.body.velocity.length > self.max_speed:
