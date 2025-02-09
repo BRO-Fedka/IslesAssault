@@ -132,22 +132,29 @@ class Player:
             message_id = 0
             return
         # print(message)
+        cursor_x = float(message.split(',')[0])
+        cursor_y = float(message.split(',')[1])
+        message = message.split(',')[2]
+        mouse_input = []
+        for _ in range(0,5):
+            mouse_input.append(bool(int(message[_])))
+        message = message[5:]
+        keys = []
+        for _ in range(0,len(self.vehicle.input_keys)):
+            self.vehicle.input_keys[_].is_pressed = bool(int(message[_]))
+            if bool(int(message[_])):
+                keys.append(self.vehicle.input_keys[_])
         self.inputs = PlayerInputData(
-            mouse_0=bool(int(message[0])),
-            up=bool(int(message[1])),
-            left=bool(int(message[2])),
-            down=bool(int(message[3])),
-            right=bool(int(message[4])),
-            first_weapon=bool(int(message[5])),
-            second_weapon=bool(int(message[6])),
-            repair=bool(int(message[7])),
-            tab=bool(int(message[8])),
-            shooting_mode=bool(int(message[9])),
-            z_aiming_mode=int(message[10]),
-            view=int(message[11]),
-            cursor_x=float(message[12:].split(',')[0]),
-            cursor_y=float(message[12:].split(',')[1]),
+            mouse_0=mouse_input[0],
+            mouse_1=mouse_input[1],
+            mouse_2=mouse_input[2],
+            mouse_3=mouse_input[3],
+            mouse_4=mouse_input[4],
+            active_keys=keys,
+            cursor_x=cursor_x,
+            cursor_y=cursor_y,
             date=datetime.datetime.now()
+
         )
         try:
             m_index = message.index('m')
@@ -162,9 +169,13 @@ class Player:
         while True:
             try:
                 message = await self.websocket.recv()
-                self.parse_message(message)
-                self.vehicle.update_input(self.inputs)
-                await self.websocket.send("0,0," + self.camera.get_picture())
+                if self.vehicle.is_active:
+                    self.parse_message(message)
+                    self.vehicle.update_input(self.inputs)
+                    #ID, money
+                    await self.websocket.send("0,0," + self.camera.get_picture())
+                else:
+                    await self.websocket.send("0,D")
             except MessageParsingException:
                 self.disconnect()
                 logger.info("MessageParsingException")

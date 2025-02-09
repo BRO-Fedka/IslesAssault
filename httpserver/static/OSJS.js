@@ -1,3 +1,13 @@
+PACK_ID = 0
+
+IK.FORWARD = new InputKey(0,"Move forward",87)
+IK.BACKWARD = new InputKey(1,"Move backward",83)
+IK.LEFT = new InputKey(2,"Turn left",65)
+IK.RIGHT = new InputKey(3,"Turn right",68)
+IK.LAUNCH_TORPEDO = new InputKey(4,"Launch torpedo",32)
+IK.SMOKE = new InputKey(6,"Deploy smoke shield",71)
+
+
 class MortarCannon extends Cannon{
     constructor(x,y,r = 0.0375){
         super(x,y,r)
@@ -55,6 +65,7 @@ class Engine extends PolygonModule{
     // }
 }
 class ShipEngine extends Engine{
+    input_keys = [IK.FORWARD,IK.BACKWARD]
     indication_layer = 'BOTTOM'
 
 }
@@ -81,6 +92,7 @@ class ShipFuelTank extends PolygonModule{
 }
 
 class Track extends PolygonModule{
+    input_keys = [IK.FORWARD, IK.BACKWARD, IK.LEFT, IK.RIGHT]
     indication_layer = 'DEFAULT'
     constructor(poly,image){
         super(poly)
@@ -155,6 +167,7 @@ class ShipSegment extends PolygonModule{
 class TorpedoFrontalTube extends PolygonModule{
     indication_layer = 'BOTTOM'
     image='static/indication/torpedo_icon.svg'
+    input_keys = [IK.LAUNCH_TORPEDO]
     constructor(poly, max){
         super(poly)
         this.amount = max
@@ -173,9 +186,12 @@ class TorpedoFrontalTube extends PolygonModule{
         return string
     }
 }
-
+class ShipSteering extends Module{
+    input_keys = [IK.LEFT, IK.RIGHT]
+}
 class SmokeGenerator extends PolygonModule{
-image='static/indication/smoke_generator_icon.svg'
+    input_keys = [IK.SMOKE]
+    image='static/indication/smoke_generator_icon.svg'
     constructor(poly,max){
         super(poly)
         this.amount = max
@@ -228,7 +244,7 @@ class Heavy extends Vehicle{
             new MortarCannon(-0.1,0),
             new TorpedoFrontalTube(TUBE0,12),
             new SmokeGenerator(SMK0,5),
-            new MockModule(),
+            new ShipSteering(),
             new MockModule(),
             new ShipEngine(ENG0),
             new WaterPump(PMP0),
@@ -243,6 +259,7 @@ class Heavy extends Vehicle{
             new OverloadIndication(),
             new RepairKit(this)
       ]
+      this.init_inputs()
         
     }
 
@@ -311,6 +328,7 @@ class Tank extends Vehicle{
             new RepairKit(this)
 
       ]
+      this.init_inputs()
         
     }
 
@@ -364,7 +382,7 @@ let StructuresTable = {
     
 }
 
-let LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"B",'_0','g','G','C','BD','R','r',"OnWater-2","OnWater-1","OnWater","OnWater+1","OnWater+2","OnWater+3",'_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
+let LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"OnWater-2","OnWater-1","B",'BD',"OnWater","OnWater+1","OnWater+2","OnWater+3",'_0','g','G','C','R','r','_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
 
 let LayersFunctions = {
     'BD': drawCeils,

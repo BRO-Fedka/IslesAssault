@@ -2,8 +2,8 @@ from pymunk import Body
 from server.Types import PlayerInputData
 from server.Modules.Module import Module
 from server.constants import COF_WATER_RESISTANCE
+import server.Modules.InputKeys.InputKeys as IK
 import math
-
 
 RIGHT = 2
 LEFT = 1
@@ -11,6 +11,7 @@ STRAIGHT = 0
 
 
 class ShipSteering(Module):
+    input_keys = [IK.LEFT, IK.RIGHT]
 
     def __init__(self,body:Body, x, y, l=0.1, deg=5, passive_friction_cof=0.001):
         super().__init__()
@@ -56,10 +57,10 @@ class ShipSteering(Module):
 
     def update_module_input(self, input: PlayerInputData):
 
-        if input.right:
+        if IK.RIGHT in input.active_keys:
             self.direction = RIGHT
 
-        elif input.left:
+        elif IK.LEFT in input.active_keys:
             self.direction = LEFT
         else:
             self.direction = STRAIGHT

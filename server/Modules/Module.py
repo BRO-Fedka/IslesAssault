@@ -1,7 +1,7 @@
 from server.Types import PlayerInputData, coords
 from typing import Sequence
-import asyncio
-
+from typing import List
+from server.Modules.InputKeys.InputKey import InputKey
 DEFAULT = 0
 BOTTOM = -1
 
@@ -11,6 +11,7 @@ class Module:
     repair_priority: int = None
     is_repairable: bool = False
     active_after_death: bool = True
+    input_keys:List[InputKey] = None
 
     def __init__(self):
         self.is_destroyed = False

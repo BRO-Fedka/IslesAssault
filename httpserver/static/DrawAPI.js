@@ -1,3 +1,4 @@
+PACK_ID = null
 function drawCannon(vehicle,cannon, fire=false){
     let turcrd = [cannon.x, cannon.y]
     let cos = vehicle.cos
@@ -315,6 +316,28 @@ function global_xy_to_screen(xy){
     return [global_x_to_screen(xy[0]),global_y_to_screen(xy[1])]
 }
 
+// InputKeys ======================================
+
+class InputKey{
+    constructor(id,name,def_char){
+        this.id = id
+        this.name = name
+        this.def_char = def_char
+        this.is_pressed = false
+        this.was_pressed = false
+        this.cur_char = def_char
+
+    }
+    update(){
+        if (localStorage.hasOwnProperty(PACK_ID+"k"+this.id)){
+            this.cur_char = Number(localStorage.getItem(PACK_ID+"k"+this.id))
+        }
+    }
+}
+let IK = {
+    REPAIR : new InputKey(5,"Repair",70)
+}
+
 
 //  BASE    =======================================
 
@@ -338,6 +361,24 @@ class Vehicle{
         this.sin = 0
         this.cos = 0
         this.first_appearance = true
+        this.input_keys = null
+        
+    }
+
+    init_inputs(){
+        let modules = new Set() 
+        this.modules.forEach(module => {
+            module.input_keys.forEach(input_key => {
+                modules.add(input_key)
+            });
+        });
+        this.input_keys = Array.from(modules)
+        console.log(this.input_keys)
+        this.input_keys = this.input_keys.sort((m0, m1) => m0.id > m1.id ? 1: -1)
+        this.input_keys.forEach(ik => {
+            ik.update()
+        });
+        console.log(this.input_keys)
     }
 
     local_xy_to_global(xy){
@@ -526,6 +567,7 @@ class AmountIndicator extends Indicator{
 
 class Module{
     image = ''
+    input_keys = []
     constructor(){
     }
 
@@ -556,6 +598,7 @@ class MockModule extends Module{
 
 class RepairKit extends Module{
     image = 'static/indication/repair_animation.svg'
+    input_keys = [IK.LAUNCH_TORPEDO]
     constructor(vehicle){
         super()
         this.indicator = new TwoImagesIndicator(this.image,upperIndicators)
@@ -699,6 +742,7 @@ class ArmorIndication extends Module{
 }
 
 class RealModule extends Module{
+    input_keys = [IK.REPAIR]
     bang_prt_amount = 5
     indication_layer = 'DEFAULT'
     bang_particle_class = Bang
@@ -1637,7 +1681,7 @@ class Tree{
         this.x = x
         this.y = y
         this.size = size
-        console.log(id,x,y,size)
+        // console.log(id,x,y,size)
         this.tree_size={
             0:0.1,
             1:0.15,
@@ -1728,10 +1772,10 @@ class TreeGroup extends Strucure{
         let i = 0
         trees.forEach(element => {
             i++
-            console.log(this.TreesTable[element[0]])
+            // console.log(this.TreesTable[element[0]])
             this.trees.push(new this.TreesTable[element[0]](i,element[1],element[2],element[3]))
         });
-        console.log(this.trees)
+        // console.log(this.trees)
     }
     draw(){
         let alpha = 'ff'

@@ -4,11 +4,15 @@ from server.World import World
 from typing import Sequence
 from server.Entities.Smoke import Smoke
 import datetime
+import server.Modules.InputKeys.InputKeys as IK
 from server.Types import coords
+
 from pymunk import Body
 
 
 class SmokeGenerator(PolygonModule):
+    input_keys = [IK.SMOKE]
+
     def __init__(self, world: World, body: Body, poly: Sequence[Sequence[float]], amount=0):
         super().__init__(poly)
         self.max_amount = amount
@@ -20,7 +24,8 @@ class SmokeGenerator(PolygonModule):
     def update_module_input(self, input: PlayerInputData):
         if self.is_repairing:
             return
-        if input.second_weapon and (datetime.datetime.now() - self.reload_timer).total_seconds() > 5 and self.amount > 0:
+        if IK.SMOKE in input.active_keys and (
+                datetime.datetime.now() - self.reload_timer).total_seconds() > 5 and self.amount > 0:
             print('SMOKE')
             Smoke(self.world, self.body.master, coords(self.body.position.x, self.body.position.y))
             self.reload_timer = datetime.datetime.now()

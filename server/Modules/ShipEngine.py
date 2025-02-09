@@ -6,7 +6,7 @@ from server.Modules.Module import BOTTOM
 from server.Modules.ShipFuelTank import ShipFuelTank
 from server.Modules.ShipSegment import ShipSegment
 from shapely.geometry import Polygon
-
+import server.Modules.InputKeys.InputKeys as IK
 FORWARD = 1
 STOP = 0
 BACK = 2
@@ -15,6 +15,7 @@ BACK = 2
 class ShipEngine(PolygonModule):
     level: int = BOTTOM
     repair_priority = 3
+    input_keys = [IK.FORWARD,IK.BACKWARD]
 
     def __init__(self, body: Body, x_force:float, y_force:float, poly:Sequence[Sequence[float]], force:float=0.05, fueltanks: List[ShipFuelTank] = None, segment:ShipSegment= None, fueluse:float = 0):
         super().__init__(poly)
@@ -45,9 +46,10 @@ class ShipEngine(PolygonModule):
             self.body.apply_force_at_local_point((-force, 0), (self.x, self.y))
 
     def update_module_input(self, input: PlayerInputData):
-        if input.up:
+        #print(input.active_keys)
+        if IK.FORWARD in input.active_keys:
             self.moving = FORWARD
-        elif input.down:
+        elif IK.BACKWARD in input.active_keys:
             self.moving = BACK
         else:
             self.moving = STOP

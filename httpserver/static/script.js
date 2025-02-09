@@ -68,24 +68,16 @@ function onMouseUpdate(e) {
 }
 window.onresize = resize
 function ExitGame(){
-    Send = true
-    messagebtn.innerText = "Global"
-    messageinput.value = "/leave"
-    setTimeout(function(){
-        if (GameStatus == "InGame" ){
+    GameStatus = "MainMenu"
+    PlayersData = new Map()
+    PIXI.sound.play('MainMenuMusic');
+    document.getElementById('chk-game').checked = false
+    document.getElementById("chkInterfaceHide").checked = false
+    Players = []
+    indicators.innerHTML = ""
+    TVehicles = new Map()
 
-						GameStatus = "MainMenu"
-						PlayersData = new Map()
-                        PIXI.sound.play('MainMenuMusic');
-                        document.getElementById('Inventory').innerHTML = ""
-                        document.getElementById('chk-game').checked = false
-                        document.getElementById("chkInterfaceHide").checked = false
-                        chatview.innerHTML = ""
-                        Players = []
-
-                        socket.close();
-        }
-    },500)
+    socket.close();
 
 
 
@@ -162,7 +154,7 @@ PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 let TVehicles = new Map()
-
+let module_view_mode = false
 var cameraMode = false;
 var Players=[];
 var TorpedosData = new Map();
@@ -436,27 +428,14 @@ catch{}
 let MSGs = [];
 let Particles = new Map();
 
-let input = new Map();
-input.set(87,false);
-input.set(65,false);
-input.set(83,false);
-input.set(68,false);
-input.set(32,false);
-input.set(71,false);
-input.set(70,false);
-input.set(79,false);
-input.set('Tab',false);
-input.set('m0',false);
-let dobleinput = new Map();
-dobleinput.set(87,false);
-dobleinput.set(79,false);
-dobleinput.set(65,false);
-dobleinput.set(83,false);
-dobleinput.set(68,false);
-dobleinput.set(32,false);
-dobleinput.set(71,false);
-dobleinput.set(70,false);
-dobleinput.set('m0',false);
+let mouse_input = new Map();
+let post_mouse_input = new Map();
+[0,1,2,3,4].forEach(i => {
+    mouse_input.set(i,false);
+    post_mouse_input.set(i,false);
+});
+
+
 let mouseX = 0;
 let mouseY = 0;
 let INFO = '';
@@ -494,7 +473,7 @@ function startgame() {
 			function taken(event) {
 			    lastMSGid = event.data.split(',')[0]
 			    let eventdata = event.data.slice(lastMSGid.length+1,event.data.length)
-//			    console.log(eventdata)
+			    console.log(eventdata)
 			    lastMSGid = Number(lastMSGid)
 				if (eventdata[0] == 'E'){
 				    GameStatus= "Error"
@@ -534,22 +513,23 @@ function startgame() {
                     }
 
                     setTimeout(function(){UpdateObjs = true}, 300);
-                    socket.send((input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get(70) || dobleinput.get(70) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString());
+                    socket.send('OK');
 				}
 				else if (eventdata[0] == 'D'){
-						GameStatus = "MainMenu"
-						PlayersData = new Map()
-						PIXI.sound.play('MainMenuMusic');
-                        let children = document.getElementById('Inventory').children;
-                        for (let i = 0; i < children.length; i++) {
-                          children[i].style.display = "none"
-                        }
-                        document.getElementById("chk-game").checked = false
-                        document.getElementById("chkInterfaceHide").checked = false
-                        chatview.innerHTML = ""
-                        StartMainMusicPlay = Date.now()
-                        Players = []
-                        socket.close();
+						// GameStatus = "MainMenu"
+						// PlayersData = new Map()
+						// PIXI.sound.play('MainMenuMusic');
+                        // let children = document.getElementById('Inventory').children;
+                        // for (let i = 0; i < children.length; i++) {
+                        //   children[i].style.display = "none"
+                        // }
+                        // document.getElementById("chk-game").checked = false
+                        // document.getElementById("chkInterfaceHide").checked = false
+                        // chatview.innerHTML = ""
+                        // StartMainMusicPlay = Date.now()
+                        // Players = []
+                        // socket.close();
+                        ExitGame()
 				}else if (eventdata[0] == 'R'){
 						socket.close();
 						SaveMusicPos()
@@ -567,7 +547,7 @@ function startgame() {
 					PlayerName = splstr[4]
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
-                   //console.log(INFO)
+                    // console.log(INFO)
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -669,35 +649,32 @@ function startgame() {
 						}
 					}
 					dellarr = []
-
+                    
                     while (dellarr.length > 0){
                         PlayersData.delete(dellarr[0])
                         dellarr.shift()
                     }
+                    let substr = ""
+                    new Array(0,1,2,3,4).forEach(i => {
+                        substr += (mouse_input.get(i) || post_mouse_input.get(i)   ? 1 : 0).toString()
+                    });
+                    // console.log(substr)
 
-					if (Send == true){
-					    if(messagebtn.innerText == "Team"){
-					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get(70) || dobleinput.get(70) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m/team chat '+messageinput.value);
-					    }else{
-					    socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get(70) || dobleinput.get(70) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom).toString()+',m'+messageinput.value);
-					    }
-						messageinput.value = ''
-						Send=false
-					}else{
-						socket.send(lastMSGid.toString()+','+(input.get('m0') || dobleinput.get('m0')  ? 1 : 0).toString()+(input.get(87) || dobleinput.get(87) ? 1 : 0).toString()+(input.get(65) || dobleinput.get(65) ? 1 : 0).toString()+(input.get(83) || dobleinput.get(83) ? 1 : 0).toString()+(input.get(68) || dobleinput.get(68) ? 1 : 0).toString()+(input.get(32) || dobleinput.get(32) ? 1 : 0).toString()+(input.get(71) || dobleinput.get(71) ? 1 : 0).toString()+(input.get(70) || dobleinput.get(70) ? 1 : 0).toString()+(input.get('Tab') ? 1 : 0).toString()+(Cmod ? 1 : 0).toString()+(Xmod ? 1 : 0).toString()+(curView).toString()+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString());
-					}
-					SENDB = ''
-					SENDS = ''
-					dobleinput.set(87,false);
-					dobleinput.set(79,false);
-					dobleinput.set(65,false);
-					dobleinput.set(83,false);
-					dobleinput.set(68,false);
-					dobleinput.set(32,false);
-					dobleinput.set(71,false);
-					dobleinput.set(70,false);
-					dobleinput.set('m0',false);
-					input.set('Tab',false)
+                    TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+                        substr += (ik.is_pressed || ik.was_pressed ? 1 : 0).toString()
+                    });
+                    // console.log(substr)
+                    TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+                        
+                            ik.was_pressed = false
+                        
+                    });
+                    new Array(0,1,2,3,4).forEach(i => {
+                        post_mouse_input.set(i,false)
+                    });
+					socket.send(lastMSGid.toString()+','+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+substr);
+
+
 			}}
 			socket.addEventListener('message', taken);
 			socket.onerror =  function (e) {
@@ -731,30 +708,40 @@ function fresize(){
 	canvas.style.height = window.innerHeight + "px";
 	ZoomCorrection()
 }
-function mclick() {
-	input.set('m0',true)
-	dobleinput.set('m0',true)
+function mclick(event) {
+    mouse_input.set(event.button,true)
+	post_mouse_input.set(event.button,true)
 }
-function mrelease(){
-	input.set('m0',false)
+function mrelease(event){
+	mouse_input.set(event.button,false)
 }
 function mifo() {
 	messagefield.style.display = 'none'
 }
 function keydown(event) {
-	if (messagefield.style.display == 'none' && (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32|| event.keyCode == 71 || event.keyCode == 79|| event.keyCode == 70)){
-		input.set(event.keyCode,true);
-		dobleinput.set(event.keyCode,true)
-	}
-	 else if (event.key == 'Enter' && GameStatus == "InGame") {
-		if (messagefield.style.display == 'none'){
-			messagefield.style.display = 'block';
-			messageinput.focus();
-		}else {
-			messagefield.style.display = 'none'
-			Send = true;
-		}
-	}else if ( (event.keyCode == 113 )) {
+    console.log(TVehicles)
+    console.log(CurVehicleID)
+    console.log(TVehicles.get(CurVehicleID))
+    TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+        if (event.keyCode==ik.cur_char){
+            ik.is_pressed = true
+            ik.was_pressed = true
+        }
+    });
+	// if (messagefield.style.display == 'none' && (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32|| event.keyCode == 71 || event.keyCode == 79|| event.keyCode == 70)){
+	// 	input.set(event.keyCode,true);
+	// 	dobleinput.set(event.keyCode,true)
+	// }
+	//  else if (event.key == 'Enter' && GameStatus == "InGame") {
+	// 	if (messagefield.style.display == 'none'){
+	// 		messagefield.style.display = 'block';
+	// 		messageinput.focus();
+	// 	}else {
+	// 		messagefield.style.display = 'none'
+	// 		Send = true;
+	// 	}
+	// }
+    if ( (event.keyCode == 113 )) {
         document.getElementById("chkInterfaceHide").checked = (!(document.getElementById("chkInterfaceHide").checked))
         cameraMode = document.getElementById("chkInterfaceHide").checked
 	}else if ( (event.keyCode == 114 )) {
@@ -763,31 +750,33 @@ function keydown(event) {
 	    }else{
 	        document.getElementById("MainCanvas").style.cursor = 'crosshair'
 	    }
-	}else if ( (event.keyCode == 86 )) {
-		curView = (curView+1)%Vehicles[CurVehicle].views
-		document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
-	}else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
-		map.style.display = 'block';
-	}else if (messagefield.style.display == 'none' && (event.keyCode == 9) ) {
-		input.set('Tab',true);
-		tab.style.display = 'block';
-	}else if(messagefield.style.display == 'none' && (event.keyCode == 67)){
-		Cmod = !Cmod
-		cmodnum.src = './static/Cmodinv' +(Cmod  ? 1 : 0).toString()+ '.svg'
-		tracernum.src = './static/Tracerinv' +(Cmod  ? 1 : 0).toString()+ '.svg'
-	}else if(messagefield.style.display == 'none' && (event.keyCode == 88)){
-		Xmod = !Xmod
-		xmodnum.src = './static/Xmodinv' +(Xmod  ? 1 : 0).toString()+ '.svg'
-	}
+	}else if(event.keyCode == 115){
+        module_view_mode=(!module_view_mode)
+    }
+    
+    //else if ( (event.keyCode == 86 )) {
+	// 	curView = (curView+1)%Vehicles[CurVehicle].views
+	// 	document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]
+	// }else if (messagefield.style.display == 'none' && (event.keyCode == 77 )) {
+	// 	map.style.display = 'block';
+	// }else if (messagefield.style.display == 'none' && (event.keyCode == 9) ) {
+	// 	input.set('Tab',true);
+	// 	tab.style.display = 'block';
+	// }
 }
 function keyup(event) {
-	if (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32 || event.keyCode == 71|| event.keyCode == 79|| event.keyCode == 70){
-		input.set(event.keyCode,false);
-	} else if (event.keyCode == 77 ) {
-		map.style.display = 'none';
-	}else if (event.keyCode == 9 ) {
-		tab.style.display = 'none';
-	}
+    TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+        if (event.keyCode==ik.cur_char){
+            ik.is_pressed = false
+        }
+    });
+	// if (event.keyCode == 87 || event.keyCode == 65 || event.keyCode == 83 || event.keyCode == 68 || event.keyCode == 32 || event.keyCode == 71|| event.keyCode == 79|| event.keyCode == 70){
+	// 	input.set(event.keyCode,false);
+	// } else if (event.keyCode == 77 ) {
+	// 	map.style.display = 'none';
+	// }else if (event.keyCode == 9 ) {
+	// 	tab.style.display = 'none';
+	// }
 }
 let start = null;
 let timenow = Date.now()
@@ -841,7 +830,8 @@ try{
 
     TVehicles.forEach(vehicle => {
         vehicle.first_appearance = false
-        if ( input.get(79)){
+        //TODO
+        if ( module_view_mode){
 
             vehicle.draw_indicators("BOTTOM")
             vehicle.draw_indicators("DEFAULT")

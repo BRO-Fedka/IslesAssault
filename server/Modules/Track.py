@@ -8,6 +8,7 @@ from server.Modules.ShipSegment import ShipSegment
 from server.Modules.TankEngine import TankEngine, EngineDoesNotWork
 from shapely.geometry import Polygon
 from server.Vehicle.Contollers.LevelController import LevelController
+import server.Modules.InputKeys.InputKeys as IK
 
 FORWARD = 1
 STOP = 0
@@ -17,6 +18,7 @@ BACK = 2
 class Track(PolygonModule):
     level: int = DEFAULT
     repair_priority = 3
+    input_keys = [IK.FORWARD, IK.BACKWARD, IK.LEFT, IK.RIGHT]
 
     def __init__(self, body: Body, poly: Sequence[Sequence[float]], engine: TankEngine,
                  level_controller: LevelController, force=0.05):
@@ -30,7 +32,7 @@ class Track(PolygonModule):
         self.y = sum(map(lambda e: e[1], poly)) / len(poly)
         self.level_controller = level_controller
 
-    def update_module(self,vehicle):
+    def update_module(self, vehicle):
         super().update_module(vehicle)
         if self.is_repairing:
             raise ModuleIsRepairing

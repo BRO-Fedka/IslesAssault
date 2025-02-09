@@ -30,6 +30,18 @@ class Vehicle(Object):
         self.mass_controller: MassController = None
         self.level_controller: LevelController = None
         self.world.add_object(self)
+        self.input_keys = None
+
+    def init_inputs(self):
+        modules = set()
+        for module in self.modules:
+            if not module.input_keys:
+                continue
+            for input_key in module.input_keys:
+                modules.add(input_key)
+        self.input_keys = list(modules)
+        self.input_keys.sort(key=lambda e: e.id)
+        print(self.input_keys)
 
     def kill(self):
         self.is_active = False

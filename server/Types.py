@@ -1,6 +1,8 @@
 from typing import NamedTuple
 import dataclasses
 import datetime
+from server.Modules.InputKeys.InputKey import InputKey
+from typing import List
 
 
 class coords(NamedTuple):
@@ -11,17 +13,11 @@ class coords(NamedTuple):
 @dataclasses.dataclass
 class PlayerInputData:
     mouse_0: bool = False
-    up: bool = False
-    down: bool = False
-    right: bool = False
-    left: bool = False
-    first_weapon: bool = False
-    second_weapon: bool = False
-    repair: bool = False
-    tab: bool = False
-    z_aiming_mode: int = 0
-    shooting_mode: bool = False
-    view: int = 0
+    mouse_1: bool = False
+    mouse_2: bool = False
+    mouse_3: bool = False
+    mouse_4: bool = False
+    active_keys: List[InputKey] = None
     cursor_x: float = 0
     cursor_y: float = 0
     date: datetime.datetime = datetime.datetime.now()

@@ -8,10 +8,12 @@ from server.Modules.Module import BOTTOM
 from typing import Sequence
 from server.Vehicle.Contollers.HealthController import HealthController
 from server.functions import prevent_recursion
+import server.Modules.InputKeys.InputKeys as IK
 
 
 class TorpedoFrontalTube(PolygonModule):
     level: int = BOTTOM
+    input_keys = [IK.LAUNCH_TORPEDO]
 
     def __init__(self, hc: HealthController, world: World, body: Body, poly: Sequence[Sequence[float]], amount=10):
         self.cof_hp_per_area *= 2
@@ -26,7 +28,7 @@ class TorpedoFrontalTube(PolygonModule):
     def update_module_input(self, input: PlayerInputData):
         if self.is_repairing:
             return
-        if input.first_weapon and (datetime.datetime.now() - self.reload_timer).total_seconds() > 5 and self.amount > 0:
+        if IK.LAUNCH_TORPEDO in input.active_keys and (datetime.datetime.now() - self.reload_timer).total_seconds() > 5 and self.amount > 0:
             Torpedo(self.world, self.body.master, coords(self.body.position.x, self.body.position.y), self.body.angle)
             self.reload_timer = datetime.datetime.now()
             self.amount -= 1

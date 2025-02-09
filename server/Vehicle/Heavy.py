@@ -81,6 +81,7 @@ class Heavy(Vehicle):
         ]
         self.health_controller.update_params(1000,self.modules,POLY_SHAPE,self.level_controller)
         self.mass_controller.update_params(self.modules)
+        self.init_inputs()
 
     def get_public_info_string(self) -> str:
         return super().get_public_info_string()
