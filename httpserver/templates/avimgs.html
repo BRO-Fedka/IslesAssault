@@ -1,7 +1,7 @@
 
 <form name="avimgs" class="scrollbar">
     {%for i in avas%}
-<label class="unselectable">
+<label class="unselectable avimagecard">
   <input class="unselectable" type="radio" name="img" value="{{i[0]}}"  {% if i[0] == curimg %} checked {%endif%} >
   <img src="{{i[2]}}" alt="{{i[1]}}" onclick="image_select(this)">
 </label>

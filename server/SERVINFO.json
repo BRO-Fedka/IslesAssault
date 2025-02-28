@@ -7,6 +7,7 @@
     5
   ],
   "js": "%js%",
+  "roles": [[0,"Player"]],
   "map": "../static/MAPchNew.png",
   "bg_cl": "#2879AD",
   "bg": [[0,"../static/BG4/BG.svg"],[-0.002,"../static/BG4/BG0.svg"],[0.003,"../static/BG4/BG1.svg"],[0.005,"../static/BG4/BG2.svg"],[0.002,"../static/BG4/BG3.svg"],[0.03,"../static/BG4/BG4.svg"]],
@@ -14,6 +15,7 @@
   "text": "%text%",
   "VIEW_X": 6,
   "VIEW_Y": 3,
+  "WH": 16,
   "vehicleAvailable": [
     [
       "Battleship",

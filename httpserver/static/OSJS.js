@@ -1,11 +1,11 @@
 PACK_ID = 0
 
-IK.FORWARD = new InputKey(0,"Move forward",87)
-IK.BACKWARD = new InputKey(1,"Move backward",83)
-IK.LEFT = new InputKey(2,"Turn left",65)
-IK.RIGHT = new InputKey(3,"Turn right",68)
-IK.LAUNCH_TORPEDO = new InputKey(4,"Launch torpedo",32)
-IK.SMOKE = new InputKey(6,"Deploy smoke shield",71)
+IK.FORWARD = new InputKey(0,"Move forward",87,'static/indication/forward_icon.svg')
+IK.BACKWARD = new InputKey(1,"Move backward",83,'static/indication/backward_icon.svg')
+IK.LEFT = new InputKey(2,"Turn left",65,'static/indication/left_icon.svg')
+IK.RIGHT = new InputKey(3,"Turn right",68,'static/indication/right_icon.svg')
+IK.LAUNCH_TORPEDO = new InputKey(4,"Launch torpedo",32,'static/indication/torpedo_icon.svg')
+IK.SMOKE = new InputKey(6,"Deploy smoke shield",71,'static/indication/smoke_generator_icon.svg')
 
 
 class MortarCannon extends Cannon{
@@ -388,3 +388,4 @@ let LayersFunctions = {
     'BD': drawCeils,
     'w':drawSurface
 }
+onPackageLoaded()

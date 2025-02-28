@@ -1,6 +1,7 @@
      #lbl-form-item,
      #lbl-form-login,
      #lbl-form-reg,
+     #lbl-form-enter,
      #lbl-form-avimg
      {
         display:none;
@@ -11,6 +12,7 @@
      #chk-form-shop:checked ~ #lbl-form-shop,
      #chk-form-item:checked ~ #lbl-form-item,
      #chk-form-login:checked ~ #lbl-form-login,
+     #chk-form-enter:checked ~ #lbl-form-enter,
      #chk-form-avimg:checked ~ #lbl-form-avimg,
      #chk-form-reg:checked ~ #lbl-form-reg,
      #chk-form-settings:checked ~ #lbl-form-settings
@@ -20,6 +22,7 @@
      }
 
      #chk-game:checked ~ #lbl-form-play,
+     #chk-game:checked ~ #lbl-form-enter,
      #chk-game:checked ~ #lbl-form-user,
      #chk-game:checked ~ #lbl-form-shop,
      #chk-game:checked ~ #lbl-form-item,
@@ -36,6 +39,7 @@
      }
 
      .Form{
+
      display:none;
      position:fixed;
      color:transparent;
@@ -60,6 +64,9 @@
         display: block;
      }
      #chk-form-play:checked ~ #PlayForm{
+        display: block;
+     }
+     #chk-form-enter:checked ~ #EnterForm{
         display: block;
      }
      #chk-form-settings:checked ~ #SettingsForm{

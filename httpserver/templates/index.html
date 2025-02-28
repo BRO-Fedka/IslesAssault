@@ -38,7 +38,7 @@
 	</div>
 	<input id="chk-game" type="checkbox" style="display:none;">
 	<input id="chk-form-play" type="radio" name="form" value="play" checked>
-	<label id="lbl-form-play" for="chk-form-play" onclick="play_form_select()" class="NEbar" style="top:10px;background-image:url(static/play.svg)"></label>
+	<label id="lbl-form-play" for="chk-form-play" onclick="play_form_select()" class="NEbar" style="top:10px;background-image:url(static/menu.svg)"></label>
 	<input id="chk-form-user" type="radio" name="form" value="user" class="hideBG">
 	<label id="lbl-form-user" for="chk-form-user" onclick="user_form_select()" class="NEbar" style="top:70px;background-image:url(static/user.svg)"></label>
 	<input id="chk-form-shop" type="radio" name="form" value="shop" class="hideBG">
@@ -53,6 +53,8 @@
 	<label id="lbl-form-reg" for="chk-form-reg" class="NEbar" style="top:310px;background-image:url(static/user.svg)"></label>
 	<input id="chk-form-avimg" type="radio" name="form" value="avimg" class="hideBG">
 	<label id="lbl-form-avimg" for="chk-form-avimg" class="NEbar" style="top:310px;background-image:url(static/i.svg)"></label>
+	<input id="chk-form-enter" type="radio" name="form" value="enter" class="hideBG">
+	<label id="lbl-form-enter" for="chk-form-enter" class="NEbar" style="top:310px;background-image:url(static/play.svg)"></label>
 	<a href="about" id="lbl-form-about" class="NEbar" style="top:250px;background-image:url(static/about.svg)" target="_blank" aria-label="Open about page."></a>
 	<div id="MainScreen" class="HiddenInGame">
 		<div class="loader"></div>
@@ -124,6 +126,18 @@
 			<br>
 			<br>
 		</div>
+		<div class="unselectable scrollbar LeftForm" id="keybinds_list">
+			<div class="keybind">
+				<span>
+					<img src="static/indication/forward_icon.svg">
+					<b>
+						Deploy smoke shield
+					</b>
+				</span>
+				<span><input type="button" class="keyinput"  value="LOL"></span>
+			</div>
+			
+		</div>
 	</div>
 	<div id="PlayForm" class="Form HiddenInGame">
 		<div id="SocialNetworksNW">
@@ -157,10 +171,17 @@
 			<input id="ServerAddress" onkeydown="forgetServer();" onchange="GetServerInfo()">
 			<br>
 			<div id="online">?/?</div>
+			<br>
+
+			<span id="role">Role:</span>
+			<select aria-label="Role" id="RoleSelect" onchange="play_click_sound();" onclick="play_click_sound()">
+				<option value="0" onclick="play_click_sound()">Player</option>
+			</select>
+			<br>
+			<br>
 			<div id="text">No information yet</div>
-			<div id="dmpprev"><img id="impprev" alt="map preview" src="static/emptyMap.svg">
-				<div class="loader"></div>
-			</div>
+
+
 		</div>
 		<h1 id="UpdateName" class="unselectable">
         {{updateName}}
@@ -174,9 +195,55 @@
 			<br>
 			<br>
 			<br>
-			<input onclick="play_click_sound();startgamebtn()" id="PlayBTN" value="Play" type="button"> </div>
-		<div class="scrollbar unselectable RightForm">
-			<h2>Color</h2>
+			<input onclick="play_click_sound();document.getElementById('chk-form-enter').checked = true;GetSpawnInfo();" id="EnterBTN" value="Play" type="button">
+		</div>
+		<div class="unselectable RightForm" style="overflow:hidden;"><!--scrollbar -->
+			<div id="dmpprev">
+				<img id="impprev" alt="map preview" src="static/emptyMap.svg">
+				<div class="loader"></div>
+			</div>
+<!--			<h2>Color</h2>-->
+<!--			<div id="ColorMenu" class="scrollbar">-->
+<!--				{%for i in range(0,colorslen)%}-->
+<!--				<label onclick="play_click_sound();changeColor()">-->
+<!--					<input type="radio" name="color" class="cl" value="{{colors[i][0]}}" {% if i==0%} checked {%endif%}>-->
+<!--					<div class="cl" style="background:{{colors[i][1]}}"></div>-->
+<!--				</label> {%endfor%}-->
+<!--			</div>-->
+<!--			<h2>Vehicle</h2>-->
+<!--			<select aria-label="Vehicle" id="VehicleSelect" onchange="ShowPrevVeh();play_click_sound();" onclick="play_click_sound()"> {%for i in vehicles%}-->
+<!--				<option value="{{i[0]}}" onclick="play_click_sound()">{{i[2]}}</option> {%endfor%} </select>-->
+<!--			<div style="overflow:hidden; cursor: pointer;" onclick="open_item_page(SelectedVehicleShopId)" > <img id="vehprev" src="static/empty.svg" alt="vehicle preview"> </div>-->
+<!--			<h2>How to play</h2>-->
+<!--			<ul type="disc">-->
+<!--				<li>Click mouse to fire.</li>-->
+<!--				<li>Scroll to zoom in and out.</li>-->
+<!--				<li>W/A/S/D to control a ship, tank or airship.</li>-->
+<!--				<li>W/S and Mouse to control a plane.</li>-->
+<!--				<li>X to change gunfire mode, can be aerial targets or surface based targets.</li>-->
+<!--				<li>C to change gun guidance mode or to turn on tracers.</li>-->
+<!--				<li>Space to launch torpedos</li>-->
+<!--				<li>G to blow up smokes</li>-->
+<!--				<li>V to change seats</li>-->
+<!--			</ul>-->
+		</div>
+	</div>
+	<div id="EnterForm" class="Form HiddenInGame">
+		<div id="EnterContainer">
+		<div class="unselectable" id="SpawnSelectForm">
+			<div id="spcontainer">
+
+			</div>
+			<img id="spimpprev" alt="map preview" src="static/emptyMap.svg">
+		</div>
+
+		<div id="VehicleSelectForm" class="unselectable">
+			<form id="VHcontainer" name="formVHcontainer">
+
+
+			</form>
+<!--			<h2>Color</h2>-->
+
 			<div id="ColorMenu" class="scrollbar">
 				{%for i in range(0,colorslen)%}
 				<label onclick="play_click_sound();changeColor()">
@@ -184,35 +251,19 @@
 					<div class="cl" style="background:{{colors[i][1]}}"></div>
 				</label> {%endfor%}
 			</div>
-			<h2>Vehicle</h2>
-			<select aria-label="Vehicle" id="VehicleSelect" onchange="ShowPrevVeh();play_click_sound();" onclick="play_click_sound()"> {%for i in vehicles%}
-				<option value="{{i[0]}}" onclick="play_click_sound()">{{i[2]}}</option> {%endfor%} </select>
-			<div style="overflow:hidden; cursor: pointer;" onclick="open_item_page(SelectedVehicleShopId)" > <img id="vehprev" src="static/empty.svg" alt="vehicle preview"> </div>
-			<h2>How to play</h2>
-			<ul type="disc">
-				<li>Click mouse to fire.</li>
-				<li>Scroll to zoom in and out.</li>
-				<li>W/A/S/D to control a ship, tank or airship.</li>
-				<li>W/S and Mouse to control a plane.</li>
-				<li>X to change gunfire mode, can be aerial targets or surface based targets.</li>
-				<li>C to change gun guidance mode or to turn on tracers.</li>
-				<li>Space to launch torpedos</li>
-				<li>G to blow up smokes</li>
-				<li>V to change seats</li>
-			</ul>
+			<input onclick="play_click_sound();startgamebtn()" id="PlayBTN" value="Play" type="button">
+
+<!--			<h2>Vehicle</h2>-->
+<!--			<select aria-label="Vehicle" id="VehicleSelect" onchange="ShowPrevVeh();play_click_sound();" onclick="play_click_sound()"> {%for i in vehicles%}-->
+<!--				<option value="{{i[0]}}" onclick="play_click_sound()">{{i[2]}}</option> {%endfor%} </select>-->
+<!--			<div style="overflow:hidden; cursor: pointer;" onclick="open_item_page(SelectedVehicleShopId)" > <img id="vehprev" src="static/empty.svg" alt="vehicle preview"> </div>-->
 		</div>
+		</div>
+
+<!--		<div class="scrollbar unselectable RightForm">-->
+
+<!--		</div>-->
 	</div>
-<!--	<div id="Num120" class="unselectable ammonum NumAmmo"><span>120mm</span>1000</div>-->
-<!--	<div id="Num45" class="unselectable ammonum NumAmmo"><span>45mm</span>1000</div>-->
-<!--	<div id="Num20" class="unselectable ammonum NumAmmo"><span>20mm</span>1000</div>-->
-<!--	<div id="Num8" class="unselectable ammonum NumAmmo"><span>8mm</span>1000</div>-->
-<!--	<div id="Sensors" class="interface">-->
-<!--		<div id="GasNum" class="unselectable Sensor">GAS+100</div>-->
-<!--		<div id="DirNum" class="unselectable Sensor">DIR+100</div>-->
-<!--		<div id="XNum" class="unselectable Sensor">X-16</div>-->
-<!--		<div id="YNum" class="unselectable Sensor">Y-16</div>-->
-<!--		<div id="SpdNum" class="unselectable Sensor">SPD+100</div>-->
-<!--	</div>-->
 	<div id="MapForm" class="unselectable">
 		<div class="mapmark" id="PlayerMark"></div><img id="Map" src="static/emptyMap.svg" alt="map"></div>
 	<div id="TabForm" class="scrollbar"></div>
@@ -231,7 +282,7 @@
 
 	</div>
 <!--	<div id="HPNum" class="unselectable interface"></div>-->
-	<div id="Zones" class="unselectable interface"> </div>
+<!--	<div id="Zones" class="unselectable interface"> </div>-->
 	<span id="GameVersion" class="interface unselectable">{{version}}v BETA</span>
 	<canvas id="MainCanvas"></canvas>
 	<script src="static/pixi.min.js"></script>

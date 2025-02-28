@@ -44,6 +44,23 @@ class Connection:
                     ServInfoJSON.replace('%js%', JSVEHs).replace('%text%', '1# Oficial FFA/PVP').replace('%online%',str(Player.get_amount())))
                 await websocket.close()
                 return
+            elif message[:4] == 'resp':
+                #,["Battleship",0,"./static/veh0.svg",0],["Battleship",0,"./static/veh0.svg",1]
+                #["Tank",1,"./static/veh1.svg",0],,["Tank",1,"./static/veh1.svg",1]
+                await websocket.send("""
+                {
+                "0":{"vehicles":[["Battleship",0,"./static/veh0.svg",-1]],
+                    "ico":"static/mapmarks/anchor.svg",
+                    "pos":[7,7]
+                },
+                "1":{"vehicles":[["Tank",1,"./static/veh1.svg",-1]],
+                    "ico":"static/mapmarks/carhelm.svg",
+                    "pos":[5,6]
+                }
+                }
+                """)
+                await websocket.close()
+                return
         except:
             logger.exception("")
             await websocket.close()

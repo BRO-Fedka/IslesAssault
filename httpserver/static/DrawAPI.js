@@ -319,23 +319,26 @@ function global_xy_to_screen(xy){
 // InputKeys ======================================
 
 class InputKey{
-    constructor(id,name,def_char){
+    constructor(id,name,def_char,icon_link){
         this.id = id
         this.name = name
         this.def_char = def_char
         this.is_pressed = false
         this.was_pressed = false
         this.cur_char = def_char
+        this.icon_link = icon_link
 
     }
     update(){
         if (localStorage.hasOwnProperty(PACK_ID+"k"+this.id)){
             this.cur_char = Number(localStorage.getItem(PACK_ID+"k"+this.id))
         }
+        
+        this.is_pressed = false
     }
 }
 let IK = {
-    REPAIR : new InputKey(5,"Repair",70)
+    REPAIR : new InputKey(5,"Repair",70,'static/indication/repair_animation.svg')
 }
 
 

@@ -100,10 +100,11 @@ class Player:
         self.websocket = websocket
         self.name = self.validate_name(message[1:].split('\n')[0], message[1:].split('\n')[3])
         color_id = int(message[1:].split('\n')[1])
-        vehicle_id = int(message[1:].split('\n')[2])
+        spawnpoint_id = int(message[1:].split('\n')[2])
+        vehicle_id = int(message[1:].split('\n')[3])
         tracer_id = 1
-        acc_name = message[1:].split('\n')[3]
-        acc_password = message[1:].split('\n')[4]
+        acc_name = message[1:].split('\n')[4]
+        acc_password = message[1:].split('\n')[5]
         try:
             if acc_name == "":
                 await self.valid_guest_player({"color": color_id, "vehicle": vehicle_id})

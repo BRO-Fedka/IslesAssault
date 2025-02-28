@@ -27,9 +27,9 @@ left: 5px;
 	z-index: 500;
 }
 
-div#text,div#online{
+div#text,div#online,#role{
 padding-left:30px;
-padding-right:30px;
+
     color: #fff;
     font-family: 'Fredoka One', cursive;
 
@@ -39,6 +39,7 @@ padding-right:30px;
 animation: animloader 25s linear infinite;
 }
 .loader {
+    z-index:-10;
   margin: auto;
   border: 10px solid rgba(0,0,0,0.1);
   border-radius: 50%;
@@ -63,22 +64,22 @@ animation: animloader 25s linear infinite;
   animation: animloader 1s linear infinite;
 }
 #dmpprev{
-margin-top:10px;
 position:absolute;
-
-margin-left:15px;
-width:calc(100% - 15px);
+margin:10px;
+width:calc(100%-20px);
+height:calc(100%-20px);
 }
-#dmpprev div{
+#dmpprev div.loader{
 position:absolute;
-top:0;
-left:calc(50% - 25px);
+top:calc(50% - 25px - 10px);
+left:calc(50% - 25px - 10px);
 
 }
 #impprev{
-position:absolute;
+position:static;
 border-radius:5px;
-z-index:10;
+z-index:100;
+outline: 4px solid rgba(255,255,255,0.8);
 width:100%;
 
 
@@ -88,10 +89,11 @@ width:100%;
   100% { transform: rotate(360deg); }
 }
 
-div#online{
+div#online,#role{
 margin-top:5px;
 font-size: 20px;
 }
+
 div#text{
 font-size: 15px;
 }
@@ -219,7 +221,7 @@ height:100%;
 .LeftForm{
 	overflow-x: hidden;
 
-
+    color:#fff;
 	border-radius: 10px;
 	position: fixed;
 	transform: translateX(-50%) translateX(-310px) translateY(-50%);
@@ -245,14 +247,17 @@ height:100%;
 	z-index: 10;
 }
 #ColorMenu{
+    position:absolute;
 	color: transparent;
 	overflow-x: scroll;
 	overflow-y: hidden;
 	display: flex;
 	background-color: rgba(0,0,0,0.2);
-	margin-left: 10px;
-	/*margin-right: 10px;*/
-	border-radius: 5px;
+	margin-top: 1%;
+	margin-left: 1%;
+    height: min(58px, 29%);
+	width:calc((100% - 40px) / 2 * 0.96);
+	border-radius: 10px;
 }
 input.cl{
     display:none;
@@ -262,7 +267,7 @@ div.cl{
 	width: 30px;
 	height: 30px;
 	margin: 5px;
-	border-radius: 5px;
+	border-radius: 10px;
 	z-index: 15;
 	border: 3px solid;
 	border-color: rgba(0,0,0,0.5);
@@ -274,21 +279,21 @@ div.cl:hover{
 input.cl:checked + div.cl{
 	border-color: #ffffff;
 }
-#VehicleSelect{
+#RoleSelect{
+    margin-right:0;
 	background-color: rgba(0,0,0,0.2);
 	border:none;
 	color: #ffffff;
 	padding: 5px;
 
 	border-radius: 5px;
-	margin-left: 15px;
-	width: 270px;
+	margin-left: 5px;
 	/*transform: translateX(-50%);*/
-	font-size: 24px;
+	font-size: 20px;
 	font-family: 'Fredoka One', cursive;
 
 }
-#VehicleSelect:focus{
+#RoleSelect:focus{
 	border:none;
 	outline: none;
 
@@ -444,7 +449,7 @@ span.inp{
 #LoginBTN:hover{
 	background-color: rgba(0,0,0,0.5);
 }
-#PlayBTN{
+#EnterBTN{
 	cursor: pointer;
 
     position:relative;
@@ -461,7 +466,7 @@ span.inp{
 	border:0;outline:0;
 	border: none;
 }
-#PlayBTN:hover{
+#EnterBTN:hover{
 	background-color: rgba(0,0,0,0.5);
 }
 #SelBTN{
@@ -500,6 +505,7 @@ span.inp{
 }
 .scrollbar::-webkit-scrollbar {
   width: 12px;               /* ширина scrollbar */
+  height: 12px;               /* ширина scrollbar */
 }
 .scrollbar::-webkit-scrollbar-track {
   background: transparent;        /* цвет дорожки */
@@ -669,7 +675,7 @@ display: none;
 }
 
 /* IMAGE STYLES */
-[type=radio] + img {
+.avimagecard > [type=radio] + img {
     cursor: pointer;
     opacity: 50%;
     width: 200px;
@@ -680,7 +686,7 @@ display: none;
 }
 
 /* CHECKED STYLES */
-[type=radio]:checked + img {
+.avimagecard > [type=radio]:checked + img {
     opacity: 100%;
     outline: 5px solid #fff;
     border-radius:2px;
@@ -873,4 +879,249 @@ position:fixed;
 #SocialNetworksNW img{
     width: 40px;
     height: 40px;
+}
+
+div.keybind img{
+	width: 40px;
+	height: 40px;
+	display: inline-block;
+}
+
+div.keybind b{
+    position: relative;
+    font-size:20px;
+    bottom:10px;
+    cursor:default;
+	font-family: 'Fredoka One', cursive;
+	color:rgba(255,255,255,0.8);
+}
+div.keybind b:hover{
+	color:#fff;
+}
+div.keybind{
+    margin-left:10px;
+    margin-top:5px;
+    margin-right:10px;
+    overflow:hidden;
+}
+
+.keyinput{
+    background:rgba(0,0,0,0.2);
+    border-radius:5px;
+    font-size:18px;
+    cursor:pointer;
+	font-family: 'Fredoka One', cursive;
+	color:rgba(255,255,255,0.8);
+    border:transparent 3px solid;
+    width:260px;
+
+}
+
+.keyinput:focus{
+    border:rgba(255,255,255,0.9) 3px solid;
+}
+
+.keyinput:hover{
+    background:rgba(0,0,0,0.5);
+}
+
+
+
+label.spawnpoint{
+z-index:500;
+position: absolute;
+cursor:pointer;
+display:block;
+width:25px;
+height:25px;
+border-radius:50%;
+transform:translateX(-50%) translateY(-50%);
+}
+
+label.spawnpoint img{
+width:100%;
+height:100%;
+}
+
+#SpawnSelectForm{
+
+	border-radius: 10px;
+    aspect-ratio: 1/1;
+    height:calc(100% - 10px);
+    margin-right:10px;
+	background-color: rgba(0,0,0,0.2);
+	z-index: 10;
+}
+
+#spimpprev{
+position:static;
+border-radius:10px;
+z-index:100;
+outline: 4px solid rgba(255,255,255,0.8);
+width:100%;
+
+}
+
+#VehicleSelectForm{
+
+	border-radius: 10px;
+    aspect-ratio: 1/1;
+
+    height:calc(100% - 10px);
+    margin-left:10px;
+	background-color: rgba(0,0,0,0.2);
+	z-index: 10;
+}
+
+.spawnpoint > [type=radio] + img {
+    border-radius:50%;
+    background:rgba(0,0,0,0.5);
+
+}
+.spawnpoint > [type=radio]:checked + img {
+    background:rgba(255,255,255,0.5);
+
+}
+label.spawnpoint:hover img{
+width:100%;
+height:100%;
+background:rgba(255,255,255,0);
+}
+#EnterForm{
+    width:calc(100vw - 80px);
+    height:calc(100vh - 70px);
+    vertical-align: middle;
+    margin-top:40px;
+    margin-bottom:30px;
+    margin-right:70px;
+    margin-left:10px;
+}
+
+#EnterContainer{
+position:relative;
+top:50%;
+transform: translateY(-50%);
+max-width:calc(100vw - 80px);
+max-height:calc(100vh - 70px);
+margin:0 auto;
+padding:10px;
+display:flex;
+aspect-ratio: 4/2;
+margin-top:auto;
+
+}
+div.VehiclesList{
+display:none;
+overflow-x:hidden;
+overflow-y:scroll;
+flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: left;
+
+height: 100%;
+background: rgba(0,0,0,0.2);
+border-radius:10px;
+}
+.vehiclecard{
+
+z-index:500;
+display:block;
+aspect-ratio: 1 / 1;
+width: calc(100% / 6 - 10px);
+height: calc(50% - 10px);
+padding:5px;
+overflow:hidden;
+
+
+
+}
+.vehiclecard >  span {
+    opacity: 50%;
+    color:rgba(255,255,255,0.8);
+    font-family: 'Fredoka One', cursive;
+    position:relative;
+
+}
+.vehiclecard > [type=radio] + img {
+
+    cursor: pointer;
+    opacity: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius:5px;
+       position:relative;
+    bottom:18px;
+}
+
+/* CHECKED STYLES */
+.vehiclecard > [type=radio]:checked + img {
+    opacity: 100%;
+    outline: 5px solid rgba(255,255,255,0.5);
+    /*animation: animloader 25s linear infinite;*/
+}
+.vehiclecard > [type=radio]:checked + b {
+    opacity: 100%;
+}
+
+#spcontainer{
+
+height: calc(100% - 30px);
+aspect-ratio: 1 / 1;
+position:absolute;
+overflow:hidden;
+}
+.vehlist{
+position:absolute;
+height:calc((100% - 30px) / 3);
+aspect-ratio:3/1;
+margin:0;
+
+}
+
+
+input.VehiclesList:checked + div.VehiclesList{
+    display:flex;
+}
+#VHcontainer{
+height: calc(100% / 3);
+}
+.vehiclecard > span.vhcrdname {
+font-size:14px;
+bottom:40px;
+left:3px;
+}
+.vehiclecard > span.vhcrdamount {
+font-size:14px;
+left:3px;
+}
+.vehiclecard > [type=radio]:disabled + img {
+
+
+    opacity: 10%;
+
+}
+#PlayBTN{
+	cursor: pointer;
+    position:absolute;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left:30px;
+    padding-right:30px;
+	text-align: center;
+	color: #ffffff;
+	background-color: rgba(0,0,0,0.2);
+	font-family: 'Fredoka One', cursive;
+	font-size: 24px;
+	border-radius: 5px;
+	border:0;
+	outline:0;
+	bottom:calc(20px + 2%);
+	margin-top: 1%;
+	margin-left: 1%;
+    height: min(58px, 29%);
+	width:calc((100% - 40px) / 2 * 0.96);
+	border: none;
+}
+#PlayBTN:hover{
+	background-color: rgba(0,0,0,0.5);
 }

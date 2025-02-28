@@ -1,3 +1,262 @@
+var keyboardMap = [
+    "", // [0]
+    "", // [1]
+    "", // [2]
+    "CANCEL", // [3]
+    "", // [4]
+    "", // [5]
+    "HELP", // [6]
+    "", // [7]
+    "BACKSPACE", // [8]
+    "TAB", // [9]
+    "", // [10]
+    "", // [11]
+    "CLEAR", // [12]
+    "ENTER", // [13]
+    "ENTER SPECIAL", // [14]
+    "", // [15]
+    "SHIFT", // [16]
+    "CONTROL", // [17]
+    "ALT", // [18]
+    "PAUSE", // [19]
+    "CAPSLOCK", // [20]
+    "KANA", // [21]
+    "EISU", // [22]
+    "JUNJA", // [23]
+    "FINAL", // [24]
+    "HANJA", // [25]
+    "", // [26]
+    "ESCAPE", // [27]
+    "CONVERT", // [28]
+    "NONCONVERT", // [29]
+    "ACCEPT", // [30]
+    "MODECHANGE", // [31]
+    "SPACE", // [32]
+    "PAGE_UP", // [33]
+    "PAGE_DOWN", // [34]
+    "END", // [35]
+    "HOME", // [36]
+    "LEFT", // [37]
+    "UP", // [38]
+    "RIGHT", // [39]
+    "DOWN", // [40]
+    "SELECT", // [41]
+    "PRINT", // [42]
+    "EXECUTE", // [43]
+    "PRINTSCREEN", // [44]
+    "INSERT", // [45]
+    "DELETE", // [46]
+    "", // [47]
+    "0", // [48]
+    "1", // [49]
+    "2", // [50]
+    "3", // [51]
+    "4", // [52]
+    "5", // [53]
+    "6", // [54]
+    "7", // [55]
+    "8", // [56]
+    "9", // [57]
+    "COLON", // [58]
+    "SEMICOLON", // [59]
+    "<", // [60]
+    "=", // [61]
+    ">", // [62]
+    "?", // [63]
+    "AT", // [64]
+    "A", // [65]
+    "B", // [66]
+    "C", // [67]
+    "D", // [68]
+    "E", // [69]
+    "F", // [70]
+    "G", // [71]
+    "H", // [72]
+    "I", // [73]
+    "J", // [74]
+    "K", // [75]
+    "L", // [76]
+    "M", // [77]
+    "N", // [78]
+    "O", // [79]
+    "P", // [80]
+    "Q", // [81]
+    "R", // [82]
+    "S", // [83]
+    "T", // [84]
+    "U", // [85]
+    "V", // [86]
+    "W", // [87]
+    "X", // [88]
+    "Y", // [89]
+    "Z", // [90]
+    "OS_KEY", // [91] Windows Key (Windows) or Command Key (Mac)
+    "", // [92]
+    "CONTEXT_MENU", // [93]
+    "", // [94]
+    "SLEEP", // [95]
+    "NUMPAD_0", // [96]
+    "NUMPAD_1", // [97]
+    "NUMPAD_2", // [98]
+    "NUMPAD_3", // [99]
+    "NUMPAD_4", // [100]
+    "NUMPAD_5", // [101]
+    "NUMPAD_6", // [102]
+    "NUMPAD_7", // [103]
+    "NUMPAD_8", // [104]
+    "NUMPAD_9", // [105]
+    "MULTIPLY", // [106]
+    "ADD", // [107]
+    "SEPARATOR", // [108]
+    "SUBTRACT", // [109]
+    "DECIMAL", // [110]
+    "DIVIDE", // [111]
+    "F1", // [112]
+    "F2", // [113]
+    "F3", // [114]
+    "F4", // [115]
+    "F5", // [116]
+    "F6", // [117]
+    "F7", // [118]
+    "F8", // [119]
+    "F9", // [120]
+    "F10", // [121]
+    "F11", // [122]
+    "F12", // [123]
+    "F13", // [124]
+    "F14", // [125]
+    "F15", // [126]
+    "F16", // [127]
+    "F17", // [128]
+    "F18", // [129]
+    "F19", // [130]
+    "F20", // [131]
+    "F21", // [132]
+    "F22", // [133]
+    "F23", // [134]
+    "F24", // [135]
+    "", // [136]
+    "", // [137]
+    "", // [138]
+    "", // [139]
+    "", // [140]
+    "", // [141]
+    "", // [142]
+    "", // [143]
+    "NUM_LOCK", // [144]
+    "SCROLL_LOCK", // [145]
+    "WIN_OEM_FJ_JISHO", // [146]
+    "WIN_OEM_FJ_MASSHOU", // [147]
+    "WIN_OEM_FJ_TOUROKU", // [148]
+    "WIN_OEM_FJ_LOYA", // [149]
+    "WIN_OEM_FJ_ROYA", // [150]
+    "", // [151]
+    "", // [152]
+    "", // [153]
+    "", // [154]
+    "", // [155]
+    "", // [156]
+    "", // [157]
+    "", // [158]
+    "", // [159]
+    "CIRCUMFLEX", // [160]
+    "EXCLAMATION", // [161]
+    "DOUBLE_QUOTE", // [162]
+    "HASH", // [163]
+    "DOLLAR", // [164]
+    "PERCENT", // [165]
+    "AMPERSAND", // [166]
+    "UNDERSCORE", // [167]
+    "OPEN_PAREN", // [168]
+    "CLOSE_PAREN", // [169]
+    "ASTERISK", // [170]
+    "PLUS", // [171]
+    "PIPE", // [172]
+    "HYPHEN_MINUS", // [173]
+    "OPEN_CURLY_BRACKET", // [174]
+    "CLOSE_CURLY_BRACKET", // [175]
+    "TILDE", // [176]
+    "", // [177]
+    "", // [178]
+    "", // [179]
+    "", // [180]
+    "VOLUME_MUTE", // [181]
+    "VOLUME_DOWN", // [182]
+    "VOLUME_UP", // [183]
+    "", // [184]
+    "", // [185]
+    "SEMICOLON", // [186]
+    "EQUALS", // [187]
+    "COMMA", // [188]
+    "MINUS", // [189]
+    "PERIOD", // [190]
+    "SLASH", // [191]
+    "BACK_QUOTE", // [192]
+    "", // [193]
+    "", // [194]
+    "", // [195]
+    "", // [196]
+    "", // [197]
+    "", // [198]
+    "", // [199]
+    "", // [200]
+    "", // [201]
+    "", // [202]
+    "", // [203]
+    "", // [204]
+    "", // [205]
+    "", // [206]
+    "", // [207]
+    "", // [208]
+    "", // [209]
+    "", // [210]
+    "", // [211]
+    "", // [212]
+    "", // [213]
+    "", // [214]
+    "", // [215]
+    "", // [216]
+    "", // [217]
+    "", // [218]
+    "OPEN_BRACKET", // [219]
+    "BACK_SLASH", // [220]
+    "CLOSE_BRACKET", // [221]
+    "QUOTE", // [222]
+    "", // [223]
+    "META", // [224]
+    "ALTGR", // [225]
+    "", // [226]
+    "WIN_ICO_HELP", // [227]
+    "WIN_ICO_00", // [228]
+    "", // [229]
+    "WIN_ICO_CLEAR", // [230]
+    "", // [231]
+    "", // [232]
+    "WIN_OEM_RESET", // [233]
+    "WIN_OEM_JUMP", // [234]
+    "WIN_OEM_PA1", // [235]
+    "WIN_OEM_PA2", // [236]
+    "WIN_OEM_PA3", // [237]
+    "WIN_OEM_WSCTRL", // [238]
+    "WIN_OEM_CUSEL", // [239]
+    "WIN_OEM_ATTN", // [240]
+    "WIN_OEM_FINISH", // [241]
+    "WIN_OEM_COPY", // [242]
+    "WIN_OEM_AUTO", // [243]
+    "WIN_OEM_ENLW", // [244]
+    "WIN_OEM_BACKTAB", // [245]
+    "ATTN", // [246]
+    "CRSEL", // [247]
+    "EXSEL", // [248]
+    "EREOF", // [249]
+    "PLAY", // [250]
+    "ZOOM", // [251]
+    "", // [252]
+    "PA1", // [253]
+    "WIN_OEM_CLEAR", // [254]
+    "" // [255]
+  ];
+
 PIXI.sound.add("MainMenuMusic",{
     url: "static\\mainMenuMusic.mp3",
     autoPlay:true
@@ -57,6 +316,7 @@ function forgetServer(){
     document.getElementById('online').innerHTML = '?/?'
     document.getElementById('text').innerHTML = 'No information yet'
     document.getElementById('impprev').src = ''
+    document.getElementById('spimpprev').src = ''
 
 }
 function onMouseUpdate(e) {
@@ -115,6 +375,57 @@ function UpdtVolumes(){
 
     //MusicRange
 }
+
+function keybindOnKeyDown(event){
+    // console.log(event)
+    // console.log()
+    let id = event.target.id.slice(10)
+    let keyCode = event.keyCode
+
+    localStorage.setItem(PACK_ID+"k"+id,keyCode)
+    try{
+        TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+           ik.update()          
+            
+        
+    });
+    }catch{}
+    event.target.value = keyboardMap[keyCode]
+    event.target.blur()
+    play_click_sound()
+    // if (localStorage.hasOwnProperty(PACK_ID+"k"+this.id)){
+    //     this.cur_char = Number(localStorage.getItem(PACK_ID+"k"+this.id))
+    // }
+
+
+}
+
+function UpdtKeybinds(){
+    keybinds_list.innerHTML = ""
+
+    for (const [key, ik] of Object.entries(IK)) {
+        ik.update()
+        keybinds_list.innerHTML += '<div class=\"keybind\"><span><img src=\"'+ik.icon_link+ '\"><b>'+ik.name+'</b></span><span><input type=\"button\" onclick="play_click_sound()" id="keybindbtn'+ik.id+'" class=\"keyinput\"  value=\"'+keyboardMap[ik.cur_char]+'\"></span></div>'
+
+        console.log(ik.id,ik.name,ik.cur_char,ik.icon_link);
+    }
+    keybinds_list.innerHTML += "<br><br>"
+    BindKeybinds()
+}
+
+function BindKeybinds(){
+
+    for (const [key, ik] of Object.entries(IK)) {
+        let btn = document.getElementById('keybindbtn'+ik.id)
+        // id="keybindbtn'+key+'" 
+        console.log(btn)
+        btn.onkeydown=keybindOnKeyDown
+        console.log(btn.onkeydown)
+        btn.addEventListener('keypressed', keybindOnKeyDown, false)
+
+    }
+}
+
 var PlayerTags = new Map()
 function NoTeamTag(name, updTags=false){
     if (name == undefined){
@@ -165,13 +476,13 @@ var SmokesData = new Map();
 var ColorPack = 'Summer';
 var Vehicles;
 var PlayersData = new Map();
-var VehList;
+var RolesList;
 var VIEW_X = 0
 var VIEW_Y = 0
 var PlayerName;
 let PlayerVehicleID = 0
 var CurVehicle;
-var Zones = '';
+// var Zones = '';
 var SelectedVehicleShopId = null
 function onWheel(e){
     if (e.deltaY > 0){
@@ -182,16 +493,16 @@ function onWheel(e){
     if (Zoom > 640){Zoom = 640}
     ZoomCorrection()
 }
-function ShowPrevVeh(){
-    sessionStorage.setItem('VehicleSelectVal',document.getElementById('VehicleSelect').value)
-	for (let _ of VehList) {
-        if(_[1]==document.getElementById('VehicleSelect').value){
-            document.getElementById('vehprev').src = _[2];
-            SelectedVehicleShopId = _[3]
-            break;
-        }
-	}
-}
+// function ShowPrevVeh(){
+//     sessionStorage.setItem('VehicleSelectVal',document.getElementById('VehicleSelect').value)
+// 	for (let _ of VehList) {
+//         if(_[1]==document.getElementById('VehicleSelect').value){
+//             document.getElementById('vehprev').src = _[2];
+//             SelectedVehicleShopId = _[3]
+//             break;
+//         }
+// 	}
+// }
 
 function drawLayer(layer) {
     for (let _ of Entities.keys()) {
@@ -223,7 +534,54 @@ function drawLayer(layer) {
     }catch{}
 
 }
+function onPackageLoaded(){
+    UpdtKeybinds()
+}
+function GetSpawnInfo(){
+    try{
+        let soc = new WebSocket(document.getElementById('ServerAddress').value);
 
+        soc.addEventListener('open', function (event) {
+//                    console.log('!');
+            soc.send('resp'+RoleSelect.value);
+        });
+
+        function taken(event) {
+//                    console.log(event.data)
+            console.log(event.data)
+            var data = JSON.parse(event.data);
+//                    console.log(data)
+            console.log(data)
+            document.getElementById('spcontainer').innerHTML = ''
+            let vehlst = ""
+            for (let key in data) {
+                document.getElementById('spcontainer').innerHTML += '<label class="spawnpoint" for="sp'+key+'" style="top:calc(100% * '+data[key].pos[1]+' / '+WH+');left:calc(100% * '+data[key].pos[0]+' / '+WH+');"><input type="radio" id="sp'+key+'" checked value="'+key+'" name="SpawnPoints" onclick="play_click_sound();vs'+key+'.checked=true;"><img src="'+data[key].ico+'"></label>'
+              vehlst += '<div class="vehlist"><input class="VehiclesList" checked  type="radio" id="vs'+key+'"  value="'+key+'" name="VehicleLists"><div class="scrollbar VehiclesList">'
+              for (let k of data[key].vehicles) {
+                let amount = "-"
+                if (k[3]>=0){
+                    amount = k[3]
+                }
+                let dis = ''
+                let chk = ' checked '
+                if (amount==0){
+                    dis = ' disabled '
+                    chk = ''
+                }
+                vehlst +='<label class="unselectable vehiclecard" onclick="play_click_sound()" '+dis+'><span class="vhcrdamount">'+amount+'</span><input class="unselectable" '+chk+' '+dis+' type="radio" name="veh'+k[1]+'" value="'+k[1]+'"  ><img src="'+k[2]+'" alt="'+k[0]+'" ><span class="vhcrdname">'+k[0]+'</span></label>'
+			  }
+              vehlst += '</div></div>'
+				
+            }
+            VHcontainer.innerHTML = vehlst
+
+        }
+
+        soc.addEventListener('message', taken);
+    }catch{
+
+    }
+}
 function GetServerInfo(){
             try{
                 let soc = new WebSocket(document.getElementById('ServerAddress').value);
@@ -238,38 +596,43 @@ function GetServerInfo(){
                     var data = JSON.parse(event.data);
 //                    console.log(data)
                     document.getElementById('impprev').src = data.map;
+                    document.getElementById('spimpprev').src = data.map;
                     document.getElementById('Map').src = data.map;
                     document.getElementById('online').innerHTML = "Players: "+data.online;
                     document.getElementById('text').innerHTML = data.text;
 //                    console.log(data.js)
 //                    console.log(document.getElementById('prevmpjs').src)
                     document.getElementById('prevmpjs').src = data.js;
+                    // console.log(data.WH)
+                    WH = Number(data.WH)
+                    // console.log(WH)
                     BGLayers = data.bg;
                     UpdateBG()
                     MainScreen.style.background = data.bg_cl
                     VIEW_X = data.VIEW_X
                     VIEW_Y = data.VIEW_Y
-                    VehList = data.vehicleAvailable;
-                    document.getElementById('VehicleSelect').innerHTML = "";
+                    RolesList = data.roles;
+                    console.log(RolesList)
+                    document.getElementById('RoleSelect').innerHTML = "";
 
                     let justbool = true
-                    for (let _ of VehList) {
-                        document.getElementById('VehicleSelect').innerHTML+='<option value = "'+_[1]+'">'+_[0]+'</option>'
-                        if (Number(_[1]) == Number(sessionStorage.getItem('VehicleSelectVal')) ){
+                    for (let _ of RolesList) {
+                        document.getElementById('RoleSelect').innerHTML+='<option value = "'+_[0]+'" onclick="setItem(\'RoleSelectVal\',this.value)">'+_[1]+'</option>'
+                        if (Number(_[0]) == Number(sessionStorage.getItem('RoleSelectVal')) ){
                         justbool = false
                         }
                     }
 
-                    if (justbool || sessionStorage.getItem('VehicleSelectVal') =='' ||sessionStorage.getItem('VehicleSelectVal') ==null ){
-//                        console.log(data.vehicleAvailable[0][1])
-                        document.getElementById('VehicleSelect').value = data.vehicleAvailable[0][1]
+                    if (justbool || sessionStorage.getItem('RoleSelectVal') =='' ||sessionStorage.getItem('RoleSelectVal') ==null ){
+                        document.getElementById('RoleSelect').value = RolesList[0][0]
 
                     }else{
-                        document.getElementById('VehicleSelect').value = sessionStorage.getItem('VehicleSelectVal')
+                        document.getElementById('RoleSelect').value = sessionStorage.getItem('RoleSelectVal')
                     }
 
-
-                    ShowPrevVeh();
+                    
+                    // ShowPrevVeh();
+                    
                 }
 
                 soc.addEventListener('message', taken);
@@ -277,6 +640,7 @@ function GetServerInfo(){
                 document.getElementById("online").innerHTML = "?/?"
                 document.getElementById("text").innerHTML = "No information yet"
                 document.getElementById("impprev").src = ""
+                document.getElementById("spimpprev").src = ""
 			}
 }
 var MAPstatic = {
@@ -345,7 +709,7 @@ let PING = 0;
 let LastPING = Date.now();
 let Send = false;
 let hp = document.getElementById('HPNum');
-let ZonesNum = document.getElementById('Zones');
+// let ZonesNum = document.getElementById('Zones');
 let moneyb = document.getElementById('MoneyB');
 let gasnum = document.getElementById('GasNum');
 let spdnum = document.getElementById('SpdNum');
@@ -467,13 +831,15 @@ function startgame() {
 			socket = new WebSocket(document.getElementById('ServerAddress').value);
 			socket.addEventListener('open', function (event) {
 
-				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.getElementById('VehicleSelect').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
-				vehicle = Number(document.getElementById('VehicleSelect').value)
+				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.querySelector('input[name="SpawnPoints"]:checked').value+'\n'+document.querySelector('input[name="veh'+document.querySelector('input[name="SpawnPoints"]:checked').value+'"]:checked').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
+				//vehicle = Number(document.getElementById('VehicleSelect').value)
 			});
 			function taken(event) {
 			    lastMSGid = event.data.split(',')[0]
 			    let eventdata = event.data.slice(lastMSGid.length+1,event.data.length)
-			    console.log(eventdata)
+			    // console.log(eventdata)
+                document.querySelector('input[name="veh'+document.querySelector('input[name="SpawnPoints"]:checked').value+'"]:checked').value
+                
 			    lastMSGid = Number(lastMSGid)
 				if (eventdata[0] == 'E'){
 				    GameStatus= "Error"
@@ -507,10 +873,10 @@ function startgame() {
                         }
                     }
                     WH = MAPstatic['WH']
-                    ZonesNum.innerHTML = ''
-                    for(let _ = 0; _ < MAPstatic['*'].length; _++){
-                        ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
-                    }
+                    // ZonesNum.innerHTML = ''
+                    // for(let _ = 0; _ < MAPstatic['*'].length; _++){
+                    //     ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
+                    // }
 
                     setTimeout(function(){UpdateObjs = true}, 300);
                     socket.send('OK');
@@ -719,10 +1085,11 @@ function mifo() {
 	messagefield.style.display = 'none'
 }
 function keydown(event) {
-    console.log(TVehicles)
-    console.log(CurVehicleID)
-    console.log(TVehicles.get(CurVehicleID))
+    // console.log(TVehicles)
+    // console.log(CurVehicleID)
+    // console.log(TVehicles.get(CurVehicleID))
     TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
+        // console.log(ik.cur_char, keyboardMap[ik.cur_char])
         if (event.keyCode==ik.cur_char){
             ik.is_pressed = true
             ik.was_pressed = true
@@ -878,6 +1245,7 @@ function mousepos(e){
 window.onload=function () {
 document.getElementById('TitleScreen').classList = ['titlescrh']
 GetServerInfo()
+UpdtKeybinds()
 if(navigator.userAgent.match(/iPhone/i)){
 document.documentElement.requestFullscreen()
 }
