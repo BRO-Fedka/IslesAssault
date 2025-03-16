@@ -502,6 +502,10 @@ span.inp{
 
 .scrollbar{
 	overflow-y: scroll ;
+	scrollbar-width: thin;
+	scrollbar-color: #ffffff88 transparent;
+	scroll-behavior: smooth;
+
 }
 .scrollbar::-webkit-scrollbar {
   width: 12px;               /* ширина scrollbar */

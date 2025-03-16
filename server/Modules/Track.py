@@ -50,9 +50,10 @@ class Track(PolygonModule):
             self.body.apply_force_at_local_point((-force, 0), (self.x, self.y))
 
     def update_module_input(self, input: PlayerInputData):
-        if input.up:
+
+        if IK.FORWARD in input.active_keys:
             self.moving = FORWARD
-        elif input.down:
+        elif IK.BACKWARD in input.active_keys:
             self.moving = BACK
         else:
             self.moving = STOP

@@ -63,6 +63,9 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.beginPath()
     ctx.moveTo(xy[0],xy[1]);
     ctx.lineTo(xy[0] + cosc*l/320*Zoom,xy[1] + sinc*l/320*Zoom);
+//    console.log(Zoom)
+//    console.log(cosc) //?
+//    console.log(l)
     ctx.closePath()
 
     if(fire && (!(vehicle.first_appearance))){
@@ -373,6 +376,7 @@ class Vehicle{
         this.modules.forEach(module => {
             module.input_keys.forEach(input_key => {
                 modules.add(input_key)
+//                console.log(module,input_key)
             });
         });
         this.input_keys = Array.from(modules)
@@ -418,12 +422,13 @@ class Vehicle{
     }
 
     drawp(layer){
+//        console.log(OffsetX,PING)
         this.calculate_sin_cos()
         this.modules.forEach(module => {
             // console.log(module)
             module.drawp(layer,this)
         });
-        
+
     }
 
     drawe(layer){
@@ -601,7 +606,7 @@ class MockModule extends Module{
 
 class RepairKit extends Module{
     image = 'static/indication/repair_animation.svg'
-    input_keys = [IK.LAUNCH_TORPEDO]
+    input_keys = [IK.REPAIR]
     constructor(vehicle){
         super()
         this.indicator = new TwoImagesIndicator(this.image,upperIndicators)
@@ -985,6 +990,9 @@ class Projectile extends Entity{
 
     draw(layer=false){
         if (layer != false && layer != 'OnWater+3') return 
+//        console.log(GameW/2 ,OffsetX,this.x,nX,X,(Date.now() - LastPING),PING,Zoom)
+//        console.log(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
+//        try{
         let grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
 
         grad.addColorStop(1,this.grad_color_1);
@@ -1009,6 +1017,9 @@ class Projectile extends Entity{
         if (this.x > 20 || this.x < -4 || this.y > 20 || this.y < -4){
             this.is_active = false
         }
+//        }catch{
+//
+//        }
     }
 }
 
@@ -1365,7 +1376,9 @@ class PolyStrokeModuleParticleSpawner extends ModuleParticleSpawner{
 }
 
 class Strucure{
-constructor(layer){
+constructor(layer,id=-1){
+    this.id = id
+    this.children_structures = []
     this.layer = layer
     if (Strucures.has(this.layer)){
         Strucures.get(this.layer).push(this)
@@ -1383,11 +1396,15 @@ draw(){
 
 }
 
+get_children_structures(){
+    return this.children_structures
+}
+
 }
 
 class PolyStructure extends Strucure{
-    constructor(layer,poly){
-        super(layer)
+    constructor(layer,poly,id=-1){
+        super(layer,id)
         this.poly = poly
     }
 
@@ -1454,11 +1471,11 @@ class Waves extends PolyStructure{
 }
 
 class Beach extends PolyStructure{
-    constructor(poly){
-        super('B',poly)
-        new ShoreLine0(poly)
-        new ShoreLine1(poly)
-        new Waves(poly)
+    constructor(poly,id){
+        super('B',poly,id)
+        this.children_structures.push( new ShoreLine0(poly))
+        this.children_structures.push( new ShoreLine0(poly))
+        this.children_structures.push( new Waves(poly))
     }
 
     draw(){
@@ -1466,12 +1483,14 @@ class Beach extends PolyStructure{
         super.draw()
         ctx.fill();
     }
+
+
 }
 class Concrete extends PolyStructure{
-    constructor(poly){
-        super('C',poly)
-        new ShoreLine0(poly,60/320)
-        new ShoreLine1(poly,30/320)
+    constructor(poly,id){
+        super('C',poly,id)
+        this.children_structures.push(new ShoreLine0(poly,60/320))
+        this.children_structures.push(new ShoreLine1(poly,30/320))
     }
 
     draw(){
@@ -1485,10 +1504,10 @@ class Concrete extends PolyStructure{
     }
 }
 class Stone extends PolyStructure{
-    constructor(poly){
-        super('S',poly)
-        new ShoreLine0(poly,80/320)
-        new ShoreLine1(poly,40/320)
+    constructor(poly,id){
+        super('S',poly,id)
+        this.children_structures.push(new ShoreLine0(poly,80/320))
+        this.children_structures.push(new ShoreLine1(poly,40/320))
     }
 
     draw(){
@@ -1519,9 +1538,9 @@ class Soil extends PolyStructure{
 }
 
 class Grass extends PolyStructure{
-    constructor(poly){
-        super('G',poly)
-        new Soil(poly)
+    constructor(poly,id){
+        super('G',poly,id)
+        this.children_structures.push( new Soil(poly))
     }
 
     draw(){
@@ -1532,8 +1551,8 @@ class Grass extends PolyStructure{
 }
 
 class LineStructure extends Strucure{
-    constructor(layer,coords){
-        super(layer)
+    constructor(layer,coords,id=-1){
+        super(layer,id)
         this.p0 = [coords[0],coords[1]]
         this.p1 = [coords[2],coords[3]]
         
@@ -1601,13 +1620,13 @@ class BridgeBase extends LineStructure{
     }
 }
 class Bridge extends LineStructure{
-    constructor(coords){
-        super('_',coords)
+    constructor(coords,id){
+        super('_',coords,id)
         ctx.lineCap = 'square';
         ctx.lineJoin = 'miter';
-        new BridgeBase(coords)
-        new BridgeShadow0(coords)
-        new BridgeShadow1(coords)
+        this.children_structures.push( new BridgeBase(coords))
+        this.children_structures.push( new BridgeShadow0(coords))
+        this.children_structures.push(new BridgeShadow1(coords))
         
     }
     draw(){
@@ -1626,8 +1645,8 @@ class Bridge extends LineStructure{
 
 
 class LinesStructure extends Strucure{
-    constructor(layer,coords){
-        super(layer)
+    constructor(layer,coords,id=-1){
+        super(layer,id)
         this.coords = coords
         
     }
@@ -1645,16 +1664,16 @@ class LinesStructure extends Strucure{
 }
 
 class Road extends LinesStructure{
-    constructor(coords){
-        super('R',coords)
-        new RoadDashes(coords)
+    constructor(coords,id){
+        super('R',coords,id)
+        // !OLD! new RoadDashes(coords)
     }
     draw(){
         super.draw()
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.strokeStyle = MAPstatic.CT.cs;
-        ctx.lineWidth = 40/320*Zoom;
+        ctx.lineWidth = 20/320*Zoom;
         ctx.stroke()
         ctx.closePath();
     }
@@ -1666,9 +1685,9 @@ class RoadDashes extends LinesStructure{
     }
     draw(){
         super.draw()
-        ctx.lineWidth = 2/320*Zoom;
+        ctx.lineWidth = 1/320*Zoom;
         ctx.strokeStyle = MAPstatic.CT.rd;
-        ctx.setLineDash([10/320*Zoom,10/320*Zoom])
+        ctx.setLineDash([5/320*Zoom,5/320*Zoom])
         ctx.stroke()
         ctx.closePath();
         ctx.setLineDash([])
@@ -1769,8 +1788,8 @@ class TreeGroup extends Strucure{
         1: FirTree,
         2: PalmTree                                                                                                                                                                                                               
     }
-    constructor(trees){
-        super('T')
+    constructor(trees,id){
+        super('T',id)
         this.trees = []
         let i = 0
         trees.forEach(element => {
@@ -1996,15 +2015,62 @@ class HangarBuilding extends BasedBuilding{
 
 }
 
+class CraneBuilding extends Building{
+
+    l=0.075
+    L=0.25
+    
+    draw(){
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[-0.08/2, -0.08/2], [-0.08/2, 0.08/2], [0.08/2, 0.08/2], [0.08/2, -0.08/2]]
+        ctx.beginPath();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = MAPstatic.CT.c0
+        ctx.lineWidth = 4/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = MAPstatic.CT.c1
+        ctx.lineWidth = 4/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[2][1]*cos*Zoom)+(poly[2][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[2][1]*sin*Zoom)+(poly[2][0]*-cos*Zoom));
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[3][1]*cos*Zoom)+(poly[3][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[3][1]*sin*Zoom)+(poly[3][0]*-cos*Zoom));
+        ctx.stroke();
+        ctx.fillStyle = MAPstatic.CT.c1
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),this.w*Zoom/3,0 , Math.PI*2 )
+        ctx.fill();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = MAPstatic.CT.c2
+        ctx.lineWidth = 8/320*Zoom
+        ctx.lineCap = 'butt';
+        ctx.moveTo(global_x_to_screen(this.x)-(this.l*cos*Zoom) ,global_y_to_screen(this.y)-(this.l*sin*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(this.L*cos*Zoom) ,global_y_to_screen(this.y)+(this.L*sin*Zoom));
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+}
+
 class BuildingsGroup extends Strucure{
     BuildingsTable = {
         0: HouseBuilding,
         1: ContainerBuilding,
         2: ChimneyBuilding,
-        3: HangarBuilding                                                                                                                                                                                                              
+        3: HangarBuilding,        
+        4: CraneBuilding                                                                                                                                                                                                        
     }
-    constructor(buildings){
-        super('#')
+    constructor(buildings,id){
+        super('#',id)
         this.buildings = []
         let i = 0
         buildings.forEach(element => {

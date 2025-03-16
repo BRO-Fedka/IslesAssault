@@ -2,7 +2,7 @@ from server.World import World
 from server.Types import coords
 import pymunk
 import math
-from server.constants import COL_ON_GROUND, COLTYPE_PROJECTILE
+from server.constants import COL_ON_WATER_GROUND, COLTYPE_PROJECTILE
 
 from server.Entities.Projectiles.Projectile import Projectile
 from server.Vehicle.Vehicle import Vehicle
@@ -23,7 +23,7 @@ class Shell(Projectile):
         super().__init__(world, sender, start_pos, angle)
         self.speed = speed
         self.shape = pymunk.Circle(self.body, 0.001)
-        self.shape.filter = COL_ON_GROUND
+        self.shape.filter = COL_ON_WATER_GROUND
         self.world.space.add(self.body, self.shape)
         self.body.velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
         self.body.mass = 0.001

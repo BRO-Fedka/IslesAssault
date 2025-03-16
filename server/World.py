@@ -29,7 +29,7 @@ class World:
     def __init__(self):
         self.space = pymunk.space.Space()
         self.space.gravity = 0, 0
-        self.data = json.load(open("MAP.json"))
+        self.data = json.load(open(os.environ["MAP"]))
         self.wh = self.data['WH']
         self.Bs = []
         self.Ss = []

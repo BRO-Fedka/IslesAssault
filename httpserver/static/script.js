@@ -261,7 +261,7 @@ PIXI.sound.add("MainMenuMusic",{
     url: "static\\mainMenuMusic.mp3",
     autoPlay:true
    })
-
+let LayerList= []
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? [
@@ -505,10 +505,7 @@ function onWheel(e){
 // }
 
 function drawLayer(layer) {
-    for (let _ of Entities.keys()) {
-        Entities.get(_).draw(layer)
-
-    }
+//    console.log(PING)
     TVehicles.forEach(vehicle => {
         if (vehicle.id == CurVehicleID){
             vehicle.drawp(layer)
@@ -516,22 +513,63 @@ function drawLayer(layer) {
             vehicle.drawe(layer)
         }
     })
+//    console.log(PING)
+    for (let _ of Entities.keys()) {
+        Entities.get(_).draw(layer)
+
+    }
+//    console.log(PING)
     if (Particles.has(layer)){
         Particles.get(layer).forEach(particle => {
             particle.draw()
         })
     }
-    if (Strucures.get(layer)){
-        Strucures.get(layer).forEach(structure => {
-            structure.draw()
-        })
+//    console.log(PING)
+    // TODO
+    // StructuresPerChunk
+    if (StructuresPerChunk.length < WH){
+        StructuresPerChunk=[]
+        for (let i = 0; i < WH; i++) {
+            sb = []
+            for (let j = 0; j < WH; j++) {
+                sb.push(new Map())
+                
+            }
+            StructuresPerChunk.push(sb)
+            
+        }
     }
+    let objs = new Set()
+    for (let x=Math.round(X)-VIEW_X-2; x < Math.round(X)+VIEW_X+2; x++){
+        for (let y=Math.round(Y)-VIEW_Y-2; y < Math.round(Y)+VIEW_Y+2; y++){
+            if (x < 0 || y <0 || x >= WH || y >= WH || !StructuresPerChunk[x][y].has(layer)) continue
+            // console.log(StructuresPerChunk)
+            // console.log(layer)
+            // console.info(StructuresPerChunk)
+            StructuresPerChunk[x][y].get(layer).forEach(struct=>{
+                objs.add(struct)
+                
+            })
+
+        }
+
+    }
+    Array.from(objs).forEach(struct=>{
+        struct.draw()
+    })
+    // if (Strucures.get(layer)){
+    //     Strucures.get(layer).forEach(structure => {
+    //         structure.draw()
+    //     })
+    // }
+//    console.log(PING)
     try{
         if (LayersFunctions.hasOwnProperty(layer)){
             LayersFunctions[layer]()
     
         }
     }catch{}
+//    console.log(PING)
 
 }
 function onPackageLoaded(){
@@ -597,7 +635,7 @@ function GetServerInfo(){
 //                    console.log(data)
                     document.getElementById('impprev').src = data.map;
                     document.getElementById('spimpprev').src = data.map;
-                    document.getElementById('Map').src = data.map;
+                    // document.getElementById('Map').src = data.map;
                     document.getElementById('online').innerHTML = "Players: "+data.online;
                     document.getElementById('text').innerHTML = data.text;
 //                    console.log(data.js)
@@ -643,6 +681,7 @@ function GetServerInfo(){
                 document.getElementById("spimpprev").src = ""
 			}
 }
+let StructuresPerChunk = []
 var MAPstatic = {
 '*':[],
 'B':[],
@@ -741,16 +780,16 @@ let mapimg = document.getElementById('Map');
 let tab = document.getElementById('TabForm');
 let moneys = document.getElementById('MoneyB');
 let nicknameinput = document.getElementById('NameField');
-let messageinput = document.getElementById('MessageFieldTxt');
-messageinput.onkeydown = function (event){
-    if (event.keyCode == 9 || event.keyCode == 17) {
-        if (messagebtn.innerText == "Global"){
-            messagebtn.innerText = "Team"
-        }else{
-            messagebtn.innerText = "Global"
-        }
-    }
-}
+// let messageinput = document.getElementById('MessageFieldTxt');
+// messageinput.onkeydown = function (event){
+//     if (event.keyCode == 9 || event.keyCode == 17) {
+//         if (messagebtn.innerText == "Global"){
+//             messagebtn.innerText = "Team"
+//         }else{
+//             messagebtn.innerText = "Global"
+//         }
+//     }
+// }
 let messagefield = document.getElementById('MessageField');
 let messagebtn = document.getElementById('MessageFieldBtn');
 let mapimgwh = 100
@@ -824,7 +863,7 @@ function startgame() {
 		document.addEventListener('fullscreenchange', fresize  );
 		document.addEventListener('keydown',keydown);
 		document.addEventListener('keyup', keyup);
-		messagefield.addEventListener("focusout",mifo)
+		// messagefield.addEventListener("focusout",mifo)
 		document.addEventListener("wheel", onWheel);
 
 		try {
@@ -856,23 +895,67 @@ function startgame() {
                     // console.log(MAPstatic)
                     for (let struct_char in StructuresTable) {
                         if (MAPstatic.hasOwnProperty(struct_char)){
-                            
-                            MAPstatic[struct_char].forEach(element => {
-                                new StructuresTable[struct_char](element)
+                            for (let i = 0; i < MAPstatic[struct_char].length; i++) {
+                                new StructuresTable[struct_char](MAPstatic[struct_char][i],i)
                                 
-                            });
+                            }
+                            // MAPstatic[struct_char].forEach(element => {
+                            //     new StructuresTable[struct_char](element)
+                                
+                            // });
 
                         }
                     }
                     // console.log(MAPstatic)
                     
                     
-                    for (let _ in MAPstatic['#']){
-                        for(let t in MAPstatic['#'][_]){
-                            MAPstatic['#'][_][t].push(0)
-                        }
-                    }
+                    // for (let _ in MAPstatic['#']){
+                    //     for(let t in MAPstatic['#'][_]){
+                    //         MAPstatic['#'][_][t].push(0)
+                    //     }
+                    // }
                     WH = MAPstatic['WH']
+                    StructuresPerChunk = []
+                    for (let x = 0; x < WH; x++) {
+                        StructuresPerChunk.push([])
+                        for (let y = 0; y < WH; y++) {
+                            let structs = new Set()
+                            for (let struct_char in StructuresTable) {
+                                // FrameRequestCallback
+                                // console.info(struct_char)
+                                // console.info(MAPstatic['Q'][x][y])
+                                if (MAPstatic['Q'][x][y].hasOwnProperty(struct_char)){
+                                    
+                                    for (let i = 0; i < MAPstatic['Q'][x][y][struct_char].length; i++) {
+                                        // console.info(Strucures)
+                                        // console.info(Strucures.get(struct_char)[MAPstatic['Q'][x][y][struct_char][i]])
+                                        
+                                        structs.add(Strucures.get(struct_char)[MAPstatic['Q'][x][y][struct_char][i]])
+                                        Strucures.get(struct_char)[MAPstatic['Q'][x][y][struct_char][i]].get_children_structures().forEach(strct=>{
+                                            structs.add(strct)
+                                        })
+                                            
+                                        
+                                        // new StructuresTable[struct_char](MAPstatic[struct_char][i],i)
+                                        
+                                    }
+        
+                                }
+                            }
+                            structs = Array.from(structs)
+                            let dct = new Map()
+                            structs.forEach(struct=>{
+                                if (dct.has(struct.layer)){
+                                    
+                                }else{
+                                    dct.set(struct.layer,[])
+                                }
+                                dct.get(struct.layer).push(struct)
+                            })
+                            StructuresPerChunk[x].push(dct)
+                            
+                        }    
+                    }
                     // ZonesNum.innerHTML = ''
                     // for(let _ = 0; _ < MAPstatic['*'].length; _++){
                     //     ZonesNum.innerHTML += '<div class="Zone" style="background-color: red" id="zone'+_ +'"><b>'+MAPstatic['*'][_][0]+'</b></div>'
@@ -904,6 +987,7 @@ function startgame() {
  					MSGTKNDT = new Date();
 					INFO = eventdata;
 					PING = Date.now() - LastPING;
+//					console.log(PING)
 					LastPING = Date.now();
 					let infarr = INFO.split('\n');
 					let grad = null;
@@ -950,8 +1034,8 @@ function startgame() {
 					if(!(moneyb == null)) {
 						moneyb.innerText = Money
 					}
-					PlayerMark.style.left = (X/WH*100).toString()+'%'
-					PlayerMark.style.top = (Y/WH*100).toString()+'%'
+					// PlayerMark.style.left = (X/WH*100).toString()+'%'
+					// PlayerMark.style.top = (Y/WH*100).toString()+'%'
 					if (infarr[0].split(',')[6]==0 && false){
 						BURNING = true
 					}
@@ -1152,7 +1236,7 @@ let UpdateObjs = true
 let QupdtSequence = 0
 function DRAW(timestamp)  {
 
-try{
+// try{
     if (GameStatus == "InGame"){
     if(MAPstatic.CT.weather == 'Snow' ){
     if (SnowParticles0.length == 0){
@@ -1180,6 +1264,7 @@ try{
 	ShakeYbnds = ShakeYbnds*0.9
 	OffsetX = Math.random()*ShakeXbnds-ShakeXbnds/2
 	OffsetY = Math.random()*ShakeYbnds-ShakeYbnds/2
+//	console.log(OffsetX)
 	LastFPS = Date.now()
 	FPS = 1000/(Date.now()-LastAnime)
 	LastAnime = Date.now()
@@ -1191,8 +1276,9 @@ try{
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fill()
     if (GameStatus == "InGame" || true){
-
+    // console.log(PING)
     LayerList.forEach(drawLayer);
+    // console.log(PING)
 
 
     TVehicles.forEach(vehicle => {
@@ -1230,11 +1316,11 @@ try{
         }
 
         window.requestAnimationFrame(DRAW);
-       }catch(e)
-       {
-      console.log(e,e.stack)
-       window.requestAnimationFrame(DRAW);
-       }
+    //    }catch(e)
+    //    {
+    //   console.log(e,e.stack)
+    //    window.requestAnimationFrame(DRAW);
+    //    }
 }
 LastAnime = Date.now()
 window.requestAnimationFrame(DRAW);

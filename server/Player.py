@@ -141,6 +141,8 @@ class Player:
             mouse_input.append(bool(int(message[_])))
         message = message[5:]
         keys = []
+        # print(message)
+        # print(self.vehicle.input_keys)
         for _ in range(0,len(self.vehicle.input_keys)):
             self.vehicle.input_keys[_].is_pressed = bool(int(message[_]))
             if bool(int(message[_])):

@@ -382,7 +382,7 @@ let StructuresTable = {
     
 }
 
-let LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"OnWater-2","OnWater-1","B",'BD',"OnWater","OnWater+1","OnWater+2","OnWater+3",'_0','g','G','C','R','r','_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
+LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"OnWater-2","OnWater-1","B",'BD',"OnWater","OnWater+1","OnWater+2","OnWater+3",'_0','g','G','C','R','_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
 
 let LayersFunctions = {
     'BD': drawCeils,

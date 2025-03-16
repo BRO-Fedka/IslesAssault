@@ -7,7 +7,7 @@ from server.Modules.Armor.ArmorPlate import ArmorPlate
 from server.Vehicle.Contollers.MassController import MassController
 import math
 import pymunk
-from server.constants import COL_ON_GROUND, COL_ON_WATER, COL_IN_AIR, COLTYPE_VEHICLE
+from server.constants import COL_ON_GROUND, COL_ON_WATER, COLTYPE_VEHICLE
 from server.World import World, ACCESSABLE_GROUND
 
 
