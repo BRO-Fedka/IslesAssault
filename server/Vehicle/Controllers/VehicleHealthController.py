@@ -1,4 +1,4 @@
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, Callable
 from server.Modules.Module import Module, BOTTOM, DEFAULT
 from pymunk import Body
 from server.Types import coords
@@ -6,10 +6,12 @@ from shapely.geometry import Polygon, LineString, Point
 from server.Modules.Armor.ArmorPlate import ArmorPlate
 import math
 import asyncio
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.constants import DO_FRIENDLY_FIRE
+from server.Vehicle.Controllers.LevelController import LevelController
+from server.HealthController import HealthController
 
 
-class HealthController:
+class VehicleHealthController(HealthController):
     def __init__(self, body: Body):
         self.body = body
         self.max_hp: int = None
@@ -20,12 +22,13 @@ class HealthController:
         self.armor_modules: List[Module] = []
         self.is_repairing = False
         self.module_under_repairing = None
-        self.modules_for_repairing: List[List[Module,Union[str,int]]] = []
+        self.modules_for_repairing: List[List[Module, Union[str, int]]] = []
+        self.on_kill = None
 
     def on_damage(self):
         pass
 
-    def update(self,vehicle):
+    def update(self):
         repairable_modules = 0
         broken_modules = 0
 
@@ -35,7 +38,7 @@ class HealthController:
                 if module.get_hp() == 0 or module.is_destroyed:
                     broken_modules += 1
         if repairable_modules == broken_modules:
-            vehicle.kill()
+            self.on_kill()
 
     def filter_modules_for_repairing(self):
         modules = []
@@ -43,24 +46,28 @@ class HealthController:
         for module in self.modules + self.armor_modules:
             i += 1
             if module.is_repairable:
-                if (module.get_hp() == 0 and self.body.velocity.length > 0.05) or module.get_rel_hp() == 1 or module.is_destroyed:
+                if (
+                        module.get_hp() == 0 and self.body.velocity.length > 0.05) or module.get_rel_hp() == 1 or module.is_destroyed:
                     continue
                 if i >= len(self.modules):
-                    modules.append([module,'-'])
+                    modules.append([module, '-'])
                 else:
-                    modules.append([module,i])
+                    modules.append([module, i])
 
         modules.sort(key=lambda e: 100000 * (e[0].get_rel_hp() + 0.001) if e[0].repair_priority is None else (
-                                                                                                               e[0].get_rel_hp() + 0.001) * e[0].repair_priority)
+                                                                                                                     e[
+                                                                                                                         0].get_rel_hp() + 0.001) *
+                                                                                                             e[
+                                                                                                                 0].repair_priority)
 
         self.modules_for_repairing = modules
         # print(self.modules_for_repairing)
 
-    def get_module_id(self):
+    def get_module_being_repaired_id(self):
         return self.module_under_repairing
 
     def repair(self):
-        if not self.level_controller.get_z() in [0,1]:
+        if not self.level_controller.get_z() in [0, 1]:
             return
         self.filter_modules_for_repairing()
         if not self.is_repairing:
@@ -100,7 +107,8 @@ class HealthController:
                 self.armor_modules.append(module)
         # print(crds)
 
-    def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]],level_controller:LevelController):
+    def update_params(self, max_hp: int, modules: List[Module], poly: Sequence[Sequence[float]],
+                      level_controller: LevelController, on_kill: Callable):
         self.level_controller = level_controller
         self.max_hp = max_hp
         self.modules = modules
@@ -110,6 +118,7 @@ class HealthController:
             self.max_modules_hp += module.get_hp()
         print(self.max_modules_hp)
         self.fill_armor_modules()
+        self.on_kill = on_kill
 
     def get_local_coords_of_penetration(self, projectile: Body) -> coords:
         pen_angle = self.body.angle - projectile.velocity.angle
@@ -135,10 +144,12 @@ class HealthController:
         return coords(pen_coord[0], -pen_coord[1])
 
     def piercing_damage_from_body(self, projectile: Body, size: float = 0.01):
-        # self.max_hp -= 100
+        # print(dir(self.body))
+        # print(dir(projectile))
+        if (not DO_FRIENDLY_FIRE) and projectile.master.sender.role == self.body.master.role: return
         self.piercing_damage_from_local_coords(self.get_local_coords_of_penetration(projectile),
                                                self.body.angle - projectile.velocity.angle,
-                                               size=size, speed=projectile.velocity.length, mass=projectile.mass*10)
+                                               size=size, speed=projectile.velocity.length, mass=projectile.mass * 10)
 
     def piercing_damage_from_local_coords(self, coord: coords, angle: float, size: float, speed: float, mass: float):
         self.on_damage()
@@ -163,7 +174,8 @@ class HealthController:
             size, speed, mass = module[1].piercing_damage(module[2], coord, size, speed, mass)
 
     def bottom_explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):
-        # self.max_hp -= 100
+        # print(dir(self.body))
+        if (not DO_FRIENDLY_FIRE) and projectile.master.sender.role == self.body.master.role: return
         self.bottom_explosion_damage_from_local_coords(self.get_local_coords_of_penetration(projectile), radius=radius)
 
     def bottom_explosion_damage_from_local_coords(self, coord: coords, radius: float):
@@ -192,6 +204,8 @@ class HealthController:
             module.explosion_damage(coord, radius=radius)
 
     def explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):
+        # print(dir(self.body))
+        if (not DO_FRIENDLY_FIRE) and projectile.master.sender.role == self.body.master.role: return
         self.explosion_damage_from_local_coords(self.get_local_coords_of_penetration(projectile), radius=radius)
 
     def get_total_hp(self):

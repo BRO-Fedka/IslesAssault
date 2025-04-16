@@ -593,22 +593,26 @@ function GetSpawnInfo(){
             document.getElementById('spcontainer').innerHTML = ''
             let vehlst = ""
             for (let key in data) {
-                document.getElementById('spcontainer').innerHTML += '<label class="spawnpoint" for="sp'+key+'" style="top:calc(100% * '+data[key].pos[1]+' / '+WH+');left:calc(100% * '+data[key].pos[0]+' / '+WH+');"><input type="radio" id="sp'+key+'" checked value="'+key+'" name="SpawnPoints" onclick="play_click_sound();vs'+key+'.checked=true;"><img src="'+data[key].ico+'"></label>'
-              vehlst += '<div class="vehlist"><input class="VehiclesList" checked  type="radio" id="vs'+key+'"  value="'+key+'" name="VehicleLists"><div class="scrollbar VehiclesList">'
-              for (let k of data[key].vehicles) {
-                let amount = "-"
-                if (k[3]>=0){
-                    amount = k[3]
+                let tags = ' checked '
+                if (data[key].active==false){
+                    tags = ' disabled '
+                } 
+                document.getElementById('spcontainer').innerHTML += '<label class="spawnpoint" for="sp'+key+'" style="top:calc(100% * '+data[key].pos[1]+' / '+WH+');left:calc(100% * '+data[key].pos[0]+' / '+WH+');"><input type="radio" id="sp'+key+'" '+tags+' value="'+key+'" name="SpawnPoints" onclick="play_click_sound();vs'+key+'.checked=true;"><div class="sp-area"></div><div class="sp-ico" style="background-color:'+data[key].cl+';mask-image:url('+data[key].ico+')" src="'+data[key].ico+'"></div></label>'
+                vehlst += '<div class="vehlist"><input class="VehiclesList" '+tags+' type="radio" id="vs'+key+'"  value="'+key+'" name="VehicleLists"><div class="scrollbar VehiclesList">'
+                for (let k of data[key].vehicles) {
+                    let amount = "-"
+                    if (k[3]>=0){
+                        amount = k[3]
+                    }
+                    let dis = ''
+                    let chk = ' checked '
+                    if (amount==0){
+                        dis = ' disabled '
+                        chk = ''
+                    }
+                    vehlst +='<label class="unselectable vehiclecard" onclick="play_click_sound()" '+dis+'><span class="vhcrdamount">'+amount+'</span><input class="unselectable" '+chk+' '+dis+' type="radio" name="veh'+key+'" value="'+k[1]+'"  ><img src="'+k[2]+'" alt="'+k[0]+'" ><span class="vhcrdname">'+k[0]+'</span></label>'
                 }
-                let dis = ''
-                let chk = ' checked '
-                if (amount==0){
-                    dis = ' disabled '
-                    chk = ''
-                }
-                vehlst +='<label class="unselectable vehiclecard" onclick="play_click_sound()" '+dis+'><span class="vhcrdamount">'+amount+'</span><input class="unselectable" '+chk+' '+dis+' type="radio" name="veh'+k[1]+'" value="'+k[1]+'"  ><img src="'+k[2]+'" alt="'+k[0]+'" ><span class="vhcrdname">'+k[0]+'</span></label>'
-			  }
-              vehlst += '</div></div>'
+                vehlst += '</div></div>'
 				
             }
             VHcontainer.innerHTML = vehlst
@@ -729,6 +733,7 @@ let X=16
 let Y =16
 let nX=16
 let Z = 0
+let Role = 0
 let speed = 0;
 let nY =16
 let Deg = 0
@@ -870,7 +875,7 @@ function startgame() {
 			socket = new WebSocket(document.getElementById('ServerAddress').value);
 			socket.addEventListener('open', function (event) {
 
-				socket.send('n'+nicknameinput.value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.querySelector('input[name="SpawnPoints"]:checked').value+'\n'+document.querySelector('input[name="veh'+document.querySelector('input[name="SpawnPoints"]:checked').value+'"]:checked').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
+				socket.send('n'+nicknameinput.value+'\n'+document.getElementById('RoleSelect').value+'\n'+document.querySelector('input[name="color"]:checked').value+'\n'+document.querySelector('input[name="SpawnPoints"]:checked').value+'\n'+document.querySelector('input[name="veh'+document.querySelector('input[name="SpawnPoints"]:checked').value+'"]:checked').value+'\n'+document.getElementById('NICK').innerText+'\n'+document.getElementById('PASS').innerText);
 				//vehicle = Number(document.getElementById('VehicleSelect').value)
 			});
 			function taken(event) {
@@ -1096,7 +1101,28 @@ function startgame() {
                             }
                             
                             
-						}
+						}else 	if (larr[0] == '*' ){
+                            let tag = larr[1]
+                            let id = Number(larr[2])
+                            Strucures.get(tag)[id].update(...larr.slice(3))
+                            // console.log(tag,id,larr.slice(3))
+                            // switch (larr[1]) {
+                            //     case 'c':
+                            //         Entities.set(larr[3],new EntitiesTable[larr[2]](larr))
+                            //         break;
+                            //     case 'u':
+                            //         if (Entities.has(larr[3])){
+                            //             Entities.get(larr[3]).update(larr)
+                            //         }
+                            //     case 'd':
+                            //         if (Entities.has(larr[3])){
+                            //             Entities.get(larr[3]).delete(larr)
+                            //         }
+                            //         break;
+                            // }
+                                                        
+                                                        
+                        }
 					}
 					dellarr = []
                     

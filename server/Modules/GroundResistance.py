@@ -1,14 +1,13 @@
 from pymunk import Body, Shape
-from server.Types import PlayerInputData
 from server.Modules.Module import Module
 import math
 from server.constants import COF_GROUND_RESISTANCE, COF_WATER_RESISTANCE_MOMENT, COF_WATER_SURFACE_FRICTION, TPS
-from server.functions import sign
+from server.Vehicle.Controllers.LevelController import LevelController
 
 
 class GroundResistance(Module):
-    def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.1, max_rotation_speed=0.1,
-                 level_controller=None):
+    def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.1, max_rotation_speed=0.075,
+                 level_controller: LevelController = None):
         super().__init__()
         self.poly = poly_shape
         self.poly_n = poly_shape_n
@@ -16,13 +15,13 @@ class GroundResistance(Module):
         self.max_rotation_speed = max_rotation_speed
         self.max_speed = max_speed
         self.body = body
-        self.level_controller = level_controller
+        self.level_controller:LevelController = level_controller
 
-    def update_module(self,vehicle):
+    def update_module(self, vehicle):
         super().update_module(vehicle)
         if not (self.level_controller is None or self.level_controller.get_z() == 1):
             return
-        if self.body.velocity.length > self.max_speed*2:
+        if self.body.velocity.length > self.max_speed * 2:
             self.body.velocity = self.body.velocity.normalized() * self.max_speed
             return
 

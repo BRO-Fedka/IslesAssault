@@ -25,13 +25,16 @@ class Projectile(Entity):
     @staticmethod
     def on_static_hit_begin(arbiter, space, data):
         s1, s2 = arbiter.shapes
-        s1.master.hit_static()
+        print(s2)
+        print(dir(s2))
+        print('LOL')
+        s1.master.hit_static(s2.master)
         return True
 
     def hit_vehicle(self, target:Vehicle):
         pass
 
-    def hit_static(self):
+    def hit_static(self, target):
         pass
 
     def __init__(self, world: World, sender:Vehicle, start_pos: coords, angle: float):
@@ -48,6 +51,7 @@ class Projectile(Entity):
         self.start_pos = start_pos
         self.body.position = start_pos.x, start_pos.y
         self.body.angle = angle
+        self.body.master = self
         self.is_active = True
         self.status = 0
         self.world.add_object(self)

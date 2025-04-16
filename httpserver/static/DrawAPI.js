@@ -368,6 +368,7 @@ class Vehicle{
         this.cos = 0
         this.first_appearance = true
         this.input_keys = null
+        this.role = null
         
     }
 
@@ -436,29 +437,39 @@ class Vehicle{
         this.modules.forEach(module => {
             module.drawe(layer,this)
         });
+        // console.log('#')
+        // console.log(Role,this.role)
+        if(layer=="NICKNAMES" && Role==this.role){
+            ctx.textAlign = 'center'
+            ctx.fillStyle = 'rgba(255,255,255,0.5)'
+            let xy = global_xy_to_screen([this.x,this.y])
+            ctx.fillText(this.name,xy[0],xy[1]-12.5/320*Zoom)
+
+        }
 
     }
 
     parse_common_string(string){
 //        console.log(string)
         let lst = []
-        for (let arg = 0; arg < 7; arg++) {
+        for (let arg = 0; arg < 8; arg++) {
             let substr = string.split(',')[0]
             lst.push(substr)
             string = string.slice(substr.length+1)
 
             
         }
-        this.name = lst[0]
-        this.color_id = Number(lst[1])
-        this.hp = Number(lst[2])
+        this.role = lst[0]
+        this.name = lst[1]
+        this.color_id = Number(lst[2])
+        this.hp = Number(lst[3])
         this.prev_dir = this.dir
-        this.dir = Number(lst[3])
+        this.dir = Number(lst[4])
         this.x = this.new_x
         this.y = this.new_y
-        this.new_x = Number(lst[4])
-        this.new_y = Number(lst[5])
-        this.z = Number(lst[6])
+        this.new_x = Number(lst[5])
+        this.new_y = Number(lst[6])
+        this.z = Number(lst[7])
 
 //        console.log(string)
         return string
@@ -471,6 +482,7 @@ class Vehicle{
         Y = this.y
         nX = this.new_x
         nY = this.new_y
+        Role = this.role
         this.modules.forEach(module => {
             // console.log(string)
             string = module.updatep(string)
@@ -1330,7 +1342,7 @@ class ModuleParticleSpawner{
         
     }
 
-    set_exstra_params(...args){
+    set_extra_params(...args){
         this.params = args
     }
 
@@ -1474,7 +1486,7 @@ class Beach extends PolyStructure{
     constructor(poly,id){
         super('B',poly,id)
         this.children_structures.push( new ShoreLine0(poly))
-        this.children_structures.push( new ShoreLine0(poly))
+        this.children_structures.push( new ShoreLine1(poly))
         this.children_structures.push( new Waves(poly))
     }
 
@@ -1489,8 +1501,8 @@ class Beach extends PolyStructure{
 class Concrete extends PolyStructure{
     constructor(poly,id){
         super('C',poly,id)
-        this.children_structures.push(new ShoreLine0(poly,60/320))
-        this.children_structures.push(new ShoreLine1(poly,30/320))
+        // this.children_structures.push(new ShoreLine0(poly,60/320))
+        // this.children_structures.push(new ShoreLine1(poly,30/320))
     }
 
     draw(){
@@ -1666,7 +1678,7 @@ class LinesStructure extends Strucure{
 class Road extends LinesStructure{
     constructor(coords,id){
         super('R',coords,id)
-        // !OLD! new RoadDashes(coords)
+        // this.children_structures.push(new RoadDashes(coords))
     }
     draw(){
         super.draw()
@@ -1811,10 +1823,10 @@ class TreeGroup extends Strucure{
 
 }
 
-class Building{
+class Building extends Strucure{
     //[0, 4.21, 9.99, 0.2, 0.2, 161]
     constructor(id,x,y,w,h,dir){
-        this.id = id
+        super('#!',id)
         this.x = x
         this.y = y
         this.w = w
@@ -1827,6 +1839,18 @@ class Building{
             2:0.2,
             3:0.25
         }
+        this.state_char = null
+    }
+    update(str){
+        
+        let prev_char = this.state_char
+        this.state_char = str.slice(0,1)
+        if (prev_char != this.state_char){
+            // console.log(str)
+            // console.log(prev_char,this.state_char)
+        }
+        return str.slice(1)
+
     }
     draw(alpha){
 
@@ -1835,18 +1859,19 @@ class Building{
 class BasedBuilding extends Building{
     constructor(id,x,y,w,h,dir){
         super(id,x,y,w,h,dir)
-        new Basement(x,y,w,h,dir)
+        this.children_structures.push(new Basement(id,x,y,w,h,dir))
+        
     }
 }
 
 class Basement extends Strucure{
-    constructor(x,y,w,h,dir){
-        super('c')
+    constructor(id,x,y,w,h,dir){
+        super('c',id)
         this.x = x
         this.y = y
         this.w = w
         this.h = h
-        this .dir = dir
+        this.dir = dir
         // console.log(0)
     }
 
@@ -1874,6 +1899,9 @@ class HouseBuilding extends BasedBuilding{
 
     
     draw(){
+        if (this.state_char=='2' || this.state_char=='3'){
+            return
+        }
         // console.log(1)
 
         let poly = []
@@ -1920,6 +1948,9 @@ class ContainerBuilding extends Building{
 
     
     draw(){
+        if (this.state_char=='2' || this.state_char=='3'){
+            return
+        }
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -1946,6 +1977,9 @@ class ChimneyBuilding extends BasedBuilding{
 
     
     draw(){
+        if (this.state_char=='2' || this.state_char=='3'){
+            return
+        }
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -1978,13 +2012,20 @@ class HangarBuilding extends BasedBuilding{
 
     
     draw(){
+        
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
         poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2, this.w/2], [this.h/2, -this.w/2]]
         ctx.beginPath();
-        ctx.fillStyle = MAPstatic.CT.hf
-        ctx.strokeStyle = MAPstatic.CT.hs
+        if (this.state_char=='2' || this.state_char=='3'){
+            ctx.fillStyle = MAPstatic.CT.o1
+            ctx.strokeStyle = MAPstatic.CT.l1
+        }else{
+            ctx.fillStyle = MAPstatic.CT.hf
+            ctx.strokeStyle = MAPstatic.CT.hs
+        }
+
         ctx.lineWidth = 2/320*Zoom
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         for (let p = 1; p < poly.length; p+=1) {
@@ -2006,7 +2047,7 @@ class HangarBuilding extends BasedBuilding{
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         ctx.lineTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
         ctx.lineCap = 'butt'
-        ctx.strokeStyle = MAPstatic.CT.hs
+        // ctx.strokeStyle = MAPstatic.CT.hs
         ctx.setLineDash([2/320*Zoom,6/320*Zoom])
         ctx.stroke();
         ctx.setLineDash([])
@@ -2021,6 +2062,15 @@ class CraneBuilding extends Building{
     L=0.25
     
     draw(){
+        let c0 = MAPstatic.CT.c0
+        let c1 = MAPstatic.CT.c1
+        let c2 = MAPstatic.CT.c2
+        if (this.state_char=='2' || this.state_char=='3'){
+            c0 = MAPstatic.CT.o1
+            c1 = MAPstatic.CT.l1
+            c2 = MAPstatic.CT.l1
+        }
+
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -2028,7 +2078,7 @@ class CraneBuilding extends Building{
         ctx.beginPath();
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
-        ctx.strokeStyle = MAPstatic.CT.c0
+        ctx.strokeStyle = c0
         ctx.lineWidth = 4/320*Zoom
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         for (let p = 1; p < poly.length; p+=1) {
@@ -2038,19 +2088,22 @@ class CraneBuilding extends Building{
         ctx.stroke();
         ctx.closePath();
         ctx.beginPath();
-        ctx.strokeStyle = MAPstatic.CT.c1
+        ctx.strokeStyle = c1
         ctx.lineWidth = 4/320*Zoom
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         ctx.lineTo(global_x_to_screen(this.x)+(poly[2][1]*cos*Zoom)+(poly[2][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[2][1]*sin*Zoom)+(poly[2][0]*-cos*Zoom));
         ctx.moveTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
         ctx.lineTo(global_x_to_screen(this.x)+(poly[3][1]*cos*Zoom)+(poly[3][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[3][1]*sin*Zoom)+(poly[3][0]*-cos*Zoom));
         ctx.stroke();
-        ctx.fillStyle = MAPstatic.CT.c1
+        ctx.fillStyle = c1
         ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),this.w*Zoom/3,0 , Math.PI*2 )
         ctx.fill();
         ctx.closePath();
+        if (this.state_char=='2' || this.state_char=='3'){
+            return
+        }
         ctx.beginPath();
-        ctx.strokeStyle = MAPstatic.CT.c2
+        ctx.strokeStyle = c2
         ctx.lineWidth = 8/320*Zoom
         ctx.lineCap = 'butt';
         ctx.moveTo(global_x_to_screen(this.x)-(this.l*cos*Zoom) ,global_y_to_screen(this.y)-(this.l*sin*Zoom));
@@ -2060,15 +2113,15 @@ class CraneBuilding extends Building{
     }
 
 }
-
+BuildingsTable = {
+    0: HouseBuilding,
+    1: ContainerBuilding,
+    2: ChimneyBuilding,
+    3: HangarBuilding,        
+    4: CraneBuilding                                                                                                                                                                                                        
+}
 class BuildingsGroup extends Strucure{
-    BuildingsTable = {
-        0: HouseBuilding,
-        1: ContainerBuilding,
-        2: ChimneyBuilding,
-        3: HangarBuilding,        
-        4: CraneBuilding                                                                                                                                                                                                        
-    }
+
     constructor(buildings,id){
         super('#',id)
         this.buildings = []
@@ -2076,18 +2129,32 @@ class BuildingsGroup extends Strucure{
         buildings.forEach(element => {
             i++
             // console.log(this.BuildingsTable[element[0]])
-            this.buildings.push(new this.BuildingsTable[element[0]](i,element[1],element[2],element[3],element[4],element[5]))
+            this.buildings.push(new BuildingsTable[element[0]](id*100+i,element[1],element[2],element[3],element[4],element[5]))
         });
+        for (const b of this.buildings) {
+            // console.log(b)
+            this.children_structures.push(b)
+            b.children_structures.forEach(s=>{
+                this.children_structures.push(s)
+            })
+
+        }
         // console.log(this.buildings)
     }
     draw(){
-        let alpha = 'ff'
-        if (Z == 1){
-            alpha = "88"
+        // let alpha = 'ff'
+        // if (Z == 1){
+        //     alpha = "88"
+        // }
+        // this.buildings.forEach(tree => {
+        //     tree.draw(alpha)
+        // });
+    }
+    update(str){
+        for (const b of this.buildings) {
+            // console.log(b)
+            str = b.update(str)
         }
-        this.buildings.forEach(tree => {
-            tree.draw(alpha)
-        });
     }
 
 }

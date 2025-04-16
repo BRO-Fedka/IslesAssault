@@ -4,12 +4,11 @@ from shapely.geometry.base import BaseGeometry
 from server.constants import COF_EX_DMG_PER_AREA, COF_HP_PER_AREA, COF_MASS_PER_AREA, COF_PR_DMG_PER_AREA, \
     COF_PIERCING_DURABILITY
 from server.Modules.Module import Module
-from server.Vehicle.Contollers import HealthController
+from server.Vehicle.Controllers import VehicleHealthController
 import math
 import random
 from typing import Sequence
 import asyncio
-
 
 class ModuleIsBroken(Exception):
     pass
@@ -98,7 +97,7 @@ class RealModule(Module):
                 self.hp = 0
             # print(self.hp, self.max_hp)
 
-    def explode_bottom_randomly(self, hc: HealthController, minrad=0.02, maxrad=0.05, max_bangs=5):
+    def explode_bottom_randomly(self, hc: VehicleHealthController, minrad=0.02, maxrad=0.05, max_bangs=5):
         points = []
         bangs = math.ceil(self.hp / self.max_hp * max_bangs)
         minx, miny, maxx, maxy = self.shape.bounds

@@ -7,7 +7,7 @@ from server.Modules.ShipFuelTank import ShipFuelTank, NoFuel
 from server.Modules.ShipSegment import ShipSegment
 from server.Modules.TankEngine import TankEngine, EngineDoesNotWork
 from shapely.geometry import Polygon
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.Vehicle.Controllers.LevelController import LevelController
 import server.Modules.InputKeys.InputKeys as IK
 
 FORWARD = 1
@@ -27,6 +27,7 @@ class Track(PolygonModule):
         self.shape = Polygon(poly)
         self.body = body
         self.moving = STOP
+        self.max_force = force
         self.force = force
         self.x = sum(map(lambda e: e[0], poly)) / len(poly)
         self.y = sum(map(lambda e: e[1], poly)) / len(poly)
@@ -50,7 +51,7 @@ class Track(PolygonModule):
             self.body.apply_force_at_local_point((-force, 0), (self.x, self.y))
 
     def update_module_input(self, input: PlayerInputData):
-
+        self.force = (1-(1-self.engine.get_rel_hp())**3)*self.max_force
         if IK.FORWARD in input.active_keys:
             self.moving = FORWARD
         elif IK.BACKWARD in input.active_keys:

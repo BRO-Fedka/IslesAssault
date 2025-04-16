@@ -265,7 +265,7 @@ class Heavy extends Vehicle{
 
     drawp(layer){
         // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
+        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
             if (layer=='OnWater'){
                 // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
@@ -281,7 +281,7 @@ class Heavy extends Vehicle{
     }
     drawe(layer){
         // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
+        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
             if (layer=='OnWater'){
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
                 this.wtp_spawner.update(this)
@@ -333,7 +333,7 @@ class Tank extends Vehicle{
     }
 
     drawp(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
+        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
             if (layer=='OnWater'){
                 drawF(this,POLY_SHAPE1, this.f)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
@@ -345,7 +345,7 @@ class Tank extends Vehicle{
         }
     }
     drawe(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))){
+        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
             if (layer=='OnWater'){
                 drawF(this,POLY_SHAPE1, this.f)
                 this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
@@ -382,7 +382,7 @@ let StructuresTable = {
     
 }
 
-LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"OnWater-2","OnWater-1","B",'BD',"OnWater","OnWater+1","OnWater+2","OnWater+3",'_0','g','G','C','R','_2','_',"OnGround","OnGround+1","OnGround+2",'S','c','#','T']
+LayerList = ["SH0","SH1","UnderWater-2","UnderWater-1","UnderWater",'w',"UnderWater+1",'w',"UnderWater+2",'w',"UnderWater+3",'w','W','_1',"OnWater-2","OnWater-1","B",'BD',"OnWater","OnWater+1","OnWater+2","OnWater+3",'_0','g','G','c','C','R','_2','_',"OnGround","OnGround+1","OnGround+2",'S','#!','T',"NICKNAMES"]
 
 let LayersFunctions = {
     'BD': drawCeils,

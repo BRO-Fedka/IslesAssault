@@ -1,6 +1,6 @@
 from server.Modules.PolygonModule import PolygonModule
 from server.Modules.Module import BOTTOM
-from server.Vehicle.Contollers.HealthController import HealthController
+from server.Vehicle.Controllers.VehicleHealthController import VehicleHealthController
 from shapely.geometry import Point
 from typing import Sequence
 from server.functions import prevent_recursion
@@ -13,7 +13,7 @@ class NoShellsLeft(Exception):
 class ShipShellStorage(PolygonModule):
     level: int = BOTTOM
 
-    def __init__(self, poly: Sequence[Sequence[float]],hc:HealthController, shells: int = 200):
+    def __init__(self, poly: Sequence[Sequence[float]],hc:VehicleHealthController, shells: int = 200):
         super().__init__(poly)
         self.health_controller = hc
         self.shells = shells

@@ -1,6 +1,7 @@
-from server.Vehicle.Vehicle import Vehicle, World
+from server.Vehicle.Vehicle import Vehicle, World, NoPlaceForSpawn
 import pymunk
 import math
+from shapely.geometry import Point
 from server.constants import COLTYPE_VEHICLE, COL_ON_GROUND
 from server.Modules.TankCannon import TankCannon
 from server.Modules.TankEngine import TankEngine
@@ -11,10 +12,10 @@ from server.Types import PlayerInputData
 from server.Modules.GroundResistance import GroundResistance
 from server.Modules.WaterResistance import WaterResistance
 from server.Modules.Armor.ArmorIndication import ArmorIndication
-from server.Vehicle.Contollers.MassController import MassController
+from server.Vehicle.Controllers.MassController import MassController
 from server.Modules.OverloadIndication import OverloadIndication
 from server.Modules.RepairKit import RepairKit
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.Vehicle.Controllers.LevelController import LevelController
 
 POLY_SHAPE = [(0.03, 0.02), (0.03, -0.02), (-0.03, -0.02), (-0.03, 0.02)]
 POLY_SHAPE_N = [(1, 0), (0, -1), (-1, 0), (0, 1)]
@@ -29,8 +30,8 @@ VEHICLE_ID: int = 1
 # TODO [SERVER] Tank
 
 class Tank(Vehicle):
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1):
-        super().__init__(world, color_id, tracer_id)
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None):
+        super().__init__(world, color_id, tracer_id,role)
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_GROUND
@@ -62,10 +63,19 @@ class Tank(Vehicle):
             RepairKit(self.health_controller)
 
         ]
-        self.health_controller.update_params(1000, self.modules, POLY_SHAPE,self.level_controller)
+        self.health_controller.update_params(1000, self.modules, POLY_SHAPE,self.level_controller, on_kill=self.kill)
         self.mass_controller.update_params(self.modules)
-        self.body.position = 5.25, 6
+        # self.body.position = 5.25, 6
         self.init_inputs()
+
+    def set_spawn_pos(self, x, y, dir):
+        super().set_spawn_pos(x,y,dir)
+        p = Point(x,y)
+        for poly in self.world.mpolygon_accessable_ground+self.world.mpolygon_inaccessable_ground:
+            if poly.intersects(p):
+                break
+        else:
+            raise NoPlaceForSpawn
 
     def get_public_info_string(self) -> str:
         return super().get_public_info_string()

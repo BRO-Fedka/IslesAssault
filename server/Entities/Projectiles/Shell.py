@@ -15,7 +15,7 @@ class Shell(Projectile):
         self.status = 1
         self.is_active = False
 
-    def hit_static(self):
+    def hit_static(self, target):
         self.status = 3
         self.is_active = False
 

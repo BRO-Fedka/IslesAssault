@@ -942,9 +942,12 @@ border-radius:50%;
 transform:translateX(-50%) translateY(-50%);
 }
 
-label.spawnpoint img{
-width:100%;
-height:100%;
+label.spawnpoint div{
+	position: absolute;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
 }
 
 #SpawnSelectForm{
@@ -977,16 +980,36 @@ width:100%;
 	z-index: 10;
 }
 
-.spawnpoint > [type=radio] + img {
-    border-radius:50%;
+.spawnpoint > [type=radio] + div {
+	border-radius:50%;
+    aspect-ratio: 1 / 1;
+	max-width: 25px;
+	max-height: 25px;
+	width: 25px;
+	height: 25px;
+
+}
+.spawnpoint > div.sp-ico {
+    pointer-events: none;
+
+}
+.spawnpoint > [type=radio] + div.sp-area {
     background:rgba(0,0,0,0.5);
 
 }
-.spawnpoint > [type=radio]:checked + img {
-    background:rgba(255,255,255,0.5);
 
+.spawnpoint > [type=radio]:checked + div.sp-area {
+    background:rgba(255,255,255,0.5);
 }
-label.spawnpoint:hover img{
+/* .sp-ico
+.sp-area */
+
+.spawnpoint > [type=radio]:disabled + div.sp-area {
+    background:transparent;
+	cursor: not-allowed;
+}
+
+label.spawnpoint:hover div.sp-area{
 width:100%;
 height:100%;
 background:rgba(255,255,255,0);

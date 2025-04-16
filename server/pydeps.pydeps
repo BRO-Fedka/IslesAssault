@@ -1,0 +1,30 @@
+[pydeps]
+max_bacon = 10
+only = server
+cluster = True
+max_cluster_size = 1000
+show_deps = True
+
+exclude_exact =
+    server.Modules
+    server.Entities
+    server.Entities.Projectiles
+    server.Static
+    server.Modules.InputKeys
+    server.Vehicle
+    server.Vehicle.Controllers
+    server.Modules.Armor
+    server.Static.Buildings
+
+    #Common
+    server.Types
+    server.constants
+    server.functions
+    server.Modules.InputKeys.InputKey
+    server.Modules.InputKeys.InputKeys
+
+    #Frequent base classes
+    server.Modules.Module
+    server.Object
+    server.HealthController
+    server.World

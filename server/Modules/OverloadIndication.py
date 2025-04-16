@@ -1,5 +1,5 @@
 from server.Modules.Module import Module
-from server.Vehicle.Contollers.MassController import MassController
+from server.Vehicle.Controllers.MassController import MassController
 
 
 class OverloadIndication(Module):

@@ -3,14 +3,10 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 10 10" style="enable-background:new 0 0 10 10;" xml:space="preserve">
 <style type="text/css">
-	.st0{display:none;}
-	.st1{display:inline;fill:#ED00F4;}
 	.st2{fill:none;stroke:#FFFFFF;stroke-width:0.862;stroke-miterlimit:10;}
 	.st3{fill:#FFFFFF;}
 </style>
-<g class="st0">
-	<rect class="st1" width="10" height="10"/>
-</g>
+
 <g>
 	<circle class="st2" cx="5" cy="4.9" r="0.4"/>
 	<ellipse class="st3" cx="5" cy="1.8" rx="0.4" ry="1.7"/>

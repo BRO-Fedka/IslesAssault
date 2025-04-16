@@ -1,17 +1,15 @@
 from pymunk import Body, Shape
-from server.Types import PlayerInputData
 from server.Modules.Module import Module
 import math
 from server.constants import COF_WATER_RESISTANCE, COF_WATER_RESISTANCE_MOMENT, COF_WATER_SURFACE_FRICTION, TPS
-from server.functions import sign
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.Vehicle.Controllers.LevelController import LevelController
 
 
 class WaterResistance(Module):
     def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.1,
                  level_controller: LevelController = None):
         super().__init__()
-        self.level_controller = level_controller
+        self.level_controller:LevelController = level_controller
         self.poly = poly_shape
         self.poly_n = poly_shape_n
         self.resistance_cof = resistance_cof

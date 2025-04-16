@@ -5,7 +5,16 @@ from server.Vehicle.Vehicle import Vehicle
 class ArmorPiercing(Shell):
     def hit_vehicle(self, target: Vehicle):
         super().hit_vehicle(target)
+        print(self.body.master)
         target.health_controller.piercing_damage_from_body(self.body, size=0.01)
+
+    def hit_static(self, target):
+        super().hit_static(target)
+        print(self.body.master)
+        target.health_controller.piercing_damage_from_body(self.body, size=0.01)
+        print('%')
+        print(target)
+        # target.health_controller.piercing_damage_from_body(self.body, size=0.01)
     # last_torpedo_id: int = 0
     #
     # def hit_vehicle(self, target: Vehicle):

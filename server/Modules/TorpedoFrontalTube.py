@@ -6,7 +6,7 @@ from server.World import World
 import datetime
 from server.Modules.Module import BOTTOM
 from typing import Sequence
-from server.Vehicle.Contollers.HealthController import HealthController
+from server.Vehicle.Controllers.VehicleHealthController import VehicleHealthController
 from server.functions import prevent_recursion
 import server.Modules.InputKeys.InputKeys as IK
 
@@ -15,7 +15,7 @@ class TorpedoFrontalTube(PolygonModule):
     level: int = BOTTOM
     input_keys = [IK.LAUNCH_TORPEDO]
 
-    def __init__(self, hc: HealthController, world: World, body: Body, poly: Sequence[Sequence[float]], amount=10):
+    def __init__(self, hc: VehicleHealthController, world: World, body: Body, poly: Sequence[Sequence[float]], amount=10):
         self.cof_hp_per_area *= 2
         super().__init__(poly)
         self.max_amount = amount

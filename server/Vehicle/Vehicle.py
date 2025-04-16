@@ -5,32 +5,43 @@ import pymunk
 import math
 from server.Modules.Module import Module
 from typing import List
-from server.Vehicle.Contollers.HealthController import HealthController
-from server.Vehicle.Contollers.MassController import MassController
+from server.Vehicle.Controllers.VehicleHealthController import VehicleHealthController
+from server.Vehicle.Controllers.MassController import MassController
 from server.IdManager import IdManager
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.Vehicle.Controllers.LevelController import LevelController
+
+
+class NoPlaceForSpawn(Exception): pass
 
 
 class Vehicle(Object):
     id_manager: IdManager = IdManager()
 
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1):
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None):
         self.world = world
         self.color_id = color_id
         self.tracer_id = tracer_id
         self.body = pymunk.Body()
         self.body.master = self
+        print(dir(self.body))
         self.shape = None
+        self.role:int = role
         self.vehicle_type_id = '?'
         self.id = self.id_manager.get_id()
-        self.body.position = 7, 7
+        self.body.position = -10, -10
         self.modules: List[Module] = []
         self.name = ""
-        self.health_controller: HealthController = HealthController(self.body)
+        self.health_controller: VehicleHealthController = VehicleHealthController(self.body)
         self.mass_controller: MassController = None
         self.level_controller: LevelController = None
         self.world.add_object(self)
         self.input_keys = None
+
+    def set_spawn_pos(self, x, y, dir):
+        print(x, y)
+        self.body.position = x, y
+        self.body.angle = dir / 180 * math.pi
+        # raise NoPlaceForSpawn
 
     def init_inputs(self):
         modules = set()
@@ -56,7 +67,7 @@ class Vehicle(Object):
     def update(self):
         self.level_controller.update()
         self.mass_controller.update()
-        self.health_controller.update(self)
+        self.health_controller.update()
         self.update_modules()
 
     def update_input(self, input: PlayerInputData):
@@ -88,7 +99,7 @@ class Vehicle(Object):
         return self.get_public_info_string()
 
     def get_public_info_string_on_disappearance(self) -> str:
-        string = f'\n+,{self.id},!,{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
+        string = f'\n+,{self.id},!,{self.vehicle_type_id},{self.role},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
             string += string_of_module
 
@@ -96,7 +107,7 @@ class Vehicle(Object):
 
     def get_public_info_string(self) -> str:
 
-        string = f'\n+,{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
+        string = f'\n+,{self.id},{self.vehicle_type_id},{self.role},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{self.body.angle / math.pi * 180},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_public_info_string(), self.modules):
             string += string_of_module
 
@@ -110,8 +121,12 @@ class Vehicle(Object):
 
         # ID,veh_type_id,name,color,HP,dir,x,y
 
-        string = f'{self.id},{self.vehicle_type_id},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{(self.body.angle / math.pi * 180):.0f},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
+        string = f'{self.id},{self.vehicle_type_id},{self.role},{self.name},{self.color_id},{self.health_controller.get_total_hp()},{(self.body.angle / math.pi * 180):.0f},{int(self.body.position.x * 1000) / 1000},{int(self.body.position.y * 1000) / 1000},{self.level_controller.get_z()},'
         for string_of_module in map(lambda e: e.get_private_info_string(), self.modules):
             string += string_of_module
 
         return string
+
+    @classmethod
+    def get_name(cls):
+        return cls.__name__

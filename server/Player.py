@@ -7,8 +7,9 @@ import asyncio
 from typing import Dict, Any, List
 import dataclasses
 import datetime
+from server.Vehicle import Vehicle
 from server.Vehicle.VehiclesDict import *
-from server.World import World
+from server.Map import Map
 from server.Camera import Camera
 from server.Types import PlayerInputData
 
@@ -91,20 +92,21 @@ class Player:
         self.name: str = None
         self.vehicle: Vehicle = None
         self.camera: Camera = None
-        self.world: World = None
+        self.world: Map = None
 
     @staticmethod
-    async def init(websocket, message: str, world: World):
+    async def init(websocket, message: str, world: Map):
         self = Player()
         self.world = world
         self.websocket = websocket
         self.name = self.validate_name(message[1:].split('\n')[0], message[1:].split('\n')[3])
-        color_id = int(message[1:].split('\n')[1])
-        spawnpoint_id = int(message[1:].split('\n')[2])
-        vehicle_id = int(message[1:].split('\n')[3])
+        role = str(message[1:].split('\n')[1])
+        color_id = int(message[1:].split('\n')[2])
+        spawnpoint_id = int(message[1:].split('\n')[3])
+        vehicle_id = int(message[1:].split('\n')[4])
         tracer_id = 1
-        acc_name = message[1:].split('\n')[4]
-        acc_password = message[1:].split('\n')[5]
+        acc_name = message[1:].split('\n')[5]
+        acc_password = message[1:].split('\n')[6]
         try:
             if acc_name == "":
                 await self.valid_guest_player({"color": color_id, "vehicle": vehicle_id})
@@ -118,11 +120,15 @@ class Player:
             self.disconnect()
             return
         await websocket.send('0,M' + MAPJSON)
-        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id)
-        self.camera = Camera(self.vehicle,world)
-        self.vehicle.name = self.name
-        # world.space.step(0.1)
-        await self.loop()
+        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id,role=role)
+        try:
+            self.world.spawnpoints[spawnpoint_id].spawn(self.vehicle,id=vehicle_id)
+            self.camera = Camera(self.vehicle, world)
+            self.vehicle.name = self.name
+            # world.space.step(0.1)
+            await self.loop()
+        except:
+            self.vehicle.is_active = False
 
     def parse_message(self, message: str):
         try:

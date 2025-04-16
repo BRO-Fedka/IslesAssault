@@ -4,7 +4,7 @@ import ssl
 import os
 from loguru import logger
 import requests as req_sync
-from server.World import World
+from server.Map import Map
 import sys
 from server.Player import Player
 import logging
@@ -23,7 +23,7 @@ API_KEY = os.environ['API_KEY']
 
 
 class Connection:
-    def __init__(self,world: World):
+    def __init__(self,world: Map):
         self.world = world
 
     async def handler(self, websocket):
@@ -45,20 +45,33 @@ class Connection:
                 await websocket.close()
                 return
             elif message[:4] == 'resp':
+                print(message[4:])
                 #,["Battleship",0,"./static/veh0.svg",0],["Battleship",0,"./static/veh0.svg",1]
                 #["Tank",1,"./static/veh1.svg",0],,["Tank",1,"./static/veh1.svg",1]
-                await websocket.send("""
-                {
-                "0":{"vehicles":[["Battleship",0,"./static/veh0.svg",-1]],
-                    "ico":"static/mapmarks/anchor.svg",
-                    "pos":[7,7]
-                },
-                "1":{"vehicles":[["Tank",1,"./static/veh1.svg",-1]],
-                    "ico":"static/mapmarks/carhelm.svg",
-                    "pos":[5,6]
-                }
-                }
-                """)
+                # await websocket.send("""
+                # {
+                # "0":{"vehicles":[["Battleship",0,"./static/veh0.svg",-1]],
+                #     "ico":"static/mapmarks/anchor.svg",
+                #     "pos":[7,7],
+                #     "cl":"#f00",
+                #     "active":true
+                #
+                # },
+                # "1":{"vehicles":[["Tank",1,"./static/veh1.svg",-1],["Battleship",0,"./static/veh0.svg",0]],
+                #     "ico":"static/mapmarks/carhelm.svg",
+                #     "pos":[5,6],
+                #     "cl":"#00f",
+                #     "active":true
+                # },
+                # "2":{"vehicles":[["Tank",1,"./static/veh1.svg",10]],
+                #     "ico":"static/mapmarks/propeller.svg",
+                #     "pos":[8,9],
+                #     "cl":"#0f0",
+                #     "active":false
+                # }
+                # }
+                # """)
+                await websocket.send(self.world.get_resps_for_role_as_json(role=message[4:]))
                 await websocket.close()
                 return
         except:

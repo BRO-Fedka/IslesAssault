@@ -2,7 +2,7 @@ from server.Modules.PolygonModule import PolygonModule
 from typing import Sequence
 from server.Modules.Module import BOTTOM
 from shapely.geometry import Polygon
-from server.Vehicle.Contollers.LevelController import LevelController
+from server.Vehicle.Controllers.LevelController import LevelController
 
 
 class ShipSegment(PolygonModule):
