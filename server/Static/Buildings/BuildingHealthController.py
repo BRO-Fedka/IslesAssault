@@ -4,14 +4,23 @@ from server.Types import coords
 from shapely.geometry import Polygon, LineString, Point
 from shapely.geometry.base import BaseGeometry
 import math
-from server.constants import DO_FRIENDLY_BUILDINGS_DAMAGE
+from server.constants import DO_FRIENDLY_BUILDINGS_DAMAGE, BUILDING_HP_PER_REPAIR
 from server.HealthController import HealthController
+from server.Role import Role
 
 BUILT = 0
 BURNING = 1
 CRUMBLED = 2
 EXPLODED = 3
-DECAYED = 4
+UNDER_CONSTRUCTION = 4
+
+
+class UnableToRepairWhileBurning(Exception):
+    pass
+
+
+class UnableToRepairBuildingWithFullHP(Exception):
+    pass
 
 
 class BuildingHealthController(HealthController):
@@ -20,6 +29,7 @@ class BuildingHealthController(HealthController):
         self.max_hp: float = max_hp
         self.hp: float = self.max_hp
         self.state = BUILT
+        self.role: Role = None
 
     def on_damage(self):
         print('HIT')
@@ -27,8 +37,21 @@ class BuildingHealthController(HealthController):
     def update(self):
         pass
 
-    def repair(self):
-        pass
+    def repair(self, role):
+        if self.max_hp == self.hp:
+            if self.state == UNDER_CONSTRUCTION:
+                self.state = BUILT
+                self.role = role
+            raise UnableToRepairBuildingWithFullHP
+        if self.state == BURNING:
+            raise UnableToRepairWhileBurning
+        if self.state in [EXPLODED, CRUMBLED]:
+            self.state = UNDER_CONSTRUCTION
+        self.hp += BUILDING_HP_PER_REPAIR
+        if self.hp >= self.max_hp:
+            self.hp = self.max_hp
+            self.state = BUILT
+            self.role = role
 
     def get_state_id(self):
         return self.state
@@ -53,7 +76,7 @@ class BuildingHealthController(HealthController):
     def piercing_damage_from_body(self, projectile: Body, size: float = 0.01):
         # print(dir(self.body))
         # print(dir(projectile))
-        # if (not DO_FRIENDLY_FIRE) and projectile.master.sender.role == self.body.master.role: return
+        if (not DO_FRIENDLY_BUILDINGS_DAMAGE) and projectile.master.sender.role == self.role: return
         self.piercing_damage_from_local_coords(self.get_local_coords_of_penetration(projectile),
                                                projectile.velocity.angle,
                                                size=size, speed=projectile.velocity.length, mass=projectile.mass * 10)
@@ -62,7 +85,8 @@ class BuildingHealthController(HealthController):
         self.on_damage()
         dmg = speed * mass * size * 10000
         self.hp -= dmg
-        if round(self.hp,2) <= 0:
+        if round(self.hp, 2) <= 0:
+            self.hp = 0
             self.state = CRUMBLED
 
     # def bottom_explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):

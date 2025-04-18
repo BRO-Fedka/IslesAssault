@@ -1,4 +1,26 @@
 PACK_ID = null
+PIXI.sound.add("bang","static\\bang.mp3")
+PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
+PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
+PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
+PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
+PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
+
+PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
+PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
+PIXI.sound.add("dmg2","static\\dmg\\2.mp3")
+PIXI.sound.add("dmg3","static\\dmg\\3.mp3")
+
+PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3")
+PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3")
+
+PIXI.sound.add("mcanon","static\\mcanon.mp3")
+PIXI.sound.add("pcanon","static\\pcanon.mp3")
+PIXI.sound.add("tcanon","static\\mcanon.mp3")
+PIXI.sound.add("hcanon","static\\pcanon.mp3")
+PIXI.sound.add("fcanon","static\\pcanon.mp3")
+
+PIXI.sound.add("crumble","static\\crumbling.mp3")
 function drawCannon(vehicle,cannon, fire=false){
     let turcrd = [cannon.x, cannon.y]
     let cos = vehicle.cos
@@ -904,7 +926,33 @@ class CircularModule extends RealModule{
     }
 }
 
-class Cannon extends CircularModule{
+class RotatingModule extends CircularModule{
+    constructor(x,y,r){
+        super(x,y,r)
+        this.dir = 0
+        this.prev_dir = 0
+    }
+    updatep(string){
+        string = super.updatep(string)
+        let sublist = string.split(',',2)
+        string = string.slice(sublist[0].length + 1)
+        this.prev_dir = this.dir
+        this.dir = Number(sublist[0])
+        return string
+    }
+    updatee(string){
+        string = super.updatee(string)
+        let sublist = string.split(',',1)
+        string = string.slice(sublist[0].length + 1)
+        this.prev_dir = this.dir
+        this.dir = Number(sublist[0])
+        return string
+    }
+}
+
+
+
+class Cannon extends RotatingModule{
     cannon_r = 12
     l = 18
     len_width = [8,5]
@@ -917,8 +965,6 @@ class Cannon extends CircularModule{
     constructor(x,y,r){
         super(x,y,r)
         this.indicator = new SimpleIndicator(this.image)
-        this.dir = 0
-        this.prev_dir = 0
         this.status = 0
         this.prev_status = 0
     }
@@ -934,23 +980,17 @@ class Cannon extends CircularModule{
     }
     updatep(string){
         string = super.updatep(string)
-        let sublist = string.split(',',2)
-        string = string.slice(sublist[0].length + 1)
         this.prev_status = this.status
-        this.status = Number(sublist[0][0])
-        this.prev_dir = this.dir
-        this.dir = Number(sublist[0].slice(1))
+        this.status = Number(string[0])
+        string = string.slice(1)
         this.indicator.update(this)
         return string
     }
     updatee(string){
-        string = super.updatep(string)
-        let sublist = string.split(',',1)
-        string = string.slice(sublist[0].length + 1)
+        string = super.updatee(string)
         this.prev_status = this.status
-        this.status = Number(sublist[0][0])
-        this.prev_dir = this.dir
-        this.dir = Number(sublist[0].slice(1))
+        this.status = Number(string[0])
+        string = string.slice(1)
         return string
     }
 }
@@ -1841,11 +1881,17 @@ class Building extends Strucure{
         }
         this.state_char = null
     }
+    crumble(){
+        PIXI.sound.play('crumble')
+    }
     update(str){
         
         let prev_char = this.state_char
         this.state_char = str.slice(0,1)
         if (prev_char != this.state_char){
+            if (this.state_char==2 && prev_char!=null){
+                this.crumble()
+            }
             // console.log(str)
             // console.log(prev_char,this.state_char)
         }
@@ -1854,6 +1900,35 @@ class Building extends Strucure{
     }
     draw(alpha){
 
+    }
+    draw_under_construction(){
+        let c0 = MAPstatic.CT.hl
+        let c1 = MAPstatic.CT.hi
+        let poly = []
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2,this.w/2], [this.h/2, -this.w/2]]
+        ctx.beginPath();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = c0
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        for (let p = 1; p < poly.length; p+=1) {
+            ctx.lineTo(global_x_to_screen(this.x)+(poly[p][1]*cos*Zoom)+(poly[p][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[p][1]*sin*Zoom)+(poly[p][0]*-cos*Zoom));
+        }
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = c1
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[2][1]*cos*Zoom)+(poly[2][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[2][1]*sin*Zoom)+(poly[2][0]*-cos*Zoom));
+        ctx.moveTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
+        ctx.lineTo(global_x_to_screen(this.x)+(poly[3][1]*cos*Zoom)+(poly[3][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[3][1]*sin*Zoom)+(poly[3][0]*-cos*Zoom));
+        ctx.stroke();
+        ctx.closePath();
     }
 }
 class BasedBuilding extends Building{
@@ -1899,6 +1974,10 @@ class HouseBuilding extends BasedBuilding{
 
     
     draw(){
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
         if (this.state_char=='2' || this.state_char=='3'){
             return
         }
@@ -1948,6 +2027,10 @@ class ContainerBuilding extends Building{
 
     
     draw(){
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
         if (this.state_char=='2' || this.state_char=='3'){
             return
         }
@@ -1977,6 +2060,10 @@ class ChimneyBuilding extends BasedBuilding{
 
     
     draw(){
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
         if (this.state_char=='2' || this.state_char=='3'){
             return
         }
@@ -2012,7 +2099,10 @@ class HangarBuilding extends BasedBuilding{
 
     
     draw(){
-        
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -2062,6 +2152,10 @@ class CraneBuilding extends Building{
     L=0.25
     
     draw(){
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
         let c0 = MAPstatic.CT.c0
         let c1 = MAPstatic.CT.c1
         let c2 = MAPstatic.CT.c2
@@ -2074,7 +2168,7 @@ class CraneBuilding extends Building{
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
-        poly = [[-0.08/2, -0.08/2], [-0.08/2, 0.08/2], [0.08/2, 0.08/2], [0.08/2, -0.08/2]]
+        poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2,this.w/2], [this.h/2, -this.w/2]]
         ctx.beginPath();
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';

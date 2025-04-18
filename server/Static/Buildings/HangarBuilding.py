@@ -1,7 +1,7 @@
-from server.Static.Buildings.Building import Building
+from server.Static.Buildings.StorageBuilding import StorageBuilding
 
 
-class HangarBuilding(Building):
+class HangarBuilding(StorageBuilding):
     is_destructible = False
     is_flammable = False
     durability = 0.05 #3

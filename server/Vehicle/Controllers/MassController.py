@@ -7,13 +7,15 @@ import math
 
 
 class MassController:
-    def __init__(self, shape: Shape):
+    def __init__(self, shape: Shape, default_mass:float = 0):
         self.shape = shape
         self.modules: List[Module] = None
+        self.mass = default_mass
+        self.default_mass = self.mass
 
     def update_params(self,modules: List[Module]):
         self.modules = modules
-        self.mass = 0
+        # self.mass = 0
         for module in self.modules:
             self.mass += module.get_mass()
         self.shape.mass = self.mass

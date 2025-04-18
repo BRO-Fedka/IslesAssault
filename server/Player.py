@@ -12,6 +12,7 @@ from server.Vehicle.VehiclesDict import *
 from server.Map import Map
 from server.Camera import Camera
 from server.Types import PlayerInputData
+from server.Role import Role
 
 TPS = int(os.environ['TPS'])
 MAPJSON = os.environ['JSON_MAP']
@@ -44,6 +45,7 @@ class Player:
 
     def disconnect(self):
         self.websocket.close()
+        print('Player.disconnect')
 
     @staticmethod
     def validate_name(name: str, account_name: str) -> str:
@@ -93,6 +95,7 @@ class Player:
         self.vehicle: Vehicle = None
         self.camera: Camera = None
         self.world: Map = None
+        self.role:Role = None
 
     @staticmethod
     async def init(websocket, message: str, world: Map):
@@ -100,7 +103,7 @@ class Player:
         self.world = world
         self.websocket = websocket
         self.name = self.validate_name(message[1:].split('\n')[0], message[1:].split('\n')[3])
-        role = str(message[1:].split('\n')[1])
+        self.role = self.world.roles[str(message[1:].split('\n')[1])]
         color_id = int(message[1:].split('\n')[2])
         spawnpoint_id = int(message[1:].split('\n')[3])
         vehicle_id = int(message[1:].split('\n')[4])
@@ -120,7 +123,7 @@ class Player:
             self.disconnect()
             return
         await websocket.send('0,M' + MAPJSON)
-        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id,role=role)
+        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id,role=self.role)
         try:
             self.world.spawnpoints[spawnpoint_id].spawn(self.vehicle,id=vehicle_id)
             self.camera = Camera(self.vehicle, world)
@@ -128,6 +131,10 @@ class Player:
             # world.space.step(0.1)
             await self.loop()
         except:
+            try:
+                self.disconnect()
+            except:
+                pass
             self.vehicle.is_active = False
 
     def parse_message(self, message: str):

@@ -1,7 +1,7 @@
-from server.Static.Buildings.Building import Building
+from server.Static.Buildings.StorageBuilding import StorageBuilding
 
 
-class CraneBuilding(Building):
+class CraneBuilding(StorageBuilding):
     is_destructible = False
     is_flammable = False
     durability = 0.5 #20

@@ -19,6 +19,19 @@ def sign(n):
         return 1
 
 
+def count_normals(coords, reverse = False):
+    normals = []
+    for _ in range(0, len(coords)):
+        dx = coords[(_+1) % len(coords)][0]-coords[_][0]
+        dy = coords[(_+1) % len(coords)][1]-coords[_][1]
+        if not reverse:
+            vec = -dy,dx
+        else:
+            vec = dy,-dx
+        normals.append(vec)
+    return normals
+
+
 def lookat_rad_raw(x, y):
     if not x == 0 and abs(y / x) <= 1:
         return math.atan((y / x)) + math.pi * int(x < 0)

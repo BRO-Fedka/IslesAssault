@@ -19,7 +19,7 @@ class Object:
         return self.get_coords(), self.get_coords()
 
     def get_public_info_string(self) -> str:
-        pass
+        return ''
 
     def get_public_info_string_on_appearance(self) -> str:
         return self.get_public_info_string()
@@ -28,7 +28,7 @@ class Object:
         return self.get_public_info_string()
 
     def get_private_info_string(self) -> str:
-        pass
+        return ''
 
     def does_exists(self) -> bool:
         pass
