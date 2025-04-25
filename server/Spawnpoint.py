@@ -101,10 +101,10 @@ class Spawnpoint:
         # print(roles)
         roles = list(roles)
         if len(roles) == 0:
-            if not self.role is None: print("LOL WTF")
+            # if not self.role is None: print("LOL WTF")
             self.role = None
         else:
-            if self.role is None: print("SUCCES")
+            # if self.role is None: print("SUCCES")
             self.role = roles[0]
 
     def get_map_mark(self):

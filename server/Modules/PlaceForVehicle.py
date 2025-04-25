@@ -46,8 +46,9 @@ class PlaceForVehicle(InteractiveModule):
         return None
 
     def interact(self, vehicle: Vehicle):
-        if (datetime.datetime.now() - self.timer).microseconds < 500:
+        if (datetime.datetime.now() - self.timer).seconds < 1:
             return
+        self.timer = datetime.datetime.now()
         if self.carried_vehicle == vehicle:
             cos, sin = math.cos(self.body.angle), math.sin(self.body.angle)
             nx = -self.land_point[1] * sin + self.land_point[0] * cos + self.body.position.x

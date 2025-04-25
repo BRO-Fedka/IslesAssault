@@ -90,7 +90,7 @@ class Player:
         self.money: int = 0
         self.logged: bool = False
         self.websocket = None
-        self.inputs: PlayerInputData = PlayerInputData()
+        self.inputs: PlayerInputData = PlayerInputData(active_keys=[])
         self.name: str = None
         self.vehicle: Vehicle = None
         self.camera: Camera = None

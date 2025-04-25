@@ -7,7 +7,7 @@ from server.Modules.Armor.ArmorPlate import ArmorPlate
 from server.Vehicle.Controllers.MassController import MassController
 import math
 import pymunk
-from server.constants import COL_ON_GROUND, COL_ON_WATER, COLTYPE_VEHICLE,ACCESSABLE_GROUND
+from server.constants import COL_ON_GROUND, COL_ON_WATER, COLTYPE_VEHICLE, ACCESSABLE_GROUND
 from server.World import World
 
 
@@ -26,6 +26,7 @@ class LevelController:
         self.mass_controller = mass_controller
         self.z = z
         self.ignore = [w, g, a].count(True) == 1
+        self.prev_z = None
         if self.ignore:
             self.z = [w, g, a].index(True)
         self.shape = shape
@@ -54,10 +55,16 @@ class LevelController:
         return self.z
 
     def update(self):
+        if self.prev_z != self.z:
+            if self.z == 0:
+                self.shape.filter = COL_ON_WATER
+            else:
+                self.shape.filter = COL_ON_GROUND
+        self.prev_z = self.z
         if self.update_block_flag:
             self.update_block_flag = False
-            return 
-        if self.mass_controller.get_overload() >= 2 and self.shape.filter == COL_ON_WATER:
+            return
+        if self.mass_controller.get_overload() >= 2 and self.z == 0:
             self.z = -1
             # if not self.underwater:
             #     self.shape.body.velocity = (0,0)
@@ -69,6 +76,7 @@ class LevelController:
         y = self.shape.body.position.y
         angle = self.shape.body.angle
         vertices = self.shape.get_vertices()
+        # TODO Poly atentiuon
         rotated_vertices = map(lambda e: e.rotated(angle), vertices)
         points = list(map(lambda e: (e.x + x, e.y + y), rotated_vertices))
         # print(points)
@@ -79,7 +87,7 @@ class LevelController:
         self.intersects_inaccessible = False
         self.intersects_bridges = False
         for poly in self.world.mpolygon_bridge_ground:
-            if self.shape.filter == COL_ON_GROUND:
+            if self.z == 1:
                 if Point(x, y).intersects(poly):
                     self.intersects_bridges = True
                     break
@@ -96,13 +104,13 @@ class LevelController:
             if vehicle_poly.intersects(poly):
                 self.intersects_inaccessible = True
                 break
-        if self.shape.filter == COL_ON_GROUND and (not self.intersects_accessible) and (
+        if self.z==1 and (not self.intersects_accessible) and (
                 not self.intersects_inaccessible) and (not self.intersects_bridges):
-            self.shape.filter = COL_ON_WATER
+            # self.shape.filter = COL_ON_WATER
             self.z = 0
             # print('WATER')
-        if self.shape.filter == COL_ON_WATER and self.intersects_accessible and (not self.intersects_inaccessible) and (
+        if self.z==0 and self.intersects_accessible and (not self.intersects_inaccessible) and (
                 not self.intersects_bridges):
-            self.shape.filter = COL_ON_GROUND
+            # self.shape.filter = COL_ON_GROUND
             self.z = 1
             # print('GROUND')

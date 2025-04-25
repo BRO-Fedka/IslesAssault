@@ -34,13 +34,12 @@ class World:
                 self.chunks_with_static_objects[(x, y)] = set()
 
     def update(self):
+
         for x in range(0, self.wh):
             for y in range(0, self.wh):
-                self.chunks_with_objects[(x, y)].clear()
-        delarr = []
+                self.chunks_with_objects[(x, y)] = set()
+        delset = set()
         for obj in self._objects:
-            obj.update()
-            # print('!')
             # coord: coords = obj.get_coords()
             bounds: Tuple[coords, coords] = obj.get_bounds()
             bounds: Tuple[int, int, int, int] = (
@@ -48,17 +47,24 @@ class World:
             try:
                 if obj.is_active:
                     if not obj.is_static:
-                        for x in range(bounds[0], bounds[2] + 1):
-                            for y in range(bounds[1], bounds[3] + 1):
-                                self.chunks_with_objects[x, y].add(obj)
-                                # print('>')
-                                # print(obj)
+                        # if not ((-10 < bounds[0] < bounds[2] < self.wh + 10) and (
+                        #         -10 < bounds[1] < bounds[3] < self.wh + 10)):
+                        #     obj.remove_from_space()
+                        #     delset.add(obj)
+                        # else:
+                            for x in range(bounds[0], bounds[2] + 1):
+                                for y in range(bounds[1], bounds[3] + 1):
+                                    self.chunks_with_objects[x, y].add(obj)
+                                    # print('>')
+                                    # print(obj)
                 else:
                     obj.remove_from_space()
-                    delarr.append(obj)
+                    delset.add(obj)
             except:
                 logging.exception('')
-        for obj in delarr:
+        for obj in self._objects:
+            obj.update()
+        for obj in list(delset):
             self._objects.remove(obj)
             # print(self._objects)
             # print(self.space.bodies)
@@ -83,18 +89,18 @@ class World:
             return self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))].union(
                 self.chunks_with_static_objects[(math.floor(coord.x), math.floor(coord.y))])
         except KeyError:
-            # print('?')
+            print('?')
             return set()
 
     def add_object(self, obj: Object):
         self._objects.add(obj)
         # print('6')
-        print('NEW OBJECT', obj.__class__.__name__)
+        # print('NEW OBJECT', obj.__class__.__name__)
         if obj.is_static:
             # print('7')
 
             bounds: Tuple[coords, coords] = obj.get_bounds()
-            print(bounds)
+            # print(bounds)
             bounds: Tuple[int, int, int, int] = (
                 math.floor(bounds[0].x), math.floor(bounds[0].y), math.floor(bounds[1].x), math.floor(bounds[1].y))
 

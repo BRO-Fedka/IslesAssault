@@ -15,6 +15,8 @@ class RepairKit(Module):
         super().update_module(vehicle)
 
     def update_module_input(self, input: PlayerInputData):
+        # print(IK.REPAIR,input)
+        # print(input.active_keys)
         if IK.REPAIR in input.active_keys:
             self.health_controller.repair()
 

@@ -35,7 +35,9 @@ class InteractionModule(Module):
                 # print(x,y)
                 try:
                     for _ in self.world.get_objects_in_chunk(coords(x, y), True):
-                        # if isinstance(_,Vehicle):
+                        if _ is self or _ == self:
+                            continue
+                        # if isinstance(_,Vehicle) and isinstance(_,InteractiveObject):
                         #     print('LOLOL')
                         if isinstance(_, InteractiveObject):
                             # print(type(_))

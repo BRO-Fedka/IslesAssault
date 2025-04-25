@@ -56,7 +56,7 @@ class Vehicle(Object):
                 modules.add(input_key)
         self.input_keys = list(modules)
         self.input_keys.sort(key=lambda e: e.id)
-        print(self.input_keys)
+        # print(self.input_keys)
 
     def kill(self):
         self.is_active = False
@@ -69,7 +69,7 @@ class Vehicle(Object):
         self.world.space.remove(self.shape)
 
     def get_map_mark(self):
-        return (MARK_ID_VEHICLE,round(self.body.position.x,2),round(self.body.position.y,2))
+        return (MARK_ID_VEHICLE, round(self.body.position.x, 2), round(self.body.position.y, 2))
 
     def update(self):
         self.role.intelligence_ally_map_marks.append(self.get_map_mark())
@@ -96,9 +96,12 @@ class Vehicle(Object):
             try:
                 module.update_module_input(input)
                 message = module.parse_callback(message)
-            except MessageParsingException:
+            except Exception as e:
                 logging.exception('')
-                self.kill()
+                if isinstance(e,MessageParsingException):
+                    print('???')
+                    self.kill()
+
     def get_world(self) -> World:
         return self.world
 

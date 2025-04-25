@@ -25,9 +25,9 @@ class Projectile(Entity):
     @staticmethod
     def on_static_hit_begin(arbiter, space, data):
         s1, s2 = arbiter.shapes
-        print(s2)
-        print(dir(s2))
-        print('LOL')
+        # print(s2)
+        # print(dir(s2))
+        # print('LOL')
         s1.master.hit_static(s2.master)
         return True
 
