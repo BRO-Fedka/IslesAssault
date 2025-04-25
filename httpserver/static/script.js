@@ -335,6 +335,8 @@ function ExitGame(){
     document.getElementById("chkInterfaceHide").checked = false
     Players = []
     indicators.innerHTML = ""
+    upperIndicators.innerHTML = ""
+    inventoryMessages.innerHTML = ""
     TVehicles = new Map()
 
     socket.close();
@@ -556,6 +558,7 @@ function drawLayer(layer) {
 function onPackageLoaded(){
     UpdtKeybinds()
 }
+let Resps = {}
 function GetSpawnInfo(){
     try{
         let soc = new WebSocket(document.getElementById('ServerAddress').value);
@@ -569,6 +572,7 @@ function GetSpawnInfo(){
 //                    console.log(event.data)
             console.log(event.data)
             var data = JSON.parse(event.data);
+            Resps = data
 //                    console.log(data)
             console.log(data)
             document.getElementById('spcontainer').innerHTML = ''
@@ -984,6 +988,7 @@ function startgame() {
 					CurVehicleID = Number(splstr[2])
 					CurVehicleType = Number(splstr[3])
                     // console.log(INFO)
+                    // console.log(infarr[0])
 					Z = Number(splstr[1])
 					Money = splstr[0]
 //					Zones = splstr[splstr.length -1].toString()
@@ -1129,7 +1134,10 @@ function startgame() {
                     new Array(0,1,2,3,4).forEach(i => {
                         post_mouse_input.set(i,false)
                     });
-					socket.send(lastMSGid.toString()+','+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+substr);
+                    // console.log(TVehicles.get(CurVehicleID).get_callback())
+                    let callback = TVehicles.get(CurVehicleID).get_callback()
+                    // console.log(callback)
+					socket.send(lastMSGid.toString()+','+((mouseX-GameW/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+((mouseY-GameH/2/window.devicePixelRatio)/Zoom*window.devicePixelRatio).toString()+','+substr+','+callback);
 
 
 			}}

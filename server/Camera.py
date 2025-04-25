@@ -34,4 +34,5 @@ class Camera:
         for obj in disappeared_objects:
             print(obj)
             string += obj.get_public_info_string_on_disappearance()
+        # print(string.split('\n')[0])
         return string

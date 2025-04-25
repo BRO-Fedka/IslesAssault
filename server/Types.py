@@ -10,6 +10,10 @@ class coords(NamedTuple):
     y: float
 
 
+class MessageParsingException:
+    pass
+
+
 @dataclasses.dataclass
 class PlayerInputData:
     mouse_0: bool = False
@@ -21,3 +25,4 @@ class PlayerInputData:
     cursor_x: float = 0
     cursor_y: float = 0
     date: datetime.datetime = datetime.datetime.now()
+    message: str = ''

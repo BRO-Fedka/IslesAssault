@@ -80,3 +80,8 @@ class Map(World):
         super().update()
         for sp in self.spawnpoints:
             sp.update()
+            for r in self.roles.items():
+                r[1].intelligence_enemy_map_marks.append(sp.get_map_mark())
+
+        for r in self.roles.items():
+            r[1].update()

@@ -1,5 +1,5 @@
 from server.Modules.RotatingModule import RotatingModule, ModuleIsBroken, ModuleIsRepairing
-from server.Static.BuildingsGroup import BuildingsGroup
+from server.Static.BuildingsGroup import Building
 from server.Types import PlayerInputData, coords
 import math
 from server.World import World
@@ -7,7 +7,7 @@ from pymunk import Body
 import datetime
 from shapely.geometry import LineString, Point
 import logging
-from server.Role import Role
+from server.Vehicle.Vehicle import Vehicle
 
 
 class ConstructionTool(RotatingModule):
@@ -16,12 +16,12 @@ class ConstructionTool(RotatingModule):
     rotation_speed = math.pi
     reload_time = 1
 
-    def __init__(self, x: float, y: float, world: World, body: Body, arm_l=0.025, role: Role = None):
-        super().__init__(x, y, body)
+    def __init__(self, x: float, y: float, world: World, vehicle: Vehicle, arm_l=0.025):
+        super().__init__(x, y, vehicle.body)
         self.reload_start = datetime.datetime.now()
         self.world = world
         self.arm_l = arm_l
-        self.role = role
+        self.vehicle = vehicle
 
     def build(self):
         if self.hp == 0:
@@ -35,7 +35,7 @@ class ConstructionTool(RotatingModule):
                 # print(x,y)
                 try:
                     for _ in self.world.get_objects_in_chunk(coords(x, y)):
-                        if isinstance(_, BuildingsGroup):
+                        if isinstance(_, Building):
                             objects.add(_)
                 except:
                     pass
@@ -44,10 +44,9 @@ class ConstructionTool(RotatingModule):
         cos, sin = math.cos(self.get_abs_direction()), math.sin(self.get_abs_direction())
         line = LineString([[tx, ty], [tx + self.arm_l * cos, ty + self.arm_l * sin]])
         inters = []
-        for bg in list(objects):
-            for b in bg.buildings:
-                if b.shape.intersects(line):
-                    inters.append(b)
+        for b in list(objects):
+            if b.shape.intersects(line):
+                inters.append(b)
         if len(inters) > 0:
             if len(inters) > 1:
                 inters.sort(key=lambda b: b.intersection(line).distance(Point(tx, ty)))
@@ -55,7 +54,7 @@ class ConstructionTool(RotatingModule):
             # print(building)
             try:
                 # print(type(building))
-                building.health_controller.repair(self.role)
+                building.health_controller.repair(self.vehicle.role)
             except:
                 logging.exception('')
         # print(objects)

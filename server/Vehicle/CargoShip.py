@@ -16,6 +16,8 @@ from server.Modules.OverloadIndication import OverloadIndication
 from server.Modules.RepairKit import RepairKit
 from server.Vehicle.Controllers.LevelController import LevelController
 from server.functions import count_normals
+from server.Modules.InteractionModule import InteractionModule
+from server.Modules.MapModule import MapModule
 
 POLY_SHAPE = [[0,0.075],[0.15,0.075],[0.2,0.05],[0.225,0],[0.2,-0.05],[0.15,-0.075],[0,-0.075],[-0.15,-0.075],[-0.225,-0.075],[-0.25,-0.05],[-0.25,0.05],[-0.225,0.075]]
 POLY_SHAPE_N = [(-0.0, 0.15), (0.025, 0.05), (0.05, 0.025), (0.05, -0.025), (0.025, -0.05), (-0.0, -0.15), (-0.0, -0.15), (-0.0, -0.075), (-0.025, -0.025), (-0.1, 0.0), (-0.025, 0.025), (-0.0, 0.225)]
@@ -55,6 +57,8 @@ class CargoShip(Vehicle):
         segment2 = ShipSegment(SEG2,self.level_controller)
         segment3 = ShipSegment(SEG3,self.level_controller)
         self.modules = [
+            MapModule(self),
+            InteractionModule(self.world, self),
             ShipSteering(self.body,-0.25,0,0.075),
             WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.2),
             ShipEngine(self.body,-0.25,0,ENG,force=0.015,fueltanks=[fueltank1,fueltank2,fueltank3,fueltank4], segment=segment3,fueluse=0.0000003),

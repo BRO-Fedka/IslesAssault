@@ -148,6 +148,7 @@ class Player:
         # print(message)
         cursor_x = float(message.split(',')[0])
         cursor_y = float(message.split(',')[1])
+        callback = ','.join(message.split(',')[3:])
         message = message.split(',')[2]
         mouse_input = []
         for _ in range(0,5):
@@ -160,6 +161,8 @@ class Player:
             self.vehicle.input_keys[_].is_pressed = bool(int(message[_]))
             if bool(int(message[_])):
                 keys.append(self.vehicle.input_keys[_])
+        # print(message)
+        # print(callback)
         self.inputs = PlayerInputData(
             mouse_0=mouse_input[0],
             mouse_1=mouse_input[1],
@@ -169,17 +172,18 @@ class Player:
             active_keys=keys,
             cursor_x=cursor_x,
             cursor_y=cursor_y,
-            date=datetime.datetime.now()
+            date=datetime.datetime.now(),
+            message=callback
 
         )
-        try:
-            m_index = message.index('m')
-            message_text = message[m_index + 1:]
-            if message_text.replace(' ', '') == '':
-                return
-            # TODO Commands handlers
-        except:
-            pass
+        # try:
+        #     m_index = message.index('m')
+        #     message_text = message[m_index + 1:]
+        #     if message_text.replace(' ', '') == '':
+        #         return
+        #     # TODO Commands handlers
+        # except:
+        #     pass
 
     async def loop(self):
         while True:

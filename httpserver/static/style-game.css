@@ -5,9 +5,9 @@
     display: none !important;
 }
 
-#player-modules-canvas{
+/* #player-modules-canvas{
 
-}
+} */
 
 #player-modules-div{
 position:fixed;
@@ -34,6 +34,26 @@ div.indicator div.ceil{
 	transform: translateX(-50%);
 	bottom: 10px;
 }
+#inventoryMessages{
+    display: flex;
+	flex-direction: column;
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 105px;
+}
+
+#inventoryMessages > div{
+padding:5px;
+margin-bottom:10px;
+padding-left:10px;
+padding-right:10px;
+background-color:rgba(0,0,0,0.2);
+border-radius:5px;
+font-family: 'ZCOOL QingKe HuangYou', cursive;
+color:#fff;
+}
+
 #upperIndicators{
     display: flex;
 	flex-direction: row;
@@ -102,3 +122,102 @@ margin-right:2px;
     transform: rotate(0deg);
   }
 }
+
+#mapModule{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(calc(-50% - 50px));
+	aspect-ratio: 1 / 1;
+	height: calc(100vh - 150px);
+	/* background-color: rgba(0,0,0,0.2); */
+	border-radius: 5px;
+	overflow: hidden;
+	border: rgba(0,0,0,0.2) solid 10px;
+}
+
+#mapModuleSettings{
+	position: fixed;
+	left: calc(50% + calc((100vh - 150px) / 2) + 20px);
+	top: 50%;
+	transform: translateY(calc(-50% - 50px));
+	width: 150px;
+	height: calc(100vh - 150px + 10px);
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 5px;
+	overflow: hidden;
+	padding: 5px;
+}
+
+#mapModuleSettings > input{
+	display: none;
+}
+
+#mapModuleSettings > label{
+	display: inline-block;
+	width:40px;
+	height:40px;
+	aspect-ratio: 1 / 1;
+	margin:5px;
+	border-radius: 5px;
+	opacity: 50%;
+	cursor: pointer;
+}
+#mapModuleSettings > label > img{
+	width: 100%;
+	height: 100%;
+}
+
+#mapModuleSettings hr{
+	border: rgba(255,255,255,0.5) solid 2.5px;
+	border-radius: 2.5px;
+}
+
+#mapModuleSettings > input:checked + label{
+	outline: solid rgba(255,255,255,1) 5px;
+	opacity: 80%;
+	
+}
+#mapModuleSettings >  div{
+	display: inline-block;
+	width:calc(100% - 10px);
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin:5px;
+	border-radius: 5px;
+	background-color: rgba(0,0,0,0.2);
+	cursor: pointer;
+	font-size: 20px;
+	text-align: center;
+	font-family: 'ZCOOL QingKe HuangYou', cursive;
+	color: rgba(255,255,255,0.8);
+}
+#mapModuleSettings >  div:hover{
+	background-color: rgba(0,0,0,0.5);
+
+}
+
+#mapModule > canvas{
+	position: absolute;
+	top:0;
+	width:100%;
+	height: 100%;
+	z-index:10;
+}
+#mapModule > img{
+	opacity: 95%;
+	position: absolute;
+	top:0;
+	width:100%;
+	height: 100%;
+}
+
+#mapModule > .spawnpoint{
+	z-index:500;
+	position: absolute;
+	display:block;
+	width:25px;
+	height:25px;
+	border-radius:50%;
+	transform:translateX(-50%) translateY(-50%);
+	}

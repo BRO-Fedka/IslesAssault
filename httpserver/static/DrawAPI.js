@@ -363,7 +363,10 @@ class InputKey{
     }
 }
 let IK = {
-    REPAIR : new InputKey(5,"Repair",70,'static/indication/repair_animation.svg')
+    REPAIR : new InputKey(5,"Repair",70,'static/indication/repair_animation.svg'),
+    INTERACT1: new InputKey(7, "Interact", 69,'static/indication/click_icon.svg'),
+    INTERACT2: new InputKey(8, "Interact 2", 81,'static/indication/click_icon.svg'),
+    MAP: new InputKey(9, "Open map", 77,'static/indication/map_icon.svg')
 }
 
 
@@ -498,6 +501,15 @@ class Vehicle{
         
     }
 
+    get_callback(){
+        let str = ""
+        for (let m = 0; m < this.modules.length; m++) {
+            str += this.modules[m].get_callback()
+            
+        }
+        return str
+    }
+
     updatep(string){
         string = this.parse_common_string(string)
         X = this.x
@@ -528,6 +540,32 @@ class Indicator{
         this.id = last_indicator_id
         this.indicators = indicators_container
         last_indicator_id += 1
+    }
+}
+
+
+
+class InventoryMessage{
+    constructor(){
+        this.id = last_indicator_id
+        last_indicator_id += 1
+    }
+    update(text){
+
+        let imsg = document.getElementById('invmessage'+this.id)
+        if (text==''){
+            if (imsg != undefined ){
+                inventoryMessages.removeChild(imsg)
+            }
+            return
+        }
+        if (imsg == undefined ){
+            inventoryMessages.innerHTML += '<div id="invmessage'+this.id+'">'+text+'</div>'
+            imsg = document.getElementById('invmessage'+this.id)
+        }
+        if (imsg.innerHTML != text){
+            imsg.innerHTML = text
+        }
     }
 }
 
@@ -630,6 +668,10 @@ class Module{
     draw_player_indicator(layer, vehicle){}
 
     draw_indicator(layer,vehicle){}
+
+    get_callback(){
+        return ''
+    }
 }
 
 class MockModule extends Module{
@@ -665,6 +707,323 @@ class RepairKit extends Module{
 
         string = string.slice(sublist[0].length + 1)
         return string
+    }
+}
+
+class InteractionModule extends Module{
+    input_keys = [IK.INTERACT1,IK.INTERACT2]
+    constructor(){
+        super()
+        this.imsg_i1 = new InventoryMessage()
+        this.imsg_i2 = new InventoryMessage()
+        //this.indicator = new TwoImagesIndicator(this.image,upperIndicators)
+        //this.indication_char = '0'
+        //this.vehicle = vehicle
+    }
+    updatep(string){
+        let sublist = string.split(',',2)
+//        console.log(sublist[0])
+//        console.log(this.vehicle.modules)
+//        console.log(this.vehicle.modules[Number(sublist[0])])
+
+        // if (sublist[0]==''){
+        //     this.indicator.update(this,'','animation-repair',false)
+
+        // }else if (sublist[0]=='-'){
+        //     this.indicator.update(this,'static/indication/armor_icon.svg','animation-repair',true)
+        // }
+        // else{
+        //     this.indicator.update(this,this.vehicle.modules[Number(sublist[0])].image,'animation-repair',true)
+        // }
+        if (sublist[0].length >0){
+            this.imsg_i1.update('<b>[ '+keyboardMap[IK.INTERACT1.cur_char]+' ]</b> '+sublist[0])
+            if (sublist[1].length >0){
+                this.imsg_i2.update('<b>[ '+keyboardMap[IK.INTERACT2.cur_char]+' ]</b> '+sublist[1])
+            }else{
+                this.imsg_i2.update('')
+            }
+        }else{
+            this.imsg_i1.update('')
+        }
+        string = string.slice(sublist[0].length + sublist[1].length + 2)
+        return string
+    }
+}
+const base_icon = {
+    'N':new Image(),
+    'R':new Image(),
+    'B':new Image(),
+}
+base_icon['R'].src = 'static/mapmarks/flagR.svg'
+base_icon['B'].src = 'static/mapmarks/flagB.svg'
+base_icon['N'].src = 'static/mapmarks/flag.svg'
+
+const sp_icon = {
+    'N':new Image(),
+    'R':new Image(),
+    'B':new Image(),
+}
+sp_icon['R'].src = 'static/mapmarks/starR.svg'
+sp_icon['B'].src = 'static/mapmarks/starB.svg'
+sp_icon['N'].src = 'static/mapmarks/star.svg'
+
+const mark_icon = {
+    'R':new Image(),
+    'B':new Image(),
+    'Y':new Image(),
+}
+mark_icon['R'].src = 'static/mapmarks/markR.svg'
+mark_icon['B'].src = 'static/mapmarks/markB.svg'
+mark_icon['Y'].src = 'static/mapmarks/markY.svg'
+
+map_marks_display_functions = {
+    // Vehicle
+    'm0':function(string,ctxc){
+        let [clid, id, x, y] = string.split(',',4)
+        string = string.slice(clid.length+id.length+x.length+y.length+4)
+        ctxc.fillStyle = role_color.get(clid)
+        ctxc.beginPath()
+        ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,5,0,2*Math.PI)
+        // console.log(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
+        ctxc.closePath()
+        ctxc.fill()
+        return string
+    },
+    // BASE
+    'm1':function(string,ctxc){
+        let [clid, id, x, y] = string.split(',',4)
+        string = string.slice(clid.length+id.length+x.length+y.length+4)
+        ctxc.fillStyle = 'rgba(0,0,0,0.5)'
+        ctxc.beginPath()
+        ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,10,0,2*Math.PI)
+        ctxc.closePath()
+        ctxc.fill()
+        ctxc.drawImage(base_icon[clid], Number(x)/WH*ctxc.canvas.width-12,Number(y)/WH*ctxc.canvas.height-12,25,25)
+
+        return string
+    },
+    // SP
+    'm2':function(string,ctxc){
+        let [clid, id, x, y] = string.split(',',4)
+        string = string.slice(clid.length+id.length+x.length+y.length+4)
+        ctxc.fillStyle = 'rgba(0,0,0,0.5)'
+        ctxc.beginPath()
+        ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,10,0,2*Math.PI)
+        ctxc.closePath()
+        ctxc.fill()
+        ctxc.drawImage(sp_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-10,20,20)
+
+        return string
+    },
+    // MARK
+    'm3':function(string,ctxc){
+        let [clid, id, x, y] = string.split(',',4)
+        string = string.slice(clid.length+id.length+x.length+y.length+4)
+        ctxc.drawImage(mark_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-20,20,20)
+
+        return string
+    },
+    // ARROW
+    'm4':function(string,ctxc){
+        let [clid, id, x, y, x1, y1] = string.split(',',6)
+        string = string.slice(clid.length+id.length+x.length+y.length+x1.length+y1.length+6)
+        ctxc.strokeStyle = role_color.get(clid)
+        ctxc.lineWidth = 4
+        ctxc.beginPath();
+        ctxc.moveTo(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
+        ctxc.lineTo(Number(x1)/WH*ctxc.canvas.width,Number(y1)/WH*ctxc.canvas.height)
+        ctxc.closePath();
+        ctxc.stroke()
+
+        ctxc.fillStyle = role_color.get(clid)
+        let l = Math.sqrt((Number(x1)-Number(x))**2+(Number(y1)-Number(y))**2)
+        let cos = (Number(x1)-Number(x))/l
+        let sin = (Number(y1)-Number(y))/l
+        ctxc.beginPath();
+        ctxc.moveTo((Number(x1)+cos*0.3)/WH*ctxc.canvas.width,(Number(y1)+sin*0.3)/WH*ctxc.canvas.height)
+        // Number(x1)+ (Number(x1)-Number(x))/l*0.5 - (Number(y1)-Number(y))/l*0.5
+        // Number(y1)+ (Number(y1)-Number(y))/l*0.5 + (Number(x1)-Number(x))/l*0.5
+        ctxc.lineTo((Number(x1)- 0.3*sin-cos*0.3)/WH*ctxc.canvas.width,(Number(y1)+ cos*0.3 - sin*0.3)/WH*ctxc.canvas.height)
+        ctxc.lineTo((Number(x1)+ 0.3*sin-cos*0.3)/WH*ctxc.canvas.width,(Number(y1)- cos*0.3 - sin*0.3)/WH*ctxc.canvas.height)
+        ctxc.closePath();
+        ctxc.fill()
+        // ctxc.stroke()
+        console.log(clid, id, x, y, x1, y1)
+        // ctxc.drawImage(mark_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-20,20,20)
+
+        return string
+    },
+}
+let mapModuleInstance = null
+let role_color = new Map()
+role_color.set('R','#f00')
+role_color.set('B','#00f')
+role_color.set('Y','#ff0')
+role_color.set('N','#fff')
+let markRoles = [['R','#f00'],['B','#00f'],['Y','#ff0']]
+let markPointTypes = [[3,'static/mapmarks/mark.svg']]
+let markArrowTypes = [[4,'static/mapmarks/arrow_icon.svg']]
+class MapModule extends Module{
+    input_keys = [IK.MAP]
+    constructor(){
+        super()
+        this.new_point = null
+    }
+    updatep(string){
+        // console.log('before',string)
+        // console.log(document.getElementById('mapModule'))
+        // console.log(Resps)
+        let mM = document.getElementById('mapModule')
+        // console.log(mM)
+        if (!mM){
+            let mp = document.createElement('div')
+            mp.id = 'mapModule'
+            mp.style.display = 'none'
+            document.body.appendChild(mp)
+            let mc = document.createElement('div')
+            mc.id = 'mapModuleSettings'
+            mc.style.display = 'none'
+            document.body.appendChild(mc)
+            mp.innerHTML += '<canvas id="mapCanvas" width=300 height=300></canvas><img alt="map" src="static/map12.png">'
+            this.canv = document.getElementById('mapCanvas')
+            this.ctx = this.canv.getContext('2d')
+            this.canv.addEventListener('click',this.m_click)
+            this.canv.addEventListener('dblclick',this.m_double)
+            this.canv.addEventListener('mousedown',this.m_down)
+            this.canv.addEventListener('mouseup',this.m_up)
+            markRoles.forEach(function(r){
+                mc.innerHTML += '<input checked type="radio" id="mapModuleRoleMark'+r[0]+'" name="mapModuleRoleMark" value="'+r[0]+'" /><label style="background-color:'+r[1]+'" for="mapModuleRoleMark'+r[0]+'"></label>'
+            })
+            mc.innerHTML += "<hr>"
+            markArrowTypes.forEach(function(t){
+                mc.innerHTML += '<input checked type="radio" id="mapModuleMarkType'+t[0]+'" name="mapModuleMarkType" value="'+t[0]+'" /><label for="mapModuleMarkType'+t[0]+'"><img src="'+t[1]+'" alt="mark"></label>'
+            })
+
+            mc.innerHTML += "<br>"
+            markPointTypes.forEach(function(t){
+                mc.innerHTML += '<input checked type="radio" id="mapModuleMarkType'+t[0]+'" name="mapModuleMarkType" value="'+t[0]+'" /><label for="mapModuleMarkType'+t[0]+'"><img src="'+t[1]+'" alt="mark"></label>'
+            })
+            mc.innerHTML += "<hr>"
+            mc.innerHTML += '<div onclick="mapModuleInstance.clear()">Clear</div>'
+            mapModuleInstance = this
+            
+            // document.body.innerHTML += '<div id="mapModule" style="display:none"></div>'
+
+        }
+        if (IK.MAP.is_pressed){
+            if (document.getElementById('mapModule').style.display=='none'){
+                document.getElementById('mapModule').style.display = 'block'
+                document.getElementById('mapModuleSettings').style.display = 'block'
+            }
+        }else{
+            if (document.getElementById('mapModule').style.display=='block'){
+                document.getElementById('mapModule').style.display = 'none'
+                document.getElementById('mapModuleSettings').style.display = 'none'
+            }
+        }
+        if (string[0]=='0'){
+            return string.slice(1)
+        }
+        // let amnt = string.split(',',1)[0]
+        // string = string.slice(amnt.length+1)
+        // let role_color = new Map()
+        // for (let i = 0; i < amnt; i++) {
+        //     let par = string.split(',',2)
+        //     string=string.slice(par[0].length+par[1].length+2)
+        //     role_color.set(par[0],par[1])   
+        // }
+        this.ctx.canvas.width = this.ctx.canvas.clientWidth
+        this.ctx.canvas.height = this.ctx.canvas.clientHeight
+        this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height)
+
+        let amnt = string.split(',',1)[0]
+        string = string.slice(amnt.length+1)
+        for (let i = 0; i < amnt; i++) {
+            let id = string.split(',',2)[1]
+            string=map_marks_display_functions['m'+id](string,this.ctx,role_color) 
+        }
+        this.ctx.fillStyle = '#fff'
+        this.ctx.strokeStyle = "#000"
+        this.ctx.lineWidth = 2
+        this.ctx.beginPath()
+        this.ctx.arc(X/WH*this.ctx.canvas.width,Y/WH*this.ctx.canvas.height,6,0,2*Math.PI)
+        this.ctx.closePath()
+        this.ctx.fill()
+        this.ctx.stroke()
+        // let sublist = string.split(',',2)
+        // if (sublist[0].length >0){
+        //     this.imsg_i1.update('<b>[ '+keyboardMap[IK.INTERACT1.cur_char]+' ]</b> '+sublist[0])
+        //     if (sublist[1].length >0){
+        //         this.imsg_i2.update('<b>[ '+keyboardMap[IK.INTERACT2.cur_char]+' ]</b> '+sublist[1])
+        //     }else{
+        //         this.imsg_i2.update('')
+        //     }
+        // }else{
+        //     this.imsg_i1.update('')
+        // }
+        // string = string.slice(sublist[0].length + sublist[1].length + 2)
+        // console.log('after',string)
+        return ','+string
+    }
+    drawp(layer,vehicle){
+
+    }
+    m_double(event){
+
+    }
+    clear(){
+        this.new_point = -1
+    }
+    m_click(event){
+        markPointTypes.forEach(function(p){
+            if (p[0]==Number(document.querySelector('input[name="mapModuleMarkType"]:checked').value)){
+                mapModuleInstance.new_point = [event.offsetX/mapCanvas.width*WH,event.offsetY/mapCanvas.height*WH]
+            }
+        })
+    }
+    m_down(event){
+        markArrowTypes.forEach(function(p){
+            if (p[0]==Number(document.querySelector('input[name="mapModuleMarkType"]:checked').value)){
+                mapModuleInstance.new_point = [event.offsetX/mapCanvas.width*WH,event.offsetY/mapCanvas.height*WH,null,null]
+            }
+        })
+        // if (markArrowTypes.includes(Number(document.querySelector('input[name="mapModuleMarkType"]:checked').value))){
+        //     mapModuleInstance.new_point = [event.offsetX/mapCanvas.width*WH,event.offsetY/mapCanvas.height*WH,null,null]
+        // }
+        
+    }
+    m_up(event){
+        if (event.button==2){
+            mapModuleInstance.new_point = null
+        }
+        try{
+            mapModuleInstance.new_point[2] = event.offsetX/mapCanvas.width*WH
+            mapModuleInstance.new_point[3] = event.offsetY/mapCanvas.height*WH
+            // console.log(mapModuleInstance.new_point)
+        }catch{}
+    }
+    get_callback(){
+        if (this.new_point == -1){
+            this.new_point = null
+            return 'X,'
+        }else if (this.new_point == null){
+            return ','
+        }else{
+            if (this.new_point.length == 2){
+                let s = document.querySelector('input[name="mapModuleMarkType"]:checked').value+','+document.querySelector('input[name="mapModuleRoleMark"]:checked').value+','+this.new_point[0]+','+this.new_point[1]+','
+                this.new_point = null
+                return s
+            }else{
+                if (this.new_point.includes(null)) {
+                    return ','
+                }
+                let s = document.querySelector('input[name="mapModuleMarkType"]:checked').value+','+document.querySelector('input[name="mapModuleRoleMark"]:checked').value+','+this.new_point[0]+','+this.new_point[1]+','+this.new_point[2]+','+this.new_point[3]+','
+                this.new_point = null
+                return s 
+            }
+
+        }
+        
     }
 }
 

@@ -245,6 +245,8 @@ class Heavy extends Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE0},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.modules = [
+            new MapModule(),
+            new InteractionModule(),
             new MortarCannon(0,0),
             new MortarCannon(-0.1,0),
             new TorpedoFrontalTube(TUBE0,12),
@@ -321,6 +323,8 @@ class Tank extends Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE1},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.modules = [
+            new MapModule(),
+            new InteractionModule(),
             new TankCannon(0.005, 0),
             new TankEngine(ENG1),
             new LeftTrack(TRACK_L1),
@@ -390,6 +394,8 @@ class CargoShip extends Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE2},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.modules = [
+            new MapModule(),
+            new InteractionModule(),
             new ShipSteering(),
             new MockModule(),
             new ShipEngine(ENG2),
@@ -464,6 +470,14 @@ class LandingShip extends Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE3},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.modules = [
+            new MapModule(),
+            new InteractionModule(),
+            new MockModule(),
+            new MockModule(),
+            new MockModule(),
+            new MockModule(),
+            new MockModule(),
+            new MockModule(),
             new ShipSteering(),
             new MockModule(),
             new ShipEngine(ENG3),
@@ -531,6 +545,8 @@ class ConstructionVehicle extends Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE1},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.modules = [
+            new MapModule(),
+            new InteractionModule(),
             new ConstructionTool(0.015, 0),
             new TankEngine(ENG1),
             new LeftTrack(TRACK_L1),

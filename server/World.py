@@ -10,7 +10,6 @@ import math
 import datetime
 import logging
 
-
 dotenv.load_dotenv()
 WORLD_TPS = int(os.environ['TPS'])
 Chunks = Dict[Sequence[int], Set[Object]]
@@ -52,6 +51,8 @@ class World:
                         for x in range(bounds[0], bounds[2] + 1):
                             for y in range(bounds[1], bounds[3] + 1):
                                 self.chunks_with_objects[x, y].add(obj)
+                                # print('>')
+                                # print(obj)
                 else:
                     obj.remove_from_space()
                     delarr.append(obj)
@@ -74,19 +75,23 @@ class World:
 
             await asyncio.sleep(1 / WORLD_TPS - (datetime.datetime.now() - start).total_seconds())
 
-    def get_objects_in_chunk(self, coord: coords):
+    def get_objects_in_chunk(self, coord: coords, log=False):
         # print(math.floor(coord.x),math.floor(coord.y))
         try:
+            # if log and len(self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))]) > 0:
+            #     print(self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))])
             return self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))].union(
                 self.chunks_with_static_objects[(math.floor(coord.x), math.floor(coord.y))])
         except KeyError:
+            # print('?')
             return set()
 
     def add_object(self, obj: Object):
         self._objects.add(obj)
-        print('6')
+        # print('6')
+        print('NEW OBJECT', obj.__class__.__name__)
         if obj.is_static:
-            print('7')
+            # print('7')
 
             bounds: Tuple[coords, coords] = obj.get_bounds()
             print(bounds)
@@ -104,5 +109,3 @@ class World:
             # except:
             #     print('ERR')
             #     logging.exception('')
-
-

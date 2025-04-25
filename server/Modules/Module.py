@@ -2,6 +2,7 @@ from server.Types import PlayerInputData, coords
 from typing import Sequence
 from typing import List
 from server.Modules.InputKeys.InputKey import InputKey
+
 DEFAULT = 0
 BOTTOM = -1
 
@@ -11,12 +12,12 @@ class Module:
     repair_priority: int = None
     is_repairable: bool = False
     active_after_death: bool = True
-    input_keys:List[InputKey] = None
+    input_keys: List[InputKey] = None
 
     def __init__(self):
         self.is_destroyed = False
 
-    def update_module(self,vehicle):
+    def update_module(self, vehicle):
         pass
 
     def update_module_input(self, input: PlayerInputData):
@@ -51,3 +52,6 @@ class Module:
 
     def get_mass(self) -> float:
         return 0
+
+    def parse_callback(self, message:str) -> str:
+        return message

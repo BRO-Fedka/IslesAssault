@@ -10,6 +10,9 @@ from server.Vehicle.Controllers.MassController import MassController
 from server.IdManager import IdManager
 from server.Vehicle.Controllers.LevelController import LevelController
 from server.Role import Role
+import logging
+from server.Types import MessageParsingException
+from server.constants import MARK_ID_VEHICLE
 
 
 class NoPlaceForSpawn(Exception): pass
@@ -65,7 +68,11 @@ class Vehicle(Object):
         self.world.space.remove(self.body)
         self.world.space.remove(self.shape)
 
+    def get_map_mark(self):
+        return (MARK_ID_VEHICLE,round(self.body.position.x,2),round(self.body.position.y,2))
+
     def update(self):
+        self.role.intelligence_ally_map_marks.append(self.get_map_mark())
         self.level_controller.update()
         self.mass_controller.update()
         self.health_controller.update()
@@ -83,13 +90,15 @@ class Vehicle(Object):
                 pass
 
     def update_modules_input(self, input: PlayerInputData):
-        # print(input)
+        # print(input.message)
+        message = input.message
         for module in self.modules:
             try:
                 module.update_module_input(input)
-            except:
-                pass
-
+                message = module.parse_callback(message)
+            except MessageParsingException:
+                logging.exception('')
+                self.kill()
     def get_world(self) -> World:
         return self.world
 

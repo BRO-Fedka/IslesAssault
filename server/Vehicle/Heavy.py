@@ -19,6 +19,8 @@ from server.Vehicle.Controllers.MassController import MassController
 from server.Modules.OverloadIndication import OverloadIndication
 from server.Modules.RepairKit import RepairKit
 from server.Vehicle.Controllers.LevelController import LevelController
+from server.Modules.InteractionModule import InteractionModule
+from server.Modules.MapModule import MapModule
 
 POLY_SHAPE = [(0.15, 0), (0, 0.06), (-0.15, 0.045), (-0.15, -0.045), (0, -0.06)]
 POLY_SHAPE_N = [(0.06, 0.15), (-0.015, 0.15), (-1, 0), (-0.015, -0.15), (0.06, -0.15)]
@@ -58,6 +60,8 @@ class Heavy(Vehicle):
         segment2 = ShipSegment(SEG2,self.level_controller)
         segment3 = ShipSegment(SEG3,self.level_controller)
         self.modules = [
+            MapModule(self),
+            InteractionModule(self.world, self),
             MortarCannon(0,0,self.world,self.body,shellstorages=[shellstorage]),
             MortarCannon(-0.1,0,self.world,self.body,shellstorages=[shellstorage]),
             TorpedoFrontalTube(self.health_controller,self.world, self.body,TUBE,12),

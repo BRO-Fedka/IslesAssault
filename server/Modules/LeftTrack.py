@@ -17,5 +17,5 @@ class LeftTrack(Track):
             else:
                 self.moving = STOP
             return
-        if  LEFT in input.active_keys and FORWARD not in input.active_keys and BACKWARD not in input.active_keys:
+        if LEFT in input.active_keys and FORWARD not in input.active_keys and BACKWARD not in input.active_keys:
             self.moving = forward

@@ -16,6 +16,8 @@ from server.Modules.OverloadIndication import OverloadIndication
 from server.Modules.RepairKit import RepairKit
 from server.Vehicle.Controllers.LevelController import LevelController
 from server.Modules.ConstructionTool import ConstructionTool
+from server.Modules.InteractionModule import InteractionModule
+from server.Modules.MapModule import MapModule
 
 POLY_SHAPE = [(0.03, 0.02), (0.03, -0.02), (-0.03, -0.02), (-0.03, 0.02)]
 POLY_SHAPE_N = [(1, 0), (0, -1), (-1, 0), (0, 1)]
@@ -48,8 +50,9 @@ class ConstructionVehicle(Vehicle):
         self.mass_controller = MassController(self.shape)
         self.level_controller = LevelController(self,self.shape,self.world,self.mass_controller,z=1, w=True, g=True)
         self.modules = [
-
-            ConstructionTool(0.015, 0, self.world, self.body),
+            MapModule(self),
+            InteractionModule(self.world, self),
+            ConstructionTool(0.015, 0, self.world, self),
             engine,
             LeftTrack(self.body,TRACK_L,engine, self.level_controller),
             RightTrack(self.body, TRACK_R, engine, self.level_controller),

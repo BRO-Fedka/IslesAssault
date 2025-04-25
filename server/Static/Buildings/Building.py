@@ -3,16 +3,20 @@ from shapely.geometry import Polygon
 import pymunk
 import math
 from typing import Dict, List
-from server.Static.Buildings.BuildingHealthController import BuildingHealthController, BUILT, CRUMBLED, EXPLODED, UNDER_CONSTRUCTION
+from server.Static.Buildings.BuildingHealthController import BuildingHealthController, BUILT, CRUMBLED, EXPLODED, \
+    UNDER_CONSTRUCTION
 from server.World import World
 from server.Role import Role
+from server.Types import coords
+from server.Object import Object
 
 
-class Building:
+class Building(Object):
     is_destructible = False
     is_flammable = False
     durability = 1
     neutral = True
+    is_static = True
 
     def __init__(self, world: World, data: list, sp_bilding_links: Dict[int, List[object]]):
         self.world = world
@@ -58,23 +62,29 @@ class Building:
         world.space.add(self.body, self.pol)
         # print('%')
 
+    def get_coords(self) -> coords:
+        return coords(self.x, self.y)
+
+    def get_bounds(self):
+        return coords(self.shape.bounds[0], self.shape.bounds[1]), coords(self.shape.bounds[2], self.shape.bounds[3])
+
     def get_string(self):
         return str(self.health_controller.get_state_id())
 
     def update_return_is_changed(self) -> bool:
         self.health_controller.update()
-        if self.health_controller.get_total_hp() == 0:
-            self.role = None
-        else:
-            if not self.health_controller.role is None and self.role is None:
-                for hc in self.related_buildings_hcs:
-                    if hc.role is not None and hc.role != self.health_controller.role:
-                        self.health_controller.role = None
-                        self.health_controller.state = UNDER_CONSTRUCTION
-                        print('LOLOLOL')
-                        break
-            else:
-                self.role = self.health_controller.role
+        # if self.health_controller.get_total_hp() == 0:
+        #     self.role = None
+        # else:
+        #     if  (not self.health_controller.role is None )and self.role is None:
+        #         for hc in self.related_buildings_hcs:
+        #             if hc.role is not None and hc.role != self.health_controller.role:
+        #                 self.health_controller.role = None
+        #                 self.health_controller.state = UNDER_CONSTRUCTION
+        #                 print('LOLOLOL')
+        #                 break
+        #     else:
+        self.role = self.health_controller.role
         if self.health_controller.get_state_id() != self.state:
             prev_state = self.state
             self.state = self.health_controller.get_state_id()

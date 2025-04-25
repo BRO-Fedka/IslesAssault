@@ -4,6 +4,7 @@ from server.Types import coords
 
 
 class Bridge(Object):
+    is_static = True
     def __init__(self, world, line):
         self.world = world
         self.line = LineString([(line[0], line[1]), (line[2], line[3])])

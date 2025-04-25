@@ -33,6 +33,7 @@ class LevelController:
         self.intersects_accessible = False
         self.intersects_inaccessible = False
         self.intersects_bridges = False
+        self.update_block_flag = False
         if not self.__class__.is_handled:
             self.__class__.handler_vehicles = self.world.space.add_collision_handler(COLTYPE_VEHICLE, 0)
             self.__class__.handler_vehicles.begin = self.on_static_hit
@@ -53,6 +54,9 @@ class LevelController:
         return self.z
 
     def update(self):
+        if self.update_block_flag:
+            self.update_block_flag = False
+            return 
         if self.mass_controller.get_overload() >= 2 and self.shape.filter == COL_ON_WATER:
             self.z = -1
             # if not self.underwater:

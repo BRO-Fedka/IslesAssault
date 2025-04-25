@@ -47,6 +47,7 @@ class BuildingHealthController(HealthController):
             raise UnableToRepairWhileBurning
         if self.state in [EXPLODED, CRUMBLED]:
             self.state = UNDER_CONSTRUCTION
+            self.role = None
         self.hp += BUILDING_HP_PER_REPAIR
         if self.hp >= self.max_hp:
             self.hp = self.max_hp
@@ -88,6 +89,7 @@ class BuildingHealthController(HealthController):
         if round(self.hp, 2) <= 0:
             self.hp = 0
             self.state = CRUMBLED
+            self.role = None
 
     # def bottom_explosion_damage_from_body(self, projectile: Body, radius: float = 0.05):
     #     # print(dir(self.body))

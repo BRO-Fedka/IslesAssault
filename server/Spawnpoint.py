@@ -3,6 +3,7 @@ from server.Static.Buildings.StorageBuilding import StorageBuilding
 import random
 from typing import Dict, List
 from server.Role import Role
+from server.constants import MARK_ID_BASE, MARK_ID_SP
 
 Vehicles = {
     0: ['Battleship', "static/veh0.svg"],
@@ -68,9 +69,11 @@ class Spawnpoint:
         if 'capital' in name.lower():
             # self.content[0] = 10
             self.ico = "static/mapmarks/flag.svg"
+            self.map_mark_id = MARK_ID_BASE
         else:
             # self.content[1] = 3
             self.ico = "static/mapmarks/star.svg"
+            self.map_mark_id = MARK_ID_SP
 
     def get_as_json(self, active=True):
         lst = '['
@@ -98,9 +101,17 @@ class Spawnpoint:
         # print(roles)
         roles = list(roles)
         if len(roles) == 0:
+            if not self.role is None: print("LOL WTF")
             self.role = None
         else:
+            if self.role is None: print("SUCCES")
             self.role = roles[0]
+
+    def get_map_mark(self):
+        r = 'N'
+        if self.role:
+            r = self.role.symbol
+        return (r,self.map_mark_id, round(self.cx, 1), round(self.cy, 1))
 
     def spawn(self, vehicle, id=-1):
         if self.content[id] == 0:

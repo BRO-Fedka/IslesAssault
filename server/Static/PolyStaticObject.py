@@ -7,6 +7,7 @@ from server.World import World
 
 
 class PolyStaticObject(Object):
+    is_static = True
     def __init__(self, world:World, poly):
         self.world = world
         self.poly = poly
