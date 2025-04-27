@@ -47,7 +47,7 @@ class InteractionModule(Module):
         intersected: List[InteractiveObject] = []
         objects = list(objects)
         for obj in objects:
-            if obj.interaction_access_shape.intersects(Point(self.body.position.x,self.body.position.y)):
+            if obj.interaction_access_shape.intersects(self.vehicle.shapely_shape):
                 # print(type(obj))
                 intersected.append(obj)
         intersected.sort(key=lambda o: o.interaction_access_shape.centroid.distance(Point(self.body.position)))

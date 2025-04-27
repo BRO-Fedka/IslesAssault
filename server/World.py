@@ -89,7 +89,7 @@ class World:
             return self.chunks_with_objects[(math.floor(coord.x), math.floor(coord.y))].union(
                 self.chunks_with_static_objects[(math.floor(coord.x), math.floor(coord.y))])
         except KeyError:
-            print('?')
+            # print('?')
             return set()
 
     def add_object(self, obj: Object):

@@ -12,7 +12,7 @@ class StorageBuilding(Building, InteractiveObject):
         super().__init__(world, data, sp_bilding_links)
         self.storage = []
         world.add_object(self)
-        self.interaction_access_shape = self.shape.buffer(0.1)
+        self.interaction_access_shape = self.shape.buffer(0.02)
 
     def get_interaction_info(self,vehicle:Vehicle) -> str:
         return 'LOL'

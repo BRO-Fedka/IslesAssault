@@ -8,6 +8,7 @@ from server.Static.Buildings.ContainerBuilding import ContainerBuilding
 from server.Static.Buildings.ChimneyBuilding import ChimneyBuilding
 from server.Static.Buildings.HangarBuilding import HangarBuilding
 from server.Static.Buildings.CraneBuilding import CraneBuilding
+from server.Static.Buildings.RadarBuilding import RadarBuilding
 from server.World import World
 
 
@@ -16,7 +17,8 @@ BuildingsTable = {
     1: ContainerBuilding,
     2: ChimneyBuilding,
     3: HangarBuilding,
-    4: CraneBuilding
+    4: CraneBuilding,
+    5: RadarBuilding
 }
 
 

@@ -4,7 +4,7 @@ from server.Types import PlayerInputData
 from server.Vehicle.Vehicle import Vehicle
 from server.constants import MARK_ID_POINT, MARK_ID_ARROW
 from server.Types import MessageParsingException
-
+import datetime
 
 # from server.Role import Role
 
@@ -60,7 +60,7 @@ class MapModule(Module):
                     try:
                         string = string[(4 + len(str(mark_id) + x + y + r)):]
                         x, y = float(x), float(y)
-                        self.own_mark = (r, mark_id, round(x, 2), round(y, 2))
+                        self.own_mark = (r, mark_id, round(x, 2), round(y, 2), datetime.datetime.now())
 
                         return string
                     except:
@@ -76,7 +76,7 @@ class MapModule(Module):
                         string = string[(6 + len(str(mark_id) + x + y + x0 + y0 + r)):]
                         x, y = float(x), float(y)
                         x0, y0 = float(x0), float(y0)
-                        self.own_mark = (r, mark_id, round(x, 2), round(y, 2), round(x0, 2), round(y0, 2))
+                        self.own_mark = (r, mark_id, round(x, 2), round(y, 2), round(x0, 2), round(y0, 2), datetime.datetime.now())
                         return string
                     except:
                         raise MessageParsingException

@@ -1,4 +1,4 @@
-from server.constants import COL_B, COL_S, COL_C
+from server.constants import COL_B, COL_S, COL_C, DESTRUCTIBLE
 from shapely.geometry import Polygon
 import pymunk
 import math
@@ -44,23 +44,24 @@ class Building(Object):
             sp_bilding_links[self.sp_id].append(self)
         except:
             pass
-        # print(5)
+        self.is_changed = True
+        self.body = None
+        self.pol = None
+        self.create_collision()
+
+    def create_collision(self):
         self.body = pymunk.Body(body_type=pymunk.Body.STATIC, mass=1)
         self.pol = pymunk.Poly(self.body,
                                [(-self.w / 2, -self.h / 2), (self.w / 2, -self.h / 2), (self.w / 2, self.h / 2),
                                 (-self.w / 2, self.h / 2)])
 
-        self.pol.type = 4
+        self.pol.type = DESTRUCTIBLE
         self.pol.mass = 1
-        # print(2)
         self.body.position = self.x, self.y
         self.body.angle = self.d / 180 * math.pi
         self.pol.filter = COL_S
         self.pol.master = self
-        self.is_changed = True
-        # print(self.x,self.y,self.w,self.h,self.d,self.sp_id)
-        world.space.add(self.body, self.pol)
-        # print('%')
+        self.world.space.add(self.body, self.pol)
 
     def get_coords(self) -> coords:
         return coords(self.x, self.y)

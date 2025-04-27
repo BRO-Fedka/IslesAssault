@@ -4,6 +4,7 @@ import random
 from typing import Dict, List
 from server.Role import Role
 from server.constants import MARK_ID_BASE, MARK_ID_SP
+import datetime
 
 Vehicles = {
     0: ['Battleship', "static/veh0.svg"],
@@ -111,7 +112,7 @@ class Spawnpoint:
         r = 'N'
         if self.role:
             r = self.role.symbol
-        return (r,self.map_mark_id, round(self.cx, 1), round(self.cy, 1))
+        return (r,self.map_mark_id, round(self.cx, 1), round(self.cy, 1), datetime.datetime.now())
 
     def spawn(self, vehicle, id=-1):
         if self.content[id] == 0:

@@ -767,6 +767,15 @@ sp_icon['R'].src = 'static/mapmarks/starR.svg'
 sp_icon['B'].src = 'static/mapmarks/starB.svg'
 sp_icon['N'].src = 'static/mapmarks/star.svg'
 
+const radar_icon = {
+    'N':new Image(),
+    'R':new Image(),
+    'B':new Image(),
+}
+radar_icon['R'].src = 'static/mapmarks/radarR.svg'
+radar_icon['B'].src = 'static/mapmarks/radarB.svg'
+radar_icon['N'].src = 'static/mapmarks/radar.svg'
+
 const mark_icon = {
     'R':new Image(),
     'B':new Image(),
@@ -853,6 +862,29 @@ map_marks_display_functions = {
 
         return string
     },
+    // RADAR
+    'm5':function(string,ctxc){
+        let [clid, id, x, y] = string.split(',',4)
+        string = string.slice(clid.length+id.length+x.length+y.length+4)
+        ctxc.drawImage(radar_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-15,20,20)
+
+        return string
+    },
+    // OBSERVED ZONE
+    'm6':function(string,ctxc){
+        let [clid, id, x, y, dir, r, ext] = string.split(',',7)
+        string = string.slice(clid.length+id.length+x.length+y.length+dir.length+r.length+ext.length+7)
+        // ctxc.drawImage(radar_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-15,20,20)
+        ctxc.fillStyle = 'rgba(255,255,255,0.2)'
+        ctxc.beginPath()
+        ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,Number(r)/WH*ctxc.canvas.height,dir/180*Math.PI-ext/360*Math.PI,dir/180*Math.PI+ext/360*Math.PI)
+        ctxc.lineTo(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
+        // console.log(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
+        ctxc.closePath()
+        ctxc.fill()
+        return string
+    }
+    // (MARK_ID_OBSERVED_ZONE, round(self.body.position.x, 2), round(self.body.position.y, 2),self.observer_direction,self.observe_radius,self.observe_extent)
 }
 let mapModuleInstance = null
 let role_color = new Map()
@@ -932,37 +964,29 @@ class MapModule extends Module{
         //     string=string.slice(par[0].length+par[1].length+2)
         //     role_color.set(par[0],par[1])   
         // }
-        this.ctx.canvas.width = this.ctx.canvas.clientWidth
-        this.ctx.canvas.height = this.ctx.canvas.clientHeight
-        this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height)
+        if (this.ctx == undefined){
+            this.canv = document.getElementById('mapCanvas')
+            this.ctx = this.canv.getContext('2d')
+        }else{
+            this.ctx.canvas.width = this.ctx.canvas.clientWidth
+            this.ctx.canvas.height = this.ctx.canvas.clientHeight
+            this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height)
 
-        let amnt = string.split(',',1)[0]
-        string = string.slice(amnt.length+1)
-        for (let i = 0; i < amnt; i++) {
-            let id = string.split(',',2)[1]
-            string=map_marks_display_functions['m'+id](string,this.ctx,role_color) 
+            let amnt = string.split(',',1)[0]
+            string = string.slice(amnt.length+1)
+            for (let i = 0; i < amnt; i++) {
+                let id = string.split(',',2)[1]
+                string=map_marks_display_functions['m'+id](string,this.ctx,role_color) 
+            }
+            this.ctx.fillStyle = '#fff'
+            this.ctx.strokeStyle = "#000"
+            this.ctx.lineWidth = 2
+            this.ctx.beginPath()
+            this.ctx.arc(X/WH*this.ctx.canvas.width,Y/WH*this.ctx.canvas.height,6,0,2*Math.PI)
+            this.ctx.closePath()
+            this.ctx.fill()
+            this.ctx.stroke()
         }
-        this.ctx.fillStyle = '#fff'
-        this.ctx.strokeStyle = "#000"
-        this.ctx.lineWidth = 2
-        this.ctx.beginPath()
-        this.ctx.arc(X/WH*this.ctx.canvas.width,Y/WH*this.ctx.canvas.height,6,0,2*Math.PI)
-        this.ctx.closePath()
-        this.ctx.fill()
-        this.ctx.stroke()
-        // let sublist = string.split(',',2)
-        // if (sublist[0].length >0){
-        //     this.imsg_i1.update('<b>[ '+keyboardMap[IK.INTERACT1.cur_char]+' ]</b> '+sublist[0])
-        //     if (sublist[1].length >0){
-        //         this.imsg_i2.update('<b>[ '+keyboardMap[IK.INTERACT2.cur_char]+' ]</b> '+sublist[1])
-        //     }else{
-        //         this.imsg_i2.update('')
-        //     }
-        // }else{
-        //     this.imsg_i1.update('')
-        // }
-        // string = string.slice(sublist[0].length + sublist[1].length + 2)
-        // console.log('after',string)
         return ','+string
     }
     drawp(layer,vehicle){
@@ -2232,12 +2256,6 @@ class Building extends Strucure{
         this.h = h
         this.dir = dir
         // console.log(id,x,y,size)
-        this.tree_size={
-            0:0.1,
-            1:0.15,
-            2:0.2,
-            3:0.25
-        }
         this.state_char = null
     }
     crumble(){
@@ -2298,14 +2316,17 @@ class BasedBuilding extends Building{
     }
 }
 
+
+
 class Basement extends Strucure{
-    constructor(id,x,y,w,h,dir){
+    constructor(id,x,y,w,h,dir,offset = 0){
         super('c',id)
         this.x = x
         this.y = y
         this.w = w
         this.h = h
         this.dir = dir
+        this.o = offset
         // console.log(0)
     }
 
@@ -2314,7 +2335,7 @@ class Basement extends Strucure{
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
-        poly = [[-this.h/2, -this.w/2], [-this.h/2, this.w/2], [this.h/2,this.w/2], [this.h/2, -this.w/2]]
+        poly = [[-this.h/2-this.o, -this.w/2-this.o], [-this.h/2-this.o, this.w/2+this.o], [this.h/2+this.o,this.w/2+this.o], [this.h/2+this.o, -this.w/2-this.o]]
         ctx.beginPath();
         ctx.fillStyle = MAPstatic.CT.cs
         ctx.lineWidth = 2/320*Zoom
@@ -2325,6 +2346,113 @@ class Basement extends Strucure{
         ctx.lineTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         ctx.fill();
         ctx.closePath();
+    }
+}
+class CircularBasement extends Strucure{
+    constructor(id,x,y,r,offset=0){
+        super('c',id)
+        this.x = x
+        this.y = y
+        this.r = r
+        this.o = offset
+        // console.log(0)
+    }
+
+    draw(){
+        // console.log(1)
+        ctx.fillStyle = MAPstatic.CT.cs
+        ctx.beginPath();
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),(this.r+this.o)*Zoom,0,2*Math.PI)
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+class CircularBuilding extends Building{
+    constructor(id,x,y,d){
+        super(id,x,y,d,d,0)
+
+    }
+    draw_under_construction(){
+        let c0 = MAPstatic.CT.hl
+        let c1 = MAPstatic.CT.hi
+        let poly = []
+        ctx.beginPath();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = c0
+        ctx.lineWidth = 2/320*Zoom
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),this.h/2*Zoom,0,Math.PI*2)
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.strokeStyle = c1
+        ctx.lineWidth = 2/320*Zoom
+        ctx.moveTo(global_x_to_screen(this.x+this.h/2/(2**0.5)),global_y_to_screen(this.y+this.h/2/(2**0.5)));
+        ctx.lineTo(global_x_to_screen(this.x-this.h/2/(2**0.5)),global_y_to_screen(this.y-this.h/2/(2**0.5)));
+        ctx.moveTo(global_x_to_screen(this.x-this.h/2/(2**0.5)),global_y_to_screen(this.y+this.h/2/(2**0.5)));
+        ctx.lineTo(global_x_to_screen(this.x+this.h/2/(2**0.5)),global_y_to_screen(this.y-this.h/2/(2**0.5)));
+        ctx.stroke();
+        ctx.closePath();
+    }
+}
+
+class CircularBasedBuilding extends CircularBuilding{
+    constructor(id,x,y,d){
+        super(id,x,y,d)
+        this.children_structures.push(new CircularBasement(id,x,y,d/2,0.04))
+        this.observer_direction = 0
+        
+    }
+}
+
+
+class RadarBuilding extends CircularBasedBuilding{
+    draw(){
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
+        // this.observer_direction += 0.3
+        if (this.state_char=='4'){
+            this.draw_under_construction()
+            return
+        }
+        ctx.lineWidth = 3/320*Zoom
+        ctx.fillStyle = MAPstatic.CT.o0
+        ctx.strokeStyle = MAPstatic.CT.l1
+        ctx.beginPath();
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),(this.h/2)*Zoom,0,2*Math.PI)
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        if (this.state_char=='2' || this.state_char=='3'){
+            ctx.fillStyle = MAPstatic.CT.o1
+        }else{
+            ctx.fillStyle = MAPstatic.CT.hf
+        }
+        ctx.beginPath();
+        ctx.arc(global_x_to_screen(this.x+Math.cos(this.observer_direction/180*Math.PI)*this.h/4),global_y_to_screen(this.y+Math.sin(this.observer_direction/180*Math.PI)*this.h/4),(this.h/4)*Zoom,this.observer_direction/180*Math.PI+Math.PI*0.5,this.observer_direction/180*Math.PI+Math.PI*1.5)
+        ctx.closePath();
+        ctx.fill();
+        if (this.state_char=='2' || this.state_char=='3'){
+            ctx.fillStyle = MAPstatic.CT.l1
+        }else{
+            ctx.fillStyle = MAPstatic.CT.hs
+        }
+        ctx.beginPath();
+        ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),(this.h/15)*Zoom,0,2*Math.PI)
+        ctx.closePath();
+        ctx.fill();
+
+    }
+
+    update(str){
+        str = super.update(str)
+        // console.log(str)
+        this.observer_direction = Number(str.slice(0,3))
+        return str.slice(3)
     }
 }
 
@@ -2571,7 +2699,8 @@ BuildingsTable = {
     1: ContainerBuilding,
     2: ChimneyBuilding,
     3: HangarBuilding,        
-    4: CraneBuilding                                                                                                                                                                                                        
+    4: CraneBuilding,
+    5:RadarBuilding                                                                                                                                                                                                     
 }
 class BuildingsGroup extends Strucure{
 
@@ -2582,7 +2711,7 @@ class BuildingsGroup extends Strucure{
         buildings.forEach(element => {
             i++
             // console.log(this.BuildingsTable[element[0]])
-            this.buildings.push(new BuildingsTable[element[0]](id*100+i,element[1],element[2],element[3],element[4],element[5]))
+            this.buildings.push(new BuildingsTable[element[0]](id*100+i,...element.slice(1)))
         });
         for (const b of this.buildings) {
             // console.log(b)

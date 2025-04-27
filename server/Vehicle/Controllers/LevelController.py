@@ -76,11 +76,8 @@ class LevelController:
         y = self.shape.body.position.y
         angle = self.shape.body.angle
         vertices = self.shape.get_vertices()
-        # TODO Poly atentiuon
         rotated_vertices = map(lambda e: e.rotated(angle), vertices)
         points = list(map(lambda e: (e.x + x, e.y + y), rotated_vertices))
-        # print(points)
-        # vehicle_poly = Polygon([])
         vehicle_poly = Polygon(points)
         # print('!')
         self.intersects_accessible = False

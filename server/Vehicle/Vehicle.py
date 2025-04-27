@@ -13,6 +13,9 @@ from server.Role import Role
 import logging
 from server.Types import MessageParsingException
 from server.constants import MARK_ID_VEHICLE
+from shapely.geometry.base import BaseGeometry
+from shapely.geometry import Polygon
+import datetime
 
 
 class NoPlaceForSpawn(Exception): pass
@@ -29,6 +32,7 @@ class Vehicle(Object):
         self.body.master = self
         print(dir(self.body))
         self.shape = None
+        self.shapely_shape: BaseGeometry = None
         self.role: Role = role
         self.vehicle_type_id = '?'
         self.id = self.id_manager.get_id()
@@ -69,10 +73,17 @@ class Vehicle(Object):
         self.world.space.remove(self.shape)
 
     def get_map_mark(self):
-        return (MARK_ID_VEHICLE, round(self.body.position.x, 2), round(self.body.position.y, 2))
+        return (MARK_ID_VEHICLE, round(self.body.position.x, 2), round(self.body.position.y, 2), datetime.datetime.now())
 
     def update(self):
         self.role.intelligence_ally_map_marks.append(self.get_map_mark())
+        x = self.shape.body.position.x
+        y = self.shape.body.position.y
+        angle = self.shape.body.angle
+        vertices = self.shape.get_vertices()
+        rotated_vertices = map(lambda e: e.rotated(angle), vertices)
+        points = list(map(lambda e: (e.x + x, e.y + y), rotated_vertices))
+        self.shapely_shape = Polygon(points)
         self.level_controller.update()
         self.mass_controller.update()
         self.health_controller.update()

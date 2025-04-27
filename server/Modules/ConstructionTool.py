@@ -8,6 +8,8 @@ import datetime
 from shapely.geometry import LineString, Point
 import logging
 from server.Vehicle.Vehicle import Vehicle
+from server.Static.Buildings.CircularBuilding import CircularBuilding
+from server.Static.Buildings.RadarBuilding import RadarBuilding
 
 
 class ConstructionTool(RotatingModule):
@@ -48,6 +50,7 @@ class ConstructionTool(RotatingModule):
             if b.shape.intersects(line):
                 inters.append(b)
         if len(inters) > 0:
+            print(inters)
             if len(inters) > 1:
                 inters.sort(key=lambda b: b.intersection(line).distance(Point(tx, ty)))
             building = inters[0]
