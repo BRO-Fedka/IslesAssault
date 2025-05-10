@@ -1152,3 +1152,47 @@ left:3px;
 #PlayBTN:hover{
 	background-color: rgba(0,0,0,0.5);
 }
+
+#ComboBoxesFrame{
+	color: rgba(255, 255, 255, 0.8);
+	font-family: 'Fredoka One', cursive;
+}
+#ComboBoxesFrame *{
+	float: left;
+}
+
+#ComboBoxesFrame > div {
+	margin: 5px;
+	border-radius: 10px;
+	margin-top: 0;
+	background-color: rgba(0, 0, 0, 0.2);
+	padding-bottom: 5px;
+}
+#ComboBoxesFrame > div > div{
+	margin: 5px;
+	margin-left: 10px;
+}
+#ComboBoxesFrame > div > div > span{
+	margin-left: 10px;
+	font-size: 20px;
+}
+
+#ComboBoxesFrame > div > div > b{
+	margin-left: 10px;
+}
+
+#ComboBoxesFrame input + div{
+	width: 20px;
+	height: 20px;
+	outline: 3px solid rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	aspect-ratio: 1 / 1;
+	/* outline: 5px; */
+	cursor: pointer;
+	
+	
+}
+#ComboBoxesFrame input:checked + div{
+
+	background-color: rgba(255, 255, 255, 0.5);
+}

@@ -1,7 +1,7 @@
 from pymunk import Body, Shape
 from server.Modules.Module import Module
 import math
-from server.constants import COF_GROUND_RESISTANCE, COF_WATER_RESISTANCE_MOMENT, COF_WATER_SURFACE_FRICTION, TPS
+from server.constants import COF_GROUND_RESISTANCE, COF_WATER_SURFACE_FRICTION, TPS
 from server.Vehicle.Controllers.LevelController import LevelController
 
 

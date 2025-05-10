@@ -68,7 +68,7 @@ class Heavy(Vehicle):
             SmokeGenerator(self.world,self.body,SMK,5),
             ShipSteering(self.body,-0.15,0),
             WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.15),
-            ShipEngine(self.body,-0.15,0,ENG,force=0.05,fueltanks=[fueltank1,fueltank2,fueltank3], segment=segment3,fueluse=0.0000003),
+            ShipEngine(self.body,-0.15,0,ENG,force=0.1,fueltanks=[fueltank1,fueltank2,fueltank3], segment=segment3,fueluse=0.0000003),
 
             WaterPump(PMP,segments=[segment1,segment2,segment3]),
             fueltank1,

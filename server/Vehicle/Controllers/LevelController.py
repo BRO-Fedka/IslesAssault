@@ -106,7 +106,7 @@ class LevelController:
             # self.shape.filter = COL_ON_WATER
             self.z = 0
             # print('WATER')
-        if self.z==0 and self.intersects_accessible and (not self.intersects_inaccessible) and (
+        if self.z in [0,-1] and self.intersects_accessible and (not self.intersects_inaccessible) and (
                 not self.intersects_bridges):
             # self.shape.filter = COL_ON_GROUND
             self.z = 1

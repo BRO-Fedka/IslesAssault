@@ -25,6 +25,6 @@ class Role:
                 self.map_module_string += f',N,{",".join(map(str, mm[1:-1]))}'
             else:
                 self.map_module_string += f',{",".join(map(str ,mm[:-1]))}'
-        self.observed_points.sort(key=lambda e: (datetime.datetime.now()-e[-1]).total_seconds(),reverse=True)
+        self.observed_points.sort(key=lambda e: (datetime.datetime.now()-e[-1]).total_seconds())
         self.intelligence_ally_map_marks = []
         self.intelligence_enemy_map_marks = []

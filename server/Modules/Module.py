@@ -1,7 +1,8 @@
 from server.Types import PlayerInputData, coords
 from typing import Sequence
 from typing import List
-from server.Modules.InputKeys.InputKey import InputKey
+from server.Modules.Input.InputKey import InputKey
+from server.Modules.Input.ComboBox import ComboBox
 
 DEFAULT = 0
 BOTTOM = -1
@@ -13,6 +14,7 @@ class Module:
     is_repairable: bool = False
     active_after_death: bool = True
     input_keys: List[InputKey] = None
+    comboboxes: List[ComboBox] = None
 
     def __init__(self):
         self.is_destroyed = False

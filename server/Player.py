@@ -13,6 +13,7 @@ from server.Map import Map
 from server.Camera import Camera
 from server.Types import PlayerInputData
 from server.Role import Role
+from server.Modules.Input.ComboBox import ComboBox
 
 TPS = int(os.environ['TPS'])
 MAPJSON = os.environ['JSON_MAP']
@@ -95,7 +96,7 @@ class Player:
         self.vehicle: Vehicle = None
         self.camera: Camera = None
         self.world: Map = None
-        self.role:Role = None
+        self.role: Role = None
 
     @staticmethod
     async def init(websocket, message: str, world: Map):
@@ -123,9 +124,9 @@ class Player:
             self.disconnect()
             return
         await websocket.send('0,M' + MAPJSON)
-        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id,role=self.role)
+        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id, role=self.role)
         try:
-            self.world.spawnpoints[spawnpoint_id].spawn(self.vehicle,id=vehicle_id)
+            self.world.spawnpoints[spawnpoint_id].spawn(self.vehicle, id=vehicle_id)
             self.camera = Camera(self.vehicle, world)
             self.vehicle.name = self.name
             # world.space.step(0.1)
@@ -151,18 +152,20 @@ class Player:
         callback = ','.join(message.split(',')[3:])
         message = message.split(',')[2]
         mouse_input = []
-        for _ in range(0,5):
+        for _ in range(0, 5):
             mouse_input.append(bool(int(message[_])))
         message = message[5:]
         keys = []
-        # print(message)
-        # print(self.vehicle.input_keys)
-        for _ in range(0,len(self.vehicle.input_keys)):
+        for _ in range(0, len(self.vehicle.input_keys)):
             self.vehicle.input_keys[_].is_pressed = bool(int(message[_]))
             if bool(int(message[_])):
                 keys.append(self.vehicle.input_keys[_])
-        # print(message)
-        # print(callback)
+        # print(self.vehicle.comboboxes)
+        ncomboboxes: Dict[int,ComboBox] = {}
+        for _ in range(0, len(self.vehicle.comboboxes)):
+            ncomboboxes[self.vehicle.comboboxes[_].id] = self.vehicle.comboboxes[_].copy()
+            ncomboboxes[self.vehicle.comboboxes[_].id].cur_val = message[len(self.vehicle.input_keys)+_]
+        # print('LOL')
         self.inputs = PlayerInputData(
             mouse_0=mouse_input[0],
             mouse_1=mouse_input[1],
@@ -170,6 +173,7 @@ class Player:
             mouse_3=mouse_input[3],
             mouse_4=mouse_input[4],
             active_keys=keys,
+            comboboxes=ncomboboxes,
             cursor_x=cursor_x,
             cursor_y=cursor_y,
             date=datetime.datetime.now(),
@@ -192,7 +196,7 @@ class Player:
                 if self.vehicle.is_active:
                     self.parse_message(message)
                     self.vehicle.update_input(self.inputs)
-                    #ID, money
+                    # ID, money
                     await self.websocket.send("0,0," + self.camera.get_picture())
                 else:
                     await self.websocket.send("0,D")

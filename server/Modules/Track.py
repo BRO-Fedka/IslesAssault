@@ -8,7 +8,7 @@ from server.Modules.ShipSegment import ShipSegment
 from server.Modules.TankEngine import TankEngine, EngineDoesNotWork
 from shapely.geometry import Polygon
 from server.Vehicle.Controllers.LevelController import LevelController
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 
 FORWARD = 1
 STOP = 0

@@ -8,7 +8,7 @@ from server.Modules.Module import BOTTOM
 from typing import Sequence
 from server.Vehicle.Controllers.VehicleHealthController import VehicleHealthController
 from server.functions import prevent_recursion
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 
 
 class TorpedoFrontalTube(PolygonModule):

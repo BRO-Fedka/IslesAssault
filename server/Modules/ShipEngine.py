@@ -6,7 +6,7 @@ from server.Modules.Module import BOTTOM
 from server.Modules.ShipFuelTank import ShipFuelTank
 from server.Modules.ShipSegment import ShipSegment
 from shapely.geometry import Polygon
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 FORWARD = 1
 STOP = 0
 BACK = 2

@@ -2,7 +2,7 @@ from pymunk import Body
 from server.Types import PlayerInputData, coords
 from server.Modules.Module import Module
 from server.constants import COF_WATER_RESISTANCE
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 import math
 from server.World import World
 from server.InteractiveObject import InteractiveObject

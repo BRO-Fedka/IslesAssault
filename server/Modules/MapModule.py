@@ -1,5 +1,5 @@
 from server.Modules.Module import Module
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 from server.Types import PlayerInputData
 from server.Vehicle.Vehicle import Vehicle
 from server.constants import MARK_ID_POINT, MARK_ID_ARROW

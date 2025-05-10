@@ -24,6 +24,9 @@ class MortarCannon extends Cannon{
     }
 }
 class ConstructionTool extends RotatingModule{
+    layers=[['+1',0],['+1',-1],['+1',1],]
+    stroke='rgba(0,0,0,0.5)'
+    fill='#CE875C'
     constructor(x,y,r = 0.01){
         super(x,y,r)
     }
@@ -79,7 +82,11 @@ class TankEngine extends Engine{
 
 }
 class WaterPump extends PolygonModule{
-image='static/indication/water_pump_icon.svg'
+    image='static/indication/water_pump_icon.svg'
+    layers=[['+1',0],['+1',-1],['+1',1],]
+    stroke='rgba(0,0,0,0.15)'
+    fill='rgba(0,0,0,0.15)'
+    width=0.5
     constructor(poly){
         super(poly)
         this.indicator = new SimpleIndicator(this.image)
@@ -96,9 +103,26 @@ class ShipFuelTank extends PolygonModule{
     indication_layer = 'BOTTOM'
 }
 
+class PlaceForVehicle extends SquareModule{
+    stroke='rgba(0,0,0,0.1)'
+    fill='rgba(0,0,0,0.1)'
+    width=0.5
+    constructor(x,y){
+        super(x,y,0.06,0.04)
+    }
+    updatee(string){
+        return string
+    }
+    updatep(string){
+        return string
+    }
+}
+
 class Track extends PolygonModule{
     input_keys = [IK.FORWARD, IK.BACKWARD, IK.LEFT, IK.RIGHT]
     indication_layer = 'DEFAULT'
+    layers=[['+1',0],['+1',-1],['+1',1],]
+    fill='#444'
     constructor(poly,image){
         super(poly)
         this.image = image
@@ -193,10 +217,15 @@ class TorpedoFrontalTube extends PolygonModule{
 }
 class ShipSteering extends Module{
     input_keys = [IK.LEFT, IK.RIGHT]
+    comboboxes = [CB.SHIP_CONTROL_TYPE]
 }
 class SmokeGenerator extends PolygonModule{
     input_keys = [IK.SMOKE]
     image='static/indication/smoke_generator_icon.svg'
+    layers=[['+1',0],['+1',-1],['+1',1],]
+    stroke='rgba(0,0,0,0.15)'
+    fill='rgba(0,0,0,0.15)'
+    width=0.5
     constructor(poly,max){
         super(poly)
         this.amount = max
@@ -239,11 +268,11 @@ class Heavy extends Vehicle{
         '4': '#323232',
         '5': '#713567',
         '6':'#723636'}
-
+    poly = POLY_SHAPE0
+    layers = [['OnWater',0],['UnderWater',-1]]
+    water_particles_rate_cof = 40
     constructor(id,name){
         super(id,name)
-        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE0},WaterTraceParticle,1)
-        this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
             new InteractionModule(),
@@ -269,38 +298,6 @@ class Heavy extends Vehicle{
       this.init_inputs()
         
     }
-
-    drawp(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE0, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE0, this.f)
-            }
-            // console.log("DR")
-            super.drawp(layer)
-        }
-    }
-    drawe(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE0, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE0, this.f)
-            }
-            // console.log("DR")
-            super.drawe(layer)
-        }
-    }
 }
 POLY_SHAPE1 = [[0.03, 0.02], [0.03, -0.02], [-0.03, -0.02], [-0.03, 0.02]]
 POLY_SHAPE_N1 = [[1, 0], [0, -1], [-1, 0], [0, 1]]
@@ -317,11 +314,11 @@ class Tank extends Vehicle{
         '4': '#323232',
         '5': '#713567',
         '6':'#723636'}
-
+    water_particles_rate_cof = 10
+    poly = POLY_SHAPE1
+    layers = [['OnWater',0],['UnderWater',-1],['OnGround',1]]
     constructor(id,name){
         super(id,name)
-        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE1},WaterTraceParticle,1)
-        this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
             new InteractionModule(),
@@ -339,31 +336,6 @@ class Tank extends Vehicle{
       ]
       this.init_inputs()
         
-    }
-
-    drawp(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                drawF(this,POLY_SHAPE1, this.f)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
-                this.wtp_spawner.update(this)
-            }else if (layer=='UnderWater'||layer=='OnGround'){
-                drawF(this,POLY_SHAPE1, this.f)
-            }
-            super.drawp(layer)
-        }
-    }
-    drawe(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                drawF(this,POLY_SHAPE1, this.f)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
-                this.wtp_spawner.update(this)
-            }else if (layer=='UnderWater'||layer=='OnGround'){
-                drawF(this,POLY_SHAPE1, this.f)
-            }
-            super.drawe(layer)
-        }
     }
 }
 POLY_SHAPE2 = [[0,0.075],[0.15,0.075],[0.2,0.05],[0.225,0],[0.2,-0.05],[0.15,-0.075],[0,-0.075],[-0.15,-0.075],[-0.225,-0.075],[-0.25,-0.05],[-0.25,0.05],[-0.225,0.075]]
@@ -389,10 +361,12 @@ class CargoShip extends Vehicle{
         '5': '#713567',
         '6':'#723636'}
     zoom = 300
+    poly = POLY_SHAPE2
+    layers = [['OnWater',0],['UnderWater',-1]]
     constructor(id,name){
         super(id,name)
-        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE2},WaterTraceParticle,1)
-        this.wtp_spawner.set_activation_to(true)
+        // this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE2},WaterTraceParticle,1)
+        // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
             new InteractionModule(),
@@ -415,37 +389,7 @@ class CargoShip extends Vehicle{
         
     }
 
-    drawp(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE2, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE2, this.f)
-            }
-            // console.log("DR")
-            super.drawp(layer)
-        }
-    }
-    drawe(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE2, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE2, this.f)
-            }
-            // console.log("DR")
-            super.drawe(layer)
-        }
-    }
+
 }
 
 POLY_SHAPE3 = [[-0.17,0.045],[-0.12,0.055],[0,0.055],[0.105,0.055],[0.155,0.035],[0.17,0],[0.155,-0.035],[0.105,-0.055],[0,-0.055],[-0.12,-0.055],[-0.17,-0.045]]
@@ -465,19 +409,21 @@ class LandingShip extends Vehicle{
         '5': '#713567',
         '6':'#723636'}
     zoom = 300
+    poly = POLY_SHAPE3
+    layers = [['OnWater',0],['UnderWater',-1]]
     constructor(id,name){
         super(id,name)
-        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE3},WaterTraceParticle,1)
-        this.wtp_spawner.set_activation_to(true)
+        // this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE3},WaterTraceParticle,1)
+        // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
             new InteractionModule(),
-            new MockModule(),
-            new MockModule(),
-            new MockModule(),
-            new MockModule(),
-            new MockModule(),
-            new MockModule(),
+            new PlaceForVehicle(-0.075, 0.025),
+            new PlaceForVehicle(-0.075, -0.025),
+            new PlaceForVehicle(-0.005, 0.025),
+            new PlaceForVehicle(-0.005, -0.025),
+            new PlaceForVehicle(0.065, 0.025),
+            new PlaceForVehicle(0.065, -0.025),
             new ShipSteering(),
             new MockModule(),
             new ShipEngine(ENG3),
@@ -497,40 +443,12 @@ class LandingShip extends Vehicle{
         
     }
 
-    drawp(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                // console.log((Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE3, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE3, this.f)
-            }
-            // console.log("DR")
-            super.drawp(layer)
-        }
-    }
-    drawe(layer){
-        // console.log("DRAW!")
-        if ((this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*40
-                this.wtp_spawner.update(this)
-                drawF(this,POLY_SHAPE3, this.f)
-//                console.log(this.id)
-            }else if (layer=='UnderWater'){
-                drawF(this,POLY_SHAPE3, this.f)
-            }
-            // console.log("DR")
-            super.drawe(layer)
-        }
-    }
 }
 class ConstructionVehicle extends Vehicle{
     zoom = 1700
+    poly = POLY_SHAPE1
+    water_particles_rate_cof = 10
+    layers = [['OnWater',0],['UnderWater',-1],['OnGround',1]]
     f = {
         '0': '#131313',
         '1': '#2a200c',
@@ -542,8 +460,8 @@ class ConstructionVehicle extends Vehicle{
 
     constructor(id,name){
         super(id,name)
-        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE1},WaterTraceParticle,1)
-        this.wtp_spawner.set_activation_to(true)
+        // this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:POLY_SHAPE1},WaterTraceParticle,1)
+        // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
             new InteractionModule(),
@@ -561,31 +479,6 @@ class ConstructionVehicle extends Vehicle{
       ]
       this.init_inputs()
         
-    }
-
-    drawp(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                drawF(this,POLY_SHAPE1, this.f)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
-                this.wtp_spawner.update(this)
-            }else if (layer=='UnderWater'||layer=='OnGround'){
-                drawF(this,POLY_SHAPE1, this.f)
-            }
-            super.drawp(layer)
-        }
-    }
-    drawe(layer){
-        if ((this.z == 1 && layer.includes('OnGround'))||(this.z == 0 && layer.includes('OnWater'))||(this.z == -1 && layer.includes('UnderWater'))||layer=='NICKNAMES'){
-            if (layer=='OnWater'){
-                drawF(this,POLY_SHAPE1, this.f)
-                this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*10
-                this.wtp_spawner.update(this)
-            }else if (layer=='UnderWater'||layer=='OnGround'){
-                drawF(this,POLY_SHAPE1, this.f)
-            }
-            super.drawe(layer)
-        }
     }
 }
 let VehiclesTable = {

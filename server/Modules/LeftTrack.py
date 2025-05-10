@@ -1,7 +1,7 @@
 from server.Modules.Track import Track, STOP, BACK
 from server.Modules.Track import FORWARD as forward
 from server.Types import PlayerInputData
-from server.Modules.InputKeys.InputKeys import RIGHT, LEFT, FORWARD, BACKWARD
+from server.Modules.Input.InputKeys import RIGHT, LEFT, FORWARD, BACKWARD
 
 
 class LeftTrack(Track):

@@ -403,6 +403,27 @@ function keybindOnKeyDown(event){
 }
 
 function UpdtKeybinds(){
+    ComboBoxesFrame.innerHTML = ''
+    let options = ''
+    for (const [key, cb] of Object.entries(CB)) {
+        cb.update()
+        let vals = ''
+        cb.vals.forEach(function(e){
+            let chkd = ''
+            if (cb.cur_val==e[0]){
+                chkd=' checked'
+            }
+            vals += '<div><label><input'+chkd+' onclick="play_click_sound();CB.'+key+'.set_val(\''+e[0]+'\')" type="radio" name="cbx'+ cb.id+'" value="'+e[0]+'"><div></div></label><b>'+e[1]+'</b></div>'
+        })
+        options += '<div><div><span>'+cb.name+'</span></div>'+vals+'</div>'
+        
+        //<span><img src=\"'+ik.icon_link+ '\"><b>'+ik.name+'</b></span><span><input type=\"button\" onclick="play_click_sound()" id="keybindbtn'+ik.id+'" class=\"keyinput\"  value=\"'+keyboardMap[ik.cur_char]+'\"></span>
+        
+
+        console.log(cb.id,cb.name,cb.cur_val);
+    }
+    ComboBoxesFrame.innerHTML += options
+    ComboBoxesFrame.innerHTML += "<br>"
     keybinds_list.innerHTML = ""
 
     for (const [key, ik] of Object.entries(IK)) {
@@ -1119,21 +1140,19 @@ function startgame() {
                     let substr = ""
                     new Array(0,1,2,3,4).forEach(i => {
                         substr += (mouse_input.get(i) || post_mouse_input.get(i)   ? 1 : 0).toString()
+                        post_mouse_input.set(i,false)
                     });
                     // console.log(substr)
 
                     TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
                         substr += (ik.is_pressed || ik.was_pressed ? 1 : 0).toString()
+                        ik.was_pressed = false
+                    });
+                    TVehicles.get(CurVehicleID).comboboxes.forEach(cb => {
+                        substr += cb.cur_val.toString()
                     });
                     // console.log(substr)
-                    TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
-                        
-                            ik.was_pressed = false
-                        
-                    });
-                    new Array(0,1,2,3,4).forEach(i => {
-                        post_mouse_input.set(i,false)
-                    });
+
                     // console.log(TVehicles.get(CurVehicleID).get_callback())
                     let callback = TVehicles.get(CurVehicleID).get_callback()
                     // console.log(callback)

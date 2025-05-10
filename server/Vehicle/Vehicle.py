@@ -44,6 +44,7 @@ class Vehicle(Object):
         self.level_controller: LevelController = None
         self.world.add_object(self)
         self.input_keys = None
+        self.comboboxes = None
 
     def set_spawn_pos(self, x, y, dir):
         print(x, y)
@@ -52,15 +53,25 @@ class Vehicle(Object):
         # raise NoPlaceForSpawn
 
     def init_inputs(self):
-        modules = set()
+        iks = set()
         for module in self.modules:
             if not module.input_keys:
                 continue
             for input_key in module.input_keys:
-                modules.add(input_key)
-        self.input_keys = list(modules)
+                iks.add(input_key)
+        self.input_keys = list(iks)
         self.input_keys.sort(key=lambda e: e.id)
-        # print(self.input_keys)
+        cbs = set()
+        for module in self.modules:
+            if not module.comboboxes:
+                continue
+            for cb in module.comboboxes:
+                cbs.add(cb)
+        lcbs = list(cbs)
+        lcbs.sort(key=lambda e: e.id)
+        self.comboboxes = []
+        for _ in lcbs:
+            self.comboboxes.append(_.copy())
 
     def kill(self):
         self.is_active = False

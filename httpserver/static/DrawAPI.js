@@ -1,4 +1,5 @@
 PACK_ID = null
+// IMPORT SOUNDS =======================================
 PIXI.sound.add("bang","static\\bang.mp3")
 PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
 PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
@@ -21,6 +22,19 @@ PIXI.sound.add("hcanon","static\\pcanon.mp3")
 PIXI.sound.add("fcanon","static\\pcanon.mp3")
 
 PIXI.sound.add("crumble","static\\crumbling.mp3")
+// BASE CALCULATIONS
+function global_x_to_screen(x){
+    return (x+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX
+}
+
+function global_y_to_screen(y){
+    return (y+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY
+}
+
+function global_xy_to_screen(xy){
+    return [global_x_to_screen(xy[0]),global_y_to_screen(xy[1])]
+}
+
 function drawCannon(vehicle,cannon, fire=false){
     let turcrd = [cannon.x, cannon.y]
     let cos = vehicle.cos
@@ -45,17 +59,6 @@ function drawCannon(vehicle,cannon, fire=false){
             break;
     }
 
-
-
-    // console.log(vehicle.dir)
-    // console.log(vehicle.prev_dir)
-
-    // if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody){
-    //             ctx.fillStyle = 'rgba(0,0,0,0.2)'
-    //             ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-    // }
-    //TODO ?????????????????
-
     ctx.lineWidth= strokeW/320*Zoom;
     ctx.lineJoin = 'miter';
     ctx.beginPath()
@@ -65,10 +68,8 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.closePath();
     if(fill) ctx.fill();
     ctx.stroke();
-    // if(!(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)) || underbody)){
     ctx.strokeStyle = MAPstatic.CT.os;
     ctx.stroke();
-    // }
 
     sinc = 0
     cosc = 0
@@ -85,18 +86,12 @@ function drawCannon(vehicle,cannon, fire=false){
     ctx.beginPath()
     ctx.moveTo(xy[0],xy[1]);
     ctx.lineTo(xy[0] + cosc*l/320*Zoom,xy[1] + sinc*l/320*Zoom);
-//    console.log(Zoom)
-//    console.log(cosc) //?
-//    console.log(l)
     ctx.closePath()
 
     if(fire && (!(vehicle.first_appearance))){
-        // console.log(vehicle.first_appearance,(!(vehicle.first_appearance)))
         xy = vehicle.local_xy_to_global(turcrd)
         for (let _ = 0; _ < 5; _++) {
-            // canbangPrts.push(new canbangPrt(xy[0] + cosc*l/320,xy[1] + sinc*l/320))
             new ShotSmokeParticle(xy[0] + cosc*l/320,xy[1] + sinc*l/320)
-            // console.log('!')
         }
         PIXI.sound.play(shtSND);
     }
@@ -110,10 +105,6 @@ function drawCannon(vehicle,cannon, fire=false){
         ctx.strokeStyle = MAPstatic.CT.l0;
         break;
     }
-    // if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
-	// 		ctx.fillStyle = 'rgba(0,0,0,0.2)'
-	// 		ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-	// 	}
 
     ctx.lineCap = 'square';
     ctx.lineWidth = lw[0]/320*Zoom;
@@ -128,10 +119,6 @@ function drawCannon(vehicle,cannon, fire=false){
         ctx.strokeStyle = MAPstatic.CT.o0;
         break;
     }
-    // if(((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0))|| underbody){
-    // 	ctx.fillStyle = 'rgba(0,0,0,0.2)'
-    // 	ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-    // }
     ctx.lineWidth = lw[1]/320*Zoom;
     ctx.stroke();
 }
@@ -223,42 +210,46 @@ function getIndicatorBGForIndicationChar(char='0'){
     }
 }
 
-function drawF(vehicle,poly=[[0,0],[0,0]], cls ={},water_stroke=false){
-        let cos = vehicle.cos
-        let sin = vehicle.sin
-		
-		if (cls[vehicle.color_id] != undefined){
-		    ctx.fillStyle =  cls[vehicle.color_id]
-		}else{
-		    ctx.fillStyle =  "#fff"
-		}
-        // console.log(poly)
-
+function drawPolyOnVehicle(vehicle,poly=[[0,0],[0,0]], fill='#f0f',stroke=null,width=2){	
+        if (stroke==null && fill==null) return
         ctx.beginPath();
-		
-		// if((PlayersData.get(playername).Z/2+"").substring(0,1) != (Xmod ? 1 : 0)){
-		// 	ctx.fillStyle = 'rgba(0,0,0,0.2)'
-		// 	ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-		// }
 		let xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
 		ctx.moveTo(xy[0],xy[1]);
         for (let _ = 1; _ < poly.length; _+=1) {
             xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[_]))
             ctx.lineTo(xy[0],xy[1]);
-
-
         }
         xy = global_xy_to_screen(vehicle.local_xy_to_global(poly[0]))
         ctx.lineTo(xy[0],xy[1]);
 		ctx.closePath();
-		ctx.lineJoin = 'round'
-//		ctx.lineWidth= (6+Math.sin(Date.now()*0.001)*2)/320*Zoom;
-//		ctx.strokeStyle = 'rgba(255,255,255,'+ (0.3-Math.sin(Date.now()*0.001)*0.1).toString()+')'
-//		ctx.stroke();
-		ctx.lineWidth= 2/320*Zoom;
-		ctx.strokeStyle = MAPstatic.CT.fs
-        ctx.fill();
-	    ctx.stroke();
+		
+        if(fill!=null){
+            ctx.fillStyle =  fill
+            ctx.fill();
+        }
+        if(stroke!=null){
+            ctx.lineJoin = 'round'
+            ctx.lineWidth= width/320*Zoom;
+            ctx.strokeStyle = stroke//MAPstatic.CT.fs
+            ctx.stroke();
+        }
+}
+
+function drawCircleOnVehicle(vehicle,xy=[[0,0]],r=0.05, fill='#f0f',stroke=null,width=2){	
+        if (stroke==null && fill==null) return
+        ctx.beginPath();
+        ctx.arc(...global_xy_to_screen(vehicle.local_xy_to_global(xy)),r*Zoom,0,2*Math.PI)
+		ctx.closePath();
+        if(fill!=null){
+            ctx.fillStyle =  fill
+            ctx.fill();
+        }
+        if(stroke!=null){
+            ctx.lineJoin = 'round'
+            ctx.lineWidth= width/320*Zoom;
+            ctx.strokeStyle = stroke//MAPstatic.CT.fs
+            ctx.stroke();
+        }
 }
 
 
@@ -282,7 +273,6 @@ function drawPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char='0',l
 }
 
 function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char='0',level=0){
-//    console.log('!')
     setIndicatorStyles(char,layer,pmcctx)
     pmcctx.beginPath();
     let zoom = vehicle.zoom
@@ -302,46 +292,9 @@ function drawPlayerPolygonModuleIndicator(layer,vehicle,poly=[[0,0],[0,0]], char
 }
 
 
-//function DrawNickname(name, hp, hpmax,x,y,z=0){
-//
-//    if (cameraMode) return
-//    var p = NoTeamTag(PlayerName)
-//    if (PlayerTags.get(p) == PlayerTags.get(name) && PlayerTags.get(p) != null){
-//        ctx.fillStyle = 'rgba(0,0,255,0.75)';
-//    }else{
-//        if (z == 1 && Z != 1) return
-//        ctx.fillStyle = 'rgba(255,0,0,0.75)';
-//    }
-//
-//    ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-//    ctx.lineWidth = 1
-//    ctx.textAlign = 'center'
-//    ctx.font = Math.round(20/320*Zoom)+"px Arial";
-//    if (PlayerTags.get(name) != null){
-//        ctx.fillText("["+PlayerTags.get(name)+"]"+name, x, y-50/320*Zoom);
-//    }else{
-//        ctx.fillText(name, x, y-50/320*Zoom);
-//    }
-//
-//    ctx.fillStyle = 'rgba('+255*(1-(hp/hpmax))+','+255*(hp/hpmax)+',0,0.75)'
-//    ctx.fillRect(x-37/320*Zoom,y-45/320*Zoom,75*(hp/hpmax)/320*Zoom,7/320*Zoom) //50*Number(larr[4])
-//    ctx.strokeRect(x-37/320*Zoom,y-45/320*Zoom,75/320*Zoom,7/320*Zoom)
-//}
 
 
-function global_x_to_screen(x){
-    return (x+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX
-}
-
-function global_y_to_screen(y){
-    return (y+(-nY+Y)*(Date.now() - LastPING) / PING-Y)*Zoom+GameH/2 + OffsetY
-}
-
-function global_xy_to_screen(xy){
-    return [global_x_to_screen(xy[0]),global_y_to_screen(xy[1])]
-}
-
-// InputKeys ======================================
+// Inputs ======================================
 
 class InputKey{
     constructor(id,name,def_char,icon_link){
@@ -362,6 +315,31 @@ class InputKey{
         this.is_pressed = false
     }
 }
+
+class ComboBox{
+    // ComboBox(0, "Move forward",0,[[0,'Keyboard'],[1,'Right mouse button aiming']])
+    constructor(id,name,def_val,vals){
+        this.id = id
+        this.name = name
+        this.def_val = def_val
+        this.vals = vals
+        this.cur_val = def_val
+        // this.was_pressed = false
+        // this.cur_char = def_char
+        // this.icon_link = icon_link
+    }
+    set_val(v){
+        this.cur_val = v
+        localStorage.setItem(PACK_ID+"v"+this.id,v)
+        
+    }
+    update(){
+        if (localStorage.hasOwnProperty(PACK_ID+"v"+this.id)){
+            this.cur_val = localStorage.getItem(PACK_ID+"v"+this.id)
+        }
+    }
+}
+
 let IK = {
     REPAIR : new InputKey(5,"Repair",70,'static/indication/repair_animation.svg'),
     INTERACT1: new InputKey(7, "Interact", 69,'static/indication/click_icon.svg'),
@@ -369,14 +347,21 @@ let IK = {
     MAP: new InputKey(9, "Open map", 77,'static/indication/map_icon.svg')
 }
 
+let CB = {
+    SHIP_CONTROL_TYPE: new ComboBox(0, "Ship control type",0,[[0,'Keyboard'],[1,'Right mouse button aiming']])
+}
 
-//  BASE    =======================================
+
+//  VEHICLE CLASS =======================================
 
 class Vehicle{
     type_id = 0
     f = {}
     zoom = 480
-
+    poly = []
+    layers = [['OnWater',0]]
+    body_layers = ['OnWater','UnderWater','OnGround']
+    water_particles_rate_cof = 40
     constructor(id,name){
         this.id = id
         this.name = name
@@ -393,25 +378,40 @@ class Vehicle{
         this.cos = 0
         this.first_appearance = true
         this.input_keys = null
+        this.comboboxes = null
         this.role = null
+        this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:null},WaterTraceParticle,1)
+        this.wtp_spawner.set_activation_to(true)
+        this.prev_layer = ''
         
     }
 
     init_inputs(){
-        let modules = new Set() 
+        let iks = new Set() 
         this.modules.forEach(module => {
             module.input_keys.forEach(input_key => {
-                modules.add(input_key)
-//                console.log(module,input_key)
+                iks.add(input_key)
             });
         });
-        this.input_keys = Array.from(modules)
+        this.input_keys = Array.from(iks)
         console.log(this.input_keys)
         this.input_keys = this.input_keys.sort((m0, m1) => m0.id > m1.id ? 1: -1)
         this.input_keys.forEach(ik => {
             ik.update()
         });
-        console.log(this.input_keys)
+        let cbs = new Set() 
+        this.modules.forEach(module => {
+            module.comboboxes.forEach(cb => {
+                cbs.add(cb)
+            });
+        });
+        this.comboboxes = Array.from(cbs)
+        console.log(this.comboboxes)
+        this.comboboxes = this.comboboxes.sort((m0, m1) => m0.id > m1.id ? 1: -1)
+        this.comboboxes.forEach(ik => {
+            ik.update()
+        });
+        console.log(this.comboboxes)
     }
 
     local_xy_to_global(xy){
@@ -448,22 +448,52 @@ class Vehicle{
     }
 
     drawp(layer){
-//        console.log(OffsetX,PING)
-        this.calculate_sin_cos()
-        this.modules.forEach(module => {
-            // console.log(module)
-            module.drawp(layer,this)
-        });
+        if (this.draw_common(layer)){
+            this.calculate_sin_cos()
+            this.modules.forEach(module => {
+                module.drawp(layer,this)
+            });
+            return true
+            
+        }else{
+            return false
+        }
+        
+        
 
     }
 
+    draw_common(layer){
+        let f = false
+        for (const lyr of this.layers) {
+            f = f || (this.z == lyr[1] && layer.includes(lyr[0]))
+        }
+        if (f==false){
+            return false
+        }
+        if (layer.includes('OnWater')){
+            this.wtp_spawner.rate = (Math.sqrt((this.new_x-this.x)**2+(this.new_y-this.y)**2)*FPS)**3*this.water_particles_rate_cof
+            this.wtp_spawner.update(this,this.poly)
+        }
+        for (const lyr of this.body_layers) {
+            if (lyr==layer){
+                drawPolyOnVehicle(this,this.poly,this.f[this.color_id],MAPstatic.CT.fs)
+                if (lyr!=this.prev_layer){
+                    if (layer.includes('OnWater')){
+                        this.wtp_spawner.set_activation_to(true)
+                    }else{
+                        this.wtp_spawner.set_activation_to(false)
+                    }
+                }
+                this.prev_layer = lyr
+                break
+            }
+        } 
+        
+        return true
+    }
+
     drawe(layer){
-        this.calculate_sin_cos()
-        this.modules.forEach(module => {
-            module.drawe(layer,this)
-        });
-        // console.log('#')
-        // console.log(Role,this.role)
         if(layer=="NICKNAMES" && Role==this.role){
             ctx.textAlign = 'center'
             ctx.fillStyle = 'rgba(255,255,255,0.5)'
@@ -471,11 +501,20 @@ class Vehicle{
             ctx.fillText(this.name,xy[0],xy[1]-12.5/320*Zoom)
 
         }
+        if (this.draw_common(layer)){
+            this.calculate_sin_cos()
+            this.modules.forEach(module => {
+                module.drawe(layer,this)
+            });
+            
+            return true
+        }else{
+            return false
+        }
 
     }
 
     parse_common_string(string){
-//        console.log(string)
         let lst = []
         for (let arg = 0; arg < 8; arg++) {
             let substr = string.split(',')[0]
@@ -495,8 +534,6 @@ class Vehicle{
         this.new_x = Number(lst[5])
         this.new_y = Number(lst[6])
         this.z = Number(lst[7])
-
-//        console.log(string)
         return string
         
     }
@@ -518,7 +555,6 @@ class Vehicle{
         nY = this.new_y
         Role = this.role
         this.modules.forEach(module => {
-            // console.log(string)
             string = module.updatep(string)
         });
     }
@@ -531,6 +567,7 @@ class Vehicle{
     }
 }
 
+//  INDICATION CLASSES =======================================
 
 let last_indicator_id = 0
 
@@ -542,8 +579,6 @@ class Indicator{
         last_indicator_id += 1
     }
 }
-
-
 
 class InventoryMessage{
     constructor(){
@@ -572,11 +607,9 @@ class InventoryMessage{
 class TwoImagesIndicator extends Indicator{
 
     update(module,icon_src,classes_image="",is_visible=true){
-    //animation-repair
         let indicator = document.getElementById('indicator'+this.id)
         if (indicator == undefined){
             this.indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico" class="'+classes_image+'"><img id="icon'+this.id+'" src="'+icon_src+'" alt="ico"></div>'
-            //indicators.innerHTML += '<div class="indicator" id="indicator'+this.id+'"><img src="'+this.image+'" alt="ico"></div>'
             indicator = document.getElementById('indicator'+this.id)
         }
         indicator.style.background = getIndicatorBGForIndicationChar(module.indication_char)
@@ -645,8 +678,11 @@ class AmountIndicator extends Indicator{
     }
 }
 
+//  MODULE CLASS =======================================
+
 class Module{
     image = ''
+    comboboxes = []
     input_keys = []
     constructor(){
     }
@@ -659,11 +695,17 @@ class Module{
         return string
     }
 
-    drawp(layer, vehicle){
-
+    draw_common(layer,vehicle){
+        
     }
 
-    drawe(layer, vehicle){}
+    drawp(layer, vehicle){
+        this.draw_common(layer, vehicle)
+    }
+
+    drawe(layer, vehicle){
+        this.draw_common(layer, vehicle)
+    }
 
     draw_player_indicator(layer, vehicle){}
 
@@ -673,6 +715,8 @@ class Module{
         return ''
     }
 }
+
+//  MODULE CLASSES =======================================
 
 class MockModule extends Module{
     constructor(){
@@ -691,9 +735,6 @@ class RepairKit extends Module{
     }
     updatep(string){
         let sublist = string.split(',',1)
-//        console.log(sublist[0])
-//        console.log(this.vehicle.modules)
-//        console.log(this.vehicle.modules[Number(sublist[0])])
 
         if (sublist[0]==''){
             this.indicator.update(this,'','animation-repair',false)
@@ -716,25 +757,9 @@ class InteractionModule extends Module{
         super()
         this.imsg_i1 = new InventoryMessage()
         this.imsg_i2 = new InventoryMessage()
-        //this.indicator = new TwoImagesIndicator(this.image,upperIndicators)
-        //this.indication_char = '0'
-        //this.vehicle = vehicle
     }
     updatep(string){
         let sublist = string.split(',',2)
-//        console.log(sublist[0])
-//        console.log(this.vehicle.modules)
-//        console.log(this.vehicle.modules[Number(sublist[0])])
-
-        // if (sublist[0]==''){
-        //     this.indicator.update(this,'','animation-repair',false)
-
-        // }else if (sublist[0]=='-'){
-        //     this.indicator.update(this,'static/indication/armor_icon.svg','animation-repair',true)
-        // }
-        // else{
-        //     this.indicator.update(this,this.vehicle.modules[Number(sublist[0])].image,'animation-repair',true)
-        // }
         if (sublist[0].length >0){
             this.imsg_i1.update('<b>[ '+keyboardMap[IK.INTERACT1.cur_char]+' ]</b> '+sublist[0])
             if (sublist[1].length >0){
@@ -793,7 +818,6 @@ map_marks_display_functions = {
         ctxc.fillStyle = role_color.get(clid)
         ctxc.beginPath()
         ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,5,0,2*Math.PI)
-        // console.log(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
         ctxc.closePath()
         ctxc.fill()
         return string
@@ -850,15 +874,11 @@ map_marks_display_functions = {
         let sin = (Number(y1)-Number(y))/l
         ctxc.beginPath();
         ctxc.moveTo((Number(x1)+cos*0.3)/WH*ctxc.canvas.width,(Number(y1)+sin*0.3)/WH*ctxc.canvas.height)
-        // Number(x1)+ (Number(x1)-Number(x))/l*0.5 - (Number(y1)-Number(y))/l*0.5
-        // Number(y1)+ (Number(y1)-Number(y))/l*0.5 + (Number(x1)-Number(x))/l*0.5
         ctxc.lineTo((Number(x1)- 0.3*sin-cos*0.3)/WH*ctxc.canvas.width,(Number(y1)+ cos*0.3 - sin*0.3)/WH*ctxc.canvas.height)
         ctxc.lineTo((Number(x1)+ 0.3*sin-cos*0.3)/WH*ctxc.canvas.width,(Number(y1)- cos*0.3 - sin*0.3)/WH*ctxc.canvas.height)
         ctxc.closePath();
         ctxc.fill()
-        // ctxc.stroke()
         console.log(clid, id, x, y, x1, y1)
-        // ctxc.drawImage(mark_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-20,20,20)
 
         return string
     },
@@ -874,17 +894,14 @@ map_marks_display_functions = {
     'm6':function(string,ctxc){
         let [clid, id, x, y, dir, r, ext] = string.split(',',7)
         string = string.slice(clid.length+id.length+x.length+y.length+dir.length+r.length+ext.length+7)
-        // ctxc.drawImage(radar_icon[clid], Number(x)/WH*ctxc.canvas.width-10,Number(y)/WH*ctxc.canvas.height-15,20,20)
         ctxc.fillStyle = 'rgba(255,255,255,0.2)'
         ctxc.beginPath()
         ctxc.arc(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height,Number(r)/WH*ctxc.canvas.height,dir/180*Math.PI-ext/360*Math.PI,dir/180*Math.PI+ext/360*Math.PI)
         ctxc.lineTo(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
-        // console.log(Number(x)/WH*ctxc.canvas.width,Number(y)/WH*ctxc.canvas.height)
         ctxc.closePath()
         ctxc.fill()
         return string
     }
-    // (MARK_ID_OBSERVED_ZONE, round(self.body.position.x, 2), round(self.body.position.y, 2),self.observer_direction,self.observe_radius,self.observe_extent)
 }
 let mapModuleInstance = null
 let role_color = new Map()
@@ -895,6 +912,7 @@ role_color.set('N','#fff')
 let markRoles = [['R','#f00'],['B','#00f'],['Y','#ff0']]
 let markPointTypes = [[3,'static/mapmarks/mark.svg']]
 let markArrowTypes = [[4,'static/mapmarks/arrow_icon.svg']]
+
 class MapModule extends Module{
     input_keys = [IK.MAP]
     constructor(){
@@ -902,11 +920,7 @@ class MapModule extends Module{
         this.new_point = null
     }
     updatep(string){
-        // console.log('before',string)
-        // console.log(document.getElementById('mapModule'))
-        // console.log(Resps)
         let mM = document.getElementById('mapModule')
-        // console.log(mM)
         if (!mM){
             let mp = document.createElement('div')
             mp.id = 'mapModule'
@@ -938,8 +952,6 @@ class MapModule extends Module{
             mc.innerHTML += "<hr>"
             mc.innerHTML += '<div onclick="mapModuleInstance.clear()">Clear</div>'
             mapModuleInstance = this
-            
-            // document.body.innerHTML += '<div id="mapModule" style="display:none"></div>'
 
         }
         if (IK.MAP.is_pressed){
@@ -956,14 +968,6 @@ class MapModule extends Module{
         if (string[0]=='0'){
             return string.slice(1)
         }
-        // let amnt = string.split(',',1)[0]
-        // string = string.slice(amnt.length+1)
-        // let role_color = new Map()
-        // for (let i = 0; i < amnt; i++) {
-        //     let par = string.split(',',2)
-        //     string=string.slice(par[0].length+par[1].length+2)
-        //     role_color.set(par[0],par[1])   
-        // }
         if (this.ctx == undefined){
             this.canv = document.getElementById('mapCanvas')
             this.ctx = this.canv.getContext('2d')
@@ -989,9 +993,6 @@ class MapModule extends Module{
         }
         return ','+string
     }
-    drawp(layer,vehicle){
-
-    }
     m_double(event){
 
     }
@@ -1011,10 +1012,6 @@ class MapModule extends Module{
                 mapModuleInstance.new_point = [event.offsetX/mapCanvas.width*WH,event.offsetY/mapCanvas.height*WH,null,null]
             }
         })
-        // if (markArrowTypes.includes(Number(document.querySelector('input[name="mapModuleMarkType"]:checked').value))){
-        //     mapModuleInstance.new_point = [event.offsetX/mapCanvas.width*WH,event.offsetY/mapCanvas.height*WH,null,null]
-        // }
-        
     }
     m_up(event){
         if (event.button==2){
@@ -1023,7 +1020,6 @@ class MapModule extends Module{
         try{
             mapModuleInstance.new_point[2] = event.offsetX/mapCanvas.width*WH
             mapModuleInstance.new_point[3] = event.offsetY/mapCanvas.height*WH
-            // console.log(mapModuleInstance.new_point)
         }catch{}
     }
     get_callback(){
@@ -1078,7 +1074,6 @@ class ArmorIndication extends Module{
         for (let _=0; _ < poly.length; _++){
             let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
             let cnt = Math.floor(ln / 0.01)
-//            console.log(ln, cnt)
             for (let i=0; i < cnt; i++){
                 this.armor_modules.push(0)
             }
@@ -1088,14 +1083,12 @@ class ArmorIndication extends Module{
     updatep(string){
         let sublist = string.split(',',1)
         let str = BigInt(sublist[0]).toString(2)
-//        console.log(str)
         while (str.length < this.armor_modules.length){
             str = '0'+str
         }
         for (let i = 0; i < str.length; i++) {
           this.armor_modules[i] = Number(str.charAt(i));
         }
-//        console.log(this.armor_modules)
         string = string.slice(sublist[0].length + 1)
         return string
     }
@@ -1113,7 +1106,6 @@ class ArmorIndication extends Module{
         for (let _=0; _ < poly.length; _++){
             let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
             let cnt = Math.floor(ln / 0.01)
-//            console.log(ln, cnt)
             for (let i=0; i < cnt; i++){
                 if (this.armor_modules[ind]!=0){
                     let x = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * i/cnt
@@ -1141,7 +1133,6 @@ class ArmorIndication extends Module{
         for (let _=0; _ < poly.length; _++){
             let ln = Math.sqrt((poly[(_ + 1)%poly.length][0]-poly[_][0])*(poly[(_ + 1)%poly.length][0]-poly[_][0])+(poly[(_ + 1)%poly.length][1]-poly[_][1])*(poly[(_ + 1)%poly.length][1]-poly[_][1]))
             let cnt = Math.floor(ln / 0.01)
-//            console.log(ln, cnt)
             for (let i=0; i < cnt; i++){
                 if (this.armor_modules[ind]!=0){
                     let x = poly[_][0] + (poly[(_ + 1)%poly.length][0]-poly[_][0]) * i/cnt
@@ -1173,6 +1164,11 @@ class RealModule extends Module{
     bang_particle_class = Bang
     underwater_bang_particle_class = WaterBang
     bang_freq = 5
+    fill=null
+    layers=[['+1',0],['+1',-1],['+1',1],]
+    stroke = null
+    width = 2
+
     constructor(){
         super()
         this.indication_char = '0'
@@ -1189,7 +1185,6 @@ class RealModule extends Module{
     draw_player_indicator(){}
 
     explode(vehicle){
-        //console.log(vehicle.first_appearance)
         if ((vehicle.first_appearance)){
             return
         }
@@ -1199,35 +1194,26 @@ class RealModule extends Module{
         }else{
             this.bang_spawner.particle = this.bang_particle_class
         }
-
     }
 
     emit_fire(){}
 
-    drawp(layer,vehicle){
-        this.bang_spawner.update(vehicle)
-        switch (this.indication_char) {
-            case '3':
-                if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
-                    this.explode(vehicle)
-                    this.prev_indication_char = '3'
+    draw_common(layer,vehicle){
+        super.draw_common()
+        for (const lyr of this.layers) {
+            // console.log(layer,lyr)
+            if(layer.includes(lyr[0]) && lyr[1]==vehicle.z){
+                this.bang_spawner.update(vehicle)
+                switch (this.indication_char) {
+                    case '3':
+                        if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
+                            this.explode(vehicle)
+                            this.prev_indication_char = '3'
+                        }
+                        break;
                 }
-                break;
-
-        }
-    }
-
-    drawe(layer,vehicle){
-        this.bang_spawner.update(vehicle)
-        switch (this.indication_char) {
-            case '3':
-                if (this.prev_indication_char == '2' || this.prev_indication_char=='1' || this.prev_indication_char=='0'){
-                    this.explode(vehicle)
-                
-                    this.prev_indication_char = '3'
-                }
-            break;
-
+                return true
+            }
         }
 
     }
@@ -1235,20 +1221,16 @@ class RealModule extends Module{
     updatep(string){
         this.prev_new_indication_char = this.indication_char
         this.indication_char = string[0]
-
         return string.slice(1)
     }
-
     updatee(string){
         this.prev_new_indication_char = this.indication_char
         this.indication_char = string[0]
-
         return string.slice(1)
     }
 }
 
 class PolygonModule extends RealModule{
-
     constructor(poly){
         super()
         this.poly = poly
@@ -1262,23 +1244,31 @@ class PolygonModule extends RealModule{
         this.y = this.y/this.poly.length
         this.bang_spawner = new ModuleParticleSpawner(this,this.bang_particle_class, this.bang_freq)
     }
-
+    draw_common(layer,vehicle){
+        if(super.draw_common(layer,vehicle)){
+            drawPolyOnVehicle(vehicle,this.poly,this.fill,this.stroke,this.stroke)
+            return true    
+        }
+    }
     get_random_point(){
         return [this.x,this.y]
     }
-
     draw_indicator(layer, vehicle){
         if (layer != this.indication_layer) return
         drawPolygonModuleIndicator(layer,vehicle,this.poly,this.indication_char)
     }
-
     draw_player_indicator(layer, vehicle){
         if (layer != this.indication_layer) return
         drawPlayerPolygonModuleIndicator(layer,vehicle,this.poly,this.indication_char)
-
     }
+}
 
-
+class SquareModule extends PolygonModule{
+    constructor(x,y,w,h){
+        super([[x-w/2,y-h/2],[x-w/2,y+h/2],[x+w/2,y+h/2],[x+w/2,y-h/2]])
+        this.w = w
+        this.h = h
+    }
 }
 
 class CircularModule extends RealModule{
@@ -1289,7 +1279,6 @@ class CircularModule extends RealModule{
         this.y = y
         this.r = r
         this.bang_spawner = new ModuleParticleSpawner(this,this.bang_particle_class, this.bang_freq)
-
     }
 
     get_random_point(){
@@ -1302,12 +1291,20 @@ class CircularModule extends RealModule{
     if (layer != this.indication_layer) return
         drawCircularModuleIndicator(layer,vehicle,this.x,this.y,this.r,this.indication_char)
     }
-    draw_player_indicator(layer, vehicle){
-    if (layer != this.indication_layer) return
-        drawPlayerCircularModuleIndicator(layer,vehicle,this.x,this.y,this.r,this.indication_char)
 
+    draw_player_indicator(layer, vehicle){
+        if (layer != this.indication_layer) return
+        drawPlayerCircularModuleIndicator(layer,vehicle,this.x,this.y,this.r,this.indication_char)
+    }
+
+    draw_common(layer,vehicle){
+        if(super.draw_common(layer,vehicle)){
+            drawCircleOnVehicle(vehicle,[this.x,this.y],this.r,this.fill,this.stroke,this.stroke)
+            return true    
+        }
     }
 }
+
 
 class RotatingModule extends CircularModule{
     constructor(x,y,r){
@@ -1332,8 +1329,6 @@ class RotatingModule extends CircularModule{
         return string
     }
 }
-
-
 
 class Cannon extends RotatingModule{
     cannon_r = 12
@@ -1378,6 +1373,7 @@ class Cannon extends RotatingModule{
     }
 }
 
+//  ENTITY CLASS =======================================
 
 class Entity{
 
@@ -1398,6 +1394,8 @@ class Entity{
 
     }
 }
+
+//  ENTITIES =======================================
 
 class Projectile extends Entity{
     grad_color_0 ="#FFFF4488"
@@ -1423,16 +1421,12 @@ class Projectile extends Entity{
         this.is_active = false
     }
 
+
     draw(layer=false){
         if (layer != false && layer != 'OnWater+3') return 
-//        console.log(GameW/2 ,OffsetX,this.x,nX,X,(Date.now() - LastPING),PING,Zoom)
-//        console.log(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom)
-//        try{
         let grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
-
         grad.addColorStop(1,this.grad_color_1);
         grad.addColorStop(0,this.grad_color_0);
-        
         ctx.strokeStyle = grad
         ctx.lineWidth= this.width/320*Zoom;
         ctx.beginPath()
@@ -1452,30 +1446,28 @@ class Projectile extends Entity{
         if (this.x > 20 || this.x < -4 || this.y > 20 || this.y < -4){
             this.is_active = false
         }
-//        }catch{
-//
-//        }
     }
 }
 
 class Shell extends Projectile{
-
+    grad_color_0 ="#FFFF4488"
+    grad_color_1 ="#FFFF4400"
     draw(layer){
-    if (layer != 'S') return 
-    if(this.status == 1 ){
-        if (Math.random() < 1){
-            PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+        if (layer != 'S') return 
+        if(this.status == 1 ){
+            if (Math.random() < 1){
+                PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+            }
+            this.status=0
+        }else if(this.status == 3){
+            if (Math.random() < 1){
+                    PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
+            }
+            this.status=0
         }
-        this.status=0
-    }else if(this.status == 3){
-        if (Math.random() < 1){
-                PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
-        }
-        this.status=0
-    }
 
 
-    super.draw()
+        super.draw()
     }
 
 }
@@ -1488,10 +1480,6 @@ class Torpedo extends Projectile{
         if(this.status == 1){
 			this.status=0
             WaterBang.spawn(5,this.x, this.y)
-			// for (let i = 0; i < 5; i++) {
-            //    new  WaterBang(this.x, this.y)
-            //     // WtrBangParticles0.push(new BangPrt0(this.x, this.y))
-            // }
 			ShakeXbnds += 10
 			ShakeYbnds += 10
 		}else if(this.status == 2){
@@ -1500,23 +1488,12 @@ class Torpedo extends Projectile{
 		}
 		if (Math.random() < 0.15){
             new WaterTraceParticle(this.x, this.y)
-		        // WtrParticles0.push(new WtrPrt0(this.x, this.y));
 		}
-
 
     super.draw()
     }
 
 }
-// function Particle3(id) {
-//     this.id =id;
-//     this.hp = 500+Math.random()*500
-//     this.cl = Math.random()*64+191;
-// 	this.h= Math.random();
-//     this.spd = Math.random()*2 -1;
-//     this.dir = (Math.random()*2-1)*Math.PI;
-//     this.spd = Math.random()*2 -1;
-// }
 class Smoke extends Entity{
 
     constructor(larr){
@@ -1554,6 +1531,8 @@ class Smoke extends Entity{
     }
 }
 
+// PARTICLE CLASS ============================
+
 class Particle{
     layer = ""
     calc_x(){
@@ -1571,11 +1550,7 @@ class Particle{
             Particles.get(this.layer).push(this)
         }else{
             Particles.set(this.layer,[this])
-        }
-
-        
-
-        
+        } 
     }
     static spawn(amount,...args){
         for (let _ = 0; _ < amount; _++) {
@@ -1584,15 +1559,14 @@ class Particle{
     }
 }
 
+// PARTICLE CLASSES ============================
 class ShotSmokeParticle extends Particle{
     constructor(x,y,dir = Math.random()*2*Math.PI){
-
         super("S",x,y)
         this.life=1;
         this.xs = Math.cos(dir);
         this.ys = Math.sin(dir);
         this.rad = 1;
-
     }
     draw(){
 	    ctx.fillStyle = "rgba(192,192,192,"+(this.life**1.5)*1+")";
@@ -1619,8 +1593,7 @@ class WaterTraceParticle extends Particle{
         }
         super("OnWater-2",x,y)
         this.life=1
-        this.rad = 1// Math.random()+1
-
+        this.rad = 1
     }
     draw(){
 		ctx.fillStyle = "rgba(255,255,255,"+(this.life**1.5)*0.25+")";
@@ -1628,15 +1601,12 @@ class WaterTraceParticle extends Particle{
 		ctx.arc(this.calc_x(),this.calc_y(),((this.rad-(this.life*this.rad))/320*Zoom*7.5+2.5)/320*Zoom,0,2*Math.PI);
 		ctx.closePath();
 		ctx.fill();
-//		console.log(OffsetX+(WtrParticles0[i].x-(X+(nX-X)*((Date.now()-LastPING)/PING)))*Zoom+GameW/2,OffsetY+GameH/2+(WtrParticles0[i].y-(Y+(nY-Y)*((Date.now()-LastPING)/PING)))*Zoom)
         this.life *= 0.99
 		if (this.life < 0.15) {
 			this.is_active = false
 		}
     }
-
 }
-
 
 class BangProto extends Particle{
     _color0=''
@@ -1696,7 +1666,6 @@ class Bang extends BangProto{
 
 class SmokeParticle extends Particle{
     constructor(x,y, start_time,dir = Math.random()*2*Math.PI){
-
         super("S",x,y)
         this.hp = 500+Math.random()*500
         this.cl = Math.random()*64+191;
@@ -1705,7 +1674,6 @@ class SmokeParticle extends Particle{
         this.dir = dir
         this.maxhp = this.hp
         this.start_time = start_time
-
     }
 
     draw(){
@@ -1729,9 +1697,10 @@ class SmokeParticle extends Particle{
             this.is_active = false
             return  
         }
-
     }
 }
+
+// PARTICLE SPAWNER CLASS ============================
 
 class ModuleParticleSpawner{
     constructor(module,particle,rate=10){
@@ -1744,7 +1713,10 @@ class ModuleParticleSpawner{
         this.module = module
     }
 
-    update(vehicle){
+    update(vehicle,poly=null){
+        if (poly==null){
+            poly = this.module.poly
+        }
         if (this.rate == 0) return
         if (this.particles_to_draw > 0 || this.is_active){
             let delta = (Date.now()- this.last_particle_time)/1000
@@ -1752,17 +1724,13 @@ class ModuleParticleSpawner{
             let amnt = delta*this.rate
             amnt = Math.floor(amnt)
             if (amnt>5) amnt = 5
-            // console.log((Date.now()- this.last_particle_time)/1000)
             if (amnt>this.particles_to_draw && this.particles_to_draw>0){
                 amnt = this.particles_to_draw 
             }
-            this.spawn_particles(amnt,vehicle)
-
+            this.spawn_particles(amnt,vehicle,poly)
             this.particles_to_draw -= amnt
             if (amnt >0 ) this.last_particle_time = Date.now()
-            
         } 
-        
     }
 
     set_extra_params(...args){
@@ -1775,13 +1743,12 @@ class ModuleParticleSpawner{
     }
 
     set_activation_to(val){
-
         this.is_active = val 
         this.last_particle_time = Date.now()
 
     }
 
-    spawn_particles(amnt,vehicle){
+    spawn_particles(amnt,vehicle,poly=null){
         for (let _ = 0; _ < amnt; _++) {
             new this.particle(...vehicle.local_xy_to_global([this.module.x,this.module.y]),...this.params)
             
@@ -1789,14 +1756,16 @@ class ModuleParticleSpawner{
         
     }
 }
+
+// PARTICLE SPAWNER CLASSES ============================
+
 class PolyStrokeModuleParticleSpawner extends ModuleParticleSpawner{
     max_dst = 1.5
-    spawn_particles(amnt,vehicle){
+    spawn_particles(amnt,vehicle,poly=null){
         for (let _ = 0; _ < amnt; _++) {
             let maxdst =  1.5;
             let polydsttoprt = Math.random()*maxdst
             let _ = 0
-            let poly = this.module.poly
             while (Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2)< polydsttoprt){
                 polydsttoprt-=Math.sqrt((poly[_%poly.length][0]-poly[(_+1)%poly.length][0])**2+(poly[_%poly.length][1]-poly[(_+1)%poly.length][1])**2);
                 _+=1;
@@ -1810,32 +1779,31 @@ class PolyStrokeModuleParticleSpawner extends ModuleParticleSpawner{
     }
 }
 
+// STRUCTURE CLASS ============================
+
 class Strucure{
-constructor(layer,id=-1){
-    this.id = id
-    this.children_structures = []
-    this.layer = layer
-    if (Strucures.has(this.layer)){
-        Strucures.get(this.layer).push(this)
-    }else{
-        Strucures.set(this.layer,[this])
+    constructor(layer,id=-1){
+        this.id = id
+        this.children_structures = []
+        this.layer = layer
+        if (Strucures.has(this.layer)){
+            Strucures.get(this.layer).push(this)
+        }else{
+            Strucures.set(this.layer,[this])
+        }
+
     }
 
+    update(args){}
+
+    draw(){}
+
+    get_children_structures(){
+        return this.children_structures
+    }
 }
 
-update(args){
-
-}
-
-draw(){
-
-}
-
-get_children_structures(){
-    return this.children_structures
-}
-
-}
+// STRUCTURE CLASSES ============================
 
 class PolyStructure extends Strucure{
     constructor(layer,poly,id=-1){
@@ -1924,8 +1892,6 @@ class Beach extends PolyStructure{
 class Concrete extends PolyStructure{
     constructor(poly,id){
         super('C',poly,id)
-        // this.children_structures.push(new ShoreLine0(poly,60/320))
-        // this.children_structures.push(new ShoreLine1(poly,30/320))
     }
 
     draw(){
@@ -2054,6 +2020,7 @@ class BridgeBase extends LineStructure{
         ctx.stroke();
     }
 }
+
 class Bridge extends LineStructure{
     constructor(coords,id){
         super('_',coords,id)
@@ -2078,13 +2045,12 @@ class Bridge extends LineStructure{
     }
 }
 
-
 class LinesStructure extends Strucure{
     constructor(layer,coords,id=-1){
         super(layer,id)
         this.coords = coords
-        
     }
+
     draw(){
         ctx.beginPath();
         for (let l = 0; l < this.coords.length; l += 1) {
@@ -2094,14 +2060,12 @@ class LinesStructure extends Strucure{
                     ctx.lineTo(...global_xy_to_screen(this.coords[l]))
                 }
         }
-        
     }
 }
 
 class Road extends LinesStructure{
     constructor(coords,id){
         super('R',coords,id)
-        // this.children_structures.push(new RoadDashes(coords))
     }
     draw(){
         super.draw()
@@ -2129,16 +2093,12 @@ class RoadDashes extends LinesStructure{
     }
 }
 
-
 class Tree{
-
-    //[0, 6.67, 4.4, 2]
     constructor(id,x,y,size){
         this.id = id
         this.x = x
         this.y = y
         this.size = size
-        // console.log(id,x,y,size)
         this.tree_size={
             0:0.1,
             1:0.15,
@@ -2146,14 +2106,11 @@ class Tree{
             3:0.25
         }
     }
-    draw(alpha){
-
-    }
+    draw(alpha){}
 }
 
 class ClassicalTree extends Tree{
     draw(alpha){
-        
         ctx.beginPath();
         ctx.fillStyle = MAPstatic.CT.tf+alpha;
         ctx.arc(...global_xy_to_screen([this.x,this.y]), Zoom * this.tree_size[this.size]/2,0,2*Math.PI)
@@ -2167,7 +2124,6 @@ class ClassicalTree extends Tree{
         ctx.beginPath();
         ctx.fillStyle = MAPstatic.CT.tt+alpha;
         ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/5*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/5*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
-        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
         ctx.fill();
         ctx.closePath();
     }
@@ -2175,7 +2131,6 @@ class ClassicalTree extends Tree{
 
 class FirTree extends Tree{
     draw(alpha){
-        
         ctx.beginPath();
         ctx.fillStyle = MAPstatic.CT.ff+alpha;
         ctx.arc(...global_xy_to_screen([this.x,this.y]), Zoom * this.tree_size[this.size]/2,0,2*Math.PI)
@@ -2189,7 +2144,6 @@ class FirTree extends Tree{
         ctx.beginPath();
         ctx.fillStyle = MAPstatic.CT.ft+alpha;
         ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/24*Zoom, Zoom * this.tree_size[this.size]/2/3,0,2*Math.PI)
-        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
         ctx.fill();
         ctx.closePath();
     }
@@ -2210,12 +2164,10 @@ class PalmTree extends Tree{
         ctx.beginPath();
         ctx.strokeStyle = MAPstatic.CT.pt+alpha;
         ctx.arc(global_x_to_screen(this.x) - this.tree_size[this.size]*Math.cos(this.id*648)/24*Zoom,global_y_to_screen(this.y) - this.tree_size[this.size]*Math.sin(this.id*541)/24*Zoom, Zoom * this.tree_size[this.size]/2/3,0,2*Math.PI)
-        // ctx.arc(GameW/2 + OffsetX - (X - _[l][1] + (nX - X) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.cos(l*648)/5)*Zoom,GameH/2 + OffsetY - (Y - _[l][2] + (nY - Y) * (Date.now() - LastPING) / PING - this.tree_size[this.size]*Math.sin(l*541)/5)*Zoom, Zoom * this.tree_size[this.size]/2*2/3,0,2*Math.PI)
         ctx.stroke();
         ctx.closePath();
     }
 }
-
 
 class TreeGroup extends Strucure{
     TreesTable = {
@@ -2229,10 +2181,8 @@ class TreeGroup extends Strucure{
         let i = 0
         trees.forEach(element => {
             i++
-            // console.log(this.TreesTable[element[0]])
             this.trees.push(new this.TreesTable[element[0]](i,element[1],element[2],element[3]))
         });
-        // console.log(this.trees)
     }
     draw(){
         let alpha = 'ff'
@@ -2243,11 +2193,9 @@ class TreeGroup extends Strucure{
             tree.draw(alpha)
         });
     }
-
 }
 
 class Building extends Strucure{
-    //[0, 4.21, 9.99, 0.2, 0.2, 161]
     constructor(id,x,y,w,h,dir){
         super('#!',id)
         this.x = x
@@ -2255,29 +2203,26 @@ class Building extends Strucure{
         this.w = w
         this.h = h
         this.dir = dir
-        // console.log(id,x,y,size)
         this.state_char = null
     }
+
     crumble(){
         PIXI.sound.play('crumble')
     }
+    
     update(str){
-        
         let prev_char = this.state_char
         this.state_char = str.slice(0,1)
         if (prev_char != this.state_char){
             if (this.state_char==2 && prev_char!=null){
                 this.crumble()
             }
-            // console.log(str)
-            // console.log(prev_char,this.state_char)
         }
         return str.slice(1)
-
     }
-    draw(alpha){
 
-    }
+    draw(alpha){}
+
     draw_under_construction(){
         let c0 = MAPstatic.CT.hl
         let c1 = MAPstatic.CT.hi
@@ -2308,15 +2253,13 @@ class Building extends Strucure{
         ctx.closePath();
     }
 }
+
 class BasedBuilding extends Building{
     constructor(id,x,y,w,h,dir){
         super(id,x,y,w,h,dir)
         this.children_structures.push(new Basement(id,x,y,w,h,dir))
-        
     }
 }
-
-
 
 class Basement extends Strucure{
     constructor(id,x,y,w,h,dir,offset = 0){
@@ -2327,11 +2270,9 @@ class Basement extends Strucure{
         this.h = h
         this.dir = dir
         this.o = offset
-        // console.log(0)
     }
 
     draw(){
-        // console.log(1)
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -2348,6 +2289,7 @@ class Basement extends Strucure{
         ctx.closePath();
     }
 }
+
 class CircularBasement extends Strucure{
     constructor(id,x,y,r,offset=0){
         super('c',id)
@@ -2355,11 +2297,9 @@ class CircularBasement extends Strucure{
         this.y = y
         this.r = r
         this.o = offset
-        // console.log(0)
     }
 
     draw(){
-        // console.log(1)
         ctx.fillStyle = MAPstatic.CT.cs
         ctx.beginPath();
         ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),(this.r+this.o)*Zoom,0,2*Math.PI)
@@ -2371,8 +2311,8 @@ class CircularBasement extends Strucure{
 class CircularBuilding extends Building{
     constructor(id,x,y,d){
         super(id,x,y,d,d,0)
-
     }
+
     draw_under_construction(){
         let c0 = MAPstatic.CT.hl
         let c1 = MAPstatic.CT.hi
@@ -2402,18 +2342,11 @@ class CircularBasedBuilding extends CircularBuilding{
         super(id,x,y,d)
         this.children_structures.push(new CircularBasement(id,x,y,d/2,0.04))
         this.observer_direction = 0
-        
     }
 }
 
-
 class RadarBuilding extends CircularBasedBuilding{
     draw(){
-        if (this.state_char=='4'){
-            this.draw_under_construction()
-            return
-        }
-        // this.observer_direction += 0.3
         if (this.state_char=='4'){
             this.draw_under_construction()
             return
@@ -2445,21 +2378,16 @@ class RadarBuilding extends CircularBasedBuilding{
         ctx.arc(global_x_to_screen(this.x),global_y_to_screen(this.y),(this.h/15)*Zoom,0,2*Math.PI)
         ctx.closePath();
         ctx.fill();
-
     }
 
     update(str){
         str = super.update(str)
-        // console.log(str)
         this.observer_direction = Number(str.slice(0,3))
         return str.slice(3)
     }
 }
 
 class HouseBuilding extends BasedBuilding{
-
-
-    
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2468,7 +2396,6 @@ class HouseBuilding extends BasedBuilding{
         if (this.state_char=='2' || this.state_char=='3'){
             return
         }
-        // console.log(1)
 
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
@@ -2505,14 +2432,9 @@ class HouseBuilding extends BasedBuilding{
         ctx.fill();
         ctx.closePath();
     }
-
 }
 
-
 class ContainerBuilding extends Building{
-
-
-    
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2526,7 +2448,6 @@ class ContainerBuilding extends Building{
         let sin = Math.sin(this.dir/180*Math.PI)
         poly = [[ -this.w,0], [this.w,0 ]]
         ctx.beginPath();
-
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         ctx.lineTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
         ctx.lineCap = 'butt'
@@ -2539,13 +2460,9 @@ class ContainerBuilding extends Building{
         ctx.setLineDash([])
         ctx.closePath();
     }
-
 }
 
 class ChimneyBuilding extends BasedBuilding{
-
-
-    
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2578,13 +2495,9 @@ class ChimneyBuilding extends BasedBuilding{
         ctx.fill();
         ctx.closePath();
     }
-
 }
 
 class HangarBuilding extends BasedBuilding{
-
-
-    
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2602,7 +2515,6 @@ class HangarBuilding extends BasedBuilding{
             ctx.fillStyle = MAPstatic.CT.hf
             ctx.strokeStyle = MAPstatic.CT.hs
         }
-
         ctx.lineWidth = 2/320*Zoom
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         for (let p = 1; p < poly.length; p+=1) {
@@ -2624,20 +2536,16 @@ class HangarBuilding extends BasedBuilding{
         ctx.moveTo(global_x_to_screen(this.x)+(poly[0][1]*cos*Zoom)+(poly[0][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[0][1]*sin*Zoom)+(poly[0][0]*-cos*Zoom));
         ctx.lineTo(global_x_to_screen(this.x)+(poly[1][1]*cos*Zoom)+(poly[1][0]*Zoom*sin) ,global_y_to_screen(this.y)+(poly[1][1]*sin*Zoom)+(poly[1][0]*-cos*Zoom));
         ctx.lineCap = 'butt'
-        // ctx.strokeStyle = MAPstatic.CT.hs
         ctx.setLineDash([2/320*Zoom,6/320*Zoom])
         ctx.stroke();
         ctx.setLineDash([])
         ctx.closePath();
     }
-
 }
 
 class CraneBuilding extends Building{
-
     l=0.075
     L=0.25
-    
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2651,7 +2559,6 @@ class CraneBuilding extends Building{
             c1 = MAPstatic.CT.l1
             c2 = MAPstatic.CT.l1
         }
-
         let poly = []
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
@@ -2710,35 +2617,20 @@ class BuildingsGroup extends Strucure{
         let i = 0
         buildings.forEach(element => {
             i++
-            // console.log(this.BuildingsTable[element[0]])
             this.buildings.push(new BuildingsTable[element[0]](id*100+i,...element.slice(1)))
         });
         for (const b of this.buildings) {
-            // console.log(b)
             this.children_structures.push(b)
             b.children_structures.forEach(s=>{
                 this.children_structures.push(s)
             })
-
         }
-        // console.log(this.buildings)
-    }
-    draw(){
-        // let alpha = 'ff'
-        // if (Z == 1){
-        //     alpha = "88"
-        // }
-        // this.buildings.forEach(tree => {
-        //     tree.draw(alpha)
-        // });
     }
     update(str){
         for (const b of this.buildings) {
-            // console.log(b)
             str = b.update(str)
         }
     }
-
 }
 
 function drawCeils(){

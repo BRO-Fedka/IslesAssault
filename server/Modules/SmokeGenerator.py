@@ -4,7 +4,7 @@ from server.World import World
 from typing import Sequence
 from server.Entities.Smoke import Smoke
 import datetime
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 from server.Types import coords
 
 from pymunk import Body

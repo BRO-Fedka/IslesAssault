@@ -12,6 +12,29 @@ def lookat_deg(x, y):
     return angle % 360
 
 
+# class PIDR:
+#     def __init__(self, kp, ki, kd):
+#         self.kp = kp
+#         self.ki = ki
+#         self.kd = kd
+#         self.integral = 0
+#         self.prevErr = None
+#
+#     def calc(self, input, target, dt):
+#         err = target - input
+#         self.integral = self.integral + err * dt
+#         if not self.prevErr:
+#             self.prevErr = err
+#         D = (err - self.prevErr) / dt
+#         self.prevErr = err
+#         return err * self.kp + self.integral * self.ki + D * self.kd
+
+
+# def PIDR(input, target, kp, ki, kd, dt):
+#     err = target - input
+#     integral = 0
+
+
 def sign(n):
     if n < 0:
         return -1
@@ -19,15 +42,15 @@ def sign(n):
         return 1
 
 
-def count_normals(coords, reverse = False):
+def count_normals(coords, reverse=False):
     normals = []
     for _ in range(0, len(coords)):
-        dx = coords[(_+1) % len(coords)][0]-coords[_][0]
-        dy = coords[(_+1) % len(coords)][1]-coords[_][1]
+        dx = coords[(_ + 1) % len(coords)][0] - coords[_][0]
+        dy = coords[(_ + 1) % len(coords)][1] - coords[_][1]
         if not reverse:
-            vec = -dy,dx
+            vec = -dy, dx
         else:
-            vec = dy,-dx
+            vec = dy, -dx
         normals.append(vec)
     return normals
 

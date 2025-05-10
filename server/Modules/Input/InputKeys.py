@@ -1,4 +1,4 @@
-from server.Modules.InputKeys.InputKey import InputKey
+from server.Modules.Input.InputKey import InputKey
 
 FORWARD = InputKey(0, "Move forward", 87)
 BACKWARD = InputKey(1, "Move backward", 83)

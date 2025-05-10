@@ -1,7 +1,7 @@
 from server.Modules.Module import Module
 from server.Vehicle.Controllers.VehicleHealthController import VehicleHealthController
 from server.Types import PlayerInputData
-import server.Modules.InputKeys.InputKeys as IK
+import server.Modules.Input.InputKeys as IK
 
 
 class RepairKit(Module):
