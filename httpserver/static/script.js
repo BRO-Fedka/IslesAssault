@@ -749,6 +749,8 @@ let WH =32
 let OffsetX = 0
 let OffsetY=0
 let indicators = document.getElementById('indicators')
+let LAST_SPEED = []
+let AVER_SPEED_VEC = [0,0]
 
 document.getElementById('VolumeRange').value = localStorage.getItem('SettingsVolumeRangeVal')
 document.getElementById('MusicRange').value = localStorage.getItem('SettingsMusicRangeVal')

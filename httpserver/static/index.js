@@ -1,10 +1,10 @@
-PIXI.sound.add("MenuBtnPress",{
-    url: "static\\MenuBtnPress.mp3",
-    preload: true
-   })
+ PIXI.sound.add("MenuBtnPress",{
+     url: "static\\MenuBtnPress.mp3",
+     preload: true
+    })
 
 function play_click_sound(){
-PIXI.sound.play('MenuBtnPress')
+ PIXI.sound.play('MenuBtnPress')
 }
 
 function parse_set_common_data_return_content(resp){

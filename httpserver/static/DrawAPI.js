@@ -1,27 +1,154 @@
 PACK_ID = null
+SONIC_SPEED = 0.5
+
+
+
+// TODO NO HOWLER.JS ! PIXI !
+
+// figure out with buffer ?!?
+
+// SOUND CLASSES ===========
+class SoundSource{
+    constructor(src,mxdist,defvol = 1,trembling=0){
+        PIXI.sound.add(src,{url:src,preload:true,volume:defvol})
+        this.src = src
+        this.max_distance = mxdist
+        this.trembling = trembling
+    }
+}
+
+
+
+
+
+
+class SoundPlayer{
+    constructor(){
+        this.sounds = []
+        this.x=0
+        this.y=0
+    }
+
+    measure_volume(snd){
+        let x = Math.max((snd.sndsrc.max_distance - Math.sqrt((X-this.x)**2+(Y-this.y)**2))/snd.sndsrc.max_distance,0)
+        return 4.4*(2**(5.3*(x-1.4))-0.005)
+    }
+
+    measure_trembling_cof(snd){
+        let x = Math.max((snd.sndsrc.max_distance - Math.sqrt((X-this.x)**2+(Y-this.y)**2))/snd.sndsrc.max_distance,0)
+        return -((1-x**4)**0.25+1)
+    }
+
+    update(x,y){
+        this.x = x
+        this.y = y
+        let i = 0
+        while (i < this.sounds.length){
+            if (this.sounds[i].progress==1){
+                this.sounds.splice(i,1)
+            }else{
+                this.sounds[i].volume = this.measure_volume(this.sounds[i])
+                i++
+            }
+        }
+
+    }
+
+    play(sndsrc){
+        if (Object.hasOwn(sndsrc, 'length')){
+            sndsrc = sndsrc[Math.floor(Math.random() * (sndsrc.length))]
+        }
+        let snd = PIXI.sound.play(sndsrc.src,{ singleInstance: false})
+        snd.sndsrc = sndsrc
+        snd.volume = this.measure_volume(snd)
+        console.log(Zoom*sndsrc.trembling*this.measure_trembling_cof(snd))
+        ShakeXbnds += Zoom*sndsrc.trembling*this.measure_trembling_cof(snd)
+		ShakeYbnds += Zoom*sndsrc.trembling*this.measure_trembling_cof(snd)
+        console.log(snd)
+        
+        this.sounds.push(snd)
+    }
+}
+
+class LongSoundPlayer{
+    constructor(sndsrc){
+        this.snd = PIXI.sound.play(sndsrc.src,{ singleInstance: false, loop:true})
+        this.snd.sndsrc =sndsrc
+        this.x=0
+        this.y=0
+        this.prev_x=null
+        this.prev_y=null
+        this.prev_t=new Date();
+        this.last_speed=[]
+    }
+
+    measure_volume(snd){
+        let x = Math.max((snd.sndsrc.max_distance - Math.sqrt((X-this.x)**2+(Y-this.y)**2))/snd.sndsrc.max_distance,0)
+        // console.log(x)
+        // console.log(X)
+        // console.log(this.x)
+        // return 4.4*(2**(5.3*(x-1.4))-0.005)
+        return x
+    }
+
+    update(x,y,asv,volume=1){
+        this.x = x
+        this.y = y
+        if (this.prev_x==null){
+            this.prev_x=x
+            this.prev_y=y
+        }
+        let dir_vec = [X-x,Y-y]
+        let speed = 1
+        if (Math.abs(dir_vec[0])+Math.abs(dir_vec[1])!=0){
+            let prj_player_spd = (dir_vec[0]*AVER_SPEED_VEC[0]+dir_vec[1]*AVER_SPEED_VEC[1])/Math.sqrt(dir_vec[0]**2+dir_vec[1]**2)
+            let prj_own_spd = (dir_vec[0]*asv[0]+dir_vec[1]*asv[1])/Math.sqrt(dir_vec[0]**2+dir_vec[1]**2)
+            speed = (SONIC_SPEED-prj_player_spd)/(SONIC_SPEED-prj_own_spd)
+        }
+
+        try{
+            this.snd.speed = speed
+            
+            
+        }catch{
+            this.snd.speed = 1
+        }
+        // console.log(this.snd.speed)
+        
+        this.snd.volume = this.measure_volume(this.snd)*volume
+        // console.log(this,this.snd.volume)
+        this.prev_x=x
+        this.prev_y=y
+        this.prev_t=new Date()
+
+
+    }
+}
 // IMPORT SOUNDS =======================================
-PIXI.sound.add("bang","static\\bang.mp3")
-PIXI.sound.add("wtrBang","static\\wtrBang.mp3")
-PIXI.sound.add("lnchTrpd","static\\TorpedoLaunch.mp3")
-PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
-PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
-PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
 
-PIXI.sound.add("dmg0","static\\dmg\\0.mp3")
-PIXI.sound.add("dmg1","static\\dmg\\1.mp3")
-PIXI.sound.add("dmg2","static\\dmg\\2.mp3")
-PIXI.sound.add("dmg3","static\\dmg\\3.mp3")
+// PIXI.sound.add("lnchRckt","static\\RocketLaunch.mp3")
+// PIXI.sound.add("bombFall","static\\bombFall4s.mp3")
+// PIXI.sound.add("rocketHit","static\\rocketHit.mp3")
 
-PIXI.sound.add("Sdmg0","static\\Sdmg\\0.mp3")
-PIXI.sound.add("Sdmg1","static\\Sdmg\\1.mp3")
+const SND_BANG = new SoundSource("static\\bang.mp3",5,0.1)
+const SND_WATER_BANG = new SoundSource("static\\wtrBang.mp3",3,1,0.07)
+const SND_LAUNCH_TORPEDO = new SoundSource("static\\TorpedoLaunch.mp3",0.75)
+const SNDS_DAMAGE = [
+    new SoundSource("static\\dmg\\0.mp3",2,1,0.01),
+    new SoundSource("static\\dmg\\1.mp3",2,1,0.01),
+    new SoundSource("static\\dmg\\2.mp3",2,1,0.01),
+    new SoundSource("static\\dmg\\3.mp3",2,1,0.01),
+]
+const SNDS_STONE_DAMAGE = [
+    new SoundSource("static\\Sdmg\\0.mp3",2,1,0.005),
+    new SoundSource("static\\Sdmg\\1.mp3",2,1,0.005),
 
-PIXI.sound.add("mcanon","static\\mcanon.mp3")
-PIXI.sound.add("pcanon","static\\pcanon.mp3")
-PIXI.sound.add("tcanon","static\\mcanon.mp3")
-PIXI.sound.add("hcanon","static\\pcanon.mp3")
-PIXI.sound.add("fcanon","static\\pcanon.mp3")
+]
+const SND_MORTAR_SHOT = new SoundSource("static\\mcanon.mp3",5,1,0.04)
+const SND_CRUMBLING = new SoundSource("static\\crumbling.mp3",4,1,0.02)
+const LSND_SHIP_ENGINE = new SoundSource("static\\ship_engine.mp3",1.5,0.1)
 
-PIXI.sound.add("crumble","static\\crumbling.mp3")
+
 // BASE CALCULATIONS
 function global_x_to_screen(x){
     return (x+(-nX+X)*(Date.now() - LastPING) / PING-X)*Zoom+GameW/2 + OffsetX
@@ -93,7 +220,6 @@ function drawCannon(vehicle,cannon, fire=false){
         for (let _ = 0; _ < 5; _++) {
             new ShotSmokeParticle(xy[0] + cosc*l/320,xy[1] + sinc*l/320)
         }
-        PIXI.sound.play(shtSND);
     }
 
     switch (cannon.indication_char) {
@@ -383,6 +509,8 @@ class Vehicle{
         this.wtp_spawner = new PolyStrokeModuleParticleSpawner({poly:null},WaterTraceParticle,1)
         this.wtp_spawner.set_activation_to(true)
         this.prev_layer = ''
+        this.last_speed=[]
+        this.aver_speed_vec = [0,0]
         
     }
 
@@ -534,6 +662,17 @@ class Vehicle{
         this.new_x = Number(lst[5])
         this.new_y = Number(lst[6])
         this.z = Number(lst[7])
+        this.last_speed.push([(this.new_x-this.x)/PING*1000,(this.new_y-this.y)/PING*1000])
+        
+        if (this.last_speed.length>5){
+            this.last_speed.shift()
+        }
+        this.aver_speed_vec = [0,0]
+        for (const v of this.last_speed){
+            this.aver_speed_vec[0] += v[0]
+            this.aver_speed_vec[1] += v[1]
+        }
+        this.aver_speed_vec = [this.aver_speed_vec[0]/this.last_speed.length,this.aver_speed_vec[1]/this.last_speed.length]
         return string
         
     }
@@ -553,6 +692,8 @@ class Vehicle{
         Y = this.y
         nX = this.new_x
         nY = this.new_y
+
+        AVER_SPEED_VEC = this.aver_speed_vec
         Role = this.role
         this.modules.forEach(module => {
             string = module.updatep(string)
@@ -1338,21 +1479,30 @@ class Cannon extends RotatingModule{
     stroke_width = 2
     canbang_prt_amount = 5
     underbody = false
-    snd_shoot = 'mcanon'
+    snd_shoot = SND_MORTAR_SHOT
     image='static/indication/mortar_turret_direct_icon.svg'
     constructor(x,y,r){
         super(x,y,r)
         this.indicator = new SimpleIndicator(this.image)
         this.status = 0
         this.prev_status = 0
+        this.sound_player = new SoundPlayer()
     }
 
     drawp(layer,vehicle){
+        this.sound_player.update(vehicle.x,vehicle.y)
+        if(this.prev_status!=this.status){
+            this.sound_player.play(this.snd_shoot)
+        }
         drawCannon(vehicle,this,this.prev_status!=this.status)
         this.prev_status = this.status
     }
 
     drawe(layer,vehicle){
+        this.sound_player.update(vehicle.x,vehicle.y)
+        if(this.prev_status!=this.status){
+            this.sound_player.play(SND_BANG)
+        }
         drawCannon(vehicle,this,this.prev_status!=this.status)
         this.prev_status = this.status
     }
@@ -1391,7 +1541,6 @@ class Entity{
     }
 
     draw(layer){
-
     }
 }
 
@@ -1413,6 +1562,7 @@ class Projectile extends Entity{
         this.width = Number(larr[9])
         this.start_time = Date.now()
         this.distance = 0
+        this.sound_player = new SoundPlayer()
 
     }
 
@@ -1424,6 +1574,7 @@ class Projectile extends Entity{
 
     draw(layer=false){
         if (layer != false && layer != 'OnWater+3') return 
+        this.sound_player.update(this.x,this.y)
         let grad=ctx.createLinearGradient(GameW/2 + OffsetX - (X - this.x + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom,GameW/2 + OffsetX - (X - this.x+Math.cos(this.dir/180*Math.PI)*this.distance + (nX - X) * (Date.now() - LastPING) / PING)*Zoom,GameH/2 + OffsetY - (Y - this.y+Math.sin(this.dir/180*Math.PI)*this.distance + (nY - Y) * (Date.now() - LastPING) / PING)*Zoom);
         grad.addColorStop(1,this.grad_color_1);
         grad.addColorStop(0,this.grad_color_0);
@@ -1456,12 +1607,12 @@ class Shell extends Projectile{
         if (layer != 'S') return 
         if(this.status == 1 ){
             if (Math.random() < 1){
-                PIXI.sound.play('dmg'+Math.floor(Math.random()*4));
+                this.sound_player.play(SNDS_DAMAGE)
             }
             this.status=0
         }else if(this.status == 3){
             if (Math.random() < 1){
-                    PIXI.sound.play('Sdmg'+Math.floor(Math.random()*2));
+                this.sound_player.play(SNDS_STONE_DAMAGE)
             }
             this.status=0
         }
@@ -1480,10 +1631,8 @@ class Torpedo extends Projectile{
         if(this.status == 1){
 			this.status=0
             WaterBang.spawn(5,this.x, this.y)
-			ShakeXbnds += 10
-			ShakeYbnds += 10
 		}else if(this.status == 2){
-            PIXI.sound.play('lnchTrpd');
+            this.sound_player.play(SND_LAUNCH_TORPEDO)
             this.status = 0
 		}
 		if (Math.random() < 0.15){
@@ -1619,9 +1768,11 @@ class BangProto extends Particle{
         this.ys = Math.sin(dir);
         this.rad = 1;
         this.dir = dir
+        this.sound_player = new SoundPlayer()
 
     }
     draw(){
+        this.sound_player.update(this.x,this.y)
 	    ctx.fillStyle = "rgba(" +this._color0+","+(this.life**0.33)*1+")";
 
 		ctx.beginPath();
@@ -1651,14 +1802,14 @@ class WaterBang extends BangProto{
     _color1='0,160,255'
     constructor(x,y){
         super(x,y)
-        PIXI.sound.play('wtrBang');
+        this.sound_player.play(SND_WATER_BANG)
     }
 }
 
 class Bang extends BangProto{
     constructor(x,y){
         super(x,y)
-        PIXI.sound.play('bang');
+        this.sound_player.play(SND_BANG)
     }
     _color0='0,0,0'
     _color1='255,160,0'
@@ -2204,13 +2355,15 @@ class Building extends Strucure{
         this.h = h
         this.dir = dir
         this.state_char = null
+        this.sound_player = new SoundPlayer()
     }
 
     crumble(){
-        PIXI.sound.play('crumble')
+        this.sound_player.play(SND_CRUMBLING)
     }
     
     update(str){
+        this.sound_player.update(this.x,this.y)
         let prev_char = this.state_char
         this.state_char = str.slice(0,1)
         if (prev_char != this.state_char){

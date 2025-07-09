@@ -55,8 +55,9 @@ class TankCannon extends Cannon{
 
 class Engine extends PolygonModule{
     image = 'static/indication/engine_icon.svg'
-    constructor(poly){
+    constructor(poly,sndsrc){
         super(poly)
+        this.long_sound_player = new LongSoundPlayer(sndsrc)
         this.indicator = new SimpleIndicator(this.image)
     }
 
@@ -65,16 +66,19 @@ class Engine extends PolygonModule{
         this.indicator.update(this)
         return string
     }
-    // drawp(layer,vehicle){
-    //     super.drawp(layer,vehicle)
-    // }
-    // drawe(layer,vehicle){
-    //     super.drawe(layer,vehicle)
-    // }
+    drawp(layer,vehicle){
+        super.drawp(layer,vehicle)
+        this.long_sound_player.update(vehicle.x,vehicle.y,vehicle.aver_speed_vec,0)
+    }
+    drawe(layer,vehicle){
+        super.drawe(layer,vehicle)
+        this.long_sound_player.update(vehicle.x,vehicle.y,vehicle.aver_speed_vec)
+    }
 }
 class ShipEngine extends Engine{
     input_keys = [IK.FORWARD,IK.BACKWARD]
     indication_layer = 'BOTTOM'
+    constructor(poly){super(poly,LSND_SHIP_ENGINE)}
 
 }
 class TankEngine extends Engine{
