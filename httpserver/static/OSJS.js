@@ -83,6 +83,7 @@ class ShipEngine extends Engine{
 }
 class TankEngine extends Engine{
     indication_layer = 'DEFAULT'
+    constructor(poly){super(poly,LSND_SHIP_ENGINE)}
 
 }
 class WaterPump extends PolygonModule{

@@ -1,5 +1,5 @@
 PACK_ID = null
-SONIC_SPEED = 0.5
+SONIC_SPEED = 4
 
 
 
@@ -146,7 +146,7 @@ const SNDS_STONE_DAMAGE = [
 ]
 const SND_MORTAR_SHOT = new SoundSource("static\\mcanon.mp3",5,1,0.04)
 const SND_CRUMBLING = new SoundSource("static\\crumbling.mp3",4,1,0.02)
-const LSND_SHIP_ENGINE = new SoundSource("static\\ship_engine.mp3",1.5,0.1)
+const LSND_SHIP_ENGINE = new SoundSource("static\\ship_engine.mp3",1.5,0.25)
 
 
 // BASE CALCULATIONS
@@ -1594,7 +1594,7 @@ class Projectile extends Entity{
         }else{
             this.distance = 0
         }
-        if (this.x > 20 || this.x < -4 || this.y > 20 || this.y < -4){
+        if (this.x > WH+5 || this.x < -5 || this.y > WH+5 || this.y < -5){
             this.is_active = false
         }
     }
@@ -1709,6 +1709,105 @@ class Particle{
 }
 
 // PARTICLE CLASSES ============================
+class BuildingExplosionParticle extends Particle{
+    constructor(x,y,dir = Math.random()*2*Math.PI){
+        super("T",x,y)
+        this.life=1;
+        this.xs = Math.cos(dir);
+        this.ys = Math.sin(dir);
+        
+        this.speed_cof = Math.random()+0.4
+        
+    }
+    draw(cof_life=0.003,spd=0.0003){
+        spd = Math.sin((1+this.life*Math.PI)/2) * spd * this.speed_cof
+		this.x += this.xs*spd
+		this.y += this.ys*spd
+        this.objdir += this.rotspd*Math.sin(this.life*Math.PI)*this.speed_cof
+		this.life -= cof_life
+		if (this.life < 0) {
+			this.is_active = false
+		}
+    }
+}
+
+class BeamBEParticle extends BuildingExplosionParticle{
+    constructor(x,y,blmin = 0.01,bldelta=0.03,bwmin = 0.005,bwdelta=0.01,objdir = Math.random()*2*Math.PI,rotspd=((Math.random() < 0.5) ? 0.03 : -0.03)*(Math.random()*0.5+0.5)){
+        super(x,y)
+        this.objdir = objdir
+        this.rotspd = rotspd
+        this.beamlen = blmin+Math.random()*bldelta
+        this.beamw = bwmin+bwdelta*Math.random()
+    }
+
+    draw(color='0,0,0',...args){
+        super.draw(...args)
+        if (this.is_active==false) return
+        ctx.strokeStyle = "rgba("+color+","+Math.sin(this.life*Math.PI)**0.25+")";//
+        let extend_cof = Math.sin(this.life*Math.PI)*0.5+1
+        ctx.lineWidth = this.beamw*Zoom*extend_cof
+		ctx.beginPath();
+        ctx.lineCap = 'butt';
+        let cx = Math.cos(this.objdir)*this.beamlen/2*Zoom*extend_cof
+        let cy = Math.sin(this.objdir)*this.beamlen/2*Zoom*extend_cof
+        ctx.moveTo(this.calc_x()+cx,this.calc_y()+cy)
+        ctx.lineTo(this.calc_x()-cx,this.calc_y()-cy)
+        ctx.stroke()
+		ctx.closePath();
+
+    }
+}
+
+class PlankBEParticle extends BeamBEParticle{
+    draw(){
+        super.draw('129,92,54')
+    }
+}
+
+class ContainerBEParticle extends BeamBEParticle{
+    constructor(x,y){
+        super(x,y,0.025,0.01,0.01,0.005)
+    }
+    draw(){
+        super.draw('185,215,215')
+    }
+}
+
+class CraneArmBEParticle extends BeamBEParticle{
+    constructor(x,y){
+        super(x,y,0.04,0.06,8/320,0)
+        this.rotspd *=0.5
+    }
+    draw(){
+        super.draw('50,50,50',0.004,0.0006)
+    }
+}
+
+class CrumblingParticle extends Particle{
+    constructor(x,y,dir = Math.random()*2*Math.PI){
+        super("T",x,y)
+        this.life=1;
+        this.xs = Math.cos(dir);
+        this.ys = Math.sin(dir);
+        this.rad = 6;
+    }
+    draw(){
+	    ctx.fillStyle = "rgba(96,96,96,"+(this.life)**0.5+")";
+		ctx.beginPath();
+		ctx.arc(this.calc_x(),this.calc_y(),this.rad/320*Zoom,0,2*Math.PI);
+		ctx.closePath();
+		this.x += this.xs/10*this.life/320
+		this.y += this.ys/10*this.life/320
+		this.rad+=0.15*this.life/320*Zoom
+		ctx.fill();
+		this.life *= 0.99
+		if (this.life < 0.001) {
+			this.is_active = false
+		}
+    }
+
+}
+
 class ShotSmokeParticle extends Particle{
     constructor(x,y,dir = Math.random()*2*Math.PI){
         super("S",x,y)
@@ -2347,6 +2446,10 @@ class TreeGroup extends Strucure{
 }
 
 class Building extends Strucure{
+    wall_bep = PlankBEParticle
+    crumbling_prt = CrumblingParticle
+    crumbling_smk_part = true
+    crumbling_wall_part = true
     constructor(id,x,y,w,h,dir){
         super('#!',id)
         this.x = x
@@ -2360,6 +2463,37 @@ class Building extends Strucure{
 
     crumble(){
         this.sound_player.play(SND_CRUMBLING)
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        if (this.crumbling_wall_part){
+            for (let _ = 0; _ < Math.round((this.w+this.h)*2*40); _++) {
+                let rnd = Math.random()*(this.w+this.h)
+                let sign = (Math.random()<0.5 ? 1:-1)
+                let x = 1
+                let y = 1
+                let deg = this.dir
+                if (rnd < this.w){
+                    x = Math.random()*this.w - this.w/2
+                    y = sign*this.h/2
+                }else{
+                    y = Math.random()*this.h - this.h/2
+                    x = sign*this.w/2
+                    deg = deg+90
+                }
+                
+                let p = new this.wall_bep(this.x+x*cos-y*sin,this.y+x*sin+y*cos)
+                p.objdir = deg/180*Math.PI 
+                
+            }
+        }
+        if(this.crumbling_smk_part){
+            for (let _ = 0; _ < Math.round((this.w*this.h)*300); _++) {
+                let x = Math.random()*this.w - this.w/2
+                let y = Math.random()*this.h - this.h/2
+                new this.crumbling_prt(this.x+x*cos-y*sin,this.y+x*sin+y*cos)
+                
+            }
+        }
     }
     
     update(str){
@@ -2588,6 +2722,9 @@ class HouseBuilding extends BasedBuilding{
 }
 
 class ContainerBuilding extends Building{
+    wall_bep = ContainerBEParticle
+    crumbling_smk_part = false
+    crumbling_wall_part = true
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2616,6 +2753,8 @@ class ContainerBuilding extends Building{
 }
 
 class ChimneyBuilding extends BasedBuilding{
+    crumbling_smk_part = true
+    crumbling_wall_part = false
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2651,6 +2790,8 @@ class ChimneyBuilding extends BasedBuilding{
 }
 
 class HangarBuilding extends BasedBuilding{
+    crumbling_smk_part = true
+    crumbling_wall_part = false
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()
@@ -2697,6 +2838,8 @@ class HangarBuilding extends BasedBuilding{
 }
 
 class CraneBuilding extends Building{
+    crumbling_smk_part = true
+    crumbling_wall_part = false
     l=0.075
     L=0.25
     draw(){
@@ -2751,6 +2894,17 @@ class CraneBuilding extends Building{
         ctx.lineTo(global_x_to_screen(this.x)+(this.L*cos*Zoom) ,global_y_to_screen(this.y)+(this.L*sin*Zoom));
         ctx.stroke();
         ctx.closePath();
+    }
+
+    crumble(){
+        super.crumble()
+        let amnt = 6
+        for (let i = 0; i < amnt; i++) {
+            let l = Math.random()*(this.l+this.L)-this.l
+            let p = new CraneArmBEParticle(this.x+Math.cos(this.dir/180*Math.PI)*l,this.y+Math.sin(this.dir/180*Math.PI)*l)
+            p.objdir = this.dir/180*Math.PI
+            
+        }
     }
 
 }
