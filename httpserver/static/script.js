@@ -281,11 +281,9 @@ tree_size.set(1,0.15)
 tree_size.set(2,0.2)
 tree_size.set(3,0.25)
 
-document.onkeydown=function(event) {
-    if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
-        event.preventDefault(); // stops its action
-    }
-}
+// document.onkeydown=function(event) {
+
+// }
 
 document.getElementById("ServerAddress").value =document.getElementById("ServerSelect").value
 function ZoomCorrection(){
@@ -383,7 +381,7 @@ function keybindOnKeyDown(event){
     // console.log()
     let id = event.target.id.slice(10)
     let keyCode = event.keyCode
-
+    
     localStorage.setItem(PACK_ID+"k"+id,keyCode)
     try{
         TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
@@ -870,7 +868,7 @@ function startgame() {
     UpdateObjs = true
     PIXI.sound.stop('MainMenuMusic')
 	if (true) {
-		canvas.addEventListener("mousedown", mclick, false);
+        canvas.addEventListener("mousedown", mclick, false);  
 		document.addEventListener("mouseup", mrelease, false);
 		document.addEventListener('mousemove', mousepos, false);
 		document.addEventListener('fullscreenchange', fresize  );
@@ -1204,13 +1202,15 @@ function mrelease(event){
 function mifo() {
 	messagefield.style.display = 'none'
 }
+let IKWhiteList = null 
 function keydown(event) {
     // console.log(TVehicles)
     // console.log(CurVehicleID)
     // console.log(TVehicles.get(CurVehicleID))
+
     TVehicles.get(CurVehicleID).input_keys.forEach(ik => {
         // console.log(ik.cur_char, keyboardMap[ik.cur_char])
-        if (event.keyCode==ik.cur_char){
+        if (event.keyCode==ik.cur_char && (IKWhiteList == null || IKWhiteList.includes(ik))){
             ik.is_pressed = true
             ik.was_pressed = true
         }
@@ -1240,7 +1240,10 @@ function keydown(event) {
 	}else if(event.keyCode == 115){
         module_view_mode=(!module_view_mode)
     }
-    
+    if (event.keyCode == 9 || event.keyCode == 112 || event.keyCode == 114 ) {  //tab pressed
+        // console.log("LOL")
+        event.preventDefault(); // stops its action
+    }
     //else if ( (event.keyCode == 86 )) {
 	// 	curView = (curView+1)%Vehicles[CurVehicle].views
 	// 	document.getElementById('ViewImg').src = Vehicles[CurVehicle].viewsIcons[curView]

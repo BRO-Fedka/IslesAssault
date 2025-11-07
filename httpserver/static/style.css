@@ -1,3 +1,7 @@
+*{
+	--gui-blur: blur(5px);
+}
+
 #SNvk{
 background-color:#0077FF;
 }
@@ -139,6 +143,7 @@ color:#f44;
 	font-family: 'Fredoka One', cursive;
 	color:rgba(255,255,255,0.8);
 	text-align: center;
+	backdrop-filter: var(--gui-blur);
 }
 
 #SEbar:hover{
@@ -151,9 +156,7 @@ border:none;
 background-color: rgba(0,0,0,0);
 }
 
-*{
-/*transition: 0.25s;*/
-}
+
 html {
 overflow:hidden;
 }
@@ -208,6 +211,7 @@ height:100%;
 	position: fixed;
 	transform: translateX(-50%) translateY(-50%);
 	background-color: rgba(0,0,0,0.2);
+	backdrop-filter: var(--gui-blur);
 	top: 50%;
 	left:50%;
 	width: 300px;
@@ -220,7 +224,7 @@ height:100%;
 }
 .LeftForm{
 	overflow-x: hidden;
-
+	backdrop-filter: var(--gui-blur);
     color:#fff;
 	border-radius: 10px;
 	position: fixed;
@@ -235,7 +239,7 @@ height:100%;
 .RightForm{
 	overflow-x: hidden;
 	overflow-y: scroll;
-
+	backdrop-filter: var(--gui-blur);
 	border-radius: 10px;
 	position: fixed;
 	transform: translateX(-50%) translateX(310px) translateY(-50%);
@@ -253,10 +257,11 @@ height:100%;
 	overflow-y: hidden;
 	display: flex;
 	background-color: rgba(0,0,0,0.2);
-	margin-top: 1%;
-	margin-left: 1%;
+	margin-top: 10px;
+	margin-left: 10px;
     height: min(58px, 29%);
-	width:calc((100% - 40px) / 2 * 0.96);
+	/* width:calc((100% - 40px) / 2 * 0.96); */
+	width: calc(100% - 20px);
 	border-radius: 10px;
 }
 input.cl{
@@ -548,6 +553,7 @@ cursor:pointer;
 	margin-bottom: 5px;
 	width: 40px;
 	height: 40px;
+	backdrop-filter:var(--gui-blur);
 	background-color: rgba(0,0,0,0.2);
 	display:block;
 	background-repeat: no-repeat;
@@ -813,6 +819,7 @@ color:rgba(255,255,255,1);
 	padding:5px;
 	border-radius: 5px;
 	background-color: rgba(0,0,0,0.2);
+	backdrop-filter:var(--gui-blur);
 	font-family: 'Fredoka One', cursive;
 	font-size: 16px;
 	color:#fff;
@@ -837,6 +844,7 @@ color:rgba(255,255,255,1);
     width: 40px;
     height: 40px;
     background-color: rgba(0, 0, 0, 0.2);
+	backdrop-filter:var(--gui-blur);
     background-image:url(crossmark.svg);
 }
 #SettingsCloseButton:hover{
@@ -854,6 +862,7 @@ color:rgba(255,255,255,1);
 	padding: 5px;
 	width: calc(100% - 140px);
 	height: calc(100% - 180px);
+	backdrop-filter:var(--gui-blur);
 
 }
 #AvimgForm> form{
@@ -958,6 +967,7 @@ label.spawnpoint div{
     margin-right:10px;
 	background-color: rgba(0,0,0,0.2);
 	z-index: 10;
+	backdrop-filter:var(--gui-blur);
 }
 
 #spimpprev{
@@ -978,6 +988,8 @@ width:100%;
     margin-left:10px;
 	background-color: rgba(0,0,0,0.2);
 	z-index: 10;
+	backdrop-filter:var(--gui-blur);
+
 }
 
 .spawnpoint > [type=radio] + div {
@@ -1012,7 +1024,6 @@ width:100%;
 label.spawnpoint:hover div.sp-area{
 width:100%;
 height:100%;
-background:rgba(255,255,255,0);
 }
 #EnterForm{
     width:calc(100vw - 80px);
@@ -1022,6 +1033,7 @@ background:rgba(255,255,255,0);
     margin-bottom:30px;
     margin-right:70px;
     margin-left:10px;
+	
 }
 
 #EnterContainer{
@@ -1046,6 +1058,7 @@ flex-direction: row;
   justify-content: left;
 
 height: 100%;
+	
 background: rgba(0,0,0,0.2);
 border-radius:10px;
 }
@@ -1092,16 +1105,17 @@ overflow:hidden;
 
 #spcontainer{
 
-height: calc(100% - 30px);
+height: 100%;
 aspect-ratio: 1 / 1;
 position:absolute;
 overflow:hidden;
 }
 .vehlist{
 position:absolute;
-height:calc((100% - 30px) / 3);
+/* height:calc((100% - 30px) / 3); */
 aspect-ratio:3/1;
 margin:0;
+width: 100%;
 
 }
 
@@ -1142,11 +1156,11 @@ left:3px;
 	border-radius: 5px;
 	border:0;
 	outline:0;
-	bottom:calc(20px + 2%);
-	margin-top: 1%;
-	margin-left: 1%;
+	bottom:calc(10px);
+	margin-top: 10px;
+	margin-left: 10px;
     height: min(58px, 29%);
-	width:calc((100% - 40px) / 2 * 0.96);
+	width:calc(100% - 20px);
 	border: none;
 }
 #PlayBTN:hover{

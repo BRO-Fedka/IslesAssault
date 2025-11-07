@@ -18,6 +18,7 @@ from server.Modules.RepairKit import RepairKit
 from server.Vehicle.Controllers.LevelController import LevelController
 from server.Modules.InteractionModule import InteractionModule
 from server.Modules.MapModule import MapModule
+from server.Modules.ChatModule import ChatModule
 
 POLY_SHAPE = [(0.03, 0.02), (0.03, -0.02), (-0.03, -0.02), (-0.03, 0.02)]
 POLY_SHAPE_N = [(1, 0), (0, -1), (-1, 0), (0, 1)]
@@ -32,8 +33,8 @@ VEHICLE_ID: int = 1
 # TODO [SERVER] Tank
 
 class Tank(Vehicle):
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None):
-        super().__init__(world, color_id, tracer_id,role)
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None,name =None):
+        super().__init__(world, color_id, tracer_id,role, name)
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_GROUND
@@ -53,6 +54,7 @@ class Tank(Vehicle):
         self.level_controller = LevelController(self,self.shape,self.world,self.mass_controller,z=1, w=True, g=True)
         self.modules = [
             MapModule(self),
+            ChatModule(self.world, self.role, self.name),
             InteractionModule(self.world,self),
             TankCannon(0.005, 0, self.world, self.body),
             engine,

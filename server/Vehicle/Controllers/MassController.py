@@ -18,6 +18,7 @@ class MassController:
         # self.mass = 0
         for module in self.modules:
             self.mass += module.get_mass()
+            print('MASS', module, module.get_mass())
         self.shape.mass = self.mass
         self.default_mass = self.mass
         print(self.default_mass, 'def_mass')

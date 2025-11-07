@@ -1,5 +1,6 @@
 from server.constants import MARK_ID_POINT
 import datetime
+from server.Chat import Chat
 
 
 class Role:
@@ -11,6 +12,8 @@ class Role:
         self.intelligence_enemy_map_marks = []
         self.observed_points = []
         self.map_module_string = ''
+        print('ROLE')
+        self.chats = [Chat(name,color)]
         # self.marks
 
     def update(self):

@@ -14,6 +14,7 @@ from server.Camera import Camera
 from server.Types import PlayerInputData
 from server.Role import Role
 from server.Modules.Input.ComboBox import ComboBox
+import logging
 
 TPS = int(os.environ['TPS'])
 MAPJSON = os.environ['JSON_MAP']
@@ -121,18 +122,20 @@ class Player:
                 except AccountNotFoundException:
                     await self.valid_guest_player({"color": color_id, "vehicle": vehicle_id})
         except:
-            self.disconnect()
+            self.disconnect(124)
             return
         await websocket.send('0,M' + MAPJSON)
-        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id, role=self.role)
+        self.vehicle = VehiclesDict[vehicle_id](world, color_id, tracer_id, role=self.role, name=self.name)
         try:
             self.world.spawnpoints[spawnpoint_id].spawn(self.vehicle, id=vehicle_id)
             self.camera = Camera(self.vehicle, world)
-            self.vehicle.name = self.name
+            # self.vehicle.name = self.name
             # world.space.step(0.1)
             await self.loop()
-        except:
+        except Exception as e:
+            logging.exception('')
             try:
+                print(136)
                 self.disconnect()
             except:
                 pass

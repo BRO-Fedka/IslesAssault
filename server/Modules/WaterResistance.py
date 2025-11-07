@@ -4,10 +4,14 @@ import math
 from server.constants import COF_WATER_RESISTANCE, COF_WATER_SURFACE_FRICTION, TPS
 from server.Vehicle.Controllers.LevelController import LevelController
 import pymunk
+import server.Modules.Input.InputKeys as IK
 import random
+from server.Types import PlayerInputData
 
 
 class WaterResistance(Module):
+    input_keys = [IK.LEFT, IK.RIGHT]
+
     def __init__(self, poly_shape, poly_shape_n, body: Body, resistance_cof=1, max_speed=0.15,
                  level_controller: LevelController = None):
         super().__init__()
@@ -17,6 +21,7 @@ class WaterResistance(Module):
         self.resistance_cof = resistance_cof
         self.max_speed = max_speed
         self.body = body
+        self.turning = False
 
     def update_module(self, vehicle):
         if not (self.level_controller is None or self.level_controller.get_z() in [0, -1]):
@@ -51,7 +56,7 @@ class WaterResistance(Module):
         for coord in range(0, len(self.poly)):
             l = math.sqrt(
                 (self.poly[coord][0] - self.poly[(coord + 1) % len(self.poly)][0]) ** 2 + (
-                            self.poly[coord][1] - self.poly[(coord + 1) % len(self.poly)][1]) ** 2)
+                        self.poly[coord][1] - self.poly[(coord + 1) % len(self.poly)][1]) ** 2)
             point = ((self.poly[coord][0] + self.poly[(coord + 1) % len(self.poly)][0]) / 2,
                      (self.poly[coord][1] + self.poly[(coord + 1) % len(self.poly)][1]) / 2)
             cos = (r_vec[0] * self.poly_n[coord][0] + r_vec[1] * self.poly_n[coord][1]) / math.sqrt(
@@ -69,7 +74,8 @@ class WaterResistance(Module):
             vec_from_cntr_grav = (point[0] - self.body.center_of_gravity.x, point[1] - self.body.center_of_gravity.y)
             vec_from_cntr_grav_l = math.sqrt(vec_from_cntr_grav[0] ** 2 + vec_from_cntr_grav[1] ** 2)
             rotated_vec_from_cntr_grav = (vec_from_cntr_grav[1], -vec_from_cntr_grav[0])
-            cos =( rotated_vec_from_cntr_grav[0] * self.poly_n[coord][0] + rotated_vec_from_cntr_grav[1] * self.poly_n[coord][1]) / math.sqrt(
+            cos = (rotated_vec_from_cntr_grav[0] * self.poly_n[coord][0] + rotated_vec_from_cntr_grav[1] *
+                   self.poly_n[coord][1]) / math.sqrt(
                 rotated_vec_from_cntr_grav[0] ** 2 + rotated_vec_from_cntr_grav[1] ** 2) / math.sqrt(
                 self.poly_n[coord][0] ** 2 + self.poly_n[coord][1] ** 2)
             m = COF_WATER_RESISTANCE * vec_from_cntr_grav_l ** 2 * self.body.angular_velocity * abs(
@@ -93,6 +99,11 @@ class WaterResistance(Module):
         if self.body.velocity.length > self.max_speed:
             self.body.velocity = (self.body.velocity.x / self.body.velocity.length * self.max_speed,
                                   self.body.velocity.y / self.body.velocity.length * self.max_speed)
-        # if self.body.velocity.length == 0 or abs(self.body.angular_velocity) < 0.05 * (
-        #         self.body.velocity.length * 1 / self.max_speed) ** 5:
-        #     self.body.angular_velocity = 0
+        if self.body.velocity.length == 0 or not self.turning:
+            self.body.angular_velocity *= 0.8
+
+    def update_module_input(self, input: PlayerInputData):
+        if (not IK.RIGHT in input.active_keys) and (not IK.LEFT in input.active_keys):
+            self.turning = False
+        else:
+            self.turning = True

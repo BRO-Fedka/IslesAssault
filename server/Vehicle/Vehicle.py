@@ -23,8 +23,8 @@ class NoPlaceForSpawn(Exception): pass
 
 class Vehicle(Object):
     id_manager: IdManager = IdManager()
-
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1, role=None):
+    vehicle_public_name: str = None
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1, role=None, name=None):
         self.world = world
         self.color_id = color_id
         self.tracer_id = tracer_id
@@ -38,7 +38,7 @@ class Vehicle(Object):
         self.id = self.id_manager.get_id()
         self.body.position = -10, -10
         self.modules: List[Module] = []
-        self.name = ""
+        self.name = name if (not name is None) else (role +' '+ self.vehicle_public_name) if (not self.vehicle_public_name is None) else role +' ' +self.__class__.__name__
         self.health_controller: VehicleHealthController = VehicleHealthController(self.body)
         self.mass_controller: MassController = None
         self.level_controller: LevelController = None
@@ -47,7 +47,7 @@ class Vehicle(Object):
         self.comboboxes = None
 
     def set_spawn_pos(self, x, y, dir):
-        print(x, y)
+        print(x, y,dir)
         self.body.position = x, y
         self.body.angle = dir / 180 * math.pi
         # raise NoPlaceForSpawn

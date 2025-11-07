@@ -38,11 +38,11 @@ class Spawnpoint:
         self.vehicle_ids = {}
         for vid in Vehicles.keys():
             self.content[vid] = 0
-        self.content[0] = 10
-        self.content[1] = 10
-        self.content[2] = 10
-        self.content[3] = 10
-        self.content[4] = 10
+        self.content[0] = -1 #10
+        self.content[1] = -1
+        self.content[2] = -1
+        self.content[3] = -1
+        self.content[4] = -1
         self.cx = 0
         self.cy = 0
         for pos in self.poses:
@@ -114,7 +114,7 @@ class Spawnpoint:
             r = self.role.symbol
         return (r,self.map_mark_id, round(self.cx, 1), round(self.cy, 1), datetime.datetime.now())
 
-    def spawn(self, vehicle, id=-1):
+    def spawn(self, vehicle, id=0):
         if self.content[id] == 0:
             raise NoVehiclesOfThisType
         poses = []

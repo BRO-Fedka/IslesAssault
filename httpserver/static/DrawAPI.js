@@ -470,7 +470,9 @@ let IK = {
     REPAIR : new InputKey(5,"Repair",70,'static/indication/repair_animation.svg'),
     INTERACT1: new InputKey(7, "Interact", 69,'static/indication/click_icon.svg'),
     INTERACT2: new InputKey(8, "Interact 2", 81,'static/indication/click_icon.svg'),
-    MAP: new InputKey(9, "Open map", 77,'static/indication/map_icon.svg')
+    MAP: new InputKey(9, "Open map", 77,'static/indication/map_icon.svg'),
+    CHAT: new InputKey(10, "Open chat", 13,'static/indication/click_icon.svg'),
+    TAB : new InputKey(11, "Change chat", 9,'static/indication/click_icon.svg')
 }
 
 let CB = {
@@ -1184,6 +1186,129 @@ class MapModule extends Module{
             }
 
         }
+        
+    }
+}
+//TODO Improve
+
+let chatModuleInstance = null
+let chatNames = []//[["Team","#00f"],["World","#fff"]]
+let curChatNameID = -1
+let messageChars = {
+    "m":'fa-solid fa-location-dot',
+    's':'fa-solid fa-gear',
+    'i':'fa-solid fa-circle-info',
+    'e':'fa-solid fa-explosion'
+}
+let specialClasses = ['msg-server','msg-event','msg-personal','msg-info']
+class ChatModule extends Module{
+    input_keys = [IK.CHAT,IK.TAB]
+    constructor(){
+        super()
+        // this.new_point = null
+        this.message = ""
+    }
+
+    updatep(string){
+        let cM = document.getElementById('chatModule')
+        if (!cM){
+            let chat = document.createElement('div')
+            chat.id = 'chatModule'
+            document.body.appendChild(chat)
+            let inpc = document.createElement('div')
+            inpc.id = 'inputChat'
+            inpc.style.display = 'none'
+            document.body.appendChild(inpc)
+            chat.innerHTML += ''
+
+            inpc.innerHTML += '<span onclick="chatModuleInstance.changeChat()" id="inputChatName" >Team</span><input id="inputChatEntry" onblur="chatModuleInstance.hide()"/>'
+            chatModuleInstance = this
+
+        }
+        // console.log('!')
+        if (IK.CHAT.was_pressed){
+            if (document.getElementById('inputChat').style.display=='none'){
+                document.getElementById('inputChat').style.display = 'block'
+                inputChatEntry.focus()
+                IKWhiteList = [IK.CHAT,IK.TAB]
+                // console.log('!!!!!')
+            }else{
+                if (inputChatEntry.value.replace(' ','') == ''){
+                    this.hide()
+                }else{
+                    this.message = inputChatEntry.value
+                    inputChatEntry.value = ''
+                }
+                
+            
+            }
+        }
+        if (IK.TAB.was_pressed && document.getElementById('inputChat').style.display=='block'){
+            this.changeChat()
+        }
+        if (string[0]=='0'){
+            return string.slice(1)
+        }
+        if (string[0]=='C'){
+            console.log(string)
+            let strarr = string.slice(1).split(',',1)[0]
+            chatNames = []
+            strarr.split(';').forEach((e)=>{
+                chatNames.push([e.split('#')[0],'#'+e.split('#')[1]])
+            })
+            string = string.slice(strarr.length+2)
+            curChatNameID=-1
+            this.changeChat()
+            return string
+        }
+        if (string[0]=='M'){
+            let stram = string.slice(1).split(',',1)[0]
+            string = string.slice(1+stram.length+1)
+            let CM = document.getElementById('chatModule');
+            for (let _ = 0; _ < Number(stram); _++) {
+                let msg = string.split(',',3)
+                let icon = ''
+                let cls = ''
+                if (isNaN(msg[0])){
+                    let sep =  msg[0].replace(/[0-9]/g, '')
+                    cls += specialClasses[Number(msg.split(sep)[0])]
+                    msg = msg[0].slice(msg.split(sep)[0].length+sep.length)
+                    icon = '<i class="'+messageChars[sep]+'"></i>'
+                }
+                CM.innerHTML += '<p style="color:'+chatNames[msg[0]][1]+'" class="'+cls+'"><b>'+icon+msg[1]+ ': </b>'+msg[2]+'</p>'
+                string = string.slice(msg[0].length+msg[1].length+msg[2].length+3) 
+            }
+            if (document.getElementById('inputChat').style.display=='none') CM.scrollTop = CM.scrollHeight
+            return string
+        }
+        return string
+    }
+    hide(){
+        document.getElementById('inputChat').style.display = 'none'
+        IKWhiteList = null
+        let CM = document.getElementById('chatModule')
+        CM.scrollTop = CM.scrollHeight
+    }
+    m_double(event){
+
+    }
+    changeChat(){
+        curChatNameID = (curChatNameID+1)%chatNames.length
+        inputChatName.innerHTML = chatNames[curChatNameID][0]
+        inputChatName.style.color = chatNames[curChatNameID][1]
+    }
+
+    get_callback(){
+        if (this.message){
+            let msg = this.message
+            this.message = ''
+            return 'M'+curChatNameID+','+msg.replace(',',';;')
+        }
+        if (chatNames.length == 0){
+            return 'C,'
+        }
+        return ''
+        
         
     }
 }
@@ -2461,8 +2586,12 @@ class Building extends Strucure{
         this.sound_player = new SoundPlayer()
     }
 
-    crumble(){
+    crumble_common(){
         this.sound_player.play(SND_CRUMBLING)
+    }
+
+    crumble(){
+        this.crumble_common()
         let cos = Math.cos(this.dir/180*Math.PI)
         let sin = Math.sin(this.dir/180*Math.PI)
         if (this.crumbling_wall_part){
@@ -2622,6 +2751,33 @@ class CircularBuilding extends Building{
         ctx.stroke();
         ctx.closePath();
     }
+    crumble(){
+        this.crumble_common()
+        let cos = Math.cos(this.dir/180*Math.PI)
+        let sin = Math.sin(this.dir/180*Math.PI)
+        if (this.crumbling_wall_part){
+            for (let _ = 0; _ < Math.round((this.w+this.h)*2*40); _++) {
+                let rnd = Math.random()*2*Math.PI
+                
+                let p = new this.wall_bep(this.x+Math.cos(rnd)*this.w,this.y+Math.sin(rnd)*this.w)
+                p.objdir = rnd+Math.PI/2
+                
+            }
+        }
+        if(this.crumbling_smk_part){
+            for (let _ = 0; _ < Math.round((this.w*this.h)*300); _++) {
+                let x =Math.random()*this.w - this.w/2
+                let y =Math.random()*this.w - this.w/2
+                while (x**2+y**2>this.w**2/4){
+                    x= Math.random()*this.w - this.w/2
+                    y= Math.random()*this.h - this.h/2
+                }
+
+                new this.crumbling_prt(this.x+x*cos-y*sin,this.y+x*sin+y*cos)
+                
+            }
+        }
+    }
 }
 
 class CircularBasedBuilding extends CircularBuilding{
@@ -2633,6 +2789,8 @@ class CircularBasedBuilding extends CircularBuilding{
 }
 
 class RadarBuilding extends CircularBasedBuilding{
+    crumbling_smk_part = true
+    crumbling_wall_part = false
     draw(){
         if (this.state_char=='4'){
             this.draw_under_construction()

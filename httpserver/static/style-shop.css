@@ -31,6 +31,7 @@ display: none;
 #ShopForm{
 	align-content: center;
 	border-radius: 10px;
+	backdrop-filter:var(--gui-blur);
 	/*transform: translateX(-50%) translateY(-50%);*/
 	background-color: rgba(0,0,0,0.2);
 	top: 45px;
@@ -142,7 +143,7 @@ div.item-lbl > span{
 	/*display: inline-block;*/
 }
 @keyframes shopGetIt {
-  0% {transform: scale(1); ro}
+  0% {transform: scale(1);}
   25%{transform: scale(1.25) rotate(-10deg);}
   50% {transform: scale(1.5);}
   75%{transform: scale(1.25) rotate(10deg);}

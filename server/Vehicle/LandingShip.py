@@ -20,6 +20,7 @@ from server.Vehicle.InteractiveVehicle import InteractiveVehicle
 from server.Modules.PlaceForVehicle import PlaceForVehicle
 from server.Modules.InteractionModule import InteractionModule
 from server.Modules.MapModule import MapModule
+from server.Modules.ChatModule import ChatModule
 
 POLY_SHAPE = [[-0.17, 0.045], [-0.12, 0.055], [0, 0.055], [0.105, 0.055], [0.155, 0.035], [0.17, 0], [0.155, -0.035],
               [0.105, -0.055], [0, -0.055], [-0.12, -0.055], [-0.17, -0.045]]
@@ -42,8 +43,9 @@ VEHICLE_ID: int = 3
 
 
 class LandingShip(InteractiveVehicle):
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1, role=None):
-        super().__init__(world, color_id, tracer_id, role)
+
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1, role=None,name =None):
+        super().__init__(world, color_id, tracer_id, role, name)
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_WATER
@@ -64,6 +66,7 @@ class LandingShip(InteractiveVehicle):
         segment3 = ShipSegment(SEG3, self.level_controller)
         self.modules = [
             MapModule(self),
+            ChatModule(self.world, self.role, self.name),
             InteractionModule(self.world, self),
             PlaceForVehicle(-0.075, 0.025, self.body),
             PlaceForVehicle(-0.075, -0.025, self.body),
@@ -71,10 +74,10 @@ class LandingShip(InteractiveVehicle):
             PlaceForVehicle(-0.005, -0.025, self.body),
             PlaceForVehicle(0.065, 0.025, self.body),
             PlaceForVehicle(0.065, -0.025, self.body),
-            ShipSteering(self.body, -0.25, 0, 0.075),
+            ShipSteering(self.body, -0.25, 0,0.2),
             WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.2),
             # fueltank1,fueltank2,fueltank3,fueltank4
-            ShipEngine(self.body, -0.25, 0, ENG, force=0.015, fueltanks=None, segment=segment3, fueluse=0.0000003),
+            ShipEngine(self.body, -0.25, 0, ENG, force=0.035, fueltanks=None, segment=segment3, fueluse=0.0000003),
             # WaterPump(PMP,segments=[segment1,segment2,segment3]),
             # fueltank1,
             # fueltank2,

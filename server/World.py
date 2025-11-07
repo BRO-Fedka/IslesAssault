@@ -9,6 +9,7 @@ from server.Object import Object
 import math
 import datetime
 import logging
+from server.Chat import Chat
 
 dotenv.load_dotenv()
 WORLD_TPS = int(os.environ['TPS'])
@@ -28,6 +29,8 @@ class World:
         self._objects: Set[Object] = set()
         self.chunks_with_objects: Chunks = {}
         self.chunks_with_static_objects: Chunks = {}
+        print("WORLD")
+        self.chats = [Chat("World",'#fff')]
         for x in range(0, self.wh):
             for y in range(0, self.wh):
                 self.chunks_with_objects[(x, y)] = set()

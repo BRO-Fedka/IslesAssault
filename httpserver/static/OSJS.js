@@ -280,6 +280,7 @@ class Heavy extends Vehicle{
         super(id,name)
         this.modules = [
             new MapModule(),
+            new ChatModule(),
             new InteractionModule(),
             new MortarCannon(0,0),
             new MortarCannon(-0.1,0),

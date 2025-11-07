@@ -309,8 +309,9 @@ def index():
         m = acc.money
         servers = []
         if isDEV:
-            servers = [['local 8001', 'ws://localhost:8001'], ['local 8002', 'ws://localhost:8002'],
-                       ['local 8003', 'ws://localhost:8003']]
+            servers = [['dev-serv 8001', 'ws://' + os.environ['HOST'] + ':8001'],
+                       ['dev-serv 8002', 'ws://' + os.environ['HOST'] + ':8002'],
+                       ['dev-serv 8003', 'ws://' + os.environ['HOST'] + ':8003']]
         else:
             onlineServers = Server.query.filter_by().all()
             for server in onlineServers:
@@ -321,8 +322,8 @@ def index():
 
     servers = []
     if isDEV:
-        servers = [['local 8001', 'ws://localhost:8001'], ['local 8002', 'ws://localhost:8002'],
-                   ['local 8003', 'ws://localhost:8003']]
+        servers = [['dev-serv 8001', 'ws://'+os.environ['HOST']+':8001'], ['dev-serv 8002', 'ws://'+os.environ['HOST']+':8002'],
+                   ['dev-serv 8003', 'ws://'+os.environ['HOST']+':8003']]
     else:
         onlineServers = Server.query.filter_by(status="online").all()
         for server in onlineServers:

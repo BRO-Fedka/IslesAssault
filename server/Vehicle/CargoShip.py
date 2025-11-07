@@ -18,6 +18,7 @@ from server.Vehicle.Controllers.LevelController import LevelController
 from server.functions import count_normals
 from server.Modules.InteractionModule import InteractionModule
 from server.Modules.MapModule import MapModule
+from server.Modules.ChatModule import ChatModule
 
 POLY_SHAPE = [[0,0.075],[0.15,0.075],[0.2,0.05],[0.225,0],[0.2,-0.05],[0.15,-0.075],[0,-0.075],[-0.15,-0.075],[-0.225,-0.075],[-0.25,-0.05],[-0.25,0.05],[-0.225,0.075]]
 POLY_SHAPE_N = [(-0.0, 0.15), (0.025, 0.05), (0.05, 0.025), (0.05, -0.025), (0.025, -0.05), (-0.0, -0.15), (-0.0, -0.15), (-0.0, -0.075), (-0.025, -0.025), (-0.1, 0.0), (-0.025, 0.025), (-0.0, 0.225)]
@@ -36,8 +37,8 @@ VEHICLE_ID: int = 2
 
 
 class CargoShip(Vehicle):
-    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None):
-        super().__init__(world, color_id, tracer_id,role)
+    def __init__(self, world: World, color_id: int = 0, tracer_id: int = 1,role=None,name =None):
+        super().__init__(world, color_id, tracer_id,role,name)
         self.shape = pymunk.Poly(self.body, POLY_SHAPE)
         # print(self.shape.area)
         self.shape.filter = COL_ON_WATER
@@ -58,10 +59,11 @@ class CargoShip(Vehicle):
         segment3 = ShipSegment(SEG3,self.level_controller)
         self.modules = [
             MapModule(self),
+            ChatModule(self.world, self.role, self.name),
             InteractionModule(self.world, self),
-            ShipSteering(self.body,-0.25,0,0.075),
+            ShipSteering(self.body,-0.25,0,0.2),
             WaterResistance(POLY_SHAPE, POLY_SHAPE_N, self.body, max_speed=0.2),
-            ShipEngine(self.body,-0.25,0,ENG,force=0.015,fueltanks=[fueltank1,fueltank2,fueltank3,fueltank4], segment=segment3,fueluse=0.0000003),
+            ShipEngine(self.body,-0.25,0,ENG,force=0.1,fueltanks=[fueltank1,fueltank2,fueltank3,fueltank4], segment=segment3,fueluse=0.0000003),
             WaterPump(PMP,segments=[segment1,segment2,segment3]),
             fueltank1,
             fueltank2,
