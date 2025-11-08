@@ -24,6 +24,7 @@ class ConstructionTool(RotatingModule):
         self.world = world
         self.arm_l = arm_l
         self.vehicle = vehicle
+        self.cof_mass_per_area *= 2.25
 
     def build(self):
         if self.hp == 0:

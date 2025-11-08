@@ -70,6 +70,8 @@ class Tank(Vehicle):
         ]
         self.health_controller.update_params(1000, self.modules, POLY_SHAPE,self.level_controller, on_kill=self.kill)
         self.mass_controller.update_params(self.modules)
+        # self.mass_controller.update()
+        # print(self.mass_controller.mass)
         # self.body.position = 5.25, 6
         self.init_inputs()
 
