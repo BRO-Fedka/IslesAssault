@@ -327,6 +327,7 @@ class Tank extends Vehicle{
         super(id,name)
         this.modules = [
             new MapModule(),
+            new ChatModule(),
             new InteractionModule(),
             new TankCannon(0.005, 0),
             new TankEngine(ENG1),
@@ -375,6 +376,7 @@ class CargoShip extends Vehicle{
         // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
+            new ChatModule(),
             new InteractionModule(),
             new ShipSteering(),
             new MockModule(),
@@ -423,6 +425,7 @@ class LandingShip extends Vehicle{
         // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
+            new ChatModule(),
             new InteractionModule(),
             new PlaceForVehicle(-0.075, 0.025),
             new PlaceForVehicle(-0.075, -0.025),
@@ -470,6 +473,7 @@ class ConstructionVehicle extends Vehicle{
         // this.wtp_spawner.set_activation_to(true)
         this.modules = [
             new MapModule(),
+            new ChatModule(),
             new InteractionModule(),
             new ConstructionTool(0.015, 0),
             new TankEngine(ENG1),

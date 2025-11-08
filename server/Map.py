@@ -51,10 +51,17 @@ class Map(World):
                     proto_sp[sp_name]['role'] = 'B'
                 if 'Red' in sp_name:
                     proto_sp[sp_name]['role'] = 'R'
-                if 'seaport' in sp_name:
-                    proto_sp[sp_name]['role'] = 'R'
+                # if 'seaport' in sp_name:
+                #     proto_sp[sp_name]['role'] = 'N'
                 if proto_sp[sp_name]['role'] == 'N':
-                    role = None
+                    aver = [0,0]
+                    # print(proto_sp[sp_name]['poses'])
+                    for x,y,d in proto_sp[sp_name]['poses']:
+                        aver[0] +=x
+                        aver[1] += y
+                    role = self.roles['B' if sum(aver)/len(proto_sp[sp_name]['poses']) < 32 else 'R']
+                    # print(role.symbol)
+                    # role = None
                 else:
                     role = self.roles[proto_sp[sp_name]['role']]
                 self.spawnpoints.append(
